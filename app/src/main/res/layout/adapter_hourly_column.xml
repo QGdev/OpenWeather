@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="wrap_content"
+    android:minWidth="100dp"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp">
+
+    <TextView
+        android:id="@+id/hourly_date"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="10/10\n10:00"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <ImageView
+        android:id="@+id/hourly_weather"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:src="@drawable/clouds_and_sun_flat"
+        android:isScrollContainer="false"/>
+
+    <TextView
+        android:id="@+id/hourly_temperature"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="10,55°C"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <TextView
+        android:id="@+id/hourly_temperature_feels_like"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="15,55°C"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <TextView
+        android:id="@+id/hourly_pressure"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="1000 hpa"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <TextView
+        android:id="@+id/hourly_humidity"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="50%"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <!--<TextView
+        android:id="@+id/hourly_dewpoint"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="20°C"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>!-->
+
+    <TextView
+        android:id="@+id/hourly_cloudiness"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="75 %"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <TextView
+        android:id="@+id/hourly_visibility"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="10 km"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <TextView
+        android:id="@+id/hourly_wind_direction"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="N"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <TextView
+        android:id="@+id/hourly_wind_speed"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="10 km/h"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <TextView
+        android:id="@+id/hourly_wind_gust_speed"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="30 km/h"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+    <TextView
+        android:id="@+id/hourly_pop"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="10,55°C"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp"
+        android:isScrollContainer="false"/>
+
+</LinearLayout>

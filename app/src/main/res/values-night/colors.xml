@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+
+    <color name="colorFirstText">@color/colorWhite</color>
+    <color name="colorSecondaryText">@color/colorWhiteGrey</color>
+
+    <color name="colorIcons">@color/colorWhiteGrey</color>
+
+    <color name="colorBackground">@color/colorBlackGrey</color>
+
+</resources>
