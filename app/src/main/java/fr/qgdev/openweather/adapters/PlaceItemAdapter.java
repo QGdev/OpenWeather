@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.card.MaterialCardView;
 
@@ -21,9 +22,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.weather.CurrentWeather;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
 
@@ -33,12 +34,13 @@ public class PlaceItemAdapter extends BaseAdapter{
     private Context context;
     private List<Place> placeItemList;
     private LayoutInflater inflater;
+    private View parentView;
 
-    public PlaceItemAdapter(Context context, List<Place> placeItemList)
-    {
+    public PlaceItemAdapter(Context context, List<Place> placeItemList, View parentView) {
         this.context = context;
         this.placeItemList = placeItemList;
         this.inflater = LayoutInflater.from(context);
+        this.parentView = parentView;
     }
 
 
@@ -64,29 +66,34 @@ public class PlaceItemAdapter extends BaseAdapter{
         LinearLayout adapterPlace = view.findViewById(R.id.adapter_place);
         MaterialCardView cardView = view.findViewById(R.id.card_place);
 
-        TextView cityTextView = (TextView) view.findViewById(R.id.city_adapter);
-        TextView countryTextView = (TextView) view.findViewById(R.id.country_adapter);
+        TextView cityTextView = view.findViewById(R.id.city_adapter);
+        TextView countryTextView = view.findViewById(R.id.country_adapter);
 
-        TextView temperatureTextView = (TextView) view.findViewById(R.id.temperature_adapter);
-        TextView temperatureFeelsLikeTextView = (TextView) view.findViewById(R.id.temperature_feelslike_adapter);
+        TextView temperatureTextView = view.findViewById(R.id.temperature_adapter);
+        TextView temperatureFeelsLikeTextView = view.findViewById(R.id.temperature_feelslike_adapter);
 
-        TextView weatherDescriptionTextView = (TextView) view.findViewById(R.id.weather_description_adapter);
-        ImageView weatherIconImageView = (ImageView) view.findViewById(R.id.weather_icon_adapter);
+        TextView weatherDescriptionTextView = view.findViewById(R.id.weather_description_adapter);
+        ImageView weatherIconImageView = view.findViewById(R.id.weather_icon_adapter);
 
-        TextView windDirectionTextView = (TextView) view.findViewById(R.id.wind_direction_value);
-        TextView windSpeedTextView = (TextView) view.findViewById(R.id.wind_speed_value);
-        TextView windGustSpeedTextView = (TextView) view.findViewById(R.id.wind_gust_speed_value);
+        TextView windDirectionTextView = view.findViewById(R.id.wind_direction_value);
+        TextView windSpeedTextView = view.findViewById(R.id.wind_speed_value);
+        TextView windGustSpeedTextView = view.findViewById(R.id.wind_gust_speed_value);
 
-        TextView humidityTextView = (TextView) view.findViewById(R.id.humidity_value);
-        TextView pressureTextView = (TextView) view.findViewById(R.id.pressure_value);
-        TextView visibilityTextView = (TextView) view.findViewById(R.id.visibility_value);
+        TextView humidityTextView = view.findViewById(R.id.humidity_value);
+        TextView pressureTextView = view.findViewById(R.id.pressure_value);
+        TextView visibilityTextView = view.findViewById(R.id.visibility_value);
 
-        TextView sunriseTextView = (TextView) view.findViewById(R.id.sunrise_value);
-        TextView sunsetTextView = (TextView) view.findViewById(R.id.sunset_value);
-        TextView cloudinessTextView = (TextView) view.findViewById(R.id.cloudiness_value);
+        TextView sunriseTextView = view.findViewById(R.id.sunrise_value);
+        TextView sunsetTextView = view.findViewById(R.id.sunset_value);
+        TextView cloudinessTextView = view.findViewById(R.id.cloudiness_value);
 
-        TextView rainTextView = (TextView) view.findViewById(R.id.rain_precipitations_current_value);
-        TextView snowTextView = (TextView) view.findViewById(R.id.snow_precipitations_current_value);
+        TextView rainTextView = view.findViewById(R.id.rain_precipitations_current_value);
+        TextView snowTextView = view.findViewById(R.id.snow_precipitations_current_value);
+
+
+        //  Get parent view elements
+        final SwipeRefreshLayout swipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
+        final TextView noPlacesRegisteredTextView = parentView.findViewById(R.id.no_places_registered);
 
 
         SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -290,7 +297,7 @@ public class PlaceItemAdapter extends BaseAdapter{
 
         //  Pressure
         if(pressureUnit.contains("hpa")){
-            pressure= String.format("%d hPa", (int) currentWeather.pressure);
+            pressure = String.format("%d hPa", currentWeather.pressure);
         }
         else{
             pressure = String.format("%d bar",currentWeather.pressure);
@@ -298,7 +305,7 @@ public class PlaceItemAdapter extends BaseAdapter{
 
         //  Visibility
         if(measureUnit.contains("metric")){
-            visibility = String.format("%d km", (int) (currentWeather.visibility / 1000));
+            visibility = String.format("%d km", currentWeather.visibility / 1000);
         }
         else{
             visibility = String.format("%d mile", (int) (currentWeather.visibility * 0.000621371));
@@ -403,6 +410,17 @@ public class PlaceItemAdapter extends BaseAdapter{
                             DataPlaces dataPlaces = new DataPlaces(context);
                             String dataPlaceName = currentItem.getCity().toUpperCase() + '/' + currentItem.getCountryCode();
                             dataPlaces.deletePlace(dataPlaceName);
+
+                            try {
+                                placeItemList = dataPlaces.getPlaces();
+
+                                if (placeItemList.isEmpty()) {
+                                    noPlacesRegisteredTextView.setVisibility(View.VISIBLE);
+                                    swipeRefreshLayout.setVisibility(View.GONE);
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
 
                             adapterPlace.setVisibility(View.GONE);
                         }

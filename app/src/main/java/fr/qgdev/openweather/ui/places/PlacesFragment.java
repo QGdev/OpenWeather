@@ -9,12 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.VolleyError;
@@ -80,10 +80,11 @@ public class PlacesFragment extends Fragment {
         API_KEY = apiKeyPref.getString("api_key", null);
 
 
-        placeItemAdapter = new PlaceItemAdapter(mContext, placeArrayList);
+        placeItemAdapter = new PlaceItemAdapter(mContext, placeArrayList, root);
 
-        //  Find SwipeRefreshLayout
+        //  Find SwipeRefreshLayout and no places registered message textview
         final SwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.swiperefresh);
+        final TextView noPlacesRegisteredTextView = root.findViewById(R.id.no_places_registered);
 
         //  Initialize places data storage
         dataPlaces = new DataPlaces(mContext);
@@ -100,17 +101,21 @@ public class PlacesFragment extends Fragment {
                 try {
                     if(dataPlaces.savePlace(place)) {
 
-                        int index = dataPlaces.getPlacePositionInRegister(place);
                         placeArrayList = dataPlaces.getPlaces();
-                        placeArrayList.set(index, place);
-                        placeItemAdapter = new PlaceItemAdapter(mContext, placeArrayList);
-
-                        if(placeList.getChildCount() - 1 < index){
-                            placeList.addView(placeItemAdapter.getView(index, null, null),placeList.getChildCount());
+                        if (!placeArrayList.isEmpty()) {
+                            noPlacesRegisteredTextView.setVisibility(View.GONE);
+                            swipeRefreshLayout.setVisibility(View.VISIBLE);
                         }
-                        else {
+
+                        int index = dataPlaces.getPlacePositionInRegister(place);
+                        placeArrayList.set(index, place);
+                        placeItemAdapter = new PlaceItemAdapter(mContext, placeArrayList, root);
+
+                        if (placeList.getChildCount() - 1 < index) {
+                            placeList.addView(placeItemAdapter.getView(index, null, null), placeList.getChildCount());
+                        } else {
                             placeList.removeViewAt(index);
-                            placeList.addView(placeItemAdapter.getView(index, null, null),index);
+                            placeList.addView(placeItemAdapter.getView(index, null, null), index);
                         }
 
                     }
@@ -229,42 +234,44 @@ public class PlacesFragment extends Fragment {
         );
 
 
-
-
-
         //  No API key registered
-        if(API_KEY != null){
+        if (API_KEY != null) {
 
             //  Show the Floating Action Button to add Places
             addPlacesFab.setVisibility(View.VISIBLE);
-
-            //  Display data about places
-            try {
-
-                //  Show current saved data
-                placeArrayList = dataPlaces.getPlaces();
-
-                placeItemAdapter = new PlaceItemAdapter(mContext, placeArrayList);
-                for(int i = 0; i < placeArrayList.size(); i++){
-                    placeList.addView(placeItemAdapter.getView(i, null, null),i);
-                }
-
-                //  Refresh data
-                for(int index = 0; index < placeArrayList.size(); index++) {
-                    weatherService.getWeatherDataOWM(placeArrayList.get(index), refreshPlaceListCallback);
-                    Log.d("WeatherUpdate", placeArrayList.get(index).getCity());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-        else{
+        } else {
             //  Hide the Floating Action Button to add Places
             addPlacesFab.setVisibility(View.GONE);
         }
 
 
+        //  Display data about places
+        try {
+
+            //  Show current saved data
+            placeArrayList = dataPlaces.getPlaces();
+
+            if (!placeArrayList.isEmpty()) {
+
+                noPlacesRegisteredTextView.setVisibility(View.GONE);
+                swipeRefreshLayout.setVisibility(View.VISIBLE);
+                placeItemAdapter = new PlaceItemAdapter(mContext, placeArrayList, root);
+                for (int i = 0; i < placeArrayList.size(); i++) {
+                    placeList.addView(placeItemAdapter.getView(i, null, null), i);
+                }
+
+                //  Refresh data
+                for (int index = 0; index < placeArrayList.size(); index++) {
+                    weatherService.getWeatherDataOWM(placeArrayList.get(index), refreshPlaceListCallback);
+                    Log.d("WeatherUpdate", placeArrayList.get(index).getCity());
+                }
+            } else {
+                noPlacesRegisteredTextView.setVisibility(View.VISIBLE);
+                swipeRefreshLayout.setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         return root;

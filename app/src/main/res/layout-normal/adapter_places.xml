@@ -41,7 +41,7 @@
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:maxHeight="50dp"
-                        android:maxLines="3"
+                        android:maxLines="4"
                         android:text="City"
                         android:textColor="@color/colorFirstText"
                         android:textSize="25sp"

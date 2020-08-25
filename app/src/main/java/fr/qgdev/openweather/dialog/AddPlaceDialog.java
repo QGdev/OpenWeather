@@ -25,9 +25,9 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.List;
 
+import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.WeatherService;
 
 public class AddPlaceDialog extends Dialog {
@@ -148,7 +148,6 @@ public class AddPlaceDialog extends Dialog {
                                                                     .show();
                                                             return;
                                                         }
-
                                                         dismiss();
                                                         Snackbar.make(addPlaceFABView, String.format("%s, %s %s", place.getCity(), getCountryCode(), context.getString(R.string.place_added_succcessfully)), Snackbar.LENGTH_LONG)
                                                                 .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
