@@ -2,15 +2,11 @@ package fr.qgdev.openweather;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
-import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -20,7 +16,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import fr.qgdev.openweather.weather.CurrentWeather;
@@ -215,7 +210,7 @@ public class WeatherService{
                                     hourlyWeatherForecasttmp.weatherDescription = hourlyForecastWeatherDescriptionsJSON.getString("description");
 
 
-                                    place.addHourlyWeatherForecast(i, hourlyWeatherForecasttmp);
+                                    place.setHourlyWeatherForecast(i, hourlyWeatherForecasttmp);
                                 }
 
 

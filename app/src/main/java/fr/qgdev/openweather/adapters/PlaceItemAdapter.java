@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -365,17 +366,19 @@ public class PlaceItemAdapter extends BaseAdapter{
         LinearLayout skyInformationsLinearLayout = view.findViewById(R.id.sky_informations);
         LinearLayout forecastInformationsLinearLayout = view.findViewById(R.id.forecast);
 
-        LinearLayout hourlyForecastLinearLayout = view.findViewById(R.id.hourly_forecast_scrollView);
+        LinearLayout hourlyForecastLinearLayout = view.findViewById(R.id.hourly_forecast);
+        LinearLayout hourlyForecastScrollview = view.findViewById(R.id.hourly_forecast_scrollView);
+        LinearLayout hourlyForecast = view.findViewById(R.id.hourly_forecast_layout);
+        ImageView hourlyForecastExpandIcon = view.findViewById(R.id.hourly_forecast_expand_icon);
 
         ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList = currentItem.getHourlyWeatherForecastArrayList();
 
-        HourlyColumnAdapter hourlyColumnAdapter = new HourlyColumnAdapter(context, hourlyWeatherForecastArrayList);
+        HourlyColumnAdapter hourlyColumnAdapter = new HourlyColumnAdapter(context, currentItem);
 
         cardView.setOnClickListener(v -> {
 
-            if(detailedInformationsLinearLayout.getVisibility() == View.GONE) {
+            if (detailedInformationsLinearLayout.getVisibility() == View.GONE) {
 
-                hourlyForecastLinearLayout.removeAllViewsInLayout();
 
                 detailedInformationsLinearLayout.setVisibility(View.VISIBLE);
                 windGustInfomationLinearLayout.setVisibility(View.VISIBLE);
@@ -383,18 +386,36 @@ public class PlaceItemAdapter extends BaseAdapter{
                 skyInformationsLinearLayout.setVisibility(View.VISIBLE);
                 forecastInformationsLinearLayout.setVisibility(View.VISIBLE);
 
-                for(int index = 0; index < hourlyWeatherForecastArrayList.size(); index++){
-                    hourlyForecastLinearLayout.addView(hourlyColumnAdapter.getView(index, null, null), index);
-                }
 
-            }
-            else{
-                hourlyForecastLinearLayout.removeAllViewsInLayout();
+                hourlyForecast.setOnClickListener(v1 -> {
+
+                    if (hourlyForecastLinearLayout.getVisibility() == View.GONE) {
+                        hourlyForecastExpandIcon.setRotation(180);
+
+                        if (hourlyForecastScrollview.getChildCount() < 48) {
+                            hourlyForecastScrollview.removeAllViewsInLayout();
+
+                            Log.d("size", String.valueOf(hourlyWeatherForecastArrayList.size()));
+                            for (int index = 0; index < hourlyWeatherForecastArrayList.size(); index++) {
+                                hourlyForecastScrollview.addView(hourlyColumnAdapter.getView(index, null, null), index);
+                            }
+                        }
+                        hourlyForecastLinearLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        hourlyForecastExpandIcon.setRotation(0);
+                        hourlyForecastLinearLayout.setVisibility(View.GONE);
+                    }
+                });
+
+
+            } else {
+                hourlyForecastScrollview.removeAllViewsInLayout();
                 detailedInformationsLinearLayout.setVisibility(View.GONE);
                 windGustInfomationLinearLayout.setVisibility(View.GONE);
                 visibilityInformationLinearLayout.setVisibility(View.GONE);
                 skyInformationsLinearLayout.setVisibility(View.GONE);
                 forecastInformationsLinearLayout.setVisibility(View.GONE);
+                hourlyForecastLinearLayout.setVisibility(View.GONE);
             }
         });
 

@@ -44,7 +44,7 @@
                         android:maxLines="3"
                         android:text="City"
                         android:textColor="@color/colorFirstText"
-                        android:textSize="25sp"
+                        android:textSize="20sp"
                         android:isScrollContainer="false"/>
 
                     <TextView

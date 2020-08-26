@@ -3,6 +3,7 @@ package fr.qgdev.openweather.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,21 +15,24 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
+import fr.qgdev.openweather.weather.CurrentWeather;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
 
 
 public class HourlyColumnAdapter extends BaseAdapter{
 
     private Context context;
+    private Place place;
     private List<HourlyWeatherForecast> hourlyWeatherForecastList;
     private LayoutInflater inflater;
 
-    public HourlyColumnAdapter(Context context, List<HourlyWeatherForecast> hourlyWeatherForecastList)
-    {
+    public HourlyColumnAdapter(Context context, Place place) {
         this.context = context;
-        this.hourlyWeatherForecastList = hourlyWeatherForecastList;
+        this.place = place;
         this.inflater = LayoutInflater.from(context);
+        this.hourlyWeatherForecastList = place.getHourlyWeatherForecastArrayList();
     }
 
 
@@ -51,36 +55,37 @@ public class HourlyColumnAdapter extends BaseAdapter{
     public View getView(int position, View view, ViewGroup parent) {
         view = inflater.inflate(R.layout.adapter_hourly_column, null);
 
-        TextView dateTextView = (TextView) view.findViewById(R.id.hourly_date);
+        TextView dateTextView = view.findViewById(R.id.hourly_date);
 
-        ImageView weatherIconImageView = (ImageView) view.findViewById(R.id.hourly_weather);
+        ImageView weatherIconImageView = view.findViewById(R.id.hourly_weather);
 
-        TextView temperatureTextView = (TextView) view.findViewById(R.id.hourly_temperature);
-        TextView temperatureFeelsLikeTextView = (TextView) view.findViewById(R.id.hourly_temperature_feels_like);
+        TextView temperatureTextView = view.findViewById(R.id.hourly_temperature);
+        TextView temperatureFeelsLikeTextView = view.findViewById(R.id.hourly_temperature_feels_like);
         //TextView dewPointTextView = (TextView) view.findViewById(R.id.hourly_dewpoint);
 
-        TextView pressureTextView = (TextView) view.findViewById(R.id.hourly_pressure);
-        TextView humidityTextView = (TextView) view.findViewById(R.id.hourly_humidity);
-        TextView cloudinessTextView = (TextView) view.findViewById(R.id.hourly_cloudiness);
-        TextView visibilityTextView = (TextView) view.findViewById(R.id.hourly_visibility);
+        TextView pressureTextView = view.findViewById(R.id.hourly_pressure);
+        TextView humidityTextView = view.findViewById(R.id.hourly_humidity);
+        TextView cloudinessTextView = view.findViewById(R.id.hourly_cloudiness);
+        //TextView visibilityTextView = (TextView) view.findViewById(R.id.hourly_visibility);
 
-        TextView windDirectionTextView = (TextView) view.findViewById(R.id.hourly_wind_direction);
-        TextView windSpeedTextView = (TextView) view.findViewById(R.id.hourly_wind_speed);
-        TextView windGustSpeedTextView = (TextView) view.findViewById(R.id.hourly_wind_gust_speed);
+        TextView windDirectionTextView = view.findViewById(R.id.hourly_wind_direction);
+        TextView windSpeedTextView = view.findViewById(R.id.hourly_wind_speed);
+        //TextView windGustSpeedTextView = (TextView) view.findViewById(R.id.hourly_wind_gust_speed);
 
-        TextView popTextView = (TextView) view.findViewById(R.id.hourly_pop);
+        TextView popTextView = view.findViewById(R.id.hourly_pop);
 
         SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(context);
         String temperatureUnit = apiKeyPref.getString("temperature_unit", null);
         String measureUnit = apiKeyPref.getString("measure_unit", null);
         String pressureUnit = apiKeyPref.getString("pressure_unit", null);
 
-        HourlyWeatherForecast currentItem = getItem(position);
+        HourlyWeatherForecast currentItemHourlyForecasts = getItem(position);
+        CurrentWeather currentItemCurrentWeather = place.getCurrentWeather();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM\nHH:mm");
 
         //  Date
-        final String date = simpleDateFormat.format(new Date(currentItem.dt));
+        final String date = simpleDateFormat.format(new Date(currentItemHourlyForecasts.dt));
 
         //  Icon
         final int weatherIconId;
@@ -89,71 +94,218 @@ public class HourlyColumnAdapter extends BaseAdapter{
         final String temperature;
         final String temperatureFeelsLike;
         //final String dewPoint;
-        
-        if(temperatureUnit.contains("celsius")){
-            temperature = String.format("%.1f°C", (currentItem.temperature - 273.15));
-            temperatureFeelsLike = String.format("%.1f°C", (currentItem.temperatureFeelsLike - 273.15));
-            //dewPoint = String.format("%.1f°C", (currentItem.dewPoint - 273.15));
-        }
-        else {
-            temperature = String.format("%.1f °F", ((currentItem.temperature - 273.15) * (9/5)) + 32);
-            temperatureFeelsLike = String.format("%.1f°F", ((currentItem.temperatureFeelsLike - 273.15) * (9/5)) + 32);
-            //dewPoint = String.format("%.1f°F", ((currentItem.dewPoint - 273.15) * (9/5)) + 32);
+
+        if (temperatureUnit.contains("celsius")) {
+            temperature = String.format("%.1f°C", (currentItemHourlyForecasts.temperature - 273.15));
+            temperatureFeelsLike = String.format("%.1f°C", (currentItemHourlyForecasts.temperatureFeelsLike - 273.15));
+            //dewPoint = String.format("%.1f°C", (currentItemHourlyForecasts.dewPoint - 273.15));
+        } else {
+            temperature = String.format("%.1f °F", ((currentItemHourlyForecasts.temperature - 273.15) * (9 / 5)) + 32);
+            temperatureFeelsLike = String.format("%.1f°F", ((currentItemHourlyForecasts.temperatureFeelsLike - 273.15) * (9 / 5)) + 32);
+            //dewPoint = String.format("%.1f°F", ((currentItemHourlyForecasts.dewPoint - 273.15) * (9/5)) + 32);
         }
 
 
         final String pressure;
         final String humidity;
         final String cloudiness;
-        final String visibility;
+        //final String visibility;
 
         //  Pressure
-        if(pressureUnit.contains("hpa")){
-            pressure= String.format("%d hPa", (int) currentItem.pressure);
-        }
-        else{
-            pressure = String.format("%d bar",currentItem.pressure);
+        if (pressureUnit.contains("hpa")) {
+            pressure = String.format("%d hPa", currentItemHourlyForecasts.pressure);
+        } else {
+            pressure = String.format("%d bar", currentItemHourlyForecasts.pressure);
         }
 
         //  Humidity
-        humidity = currentItem.humidity + " %";
+        humidity = currentItemHourlyForecasts.humidity + " %";
 
-        cloudiness = currentItem.cloudiness + " %";
+        cloudiness = currentItemHourlyForecasts.cloudiness + " %";
 
         //  Visibility
-        if(measureUnit.contains("metric")){
-            visibility = String.format("%d km", (int) (currentItem.visibility / 1000));
-        }
-        else{
-            visibility = String.format("%d mile", (int) (currentItem.visibility * 0.000621371));
-        }
+        //if(measureUnit.contains("metric")){
+        //    visibility = String.format("%d km", (int) (currentItemHourlyForecasts.visibility / 1000));
+        //}
+        //else{
+        //    visibility = String.format("%d mile", (int) (currentItemHourlyForecasts.visibility * 0.000621371));
+        //}
 
 
         final String windDirection;
         final String windSpeed;
-        final String windGustSpeed;
+        //final String windGustSpeed;
 
         //  Wind
         ////    Wind Direction
-        windDirection = currentItem.getWindDirectionCardinalPoints();
+        windDirection = currentItemHourlyForecasts.getWindDirectionCardinalPoints();
         ////  Wind speed and Wind gust Speed
-        if(measureUnit.contains("metric")){
-            windSpeed = String.format("%d km/h", (int) (currentItem.windSpeed * 3.6));
-            windGustSpeed = String.format("%d km/h", (int) (currentItem.windGustSpeed * 3.6));
+        if (measureUnit.contains("metric")) {
+            windSpeed = String.format("%d km/h", (int) (currentItemHourlyForecasts.windSpeed * 3.6));
+            //windGustSpeed = String.format("%d km/h", (int) (currentItemHourlyForecasts.windGustSpeed * 3.6));
+        } else {
+            windSpeed = String.format("%d mph", (int) (currentItemHourlyForecasts.windSpeed * 2.23694));
+            //windGustSpeed = String.format("%d mph", (int) (currentItemHourlyForecasts.windGustSpeed * 2.23694));
         }
-        else{
-            windSpeed = String.format("%d mph", (int) (currentItem.windSpeed * 2.23694));
-            windGustSpeed = String.format("%d mph", (int) (currentItem.windGustSpeed * 2.23694));
+
+
+        final String pop = String.valueOf((int) (currentItemHourlyForecasts.pop * 100)) + '%';
+
+
+        final long currentDt = currentItemHourlyForecasts.dt / 1000 % 86400;
+        final long currentSunrise = currentItemCurrentWeather.sunrise / 1000 % 86400;
+        final long currentSunset = currentItemCurrentWeather.sunset / 1000 % 86400;
+
+        Log.d("DT", date);
+        Log.d("DT", String.valueOf(currentDt));
+        Log.d("SUNRISE", String.valueOf(currentSunrise));
+        Log.d("SUNSET", String.valueOf(currentSunset));
+        Log.d("SUNRISE_TEST", String.valueOf(currentDt >= currentSunrise));
+        Log.d("SUNSET_TEST", String.valueOf(currentDt < currentSunset));
+
+        switch (currentItemHourlyForecasts.weatherDescription) {
+            case "light thunderstorm":
+            case "ragged thunderstorm":
+            case "heavy thunderstorm":
+            case "thunderstorm":
+                weatherIconId = context.getResources().getIdentifier("thunderstorm_flat", "drawable", context.getPackageName());
+                break;
+
+            //Drizzle
+            case "light intensity drizzle":
+            case "drizzle rain":
+            case "light intensity drizzle rain":
+            case "heavy intensity drizzle":
+            case "drizzle":
+                weatherIconId = context.getResources().getIdentifier("hail_flat", "drawable", context.getPackageName());
+                break;
+            case "heavy intensity drizzle rain":
+            case "shower rain and drizzle":
+            case "heavy shower rain and drizzle":
+            case "shower drizzle":
+                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                    weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
+                }
+                //  Night
+                else {
+                    weatherIconId = context.getResources().getIdentifier("rainy_night_flat", "drawable", context.getPackageName());
+                }
+                break;
+
+            //  Rain
+            case "light rain":
+            case "heavy intensity rain":
+            case "moderate rain":
+                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                    weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
+                }
+                //  Night
+                else {
+                    weatherIconId = context.getResources().getIdentifier("rainy_night_flat", "drawable", context.getPackageName());
+                }
+                break;
+            case "very heavy rain":
+            case "shower rain":
+            case "light intensity shower rain":
+            case "freezing rain":
+            case "extreme rain":
+                weatherIconId = context.getResources().getIdentifier("rain_flat", "drawable", context.getPackageName());
+                break;
+            case "heavy intensity shower rain":
+            case "ragged shower rain":
+                weatherIconId = context.getResources().getIdentifier("heavy_rain_flat", "drawable", context.getPackageName());
+                break;
+
+            //  Snow
+            case "light snow":
+            case "Snow":
+                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                    weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
+                }
+                //  Night
+                else {
+                    weatherIconId = context.getResources().getIdentifier("snow_and_night_flat", "drawable", context.getPackageName());
+                }
+                break;
+            case "Heavy snow":
+            case "Heavy shower snow":
+            case "Shower snow":
+            case "Light shower snow":
+                weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
+                break;
+            case "Sleet":
+            case "Rain and snow":
+            case "Light rain and snow":
+            case "Shower sleet":
+            case "Light shower sleet":
+                weatherIconId = context.getResources().getIdentifier("sleet_flat", "drawable", context.getPackageName());
+                break;
+
+            //  Atmosphere
+            case "mist":
+            case "Smoke":
+            case "Haze":
+            case "sand/ dust whirls":
+            case "volcanic ash":
+            case "squalls":
+            case "dust":
+            case "sand":
+            case "fog":
+                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                    weatherIconId = context.getResources().getIdentifier("fog_flat", "drawable", context.getPackageName());
+                }
+                //  Night
+                else {
+                    weatherIconId = context.getResources().getIdentifier("fog_and_night_flat", "drawable", context.getPackageName());
+                }
+                break;
+            case "tornado":
+                weatherIconId = context.getResources().getIdentifier("tornado_flat", "drawable", context.getPackageName());
+
+                //  Sky
+                break;
+            case "clear sky":
+                //  Day
+                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                    weatherIconId = context.getResources().getIdentifier("sun_flat", "drawable", context.getPackageName());
+                }
+                //  Night
+                else {
+                    weatherIconId = context.getResources().getIdentifier("moon_phase_flat", "drawable", context.getPackageName());
+                }
+                break;
+            case "few clouds":
+            case "broken clouds":
+            case "scattered clouds":
+                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                    weatherIconId = context.getResources().getIdentifier("clouds_and_sun_flat", "drawable", context.getPackageName());
+                }
+                //  Night
+                else {
+                    weatherIconId = context.getResources().getIdentifier("cloudy_night_flat", "drawable", context.getPackageName());
+                }
+                break;
+            case "overcast clouds":
+                weatherIconId = context.getResources().getIdentifier("cloudy_flat", "drawable", context.getPackageName());
+                break;
+            case "thunderstorm with heavy drizzle":
+            case "thunderstorm with drizzle":
+            case "thunderstorm with light drizzle":
+            case "thunderstorm with heavy rain":
+            case "thunderstorm with rain":
+                //  Thunderstorm Group
+            case "thunderstorm with light rain":
+
+                //  Default
+            default:
+                weatherIconId = context.getResources().getIdentifier("storm_flat", "drawable", context.getPackageName());
+                break;
         }
-
-
-        final String pop = String.valueOf((int)(currentItem.pop * 100)) + '%';
-
 
 
         dateTextView.setText(date);
 
-        //weatherIconImageView.setImageResource(weatherIconId);
+        weatherIconImageView.setImageResource(weatherIconId);
 
         temperatureTextView.setText(temperature);
         temperatureFeelsLikeTextView.setText(temperatureFeelsLike);
@@ -162,11 +314,11 @@ public class HourlyColumnAdapter extends BaseAdapter{
         humidityTextView.setText(humidity);
         pressureTextView.setText(pressure);
         cloudinessTextView.setText(cloudiness);
-        visibilityTextView.setText(visibility);
+        //visibilityTextView.setText(visibility);
 
         windDirectionTextView.setText(windDirection);
         windSpeedTextView.setText(windSpeed);
-        windGustSpeedTextView.setText(windGustSpeed);
+        //windGustSpeedTextView.setText(windGustSpeed);
 
         popTextView.setText(pop);
 

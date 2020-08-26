@@ -42,25 +42,47 @@
         <!--    hourly !-->
 
         <LinearLayout
+            android:id="@+id/hourly_forecast_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="20dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:orientation="vertical">
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/round_square"
+            android:orientation="vertical"
+            android:padding="10dp">
 
-            <TextView
+            <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:text="@string/title_forecast_hourly"
-                android:textColor="@color/colorFirstText"
-                android:textSize="20sp" />
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_forecast_hourly"
+                    android:textColor="@color/colorFirstText"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/hourly_forecast_expand_icon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="end"
+                    android:src="@drawable/ic_arrow_down_black_24dp"
+                    app:tint="@color/colorIcons" />
+
+            </GridLayout>
 
             <LinearLayout
+                android:id="@+id/hourly_forecast"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <include layout="@layout/column_hourly_forecast"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:visibility="gone">
+
+                <include layout="@layout/column_hourly_forecast" />
 
                 <HorizontalScrollView
                     android:layout_width="wrap_content"

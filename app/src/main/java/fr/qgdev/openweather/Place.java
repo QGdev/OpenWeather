@@ -1,13 +1,5 @@
 package fr.qgdev.openweather;
 
-import android.content.Context;
-import android.util.Log;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,9 +28,9 @@ public class Place {
     private int errorCode;
 
     private CurrentWeather currentWeather = new CurrentWeather();
-    private ArrayList<MinutelyWeatherForecast> minutelyWeatherForecastArrayList = new ArrayList<MinutelyWeatherForecast>();
-    private ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList = new ArrayList<HourlyWeatherForecast>();
-    private ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList = new ArrayList<DailyWeatherForecast>();
+    private ArrayList<MinutelyWeatherForecast> minutelyWeatherForecastArrayList = new ArrayList<MinutelyWeatherForecast>(60);
+    private ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList = new ArrayList<HourlyWeatherForecast>(48);
+    private ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList = new ArrayList<DailyWeatherForecast>(8);
 
 
     public Place() {

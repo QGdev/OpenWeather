@@ -214,6 +214,13 @@ public class AddPlaceDialog extends Dialog {
                                         place.setErrorCode(error.networkResponse.statusCode);
 
                                         switch (place.getErrorCode()) {
+                                            case 429:
+                                                dismiss();
+                                                Snackbar.make(addPlaceFABView, context.getString(R.string.error_too_many_request_in_a_day), Snackbar.LENGTH_LONG)
+                                                        .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+                                                        .setMaxInlineActionWidth(3)
+                                                        .show();
+                                                break;
                                             case 404:
                                                 Snackbar.make(addPlaceFABView, context.getString(R.string.error_place_not_found), Snackbar.LENGTH_LONG)
                                                         .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)

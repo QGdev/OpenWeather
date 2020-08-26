@@ -48,6 +48,7 @@
     <string name="error_server_unreachable">Cannot reach OMW servers\nVerify your connection and try again</string>
     <string name="error_place_not_found">OpenWeatherMaps didn\'t found that place</string>
     <string name="error_wrong_api_key">OpenWeatherMaps didn\'t recognize your API key</string>
+    <string name="error_too_many_request_in_a_day">Cannot get weather data\nToo many requests today</string>
     <string name="error_unknow_error">Unknow error happened</string>
 
     <string name="url_owm_weatherdata"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s]]></string>

@@ -53,12 +53,6 @@
         android:layout_gravity="center"
         app:tint="@color/colorIcons"
         android:src="@drawable/cloudy_material"/>
-    <ImageView
-        android:layout_width="30dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center"
-        app:tint="@color/colorIcons"
-        android:src="@drawable/ic_visibility_black_24dp"/>
 
     <ImageView
         android:layout_width="30dp"
@@ -72,12 +66,13 @@
         android:layout_gravity="center"
         app:tint="@color/colorIcons"
         android:src="@drawable/windsock_material"/>
-    <ImageView
+    <!--<ImageView
         android:layout_width="30dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
         app:tint="@color/colorIcons"
         android:src="@drawable/wind_material"/>
+    !-->
 
     <ImageView
         android:layout_width="30dp"
