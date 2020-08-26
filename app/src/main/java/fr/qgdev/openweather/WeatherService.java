@@ -150,7 +150,12 @@ public class WeatherService{
                                         minutelyWeatherForecasttmp.dt = minutelyForecastWeatherJSONtmp.getLong("dt") * 1000;
                                         minutelyWeatherForecasttmp.precipitation = minutelyForecastWeatherJSONtmp.getInt("precipitation");
 
-                                        place.addMinutelyWeatherForecast(i, minutelyWeatherForecasttmp);
+
+                                        if (place.getMinutelyWeatherForecastArrayList().size() == 61) {
+                                            place.setMinutelyWeatherForecast(i, minutelyWeatherForecasttmp);
+                                        } else {
+                                            place.addMinutelyWeatherForecast(i, minutelyWeatherForecasttmp);
+                                        }
                                     }
                                 }
 
@@ -210,7 +215,12 @@ public class WeatherService{
                                     hourlyWeatherForecasttmp.weatherDescription = hourlyForecastWeatherDescriptionsJSON.getString("description");
 
 
-                                    place.setHourlyWeatherForecast(i, hourlyWeatherForecasttmp);
+                                    if (place.getHourlyWeatherForecastArrayList().size() == 48) {
+                                        place.setHourlyWeatherForecast(i, hourlyWeatherForecasttmp);
+                                    } else {
+                                        place.addHourlyWeatherForecast(i, hourlyWeatherForecasttmp);
+                                    }
+
                                 }
 
 
@@ -282,7 +292,11 @@ public class WeatherService{
                                     dailyWeatherForecasttmp.weatherDescription = dailyWeatherDescriptionsJSON.getString("description");
 
 
-                                    place.addDailyWeatherForecast(i, dailyWeatherForecasttmp);
+                                    if (place.getDailyWeatherForecastArrayList().size() == 8) {
+                                        place.setDailyWeatherForecast(i, dailyWeatherForecasttmp);
+                                    } else {
+                                        place.addDailyWeatherForecast(i, dailyWeatherForecasttmp);
+                                    }
                                 }
 
                                 Log.d(TAG, "Weather information treatment completed");
