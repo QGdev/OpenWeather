@@ -87,7 +87,14 @@ public class HourlyColumnAdapter extends BaseAdapter{
         HourlyWeatherForecast currentItemHourlyForecasts = getItem(position);
         CurrentWeather currentItemCurrentWeather = place.getCurrentWeather();
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM\nHH:mm");
+        SimpleDateFormat simpleDateFormat;
+
+        if (timeFormat.contains("24")) {
+            simpleDateFormat = new SimpleDateFormat("dd/MM\nHH:mm");
+        } else {
+            simpleDateFormat = new SimpleDateFormat("dd/MM\nKK:mm a");
+        }
+
         if (timeOffset.contains("place"))
             simpleDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(place.getTimeZone())));
 

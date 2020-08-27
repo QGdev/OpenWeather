@@ -318,9 +318,13 @@ public class PlaceItemAdapter extends BaseAdapter{
         final String sunrise;
         final String sunset;
         final String cloudiness;
+        DateFormat simpleDateFormat;
 
-
-        DateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        if (timeFormat.contains("24")) {
+            simpleDateFormat = new SimpleDateFormat("HH:mm");
+        } else {
+            simpleDateFormat = new SimpleDateFormat("KK:mm a");
+        }
 
         if (timeOffset.contains("place"))
             simpleDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(currentItem.getTimeZone())));
