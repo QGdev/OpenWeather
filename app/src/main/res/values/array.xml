@@ -505,6 +505,26 @@
         <item>"AX"</item>
     </string-array>
 
+
+    <string-array name="time_offset">
+        <item name="default">@string/title_settings_time_offset_place_country</item>
+        <item>@string/title_settings_time_offset_user_country</item>
+    </string-array>
+    <string-array name="time_offset_values">
+        <item>place</item>
+        <item>user</item>
+    </string-array>
+
+    <string-array name="time_format">
+        <item name="default">@string/title_settings_time_format_24h</item>
+        <item>@string/title_settings_time_format_12h</item>
+    </string-array>
+    <string-array name="time_format_values">
+        <item>24</item>
+        <item>12</item>
+    </string-array>
+
+
     <string-array name="temperature_units">
         <item>@string/title_settings_units_temperature_celsius</item>
         <item>@string/title_settings_units_temperature_fahrenheit</item>
@@ -532,4 +552,8 @@
         <item>bar</item>
     </string-array>
 
+    <string name="title_settings_time_offset_place_country">Relative to the country of the registered places</string>
+    <string name="title_settings_time_offset_user_country">Relative to the user\'s country</string>
+    <string name="title_settings_time_format_24h">24 h</string>
+    <string name="title_settings_time_format_12h">12 h</string>
 </resources>

@@ -3,7 +3,6 @@ package fr.qgdev.openweather.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +10,13 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
@@ -78,11 +81,15 @@ public class HourlyColumnAdapter extends BaseAdapter{
         String temperatureUnit = apiKeyPref.getString("temperature_unit", null);
         String measureUnit = apiKeyPref.getString("measure_unit", null);
         String pressureUnit = apiKeyPref.getString("pressure_unit", null);
+        String timeOffset = apiKeyPref.getString("time_offset", null);
+        String timeFormat = apiKeyPref.getString("time_format", null);
 
         HourlyWeatherForecast currentItemHourlyForecasts = getItem(position);
         CurrentWeather currentItemCurrentWeather = place.getCurrentWeather();
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM\nHH:mm");
+        if (timeOffset.contains("place"))
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(place.getTimeZone())));
 
         //  Date
         final String date = simpleDateFormat.format(new Date(currentItemHourlyForecasts.dt));
@@ -152,16 +159,24 @@ public class HourlyColumnAdapter extends BaseAdapter{
         final String pop = String.valueOf((int) (currentItemHourlyForecasts.pop * 100)) + '%';
 
 
-        final long currentDt = currentItemHourlyForecasts.dt / 1000 % 86400;
-        final long currentSunrise = currentItemCurrentWeather.sunrise / 1000 % 86400;
-        final long currentSunset = currentItemCurrentWeather.sunset / 1000 % 86400;
+        final String currentDt;
+        final String currentSunrise;
+        final String currentSunset;
+        boolean isDayTime = true;
 
-        Log.d("DT", date);
-        Log.d("DT", String.valueOf(currentDt));
-        Log.d("SUNRISE", String.valueOf(currentSunrise));
-        Log.d("SUNSET", String.valueOf(currentSunset));
-        Log.d("SUNRISE_TEST", String.valueOf(currentDt >= currentSunrise));
-        Log.d("SUNSET_TEST", String.valueOf(currentDt < currentSunset));
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(place.getTimeZone())));
+
+        currentDt = dateFormat.format(new Date(currentItemHourlyForecasts.dt));
+        currentSunrise = dateFormat.format(new Date(currentItemCurrentWeather.sunrise));
+        currentSunset = dateFormat.format(new Date(currentItemCurrentWeather.sunset));
+
+        try {
+            isDayTime = dateFormat.parse(currentDt).after(dateFormat.parse(currentSunrise)) && dateFormat.parse(currentDt).before(dateFormat.parse(currentSunset));
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         switch (currentItemHourlyForecasts.weatherDescription) {
             case "light thunderstorm":
@@ -183,7 +198,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
             case "shower rain and drizzle":
             case "heavy shower rain and drizzle":
             case "shower drizzle":
-                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
                 }
                 //  Night
@@ -196,7 +211,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
             case "light rain":
             case "heavy intensity rain":
             case "moderate rain":
-                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
                 }
                 //  Night
@@ -219,7 +234,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
             //  Snow
             case "light snow":
             case "Snow":
-                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 }
                 //  Night
@@ -251,7 +266,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
             case "dust":
             case "sand":
             case "fog":
-                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("fog_flat", "drawable", context.getPackageName());
                 }
                 //  Night
@@ -266,7 +281,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
                 break;
             case "clear sky":
                 //  Day
-                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("sun_flat", "drawable", context.getPackageName());
                 }
                 //  Night
@@ -277,7 +292,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
             case "few clouds":
             case "broken clouds":
             case "scattered clouds":
-                if (currentDt >= currentSunrise && currentDt < currentSunset) {
+                if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("clouds_and_sun_flat", "drawable", context.getPackageName());
                 }
                 //  Night

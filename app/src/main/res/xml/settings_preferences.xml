@@ -9,6 +9,26 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/title_settings_time">
+
+        <ListPreference
+            app:defaultValue="@string/default_timeoffset"
+            app:entries="@array/time_offset"
+            app:entryValues="@array/time_offset_values"
+            app:key="time_offset"
+            app:title="@string/title_settings_hour_timeoffset"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="@string/default_hourformat"
+            app:entries="@array/time_format"
+            app:entryValues="@array/time_format_values"
+            app:key="time_format"
+            app:title="@string/title_settings_hour_format"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory app:title="@string/title_settings_units">
 
         <ListPreference
@@ -20,19 +40,19 @@
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
-            app:defaultValue="metric"
             app:entries="@array/measure_units"
             app:entryValues="@array/measure_units_values"
             app:key="measure_unit"
             app:title="@string/title_settings_units_measure"
+            app:defaultValue="metric"
             app:useSimpleSummaryProvider="true" />
 
         <ListPreference
-            app:defaultValue="hpa"
             app:entries="@array/pressure_units"
             app:entryValues="@array/pressure_units_values"
             app:key="pressure_unit"
             app:title="@string/title_settings_units_pressure"
+            app:defaultValue="hpa"
             app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>

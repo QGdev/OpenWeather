@@ -24,6 +24,8 @@ public class Place {
     private Date lastUpdateDate;
     private long lastUpdate;
 
+    private String timeZone;
+
     private boolean errorDuringDataAcquisition;
     private int errorCode;
 
@@ -58,6 +60,8 @@ public class Place {
             countryCode = placeJSON.getString("country_code");
             latitude = placeJSON.getDouble("latitude");
             longitude = placeJSON.getDouble("longitude");
+            timeZone = placeJSON.getString("timezone");
+
         } else {
             throw new JSONException("Cannot find place data in PlaceObjectJSON");
         }
@@ -288,13 +292,20 @@ public class Place {
         return longitude;
     }
 
+    public long getLastUpdate() {
+        return lastUpdate;
+    }
+
     public Date getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public long getLastUpdate() {
-        return lastUpdate;
+    public String getTimeZone() {
+        return timeZone;
     }
+
+
+    //public long getLastUpdateWithTimeZoneOffset() {return lastUpdate + timeZoneOffset;}
 
     public int getErrorCode() {
         return errorCode;
@@ -360,6 +371,10 @@ public class Place {
 
     public void setLastUpdate(long lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
     }
 
     public void setErrorDuringDataAcquisition(boolean errorDuringDataAcquisition) {
@@ -428,6 +443,7 @@ public class Place {
             placeJSON.accumulate("country_code", countryCode);
             placeJSON.accumulate("latitude", latitude);
             placeJSON.accumulate("longitude", longitude);
+            placeJSON.accumulate("timezone", timeZone);
 
         } catch (JSONException e) {
             e.printStackTrace();

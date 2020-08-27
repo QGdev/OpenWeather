@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +17,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.card.MaterialCardView;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.Place;
@@ -101,6 +103,8 @@ public class PlaceItemAdapter extends BaseAdapter{
         String temperatureUnit = apiKeyPref.getString("temperature_unit", null);
         String measureUnit = apiKeyPref.getString("measure_unit", null);
         String pressureUnit = apiKeyPref.getString("pressure_unit", null);
+        String timeOffset = apiKeyPref.getString("time_offset", null);
+        String timeFormat = apiKeyPref.getString("time_format", null);
 
         Place currentItem = (Place) getItem(position);
         CurrentWeather currentWeather = currentItem.getCurrentWeather();
@@ -305,10 +309,9 @@ public class PlaceItemAdapter extends BaseAdapter{
         }
 
         //  Visibility
-        if(measureUnit.contains("metric")){
+        if (measureUnit.contains("metric")) {
             visibility = String.format("%d km", currentWeather.visibility / 1000);
-        }
-        else{
+        } else {
             visibility = String.format("%d mile", (int) (currentWeather.visibility * 0.000621371));
         }
 
@@ -316,10 +319,16 @@ public class PlaceItemAdapter extends BaseAdapter{
         final String sunset;
         final String cloudiness;
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+
+        DateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+
+        if (timeOffset.contains("place"))
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(currentItem.getTimeZone())));
 
         sunrise = simpleDateFormat.format(new Date(currentWeather.sunrise));
         sunset = simpleDateFormat.format(new Date(currentWeather.sunset));
+
+
         cloudiness = currentWeather.cloudiness + " %";
 
         final String rain;
@@ -393,9 +402,9 @@ public class PlaceItemAdapter extends BaseAdapter{
                         hourlyForecastExpandIcon.setRotation(180);
 
                         if (hourlyForecastScrollview.getChildCount() < 48) {
+
                             hourlyForecastScrollview.removeAllViewsInLayout();
 
-                            Log.d("size", String.valueOf(hourlyWeatherForecastArrayList.size()));
                             for (int index = 0; index < hourlyWeatherForecastArrayList.size(); index++) {
                                 hourlyForecastScrollview.addView(hourlyColumnAdapter.getView(index, null, null), index);
                             }

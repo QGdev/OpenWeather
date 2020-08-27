@@ -107,31 +107,44 @@ public class AddPlaceDialog extends Dialog {
                                     place.setErrorDuringDataAcquisition(false);
                                     place.setErrorCode(200);
 
+
                                     try {
                                         //  Get correct city name
                                         //place.setCity(response.getString("name"));
                                         //String cityName = place.getCity();
                                         //cityName.charAt(0) = cityName.charAt(0)
 
+                                        final int timeZoneOffSet = response.getInt("timezone");
+                                        int UTCnumber = timeZoneOffSet / 3600;
+                                        if (timeZoneOffSet == 0) {
+                                            place.setTimeZone("UTC");
+                                        } else if (timeZoneOffSet < 0) {
+                                            place.setTimeZone(String.format("%d", UTCnumber));
+                                        } else {
+                                            place.setTimeZone(String.format("+%d", UTCnumber));
+                                        }
+
+
                                         JSONObject coordinatesJSON = response.getJSONObject("coord");
                                         place.setLongitude(coordinatesJSON.getDouble("lon"));
                                         place.setLatitude(coordinatesJSON.getDouble("lat"));
 
+
                                         DataPlaces dataPlaces = new DataPlaces(context);
 
-                                        WeatherService weatherService = new WeatherService(getContext(), apiKey,dataPlaces);
+                                        WeatherService weatherService = new WeatherService(getContext(), apiKey, dataPlaces);
                                         WeatherService.WeatherCallback weatherCallback = new WeatherService.WeatherCallback() {
                                             @Override
-                                            public void onWeatherData(final Place place, DataPlaces dataPlaces){
+                                            public void onWeatherData(final Place place, DataPlaces dataPlaces) {
 
                                                 String dataPlaceName = place.getCity().toUpperCase() + '/' + place.getCountryCode();
 
                                                 try {
 
-                                                    if (!dataPlaces.getPlacesRegister().contains(dataPlaceName)){
+                                                    if (!dataPlaces.getPlacesRegister().contains(dataPlaceName)) {
 
                                                         //  Save Place in the register
-                                                        if(!dataPlaces.savePlaceInRegister(dataPlaceName)){
+                                                        if (!dataPlaces.savePlaceInRegister(dataPlaceName)) {
                                                             dismiss();
                                                             Snackbar.make(addPlaceFABView, context.getString(R.string.error_cannot_save_place_in_register), Snackbar.LENGTH_LONG)
                                                                     .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
@@ -140,7 +153,7 @@ public class AddPlaceDialog extends Dialog {
                                                             return;
                                                         }
                                                         //  Save Place
-                                                        if(!dataPlaces.savePlace(place)){
+                                                        if (!dataPlaces.savePlace(place)) {
                                                             dismiss();
                                                             Snackbar.make(addPlaceFABView, context.getString(R.string.error_cannot_save_place), Snackbar.LENGTH_LONG)
                                                                     .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
@@ -154,15 +167,13 @@ public class AddPlaceDialog extends Dialog {
                                                                 .setMaxInlineActionWidth(3)
                                                                 .show();
                                                         callback.onWeatherData(place, dataPlaces);
-                                                    }
-                                                    else{
+                                                    } else {
                                                         dismiss();
                                                         Snackbar.make(addPlaceFABView, context.getString(R.string.error_place_already_added), Snackbar.LENGTH_LONG)
                                                                 .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
                                                                 .setMaxInlineActionWidth(3)
                                                                 .show();
                                                     }
-
 
 
                                                 } catch (Exception e) {
@@ -183,14 +194,13 @@ public class AddPlaceDialog extends Dialog {
                                             }
 
 
-                                            public void onConnectionError(VolleyError error, Place place, DataPlaces dataPlaces){
+                                            public void onConnectionError(VolleyError error, Place place, DataPlaces dataPlaces) {
 
                                             }
                                         };
                                         weatherService.getWeatherDataOWM(place, weatherCallback);
 
-                                    }
-                                    catch (JSONException e) {
+                                    } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
 
@@ -200,7 +210,7 @@ public class AddPlaceDialog extends Dialog {
                                 error -> {
 
                                     //  no server response (NO INTERNET or SERVER DOWN)
-                                    if(error.networkResponse == null){
+                                    if (error.networkResponse == null) {
                                         dismiss();
                                         Snackbar.make(addPlaceFABView, context.getString(R.string.error_server_unreachable), Snackbar.LENGTH_LONG)
                                                 .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)

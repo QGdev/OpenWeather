@@ -70,6 +70,7 @@ public class WeatherService{
                         response -> {
                             place.setErrorDuringDataAcquisition(false);
                             place.setErrorCode(200);
+
                             try {
 
                                 //  Current Weather
@@ -112,13 +113,13 @@ public class WeatherService{
                                 }
                                 //  Precipitations
                                 ////    Rain
-                                if (currentWeatherJSON.has("rain")) {
+                                if (currentWeatherJSON.has("rain") && currentWeatherJSON.getJSONObject("rain").has("1h")) {
                                     currentWeather.rain = currentWeatherJSON.getJSONObject("rain").getDouble("1h");
                                 } else {
                                     currentWeather.rain = 0;
                                 }
                                 ////    Snow
-                                if (currentWeatherJSON.has("snow")) {
+                                if (currentWeatherJSON.has("snow") && currentWeatherJSON.getJSONObject("snow").has("1h")) {
                                     currentWeather.snow = currentWeatherJSON.getJSONObject("snow").getDouble("1h");
                                 } else {
                                     currentWeather.snow = 0;
@@ -196,13 +197,13 @@ public class WeatherService{
                                     }
                                     //  Precipitations
                                     ////    Rain
-                                    if (hourlyForecastWeatherJSONtmp.has("rain")) {
+                                    if (hourlyForecastWeatherJSONtmp.has("rain") && hourlyForecastWeatherJSONtmp.getJSONObject("rain").has("1h")) {
                                         hourlyWeatherForecasttmp.rain = hourlyForecastWeatherJSONtmp.getJSONObject("rain").getDouble("1h");
                                     } else {
                                         hourlyWeatherForecasttmp.rain = 0;
                                     }
                                     ////    Snow
-                                    if (hourlyForecastWeatherJSONtmp.has("snow")) {
+                                    if (hourlyForecastWeatherJSONtmp.has("snow") && hourlyForecastWeatherJSONtmp.getJSONObject("snow").has("1h")) {
                                         hourlyWeatherForecasttmp.snow = hourlyForecastWeatherJSONtmp.getJSONObject("snow").getDouble("1h");
                                     } else {
                                         hourlyWeatherForecasttmp.snow = 0;
