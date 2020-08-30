@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="10dp"
+    android:gravity="center"
+    android:minWidth="100dp"
+
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/daily_date"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="10/10"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <ImageView
+        android:id="@+id/daily_weather"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:src="@drawable/clouds_and_sun_flat" />
+
+    <TextView
+        android:id="@+id/daily_temperature_maximum"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="15,55°C"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_temperature_minimum"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="10,55°C"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_temperature_morning"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="10,55°C"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_temperature_day"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="15,55°C"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_pressure"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="1000 hpa"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_humidity"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="50%"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_cloudiness"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="75 %"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_sunrise"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="6:00"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_sunset"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="19:00"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_wind_direction"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="N"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_wind_speed"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="10 km/h"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/daily_pop"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:isScrollContainer="false"
+        android:maxLines="2"
+        android:text="10%"
+        android:textColor="@color/colorFirstText"
+        android:textSize="13sp" />
+
+</LinearLayout>

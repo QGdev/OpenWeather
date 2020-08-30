@@ -39,7 +39,7 @@
                 android:textSize="25sp" />
         </LinearLayout>
 
-        <!--    hourly !-->
+        <!--    hourly forecasts !-->
 
         <LinearLayout
             android:id="@+id/hourly_forecast_layout"
@@ -100,5 +100,66 @@
 
             </LinearLayout>
         </LinearLayout>
+
+        <!--    daily forecasts !-->
+
+        <LinearLayout
+            android:id="@+id/daily_forecast_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/round_square"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="@string/title_forecast_daily"
+                    android:textColor="@color/colorFirstText"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/daily_forecast_expand_icon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="end"
+                    android:src="@drawable/ic_arrow_down_black_24dp"
+                    app:tint="@color/colorIcons" />
+
+            </GridLayout>
+
+            <LinearLayout
+                android:id="@+id/daily_forecast"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:visibility="gone">
+
+                <include layout="@layout/column_daily_forecast" />
+
+                <HorizontalScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:hapticFeedbackEnabled="true">
+
+                    <LinearLayout
+                        android:id="@+id/daily_forecast_scrollView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+            </LinearLayout>
+        </LinearLayout>
+
+
     </LinearLayout>
 </LinearLayout>

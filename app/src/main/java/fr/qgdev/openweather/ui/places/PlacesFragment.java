@@ -242,13 +242,12 @@ public class PlacesFragment extends Fragment {
 
 
         //  No API key registered
-        if (API_KEY != null) {
-
-            //  Show the Floating Action Button to add Places
-            addPlacesFab.setVisibility(View.VISIBLE);
-        } else {
+        if (API_KEY == null || API_KEY.length() != 32) {
             //  Hide the Floating Action Button to add Places
             addPlacesFab.setVisibility(View.GONE);
+        } else {
+            //  Show the Floating Action Button to add Places
+            addPlacesFab.setVisibility(View.VISIBLE);
         }
 
 

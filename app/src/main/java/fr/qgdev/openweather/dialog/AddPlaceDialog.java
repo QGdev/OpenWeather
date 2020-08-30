@@ -81,7 +81,7 @@ public class AddPlaceDialog extends Dialog {
 
                     }
                     //  No API key is registered
-                    else if (apiKey == null) {
+                    else if (apiKey == null || apiKey.length() != 32) {
 
                         dismiss();
                         Snackbar.make(addPlaceFABView, context.getString(R.string.error_no_api_key_registered), Snackbar.LENGTH_LONG)

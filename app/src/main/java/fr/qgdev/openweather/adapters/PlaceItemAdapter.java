@@ -29,6 +29,7 @@ import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.weather.CurrentWeather;
+import fr.qgdev.openweather.weather.DailyWeatherForecast;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
 
 
@@ -131,10 +132,17 @@ public class PlaceItemAdapter extends BaseAdapter{
         final int weatherIconId;
 
         switch (weatherDescription) {
+            //  Thunderstorm Group
             case "light thunderstorm":
             case "ragged thunderstorm":
             case "heavy thunderstorm":
             case "thunderstorm":
+            case "thunderstorm with heavy drizzle":
+            case "thunderstorm with drizzle":
+            case "thunderstorm with light drizzle":
+            case "thunderstorm with heavy rain":
+            case "thunderstorm with rain":
+            case "thunderstorm with light rain":
                 weatherIconId = context.getResources().getIdentifier("thunderstorm_flat", "drawable", context.getPackageName());
                 break;
 
@@ -146,6 +154,7 @@ public class PlaceItemAdapter extends BaseAdapter{
             case "drizzle":
                 weatherIconId = context.getResources().getIdentifier("hail_flat", "drawable", context.getPackageName());
                 break;
+
             case "heavy intensity drizzle rain":
             case "shower rain and drizzle":
             case "heavy shower rain and drizzle":
@@ -171,6 +180,7 @@ public class PlaceItemAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("rainy_night_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "very heavy rain":
             case "shower rain":
             case "light intensity shower rain":
@@ -178,6 +188,7 @@ public class PlaceItemAdapter extends BaseAdapter{
             case "extreme rain":
                 weatherIconId = context.getResources().getIdentifier("rain_flat", "drawable", context.getPackageName());
                 break;
+
             case "heavy intensity shower rain":
             case "ragged shower rain":
                 weatherIconId = context.getResources().getIdentifier("heavy_rain_flat", "drawable", context.getPackageName());
@@ -194,12 +205,14 @@ public class PlaceItemAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("snow_and_night_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "Heavy snow":
             case "Heavy shower snow":
             case "Shower snow":
             case "Light shower snow":
                 weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 break;
+
             case "Sleet":
             case "Rain and snow":
             case "Light rain and snow":
@@ -226,11 +239,12 @@ public class PlaceItemAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("fog_and_night_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "tornado":
                 weatherIconId = context.getResources().getIdentifier("tornado_flat", "drawable", context.getPackageName());
-
-                //  Sky
                 break;
+
+            //  Sky
             case "clear sky":
                 //  Day
                 if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
@@ -241,6 +255,7 @@ public class PlaceItemAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("moon_phase_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "few clouds":
             case "broken clouds":
             case "scattered clouds":
@@ -252,23 +267,16 @@ public class PlaceItemAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("cloudy_night_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "overcast clouds":
                 weatherIconId = context.getResources().getIdentifier("cloudy_flat", "drawable", context.getPackageName());
                 break;
-            case "thunderstorm with heavy drizzle":
-            case "thunderstorm with drizzle":
-            case "thunderstorm with light drizzle":
-            case "thunderstorm with heavy rain":
-            case "thunderstorm with rain":
-                //  Thunderstorm Group
-            case "thunderstorm with light rain":
 
-                //  Default
+            //  Default
             default:
                 weatherIconId = context.getResources().getIdentifier("storm_flat", "drawable", context.getPackageName());
                 break;
         }
-
 
         final String windDirection;
         final String windSpeed;
@@ -291,7 +299,6 @@ public class PlaceItemAdapter extends BaseAdapter{
             windSpeed = String.format("%d mph", (int) (currentWeather.windSpeed * 2.23694));
             windGustSpeed = String.format("%d mph", (int) (currentWeather.windGustSpeed * 2.23694));
         }
-
 
         final String humidity;
         final String pressure;
@@ -348,7 +355,6 @@ public class PlaceItemAdapter extends BaseAdapter{
             snow = String.format("%.1f in", currentWeather.snow / 25.4);
         }
 
-
         cityTextView.setText(cityName);
         countryTextView.setText(countryName);
 
@@ -384,14 +390,20 @@ public class PlaceItemAdapter extends BaseAdapter{
         LinearLayout hourlyForecast = view.findViewById(R.id.hourly_forecast_layout);
         ImageView hourlyForecastExpandIcon = view.findViewById(R.id.hourly_forecast_expand_icon);
 
-        ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList = currentItem.getHourlyWeatherForecastArrayList();
+        LinearLayout dailyForecastLinearLayout = view.findViewById(R.id.daily_forecast);
+        LinearLayout dailyForecastScrollview = view.findViewById(R.id.daily_forecast_scrollView);
+        LinearLayout dailyForecast = view.findViewById(R.id.daily_forecast_layout);
+        ImageView dailyForecastExpandIcon = view.findViewById(R.id.daily_forecast_expand_icon);
 
+        ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList = currentItem.getHourlyWeatherForecastArrayList();
         HourlyColumnAdapter hourlyColumnAdapter = new HourlyColumnAdapter(context, currentItem);
+
+        ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList = currentItem.getDailyWeatherForecastArrayList();
+        DailyColumnAdapter dailyColumnAdapter = new DailyColumnAdapter(context, currentItem);
 
         cardView.setOnClickListener(v -> {
 
             if (detailedInformationsLinearLayout.getVisibility() == View.GONE) {
-
 
                 detailedInformationsLinearLayout.setVisibility(View.VISIBLE);
                 windGustInfomationLinearLayout.setVisibility(View.VISIBLE);
@@ -399,8 +411,7 @@ public class PlaceItemAdapter extends BaseAdapter{
                 skyInformationsLinearLayout.setVisibility(View.VISIBLE);
                 forecastInformationsLinearLayout.setVisibility(View.VISIBLE);
 
-
-                hourlyForecast.setOnClickListener(v1 -> {
+                hourlyForecast.setOnClickListener(hourlyView -> {
 
                     if (hourlyForecastLinearLayout.getVisibility() == View.GONE) {
                         hourlyForecastExpandIcon.setRotation(180);
@@ -420,15 +431,34 @@ public class PlaceItemAdapter extends BaseAdapter{
                     }
                 });
 
+                dailyForecast.setOnClickListener(hourlyView -> {
+
+                    if (dailyForecastLinearLayout.getVisibility() == View.GONE) {
+                        dailyForecastExpandIcon.setRotation(180);
+
+                        if (dailyForecastScrollview.getChildCount() < 48) {
+
+                            dailyForecastScrollview.removeAllViewsInLayout();
+
+                            for (int index = 0; index < dailyWeatherForecastArrayList.size(); index++) {
+                                dailyForecastScrollview.addView(dailyColumnAdapter.getView(index, null, null), index);
+                            }
+                        }
+                        dailyForecastLinearLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        dailyForecastExpandIcon.setRotation(0);
+                        dailyForecastLinearLayout.setVisibility(View.GONE);
+                    }
+                });
 
             } else {
-                hourlyForecastScrollview.removeAllViewsInLayout();
                 detailedInformationsLinearLayout.setVisibility(View.GONE);
                 windGustInfomationLinearLayout.setVisibility(View.GONE);
                 visibilityInformationLinearLayout.setVisibility(View.GONE);
                 skyInformationsLinearLayout.setVisibility(View.GONE);
                 forecastInformationsLinearLayout.setVisibility(View.GONE);
                 hourlyForecastLinearLayout.setVisibility(View.GONE);
+                dailyForecastLinearLayout.setVisibility(View.GONE);
             }
         });
 

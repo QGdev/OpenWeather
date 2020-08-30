@@ -64,16 +64,13 @@ public class HourlyColumnAdapter extends BaseAdapter{
 
         TextView temperatureTextView = view.findViewById(R.id.hourly_temperature);
         TextView temperatureFeelsLikeTextView = view.findViewById(R.id.hourly_temperature_feels_like);
-        //TextView dewPointTextView = (TextView) view.findViewById(R.id.hourly_dewpoint);
 
         TextView pressureTextView = view.findViewById(R.id.hourly_pressure);
         TextView humidityTextView = view.findViewById(R.id.hourly_humidity);
         TextView cloudinessTextView = view.findViewById(R.id.hourly_cloudiness);
-        //TextView visibilityTextView = (TextView) view.findViewById(R.id.hourly_visibility);
 
         TextView windDirectionTextView = view.findViewById(R.id.hourly_wind_direction);
         TextView windSpeedTextView = view.findViewById(R.id.hourly_wind_speed);
-        //TextView windGustSpeedTextView = (TextView) view.findViewById(R.id.hourly_wind_gust_speed);
 
         TextView popTextView = view.findViewById(R.id.hourly_pop);
 
@@ -107,23 +104,19 @@ public class HourlyColumnAdapter extends BaseAdapter{
         //  Temperature
         final String temperature;
         final String temperatureFeelsLike;
-        //final String dewPoint;
 
         if (temperatureUnit.contains("celsius")) {
             temperature = String.format("%.1f°C", (currentItemHourlyForecasts.temperature - 273.15));
             temperatureFeelsLike = String.format("%.1f°C", (currentItemHourlyForecasts.temperatureFeelsLike - 273.15));
-            //dewPoint = String.format("%.1f°C", (currentItemHourlyForecasts.dewPoint - 273.15));
         } else {
             temperature = String.format("%.1f °F", ((currentItemHourlyForecasts.temperature - 273.15) * (9 / 5)) + 32);
             temperatureFeelsLike = String.format("%.1f°F", ((currentItemHourlyForecasts.temperatureFeelsLike - 273.15) * (9 / 5)) + 32);
-            //dewPoint = String.format("%.1f°F", ((currentItemHourlyForecasts.dewPoint - 273.15) * (9/5)) + 32);
         }
 
 
         final String pressure;
         final String humidity;
         final String cloudiness;
-        //final String visibility;
 
         //  Pressure
         if (pressureUnit.contains("hpa")) {
@@ -137,18 +130,8 @@ public class HourlyColumnAdapter extends BaseAdapter{
 
         cloudiness = currentItemHourlyForecasts.cloudiness + " %";
 
-        //  Visibility
-        //if(measureUnit.contains("metric")){
-        //    visibility = String.format("%d km", (int) (currentItemHourlyForecasts.visibility / 1000));
-        //}
-        //else{
-        //    visibility = String.format("%d mile", (int) (currentItemHourlyForecasts.visibility * 0.000621371));
-        //}
-
-
         final String windDirection;
         final String windSpeed;
-        //final String windGustSpeed;
 
         //  Wind
         ////    Wind Direction
@@ -156,10 +139,8 @@ public class HourlyColumnAdapter extends BaseAdapter{
         ////  Wind speed and Wind gust Speed
         if (measureUnit.contains("metric")) {
             windSpeed = String.format("%d km/h", (int) (currentItemHourlyForecasts.windSpeed * 3.6));
-            //windGustSpeed = String.format("%d km/h", (int) (currentItemHourlyForecasts.windGustSpeed * 3.6));
         } else {
             windSpeed = String.format("%d mph", (int) (currentItemHourlyForecasts.windSpeed * 2.23694));
-            //windGustSpeed = String.format("%d mph", (int) (currentItemHourlyForecasts.windGustSpeed * 2.23694));
         }
 
 
@@ -186,10 +167,18 @@ public class HourlyColumnAdapter extends BaseAdapter{
         }
 
         switch (currentItemHourlyForecasts.weatherDescription) {
+
+            //  Thunderstorm Group
             case "light thunderstorm":
             case "ragged thunderstorm":
             case "heavy thunderstorm":
             case "thunderstorm":
+            case "thunderstorm with heavy drizzle":
+            case "thunderstorm with drizzle":
+            case "thunderstorm with light drizzle":
+            case "thunderstorm with heavy rain":
+            case "thunderstorm with rain":
+            case "thunderstorm with light rain":
                 weatherIconId = context.getResources().getIdentifier("thunderstorm_flat", "drawable", context.getPackageName());
                 break;
 
@@ -201,6 +190,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
             case "drizzle":
                 weatherIconId = context.getResources().getIdentifier("hail_flat", "drawable", context.getPackageName());
                 break;
+
             case "heavy intensity drizzle rain":
             case "shower rain and drizzle":
             case "heavy shower rain and drizzle":
@@ -226,6 +216,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("rainy_night_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "very heavy rain":
             case "shower rain":
             case "light intensity shower rain":
@@ -233,6 +224,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
             case "extreme rain":
                 weatherIconId = context.getResources().getIdentifier("rain_flat", "drawable", context.getPackageName());
                 break;
+
             case "heavy intensity shower rain":
             case "ragged shower rain":
                 weatherIconId = context.getResources().getIdentifier("heavy_rain_flat", "drawable", context.getPackageName());
@@ -249,12 +241,14 @@ public class HourlyColumnAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("snow_and_night_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "Heavy snow":
             case "Heavy shower snow":
             case "Shower snow":
             case "Light shower snow":
                 weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 break;
+
             case "Sleet":
             case "Rain and snow":
             case "Light rain and snow":
@@ -281,11 +275,12 @@ public class HourlyColumnAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("fog_and_night_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "tornado":
                 weatherIconId = context.getResources().getIdentifier("tornado_flat", "drawable", context.getPackageName());
-
-                //  Sky
                 break;
+
+            //  Sky
             case "clear sky":
                 //  Day
                 if (isDayTime) {
@@ -296,6 +291,7 @@ public class HourlyColumnAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("moon_phase_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "few clouds":
             case "broken clouds":
             case "scattered clouds":
@@ -307,18 +303,12 @@ public class HourlyColumnAdapter extends BaseAdapter{
                     weatherIconId = context.getResources().getIdentifier("cloudy_night_flat", "drawable", context.getPackageName());
                 }
                 break;
+
             case "overcast clouds":
                 weatherIconId = context.getResources().getIdentifier("cloudy_flat", "drawable", context.getPackageName());
                 break;
-            case "thunderstorm with heavy drizzle":
-            case "thunderstorm with drizzle":
-            case "thunderstorm with light drizzle":
-            case "thunderstorm with heavy rain":
-            case "thunderstorm with rain":
-                //  Thunderstorm Group
-            case "thunderstorm with light rain":
 
-                //  Default
+            //  Default
             default:
                 weatherIconId = context.getResources().getIdentifier("storm_flat", "drawable", context.getPackageName());
                 break;
@@ -331,16 +321,13 @@ public class HourlyColumnAdapter extends BaseAdapter{
 
         temperatureTextView.setText(temperature);
         temperatureFeelsLikeTextView.setText(temperatureFeelsLike);
-        //dewPointTextView.setText(dewPoint);
 
         humidityTextView.setText(humidity);
         pressureTextView.setText(pressure);
         cloudinessTextView.setText(cloudiness);
-        //visibilityTextView.setText(visibility);
 
         windDirectionTextView.setText(windDirection);
         windSpeedTextView.setText(windSpeed);
-        //windGustSpeedTextView.setText(windGustSpeed);
 
         popTextView.setText(pop);
 
