@@ -37,7 +37,7 @@
         android:layout_margin="16dp"
         android:contentDescription=""
 
-        android:src="@drawable/ic_add_task_black_24dp"
+        android:src="@drawable/add_place_24dp"
         app:layout_constraintBottom_toTopOf="@+id/nav_view"
         app:layout_constraintEnd_toEndOf="parent"
         tools:srcCompat="@tools:sample/avatars" />

@@ -57,9 +57,9 @@ public class AddPlaceDialog extends Dialog {
         this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_item, countryNames);
-        countryEditText.setThreshold(0);
+        countryEditText.setThreshold(1);
+        countryEditText.performValidation();
         countryEditText.setAdapter(adapter);
-
 
         verifyButton.setOnClickListener(
                 verifyButtonView -> {
@@ -70,7 +70,7 @@ public class AddPlaceDialog extends Dialog {
                     String apiKey = apiKeyPref.getString("api_key", null);
 
                     //  Nothing was registered
-                    if (getCity().isEmpty() || getCountryName().isEmpty()) {
+                    if (getCity().isEmpty() || getCountryName().isEmpty() || !countryNames.contains(getCountryName())) {
 
                         Snackbar.make(addPlaceFABView, context.getString(R.string.error_no_place_settings_registered), Snackbar.LENGTH_LONG)
                                 .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
@@ -78,6 +78,7 @@ public class AddPlaceDialog extends Dialog {
                                 .show();
                         verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
                         verifyButton.setEnabled(true);
+                        return;
 
                     }
                     //  No API key is registered
@@ -90,6 +91,7 @@ public class AddPlaceDialog extends Dialog {
                                 .show();
                         verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
                         verifyButton.setEnabled(true);
+                        return;
 
                     }
                     //  API key and place settings is correctly registered
@@ -114,8 +116,11 @@ public class AddPlaceDialog extends Dialog {
                                         //String cityName = place.getCity();
                                         //cityName.charAt(0) = cityName.charAt(0)
 
+                                        //  Set current timeOffset of the place
                                         final int timeZoneOffSet = response.getInt("timezone");
+
                                         int UTCnumber = timeZoneOffSet / 3600;
+
                                         if (timeZoneOffSet == 0) {
                                             place.setTimeZone("UTC");
                                         } else if (timeZoneOffSet < 0) {
@@ -138,6 +143,9 @@ public class AddPlaceDialog extends Dialog {
                                             public void onWeatherData(final Place place, DataPlaces dataPlaces) {
 
                                                 String dataPlaceName = place.getCity().toUpperCase() + '/' + place.getCountryCode();
+
+                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+                                                verifyButton.setEnabled(true);
 
                                                 try {
 
@@ -184,24 +192,27 @@ public class AddPlaceDialog extends Dialog {
                                                             .show();
                                                     e.printStackTrace();
                                                 }
-
-
                                             }
 
                                             @Override
                                             public void onError(Exception exception, Place place, DataPlaces dataPlaces) {
-
+                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+                                                verifyButton.setEnabled(true);
                                             }
 
-
+                                            @Override
                                             public void onConnectionError(VolleyError error, Place place, DataPlaces dataPlaces) {
-
+                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+                                                verifyButton.setEnabled(true);
                                             }
                                         };
+
                                         weatherService.getWeatherDataOWM(place, weatherCallback);
 
                                     } catch (JSONException e) {
                                         e.printStackTrace();
+                                        verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+                                        verifyButton.setEnabled(true);
                                     }
 
 
@@ -216,6 +227,8 @@ public class AddPlaceDialog extends Dialog {
                                                 .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
                                                 .setMaxInlineActionWidth(3)
                                                 .show();
+                                        verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+                                        verifyButton.setEnabled(true);
                                     }
                                     //  Server response
                                     else {
@@ -230,12 +243,16 @@ public class AddPlaceDialog extends Dialog {
                                                         .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
                                                         .setMaxInlineActionWidth(3)
                                                         .show();
+                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+                                                verifyButton.setEnabled(true);
                                                 break;
                                             case 404:
                                                 Snackbar.make(addPlaceFABView, context.getString(R.string.error_place_not_found), Snackbar.LENGTH_LONG)
                                                         .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
                                                         .setMaxInlineActionWidth(3)
                                                         .show();
+                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+                                                verifyButton.setEnabled(true);
                                                 break;
 
                                             case 401:
@@ -244,6 +261,8 @@ public class AddPlaceDialog extends Dialog {
                                                         .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
                                                         .setMaxInlineActionWidth(3)
                                                         .show();
+                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+                                                verifyButton.setEnabled(true);
                                                 break;
 
                                             default:
@@ -252,17 +271,15 @@ public class AddPlaceDialog extends Dialog {
                                                         .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
                                                         .setMaxInlineActionWidth(3)
                                                         .show();
+                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+                                                verifyButton.setEnabled(true);
                                                 break;
                                         }
                                     }
                                 });
-
                         weatherDataRequest.add(verifyPlaceRequest);
                     }
-                    verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                    verifyButton.setEnabled(true);
                 });
-
     }
 
 
