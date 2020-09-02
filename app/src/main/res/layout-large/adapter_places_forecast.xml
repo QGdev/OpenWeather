@@ -70,7 +70,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="end"
-                    android:src="@drawable/ic_arrow_down_black_24dp"
+                    android:src="@drawable/expend_menu_icon_24dp"
                     app:tint="@color/colorIcons" />
 
             </GridLayout>
@@ -129,7 +129,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_gravity="end"
-                    android:src="@drawable/ic_arrow_down_black_24dp"
+                    android:src="@drawable/expend_menu_icon_24dp"
                     app:tint="@color/colorIcons" />
 
             </GridLayout>

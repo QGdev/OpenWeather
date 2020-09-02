@@ -9,7 +9,7 @@
         android:layout_width="30dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_access_time_black_24dp"
+        android:src="@drawable/time_24dp"
         app:tint="@color/colorIcons" />
 
     <ImageView
@@ -23,28 +23,28 @@
         android:layout_width="30dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:src="@drawable/temperature_maximum"
+        android:src="@drawable/temperature_maximum_material"
         app:tint="@color/colorIcons" />
 
     <ImageView
         android:layout_width="30dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:src="@drawable/temperature_minimum"
+        android:src="@drawable/temperature_minimum_material"
         app:tint="@color/colorIcons" />
 
     <ImageView
         android:layout_width="30dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:src="@drawable/temperature_morning"
+        android:src="@drawable/temperature_morning_material"
         app:tint="@color/colorIcons" />
 
     <ImageView
         android:layout_width="30dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:src="@drawable/temperature_day"
+        android:src="@drawable/temperature_day_material"
         app:tint="@color/colorIcons" />
 
     <ImageView

@@ -10,7 +10,7 @@
         android:layout_height="40dp"
         android:layout_gravity="center"
         app:tint="@color/colorIcons"
-        android:src="@drawable/ic_access_time_black_24dp"/>
+        android:src="@drawable/time_24dp" />
     <ImageView
         android:layout_width="30dp"
         android:layout_height="40dp"
