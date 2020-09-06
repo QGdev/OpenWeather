@@ -94,6 +94,9 @@ public class PlaceItemAdapter extends BaseAdapter{
         TextView rainTextView = view.findViewById(R.id.rain_precipitations_current_value);
         TextView snowTextView = view.findViewById(R.id.snow_precipitations_current_value);
 
+        LinearLayout lastUpdateAvailableLinearLayout = view.findViewById(R.id.last_update_available);
+        TextView lastUpdateTextView = view.findViewById(R.id.last_update_value);
+
 
         //  Get parent view elements
         final SwipeRefreshLayout swipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
@@ -355,6 +358,26 @@ public class PlaceItemAdapter extends BaseAdapter{
             snow = String.format("%.1f in", currentWeather.snow / 25.4);
         }
 
+        final String lastUpdate;
+        DateFormat lastUpdateDateFormat;
+
+        if (timeFormat.contains("24")) {
+            lastUpdateDateFormat = new SimpleDateFormat("dd/MM/YY HH:mm");
+        } else {
+            lastUpdateDateFormat = new SimpleDateFormat("dd/MM/YY KK:mm a");
+        }
+
+        if (timeOffset.contains("place"))
+            lastUpdateDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(currentItem.getTimeZone())));
+
+        if(currentItem.getTimeZone().equals("UTC")){
+            lastUpdate = lastUpdateDateFormat.format(new Date(currentWeather.dt)) + ' ' + currentItem.getTimeZone() + "+0";
+        }
+        else{
+            lastUpdate = lastUpdateDateFormat.format(new Date(currentWeather.dt)) + " UTC" + currentItem.getTimeZone();
+        }
+
+
         cityTextView.setText(cityName);
         countryTextView.setText(countryName);
 
@@ -378,6 +401,8 @@ public class PlaceItemAdapter extends BaseAdapter{
 
         rainTextView.setText(rain);
         snowTextView.setText(snow);
+
+        lastUpdateTextView.setText(lastUpdate);
 
         LinearLayout detailedInformationsLinearLayout = view.findViewById(R.id.detailed_informations);
         LinearLayout windGustInfomationLinearLayout = view.findViewById(R.id.wind_gust_speed);
@@ -410,6 +435,7 @@ public class PlaceItemAdapter extends BaseAdapter{
                 visibilityInformationLinearLayout.setVisibility(View.VISIBLE);
                 skyInformationsLinearLayout.setVisibility(View.VISIBLE);
                 forecastInformationsLinearLayout.setVisibility(View.VISIBLE);
+                lastUpdateAvailableLinearLayout.setVisibility(View.VISIBLE);
 
                 hourlyForecast.setOnClickListener(hourlyView -> {
 
@@ -459,6 +485,7 @@ public class PlaceItemAdapter extends BaseAdapter{
                 forecastInformationsLinearLayout.setVisibility(View.GONE);
                 hourlyForecastLinearLayout.setVisibility(View.GONE);
                 dailyForecastLinearLayout.setVisibility(View.GONE);
+                lastUpdateAvailableLinearLayout.setVisibility(View.GONE);
             }
         });
 

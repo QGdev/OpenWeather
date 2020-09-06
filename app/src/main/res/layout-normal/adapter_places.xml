@@ -111,6 +111,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|top"
                         android:layout_marginTop="10dp"
+                        android:gravity="end"
                         android:text="Clear Sky"
                         android:textColor="@color/colorFirstText"
                         android:textSize="20sp"/>
@@ -312,6 +313,36 @@
                 layout="@layout/adapter_places_forecast"
                 android:visibility="gone"/>
 
+            <LinearLayout
+                android:id="@+id/last_update_available"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_last_update"
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" : "
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/last_update_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="19/07/20 19:19"
+                    android:textColor="@color/colorSecondaryText"
+                    android:textSize="15sp" />
+            </LinearLayout>
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

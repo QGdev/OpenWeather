@@ -1,9 +1,5 @@
 package fr.qgdev.openweather.weather;
 
-import android.net.sip.SipSession;
-
-import java.util.Date;
-
 public class DailyWeatherForecast {
 
     public long dt = 0;

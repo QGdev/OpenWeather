@@ -1,7 +1,5 @@
 package fr.qgdev.openweather.weather;
 
-import android.util.Log;
-
 public class CurrentWeather {
 
     public long dt = 0;
