@@ -367,14 +367,17 @@ public class PlaceItemAdapter extends BaseAdapter{
             lastUpdateDateFormat = new SimpleDateFormat("dd/MM/YY KK:mm a");
         }
 
-        if (timeOffset.contains("place"))
+        if (timeOffset.contains("place")) {
             lastUpdateDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(currentItem.getTimeZone())));
 
-        if(currentItem.getTimeZone().equals("UTC")){
-            lastUpdate = lastUpdateDateFormat.format(new Date(currentWeather.dt)) + ' ' + currentItem.getTimeZone() + "+0";
+            if (currentItem.getTimeZone().equals("UTC")) {
+                lastUpdate = lastUpdateDateFormat.format(new Date(currentWeather.dt)) + ' ' + currentItem.getTimeZone() + "+0";
+            } else {
+                lastUpdate = lastUpdateDateFormat.format(new Date(currentWeather.dt)) + " UTC" + currentItem.getTimeZone();
+            }
         }
         else{
-            lastUpdate = lastUpdateDateFormat.format(new Date(currentWeather.dt)) + " UTC" + currentItem.getTimeZone();
+            lastUpdate = lastUpdateDateFormat.format(new Date(currentWeather.dt));
         }
 
 
