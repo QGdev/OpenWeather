@@ -133,7 +133,7 @@
 
                     <ImageView
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
                         android:src="@drawable/weather_vane_material"
                         app:tint="@color/colorIcons" />
@@ -148,7 +148,7 @@
 
                     <ImageView
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
                         android:src="@drawable/windsock_material"
                         app:tint="@color/colorIcons" />
@@ -169,7 +169,7 @@
 
                         <ImageView
                             android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_height="match_parent"
                             android:layout_marginEnd="10dp"
                             android:src="@drawable/wind_material"
                             app:tint="@color/colorIcons" />
@@ -194,7 +194,7 @@
 
                     <ImageView
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
                         android:src="@drawable/humidity_material"
                         app:tint="@color/colorIcons" />
@@ -209,7 +209,7 @@
 
                     <ImageView
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
                         android:src="@drawable/barometer_material"
                         app:tint="@color/colorIcons" />
@@ -224,14 +224,14 @@
 
 
                     <LinearLayout
-                        android:id="@id/visibility"
+                        android:id="@+id/visibility"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:visibility="gone">
 
                         <ImageView
                             android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_height="match_parent"
                             android:layout_marginEnd="10dp"
                             android:src="@drawable/visibility_24dp"
                             app:tint="@color/colorIcons" />
@@ -258,7 +258,7 @@
 
                     <ImageView
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
                         android:src="@drawable/sunrise_material"
                         app:tint="@color/colorIcons" />
@@ -273,7 +273,7 @@
 
                     <ImageView
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
                         android:src="@drawable/sunset_material"
                         app:tint="@color/colorIcons" />
@@ -288,7 +288,7 @@
 
                     <ImageView
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="10dp"
                         android:src="@drawable/cloudy_material"
                         app:tint="@color/colorIcons" />
