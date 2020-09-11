@@ -24,10 +24,9 @@
             android:value="ca-app-pub-8585749083199355~4081465298" />
 
 
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name">
+        <activity android:name=".MainActivity" />
 
+        <activity android:name=".splash.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

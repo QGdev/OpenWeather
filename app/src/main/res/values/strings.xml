@@ -87,6 +87,7 @@
     <string name="error_place_already_added">This place is already added</string>
     <string name="error_no_places_registered">No places registered</string>
     <string name="title_forecast_daily">Daily Forecast</string>
+    <string name="splash_screen">Splash Screen</string>
 
 
 </resources>

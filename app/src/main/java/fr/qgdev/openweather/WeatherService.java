@@ -92,7 +92,12 @@ public class WeatherService{
                                 currentWeather.pressure = currentWeatherJSON.getInt("pressure");
                                 currentWeather.humidity = currentWeatherJSON.getInt("humidity");
                                 currentWeather.dewPoint = currentWeatherJSON.getDouble("dew_point");
-                                currentWeather.uvIndex = currentWeatherJSON.getInt("uvi");
+                                if (currentWeatherJSON.has("uvi")) {
+                                    currentWeather.uvIndex = currentWeatherJSON.getInt("uvi");
+                                } else {
+                                    currentWeather.uvIndex = 0;
+                                }
+
                                 //    Sky informations
                                 currentWeather.cloudiness = currentWeatherJSON.getInt("clouds");
                                 currentWeather.visibility = currentWeatherJSON.getInt("visibility");
