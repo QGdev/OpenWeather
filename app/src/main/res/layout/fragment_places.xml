@@ -38,7 +38,4 @@
         </ScrollView>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

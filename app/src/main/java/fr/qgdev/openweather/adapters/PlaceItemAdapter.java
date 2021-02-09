@@ -33,12 +33,12 @@ import fr.qgdev.openweather.weather.DailyWeatherForecast;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
 
 
-public class PlaceItemAdapter extends BaseAdapter{
+public class PlaceItemAdapter extends BaseAdapter {
 
-    private Context context;
+    private final Context context;
     private List<Place> placeItemList;
-    private LayoutInflater inflater;
-    private View parentView;
+    private final LayoutInflater inflater;
+    private final View parentView;
 
     public PlaceItemAdapter(Context context, List<Place> placeItemList, View parentView) {
         this.context = context;
@@ -199,7 +199,7 @@ public class PlaceItemAdapter extends BaseAdapter{
 
             //  Snow
             case "light snow":
-            case "Snow":
+            case "snow":
                 if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
                     weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 }
@@ -209,25 +209,25 @@ public class PlaceItemAdapter extends BaseAdapter{
                 }
                 break;
 
-            case "Heavy snow":
-            case "Heavy shower snow":
-            case "Shower snow":
-            case "Light shower snow":
+            case "heavy snow":
+            case "heavy shower snow":
+            case "shower snow":
+            case "light shower snow":
                 weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 break;
 
-            case "Sleet":
-            case "Rain and snow":
-            case "Light rain and snow":
-            case "Shower sleet":
-            case "Light shower sleet":
+            case "sleet":
+            case "rain and snow":
+            case "light rain and snow":
+            case "shower sleet":
+            case "light shower sleet":
                 weatherIconId = context.getResources().getIdentifier("sleet_flat", "drawable", context.getPackageName());
                 break;
 
             //  Atmosphere
             case "mist":
-            case "Smoke":
-            case "Haze":
+            case "smoke":
+            case "haze":
             case "sand/ dust whirls":
             case "volcanic ash":
             case "squalls":
