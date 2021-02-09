@@ -23,10 +23,10 @@ import fr.qgdev.openweather.weather.DailyWeatherForecast;
 
 public class DailyColumnAdapter extends BaseAdapter {
 
-    private Context context;
-    private Place place;
-    private List<DailyWeatherForecast> dailyWeatherForecastList;
-    private LayoutInflater inflater;
+    private final Context context;
+    private final Place place;
+    private final List<DailyWeatherForecast> dailyWeatherForecastList;
+    private final LayoutInflater inflater;
 
     public DailyColumnAdapter(Context context, Place place) {
         this.context = context;
@@ -218,28 +218,28 @@ public class DailyColumnAdapter extends BaseAdapter {
 
             //  Snow
             case "light snow":
-            case "Snow":
+            case "snow":
                 weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 break;
 
-            case "Heavy snow":
-            case "Heavy shower snow":
-            case "Shower snow":
-            case "Light shower snow":
+            case "heavy snow":
+            case "heavy shower snow":
+            case "shower snow":
+            case "light shower snow":
                 weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 break;
-            case "Sleet":
-            case "Rain and snow":
-            case "Light rain and snow":
-            case "Shower sleet":
-            case "Light shower sleet":
+            case "sleet":
+            case "rain and snow":
+            case "light rain and snow":
+            case "shower sleet":
+            case "light shower sleet":
                 weatherIconId = context.getResources().getIdentifier("sleet_flat", "drawable", context.getPackageName());
                 break;
 
             //  Atmosphere
             case "mist":
-            case "Smoke":
-            case "Haze":
+            case "smoke":
+            case "haze":
             case "sand/ dust whirls":
             case "volcanic ash":
             case "squalls":
