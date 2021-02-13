@@ -166,35 +166,31 @@ public class HourlyColumnAdapter extends BaseAdapter {
             e.printStackTrace();
         }
 
-        switch (currentItemHourlyForecasts.weatherDescription) {
+        switch (currentItemHourlyForecasts.weatherCode) {
 
             //  Thunderstorm Group
-            case "light thunderstorm":
-            case "ragged thunderstorm":
-            case "heavy thunderstorm":
-            case "thunderstorm":
-            case "thunderstorm with heavy drizzle":
-            case "thunderstorm with drizzle":
-            case "thunderstorm with light drizzle":
-            case "thunderstorm with heavy rain":
-            case "thunderstorm with rain":
-            case "thunderstorm with light rain":
+            case 210:
+            case 211:
+            case 212:
+            case 221:
                 weatherIconId = context.getResources().getIdentifier("thunderstorm_flat", "drawable", context.getPackageName());
                 break;
 
-            //Drizzle
-            case "light intensity drizzle":
-            case "drizzle rain":
-            case "light intensity drizzle rain":
-            case "heavy intensity drizzle":
-            case "drizzle":
-                weatherIconId = context.getResources().getIdentifier("hail_flat", "drawable", context.getPackageName());
+            case 200:
+            case 201:
+            case 202:
+            case 230:
+            case 231:
+            case 232:
+                weatherIconId = context.getResources().getIdentifier("storm_flat", "drawable", context.getPackageName());
                 break;
 
-            case "heavy intensity drizzle rain":
-            case "shower rain and drizzle":
-            case "heavy shower rain and drizzle":
-            case "shower drizzle":
+            //  Drizzle and Rain (Light)
+            case 300:
+            case 310:
+            case 500:
+            case 501:
+            case 520:
                 if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
                 }
@@ -204,35 +200,33 @@ public class HourlyColumnAdapter extends BaseAdapter {
                 }
                 break;
 
-            //  Rain
-            case "light rain":
-            case "heavy intensity rain":
-            case "moderate rain":
-                if (isDayTime) {
-                    weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
-                }
-                //  Night
-                else {
-                    weatherIconId = context.getResources().getIdentifier("rainy_night_flat", "drawable", context.getPackageName());
-                }
-                break;
-
-            case "very heavy rain":
-            case "shower rain":
-            case "light intensity shower rain":
-            case "freezing rain":
-            case "extreme rain":
+            //Drizzle and Rain (Moderate)
+            case 301:
+            case 302:
+            case 311:
+            case 313:
+            case 321:
+            case 511:
+            case 521:
+            case 531:
                 weatherIconId = context.getResources().getIdentifier("rain_flat", "drawable", context.getPackageName());
                 break;
 
-            case "heavy intensity shower rain":
-            case "ragged shower rain":
+            //Drizzle and Rain (Heavy)
+            case 312:
+            case 314:
+            case 502:
+            case 503:
+            case 504:
+            case 522:
                 weatherIconId = context.getResources().getIdentifier("heavy_rain_flat", "drawable", context.getPackageName());
                 break;
 
             //  Snow
-            case "light snow":
-            case "snow":
+            case 600:
+            case 601:
+            case 620:
+            case 621:
                 if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 }
@@ -242,31 +236,30 @@ public class HourlyColumnAdapter extends BaseAdapter {
                 }
                 break;
 
-            case "heavy snow":
-            case "heavy shower snow":
-            case "shower snow":
-            case "light shower snow":
+            case 602:
+            case 622:
                 weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 break;
 
-            case "sleet":
-            case "rain and snow":
-            case "light rain and snow":
-            case "shower sleet":
-            case "light shower sleet":
+            case 611:
+            case 612:
+            case 613:
+            case 615:
+            case 616:
                 weatherIconId = context.getResources().getIdentifier("sleet_flat", "drawable", context.getPackageName());
                 break;
 
             //  Atmosphere
-            case "mist":
-            case "Smoke":
-            case "Haze":
-            case "sand/ dust whirls":
-            case "volcanic ash":
-            case "squalls":
-            case "dust":
-            case "sand":
-            case "fog":
+            case 701:
+            case 711:
+            case 721:
+            case 731:
+            case 741:
+            case 751:
+            case 761:
+            case 762:
+            case 771:
+            case 781:
                 if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("fog_flat", "drawable", context.getPackageName());
                 }
@@ -276,12 +269,8 @@ public class HourlyColumnAdapter extends BaseAdapter {
                 }
                 break;
 
-            case "tornado":
-                weatherIconId = context.getResources().getIdentifier("tornado_flat", "drawable", context.getPackageName());
-                break;
-
             //  Sky
-            case "clear sky":
+            case 800:
                 //  Day
                 if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("sun_flat", "drawable", context.getPackageName());
@@ -292,9 +281,9 @@ public class HourlyColumnAdapter extends BaseAdapter {
                 }
                 break;
 
-            case "few clouds":
-            case "broken clouds":
-            case "scattered clouds":
+            case 801:
+            case 802:
+            case 803:
                 if (isDayTime) {
                     weatherIconId = context.getResources().getIdentifier("clouds_and_sun_flat", "drawable", context.getPackageName());
                 }
@@ -304,7 +293,7 @@ public class HourlyColumnAdapter extends BaseAdapter {
                 }
                 break;
 
-            case "overcast clouds":
+            case 804:
                 weatherIconId = context.getResources().getIdentifier("cloudy_flat", "drawable", context.getPackageName());
                 break;
 

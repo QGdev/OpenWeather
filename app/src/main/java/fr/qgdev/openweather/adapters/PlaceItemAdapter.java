@@ -91,6 +91,7 @@ public class PlaceItemAdapter extends BaseAdapter {
         TextView sunsetTextView = view.findViewById(R.id.sunset_value);
         TextView cloudinessTextView = view.findViewById(R.id.cloudiness_value);
 
+        LinearLayout precipitationLinearLayout = view.findViewById(R.id.precipitations);
         TextView rainTextView = view.findViewById(R.id.rain_precipitations_current_value);
         TextView snowTextView = view.findViewById(R.id.snow_precipitations_current_value);
 
@@ -124,44 +125,40 @@ public class PlaceItemAdapter extends BaseAdapter {
         if(temperatureUnit.contains("celsius")){
             temperature = String.format("%.1f°C", (currentWeather.temperature - 273.15));
             temperatureFeelsLike = String.format("%.1f°C", (currentWeather.temperatureFeelsLike - 273.15));
-        }
-        else {
-            temperature = String.format("%.1f °F", ((currentWeather.temperature - 273.15) * (9/5)) + 32);
-            temperatureFeelsLike = String.format("%.1f°F", ((currentWeather.temperatureFeelsLike - 273.15) * (9/5)) + 32);
+        } else {
+            temperature = String.format("%.1f °F", ((currentWeather.temperature - 273.15) * (9 / 5)) + 32);
+            temperatureFeelsLike = String.format("%.1f°F", ((currentWeather.temperatureFeelsLike - 273.15) * (9 / 5)) + 32);
         }
 
         //  Weather description and icon
         final String weatherDescription = currentWeather.weatherDescription;
         final int weatherIconId;
 
-        switch (weatherDescription) {
+        switch (currentWeather.weatherCode) {
+
             //  Thunderstorm Group
-            case "light thunderstorm":
-            case "ragged thunderstorm":
-            case "heavy thunderstorm":
-            case "thunderstorm":
-            case "thunderstorm with heavy drizzle":
-            case "thunderstorm with drizzle":
-            case "thunderstorm with light drizzle":
-            case "thunderstorm with heavy rain":
-            case "thunderstorm with rain":
-            case "thunderstorm with light rain":
+            case 210:
+            case 211:
+            case 212:
+            case 221:
                 weatherIconId = context.getResources().getIdentifier("thunderstorm_flat", "drawable", context.getPackageName());
                 break;
 
-            //Drizzle
-            case "light intensity drizzle":
-            case "drizzle rain":
-            case "light intensity drizzle rain":
-            case "heavy intensity drizzle":
-            case "drizzle":
-                weatherIconId = context.getResources().getIdentifier("hail_flat", "drawable", context.getPackageName());
+            case 200:
+            case 201:
+            case 202:
+            case 230:
+            case 231:
+            case 232:
+                weatherIconId = context.getResources().getIdentifier("storm_flat", "drawable", context.getPackageName());
                 break;
 
-            case "heavy intensity drizzle rain":
-            case "shower rain and drizzle":
-            case "heavy shower rain and drizzle":
-            case "shower drizzle":
+            //  Drizzle and Rain (Light)
+            case 300:
+            case 310:
+            case 500:
+            case 501:
+            case 520:
                 if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
                     weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
                 }
@@ -171,35 +168,33 @@ public class PlaceItemAdapter extends BaseAdapter {
                 }
                 break;
 
-            //  Rain
-            case "light rain":
-            case "heavy intensity rain":
-            case "moderate rain":
-                if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
-                    weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
-                }
-                //  Night
-                else {
-                    weatherIconId = context.getResources().getIdentifier("rainy_night_flat", "drawable", context.getPackageName());
-                }
-                break;
-
-            case "very heavy rain":
-            case "shower rain":
-            case "light intensity shower rain":
-            case "freezing rain":
-            case "extreme rain":
+            //Drizzle and Rain (Moderate)
+            case 301:
+            case 302:
+            case 311:
+            case 313:
+            case 321:
+            case 511:
+            case 521:
+            case 531:
                 weatherIconId = context.getResources().getIdentifier("rain_flat", "drawable", context.getPackageName());
                 break;
 
-            case "heavy intensity shower rain":
-            case "ragged shower rain":
+            //Drizzle and Rain (Heavy)
+            case 312:
+            case 314:
+            case 502:
+            case 503:
+            case 504:
+            case 522:
                 weatherIconId = context.getResources().getIdentifier("heavy_rain_flat", "drawable", context.getPackageName());
                 break;
 
             //  Snow
-            case "light snow":
-            case "snow":
+            case 600:
+            case 601:
+            case 620:
+            case 621:
                 if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
                     weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 }
@@ -209,31 +204,30 @@ public class PlaceItemAdapter extends BaseAdapter {
                 }
                 break;
 
-            case "heavy snow":
-            case "heavy shower snow":
-            case "shower snow":
-            case "light shower snow":
+            case 602:
+            case 622:
                 weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
                 break;
 
-            case "sleet":
-            case "rain and snow":
-            case "light rain and snow":
-            case "shower sleet":
-            case "light shower sleet":
+            case 611:
+            case 612:
+            case 613:
+            case 615:
+            case 616:
                 weatherIconId = context.getResources().getIdentifier("sleet_flat", "drawable", context.getPackageName());
                 break;
 
             //  Atmosphere
-            case "mist":
-            case "smoke":
-            case "haze":
-            case "sand/ dust whirls":
-            case "volcanic ash":
-            case "squalls":
-            case "dust":
-            case "sand":
-            case "fog":
+            case 701:
+            case 711:
+            case 721:
+            case 731:
+            case 741:
+            case 751:
+            case 761:
+            case 762:
+            case 771:
+            case 781:
                 if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
                     weatherIconId = context.getResources().getIdentifier("fog_flat", "drawable", context.getPackageName());
                 }
@@ -243,12 +237,8 @@ public class PlaceItemAdapter extends BaseAdapter {
                 }
                 break;
 
-            case "tornado":
-                weatherIconId = context.getResources().getIdentifier("tornado_flat", "drawable", context.getPackageName());
-                break;
-
             //  Sky
-            case "clear sky":
+            case 800:
                 //  Day
                 if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
                     weatherIconId = context.getResources().getIdentifier("sun_flat", "drawable", context.getPackageName());
@@ -259,9 +249,9 @@ public class PlaceItemAdapter extends BaseAdapter {
                 }
                 break;
 
-            case "few clouds":
-            case "broken clouds":
-            case "scattered clouds":
+            case 801:
+            case 802:
+            case 803:
                 if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
                     weatherIconId = context.getResources().getIdentifier("clouds_and_sun_flat", "drawable", context.getPackageName());
                 }
@@ -271,7 +261,7 @@ public class PlaceItemAdapter extends BaseAdapter {
                 }
                 break;
 
-            case "overcast clouds":
+            case 804:
                 weatherIconId = context.getResources().getIdentifier("cloudy_flat", "drawable", context.getPackageName());
                 break;
 
@@ -322,7 +312,11 @@ public class PlaceItemAdapter extends BaseAdapter {
         if (measureUnit.contains("metric")) {
             visibility = String.format("%d km", currentWeather.visibility / 1000);
         } else {
-            visibility = String.format("%d mile", (int) (currentWeather.visibility * 0.000621371));
+            if (currentWeather.visibility * 0.000621371 > 1) {
+                visibility = String.format("%d miles", (int) (currentWeather.visibility * 0.000621371));
+            } else {
+                visibility = String.format("%d mile", (int) (currentWeather.visibility * 0.000621371));
+            }
         }
 
         final String sunrise;
@@ -345,17 +339,31 @@ public class PlaceItemAdapter extends BaseAdapter {
 
         cloudiness = currentWeather.cloudiness + " %";
 
-        final String rain;
-        final String snow;
 
         //  Precipitations
-        if(measureUnit.contains("metric")){
-            rain = String.format("%.1f mm", currentWeather.rain);
-            snow = String.format("%.1f mm", currentWeather.snow);
-        }
-        else{
-            rain = String.format("%.1f in", currentWeather.rain / 25.4);
-            snow = String.format("%.1f in", currentWeather.snow / 25.4);
+        if (currentWeather.rain > 0 || currentWeather.snow > 0) {
+            precipitationLinearLayout.setVisibility(View.VISIBLE);
+
+            if (measureUnit.contains("metric")) {
+                rainTextView.setText(String.format("%.1f mm", currentWeather.rain));
+                snowTextView.setText(String.format("%.1f mm", currentWeather.snow));
+            } else {
+                rainTextView.setText(String.format("%.1f in", currentWeather.rain / 25.4));
+                snowTextView.setText(String.format("%.1f in", currentWeather.snow / 25.4));
+            }
+
+            if (currentWeather.rain > 0) {
+                precipitationLinearLayout.findViewById(R.id.rain_precipitations).setVisibility(View.VISIBLE);
+            } else {
+                precipitationLinearLayout.findViewById(R.id.rain_precipitations).setVisibility(View.GONE);
+            }
+            if (currentWeather.snow > 0) {
+                precipitationLinearLayout.findViewById(R.id.snow_precipitations).setVisibility(View.VISIBLE);
+            } else {
+                precipitationLinearLayout.findViewById(R.id.snow_precipitations).setVisibility(View.GONE);
+            }
+        } else {
+            precipitationLinearLayout.setVisibility(View.GONE);
         }
 
         final String lastUpdate;
@@ -402,8 +410,6 @@ public class PlaceItemAdapter extends BaseAdapter {
         sunsetTextView.setText(sunset);
         cloudinessTextView.setText(cloudiness);
 
-        rainTextView.setText(rain);
-        snowTextView.setText(snow);
 
         lastUpdateTextView.setText(lastUpdate);
 
