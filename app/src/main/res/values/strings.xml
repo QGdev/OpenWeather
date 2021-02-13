@@ -64,7 +64,7 @@
     <string name="error_too_many_request_in_a_day">Cannot get weather data\nToo many requests today</string>
     <string name="error_unknow_error">Unknow error happened</string>
 
-    <string name="url_owm_weatherdata"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s]]></string>
+    <string name="url_owm_weatherdata"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
     <string name="url_owm_coordinates"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s]]></string>
 
     <string name="place_added_succcessfully">was successfully added</string>
