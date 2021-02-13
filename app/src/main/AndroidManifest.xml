@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission." />
 
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -18,11 +19,6 @@
         android:theme="@style/MaterialTheme"
         android:largeHeap="true"
         android:hardwareAccelerated="true">
-
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-8585749083199355~4081465298" />
-
 
         <activity android:name=".MainActivity" />
 

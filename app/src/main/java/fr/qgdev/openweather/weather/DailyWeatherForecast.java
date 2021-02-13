@@ -2,42 +2,76 @@ package fr.qgdev.openweather.weather;
 
 public class DailyWeatherForecast {
 
-    public long dt = 0;
+    public long dt;
 
-    public String weather = "";
-    public String weatherDescription = "";
+    public String weather;
+    public String weatherDescription;
+    public int weatherCode;
 
-    public double temperatureMorning = 0;
-    public double temperatureDay = 0;
-    public double temperatureEvening = 0;
-    public double temperatureNight = 0;
-    public double temperatureMinimum = 0;
-    public double temperatureMaximum = 0;
+    public double temperatureMorning;
+    public double temperatureDay;
+    public double temperatureEvening;
+    public double temperatureNight;
+    public double temperatureMinimum;
+    public double temperatureMaximum;
 
-    public double temperatureMorningFeelsLike = 0;
-    public double temperatureDayFeelsLike = 0;
-    public double temperatureEveningFeelsLike = 0;
-    public double temperatureNightFeelsLike = 0;
+    public double temperatureMorningFeelsLike;
+    public double temperatureDayFeelsLike;
+    public double temperatureEveningFeelsLike;
+    public double temperatureNightFeelsLike;
 
-    public int pressure = 0;
-    public int humidity = 0;
-    public double dewPoint = 0;
+    public int pressure;
+    public int humidity;
+    public double dewPoint;
 
-    public int cloudiness = 0;
-    public long sunrise = 0;
-    public long sunset = 0;
+    public int cloudiness;
+    public long sunrise;
+    public long sunset;
 
 
-    public double windSpeed = 0;
-    public double windGustSpeed = 0;
-    public int windDirection = 0;
+    public double windSpeed;
+    public double windGustSpeed;
+    public int windDirection;
 
-    public double pop = 0;
-    public double rain = 0;
-    public double snow = 0;
+    public double pop;
+    public double rain;
+    public double snow;
 
-    public DailyWeatherForecast(){
+    public DailyWeatherForecast() {
+        this.dt = 0;
 
+        this.weather = "";
+        this.weatherDescription = "";
+        this.weatherCode = 0;
+
+        this.temperatureMorning = 0;
+        this.temperatureDay = 0;
+        this.temperatureEvening = 0;
+        this.temperatureNight = 0;
+        this.temperatureMinimum = 0;
+        this.temperatureMaximum = 0;
+
+        this.temperatureMorningFeelsLike = 0;
+        this.temperatureDayFeelsLike = 0;
+        this.temperatureEveningFeelsLike = 0;
+        this.temperatureNightFeelsLike = 0;
+
+        this.pressure = 0;
+        this.humidity = 0;
+        this.dewPoint = 0;
+
+        this.cloudiness = 0;
+        this.sunrise = 0;
+        this.sunset = 0;
+
+
+        this.windSpeed = 0;
+        this.windGustSpeed = 0;
+        this.windDirection = 0;
+
+        this.pop = 0;
+        this.rain = 0;
+        this.snow = 0;
     }
 
     public String getWindDirectionCardinalPoints() {

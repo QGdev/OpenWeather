@@ -2,32 +2,55 @@ package fr.qgdev.openweather.weather;
 
 public class HourlyWeatherForecast {
 
-    public long dt = 0;
+    public long dt;
 
-    public String weather = "";
-    public String weatherDescription = "";
+    public String weather;
+    public String weatherDescription;
+    public int weatherCode;
 
-    public double temperature = 0;
-    public double temperatureFeelsLike = 0;
+    public double temperature;
+    public double temperatureFeelsLike;
 
-    public int pressure = 0;
-    public int humidity = 0;
-    public double dewPoint = 0;
+    public int pressure;
+    public int humidity;
+    public double dewPoint;
 
-    public int cloudiness = 0;
-    public int visibility = 0;
+    public int cloudiness;
+    public int visibility;
 
-    public double windSpeed = 0;
-    public double windGustSpeed = 0;
-    public int windDirection = 0;
+    public double windSpeed;
+    public double windGustSpeed;
+    public int windDirection;
 
-    public double pop = 0;
-    public double rain = 0;
-    public double snow = 0;
+    public double pop;
+    public double rain;
+    public double snow;
 
-     public HourlyWeatherForecast(){
+    public HourlyWeatherForecast() {
+        this.dt = 0;
 
-     }
+        this.weather = "";
+        this.weatherDescription = "";
+        this.weatherCode = 0;
+
+        this.temperature = 0;
+        this.temperatureFeelsLike = 0;
+
+        this.pressure = 0;
+        this.humidity = 0;
+        this.dewPoint = 0;
+
+        this.cloudiness = 0;
+        this.visibility = 0;
+
+        this.windSpeed = 0;
+        this.windGustSpeed = 0;
+        this.windDirection = 0;
+
+        this.pop = 0;
+        this.rain = 0;
+        this.snow = 0;
+    }
 
     public String getWindDirectionCardinalPoints() {
 

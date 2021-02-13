@@ -2,12 +2,17 @@ package fr.qgdev.openweather.weather;
 
 public class MinutelyWeatherForecast {
 
-    public long dt = 0;
+    public long dt;
+    public double precipitation;
 
-    public double precipitation = 0;
+    public MinutelyWeatherForecast() {
+        this.dt = 0;
+        this.precipitation = 0;
+    }
 
-    public MinutelyWeatherForecast(){
-
+    public MinutelyWeatherForecast(long dt, double precipitation) {
+        this.dt = dt;
+        this.precipitation = precipitation;
     }
 
 }

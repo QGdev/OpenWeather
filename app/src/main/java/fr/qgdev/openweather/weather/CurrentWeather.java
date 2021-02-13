@@ -6,6 +6,7 @@ public class CurrentWeather {
 
     public String weather = "";
     public String weatherDescription = "";
+    public int weatherCode = 0;
 
     public double temperature = 0;
     public double temperatureFeelsLike = 0;
