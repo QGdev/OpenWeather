@@ -9,7 +9,7 @@
 
     <!--    Precipitations !-->
     <LinearLayout
-        android:id="@+id/rain_precipitations"
+        android:id="@+id/precipitations"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -42,12 +42,14 @@
 
         <!--    Rain    !-->
         <LinearLayout
+            android:id="@+id/rain_precipitations"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp">
+            android:paddingEnd="20dp"
+            android:visibility="visible">
 
             <ImageView
                 android:layout_width="30dp"
@@ -75,12 +77,14 @@
 
         <!--    Snow    !-->
         <LinearLayout
+            android:id="@+id/snow_precipitations"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingStart="20dp"
-            android:paddingEnd="20dp">
+            android:paddingEnd="20dp"
+            android:visibility="visible">
 
             <ImageView
                 android:layout_width="30dp"
