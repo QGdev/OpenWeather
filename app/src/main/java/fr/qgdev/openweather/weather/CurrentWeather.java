@@ -2,36 +2,62 @@ package fr.qgdev.openweather.weather;
 
 public class CurrentWeather {
 
-    public long dt = 0;
+    public long dt;
 
-    public String weather = "";
-    public String weatherDescription = "";
-    public int weatherCode = 0;
+    public String weather;
+    public String weatherDescription;
+    public int weatherCode;
 
-    public double temperature = 0;
-    public double temperatureFeelsLike = 0;
+    public double temperature;
+    public double temperatureFeelsLike;
 
-    public int pressure = 0;
-    public int humidity = 0;
-    public double dewPoint = 0;
+    public int pressure;
+    public int humidity;
+    public double dewPoint;
 
-    public int cloudiness = 0;
-    public int uvIndex = 0;
-    public int visibility = 0;
+    public int cloudiness;
+    public int uvIndex;
+    public int visibility;
 
-    public long sunrise = 0;
-    public long sunset = 0;
+    public long sunrise;
+    public long sunset;
 
-    public double windSpeed = 0;
-    public double windGustSpeed = 0;
-    public boolean isWindDirectionReadable = false;
-    public int windDirection = 0;
+    public double windSpeed;
+    public double windGustSpeed;
+    public boolean isWindDirectionReadable;
+    public int windDirection;
 
-    public double rain = 0;
-    public double snow = 0;
+    public double rain;
+    public double snow;
 
     public CurrentWeather() {
+        this.dt = 0;
 
+        this.weather = "";
+        this.weatherDescription = "";
+        this.weatherCode = 0;
+
+        this.temperature = 0;
+        this.temperatureFeelsLike = 0;
+
+        this.pressure = 0;
+        this.humidity = 0;
+        this.dewPoint = 0;
+
+        this.cloudiness = 0;
+        this.uvIndex = 0;
+        this.visibility = 0;
+
+        this.sunrise = 0;
+        this.sunset = 0;
+
+        this.windSpeed = 0;
+        this.windGustSpeed = 0;
+        this.isWindDirectionReadable = false;
+        this.windDirection = 0;
+
+        this.rain = 0;
+        this.snow = 0;
     }
 
     public String getWindDirectionCardinalPoints() {
@@ -58,7 +84,7 @@ public class CurrentWeather {
             return "E";
         }
         //  ESE
-        if (windDirection >=101.25 && windDirection < 123.75) {
+        if (windDirection >= 101.25 && windDirection < 123.75) {
             return "ESE";
         }
         //  SE
