@@ -32,14 +32,15 @@ import fr.qgdev.openweather.WeatherService;
 
 public class AddPlaceDialog extends Dialog {
 
-    private TextView title;
-    private TextInputEditText cityEditText;
-    private AutoCompleteTextView countryEditText;
-    private Button verifyButton;
+    private final TextView title;
+    private final TextInputEditText cityEditText;
+    private final AutoCompleteTextView countryEditText;
+    private final Button verifyButton;
 
-    private List<String> countryNames, countryCodes;
+    private final List<String> countryNames;
+    private final List<String> countryCodes;
 
-    private View addPlaceFABView;
+    private final View addPlaceFABView;
 
 
     public AddPlaceDialog(Context context, View addPlaceFABView, WeatherService.WeatherCallback callback) {
@@ -137,7 +138,7 @@ public class AddPlaceDialog extends Dialog {
 
                                         DataPlaces dataPlaces = new DataPlaces(context);
 
-                                        WeatherService weatherService = new WeatherService(getContext(), apiKey, dataPlaces);
+                                        WeatherService weatherService = new WeatherService(getContext(), apiKey, context.getResources().getConfiguration().locale.getLanguage(), dataPlaces);
                                         WeatherService.WeatherCallback weatherCallback = new WeatherService.WeatherCallback() {
                                             @Override
                                             public void onWeatherData(final Place place, DataPlaces dataPlaces) {

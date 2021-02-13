@@ -1,5 +1,6 @@
 package fr.qgdev.openweather.ui.places;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -64,6 +65,7 @@ public class PlacesFragment extends Fragment {
         super.onViewStateRestored(savedInstanceState);
     }
 
+    @SuppressLint("WrongThread")
     @UiThread
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -88,9 +90,10 @@ public class PlacesFragment extends Fragment {
 
         //  Initialize places data storage
         dataPlaces = new DataPlaces(mContext);
+        Log.d("TEST", mContext.getResources().getConfiguration().locale.getLanguage());
 
         //  Initialize Weather Services and callbacks
-        weatherService = new WeatherService(mContext, API_KEY, dataPlaces);
+        weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().locale.getLanguage(), dataPlaces);
 
 
         ////    Refreshing places list callback
@@ -118,8 +121,7 @@ public class PlacesFragment extends Fragment {
                             placeList.addView(placeItemAdapter.getView(index, null, null), index);
                         }
 
-                    }
-                    else {
+                    } else {
                         Snackbar.make(container, mContext.getString(R.string.error_cannot_refresh_place_list), Snackbar.LENGTH_LONG)
                                 .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
                                 .setMaxInlineActionWidth(3)
@@ -133,6 +135,7 @@ public class PlacesFragment extends Fragment {
                             .show();
                 }
             }
+
             @Override
             public void onError(Exception exception, Place place, DataPlaces dataPlaces) {
                 try {
@@ -228,8 +231,7 @@ public class PlacesFragment extends Fragment {
                                         .show();
                                 e.printStackTrace();
                             }
-                        }
-                        else {
+                        } else {
                             swipeRefreshLayout.setRefreshing(false);
                             Snackbar.make(container, mContext.getString(R.string.error_no_api_key_registered), Snackbar.LENGTH_LONG)
                                     .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
@@ -261,6 +263,7 @@ public class PlacesFragment extends Fragment {
 
                 noPlacesRegisteredTextView.setVisibility(View.GONE);
                 swipeRefreshLayout.setVisibility(View.VISIBLE);
+
                 placeItemAdapter = new PlaceItemAdapter(mContext, placeArrayList, root);
                 for (int i = 0; i < placeArrayList.size(); i++) {
                     placeList.addView(placeItemAdapter.getView(i, null, null), i);
@@ -269,7 +272,6 @@ public class PlacesFragment extends Fragment {
                 //  Refresh data
                 for (int index = 0; index < placeArrayList.size(); index++) {
                     weatherService.getWeatherDataOWM(placeArrayList.get(index), refreshPlaceListCallback);
-                    Log.d("WeatherUpdate", placeArrayList.get(index).getCity());
                 }
             } else {
                 noPlacesRegisteredTextView.setVisibility(View.VISIBLE);
