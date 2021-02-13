@@ -64,7 +64,6 @@ public class DailyWeatherForecast {
         this.sunrise = 0;
         this.sunset = 0;
 
-
         this.windSpeed = 0;
         this.windGustSpeed = 0;
         this.windDirection = 0;
@@ -72,6 +71,45 @@ public class DailyWeatherForecast {
         this.pop = 0;
         this.rain = 0;
         this.snow = 0;
+    }
+
+    public DailyWeatherForecast clone() {
+        DailyWeatherForecast returnedDailyWeatherForecast = new DailyWeatherForecast();
+        returnedDailyWeatherForecast.dt = this.dt;
+
+        returnedDailyWeatherForecast.weather = this.weather;
+        returnedDailyWeatherForecast.weatherDescription = this.weatherDescription;
+        returnedDailyWeatherForecast.weatherCode = this.weatherCode;
+
+        returnedDailyWeatherForecast.temperatureMorning = this.temperatureMorning;
+        returnedDailyWeatherForecast.temperatureDay = this.temperatureDay;
+        returnedDailyWeatherForecast.temperatureEvening = this.temperatureEvening;
+        returnedDailyWeatherForecast.temperatureNight = this.temperatureNight;
+        returnedDailyWeatherForecast.temperatureMinimum = this.temperatureMinimum;
+        returnedDailyWeatherForecast.temperatureMaximum = this.temperatureMaximum;
+
+        returnedDailyWeatherForecast.temperatureMorningFeelsLike = this.temperatureMorningFeelsLike;
+        returnedDailyWeatherForecast.temperatureDayFeelsLike = this.temperatureDayFeelsLike;
+        returnedDailyWeatherForecast.temperatureEveningFeelsLike = this.temperatureEveningFeelsLike;
+        returnedDailyWeatherForecast.temperatureNightFeelsLike = this.temperatureNightFeelsLike;
+
+        returnedDailyWeatherForecast.pressure = this.pressure;
+        returnedDailyWeatherForecast.humidity = this.humidity;
+        returnedDailyWeatherForecast.dewPoint = this.dewPoint;
+
+        returnedDailyWeatherForecast.cloudiness = this.cloudiness;
+        returnedDailyWeatherForecast.sunrise = this.sunrise;
+        returnedDailyWeatherForecast.sunset = this.sunset;
+
+        returnedDailyWeatherForecast.windSpeed = this.windSpeed;
+        returnedDailyWeatherForecast.windGustSpeed = this.windGustSpeed;
+        returnedDailyWeatherForecast.windDirection = this.windDirection;
+
+        returnedDailyWeatherForecast.pop = this.pop;
+        returnedDailyWeatherForecast.rain = this.rain;
+        returnedDailyWeatherForecast.snow = this.snow;
+
+        return returnedDailyWeatherForecast;
     }
 
     public String getWindDirectionCardinalPoints() {

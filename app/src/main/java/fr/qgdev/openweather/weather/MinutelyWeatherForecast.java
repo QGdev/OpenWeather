@@ -15,5 +15,8 @@ public class MinutelyWeatherForecast {
         this.precipitation = precipitation;
     }
 
+    public MinutelyWeatherForecast clone() {
+        return new MinutelyWeatherForecast(this.dt, this.precipitation);
+    }
 }
 

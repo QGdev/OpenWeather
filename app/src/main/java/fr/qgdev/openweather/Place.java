@@ -379,71 +379,71 @@ public class Place {
     }
 
     public CurrentWeather getCurrentWeather() {
-        return currentWeather;
+        return currentWeather.clone();
     }
 
     public void setCurrentWeather(CurrentWeather currentWeather) {
-        this.currentWeather = currentWeather;
+        this.currentWeather = currentWeather.clone();
     }
 
     public ArrayList<MinutelyWeatherForecast> getMinutelyWeatherForecastArrayList() {
-        return minutelyWeatherForecastArrayList;
+        return (ArrayList<MinutelyWeatherForecast>) minutelyWeatherForecastArrayList.clone();
     }
 
     public void setMinutelyWeatherForecastArrayList(ArrayList<MinutelyWeatherForecast> minutelyWeatherForecastArrayList) {
-        this.minutelyWeatherForecastArrayList = minutelyWeatherForecastArrayList;
+        this.minutelyWeatherForecastArrayList = (ArrayList<MinutelyWeatherForecast>) minutelyWeatherForecastArrayList.clone();
     }
 
     public ArrayList<HourlyWeatherForecast> getHourlyWeatherForecastArrayList() {
-        return hourlyWeatherForecastArrayList;
+        return (ArrayList<HourlyWeatherForecast>) hourlyWeatherForecastArrayList.clone();
     }
 
     public void setHourlyWeatherForecastArrayList(ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList) {
-        this.hourlyWeatherForecastArrayList = hourlyWeatherForecastArrayList;
+        this.hourlyWeatherForecastArrayList = (ArrayList<HourlyWeatherForecast>) hourlyWeatherForecastArrayList.clone();
     }
 
     public ArrayList<DailyWeatherForecast> getDailyWeatherForecastArrayList() {
-        return dailyWeatherForecastArrayList;
+        return (ArrayList<DailyWeatherForecast>) dailyWeatherForecastArrayList.clone();
     }
 
     public void setDailyWeatherForecastArrayList(ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList) {
-        this.dailyWeatherForecastArrayList = dailyWeatherForecastArrayList;
+        this.dailyWeatherForecastArrayList = (ArrayList<DailyWeatherForecast>) dailyWeatherForecastArrayList.clone();
     }
 
     public MinutelyWeatherForecast getMinutelyWeatherForecast(int minute) {
-        return minutelyWeatherForecastArrayList.get(minute);
+        return minutelyWeatherForecastArrayList.get(minute).clone();
     }
 
     public HourlyWeatherForecast getHourlyWeatherForecast(int hour) {
-        return hourlyWeatherForecastArrayList.get(hour);
+        return hourlyWeatherForecastArrayList.get(hour).clone();
     }
 
     public DailyWeatherForecast getDailyWeatherForecast(int day) {
-        return dailyWeatherForecastArrayList.get(day);
+        return dailyWeatherForecastArrayList.get(day).clone();
     }
 
     public void setMinutelyWeatherForecast(int minute, MinutelyWeatherForecast minutelyWeatherForecast) {
-        this.minutelyWeatherForecastArrayList.set(minute, minutelyWeatherForecast);
+        this.minutelyWeatherForecastArrayList.set(minute, minutelyWeatherForecast.clone());
     }
 
     public void setHourlyWeatherForecast(int hour, HourlyWeatherForecast hourlyWeatherForecast) {
-        this.hourlyWeatherForecastArrayList.set(hour, hourlyWeatherForecast);
+        this.hourlyWeatherForecastArrayList.set(hour, hourlyWeatherForecast.clone());
     }
 
     public void setDailyWeatherForecast(int day, DailyWeatherForecast dailyWeatherForecast) {
-        this.dailyWeatherForecastArrayList.set(day, dailyWeatherForecast);
+        this.dailyWeatherForecastArrayList.set(day, dailyWeatherForecast.clone());
     }
 
     public void addMinutelyWeatherForecast(int minute, MinutelyWeatherForecast minutelyWeatherForecast) {
-        this.minutelyWeatherForecastArrayList.add(minute, minutelyWeatherForecast);
+        this.minutelyWeatherForecastArrayList.add(minute, minutelyWeatherForecast.clone());
     }
 
     public void addHourlyWeatherForecast(int hour, HourlyWeatherForecast hourlyWeatherForecast) {
-        this.hourlyWeatherForecastArrayList.add(hour, hourlyWeatherForecast);
+        this.hourlyWeatherForecastArrayList.add(hour, hourlyWeatherForecast.clone());
     }
 
     public void addDailyWeatherForecast(int day, DailyWeatherForecast dailyWeatherForecast) {
-        this.dailyWeatherForecastArrayList.add(day, dailyWeatherForecast);
+        this.dailyWeatherForecastArrayList.add(day, dailyWeatherForecast.clone());
     }
 
 

@@ -52,6 +52,35 @@ public class HourlyWeatherForecast {
         this.snow = 0;
     }
 
+    public HourlyWeatherForecast clone() {
+        HourlyWeatherForecast returnedHourlyWeatherForecast = new HourlyWeatherForecast();
+        returnedHourlyWeatherForecast.dt = this.dt;
+
+        returnedHourlyWeatherForecast.weather = this.weather;
+        returnedHourlyWeatherForecast.weatherDescription = this.weatherDescription;
+        returnedHourlyWeatherForecast.weatherCode = this.weatherCode;
+
+        returnedHourlyWeatherForecast.temperature = this.temperature;
+        returnedHourlyWeatherForecast.temperatureFeelsLike = this.temperatureFeelsLike;
+
+        returnedHourlyWeatherForecast.pressure = this.pressure;
+        returnedHourlyWeatherForecast.humidity = this.humidity;
+        returnedHourlyWeatherForecast.dewPoint = this.dewPoint;
+
+        returnedHourlyWeatherForecast.cloudiness = this.cloudiness;
+        returnedHourlyWeatherForecast.visibility = this.visibility;
+
+        returnedHourlyWeatherForecast.windSpeed = this.windSpeed;
+        returnedHourlyWeatherForecast.windGustSpeed = this.windGustSpeed;
+        returnedHourlyWeatherForecast.windDirection = this.windDirection;
+
+        returnedHourlyWeatherForecast.pop = this.pop;
+        returnedHourlyWeatherForecast.rain = this.rain;
+        returnedHourlyWeatherForecast.snow = this.snow;
+
+        return returnedHourlyWeatherForecast;
+    }
+
     public String getWindDirectionCardinalPoints() {
 
         //  N

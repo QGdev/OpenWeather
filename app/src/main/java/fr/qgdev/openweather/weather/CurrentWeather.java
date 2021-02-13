@@ -60,6 +60,39 @@ public class CurrentWeather {
         this.snow = 0;
     }
 
+    public CurrentWeather clone() {
+        CurrentWeather returnedCurrentWeather = new CurrentWeather();
+        returnedCurrentWeather.dt = this.dt;
+
+        returnedCurrentWeather.weather = this.weather;
+        returnedCurrentWeather.weatherDescription = this.weatherDescription;
+        returnedCurrentWeather.weatherCode = this.weatherCode;
+
+        returnedCurrentWeather.temperature = this.temperature;
+        returnedCurrentWeather.temperatureFeelsLike = this.temperatureFeelsLike;
+
+        returnedCurrentWeather.pressure = this.pressure;
+        returnedCurrentWeather.humidity = this.humidity;
+        returnedCurrentWeather.dewPoint = this.dewPoint;
+
+        returnedCurrentWeather.cloudiness = this.cloudiness;
+        returnedCurrentWeather.uvIndex = this.uvIndex;
+        returnedCurrentWeather.visibility = this.visibility;
+
+        returnedCurrentWeather.sunrise = this.sunrise;
+        returnedCurrentWeather.sunset = this.sunset;
+
+        returnedCurrentWeather.windSpeed = this.windSpeed;
+        returnedCurrentWeather.windGustSpeed = this.windGustSpeed;
+        returnedCurrentWeather.isWindDirectionReadable = this.isWindDirectionReadable;
+        returnedCurrentWeather.windDirection = this.windDirection;
+
+        returnedCurrentWeather.rain = this.rain;
+        returnedCurrentWeather.snow = this.snow;
+
+        return returnedCurrentWeather;
+    }
+
     public String getWindDirectionCardinalPoints() {
 
         //  N
