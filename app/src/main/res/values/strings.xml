@@ -3,7 +3,7 @@
 
 
 
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main" translatable="false">MainActivity</string>
     <string name="title_places">Places</string>
     <string name="title_temperature_feelslike">Feels like</string>
     <string name="title_humidity">Humidity</string>
@@ -28,7 +28,7 @@
     <string name="title_settings">Settings</string>
 
     <string name="title_settings_api_key">API key</string>
-    <string name="title_settings_api">OpenWeatherMaps API</string>
+    <string name="title_settings_api" translatable="false">OpenWeatherMaps API</string>
 
     <string name="title_settings_units">Units</string>
     <string name="title_settings_units_temperature">Temperature</string>
@@ -58,14 +58,14 @@
     <string name="title_dialog_add_place_verify_button_verification">Verification</string>
 
     <string name="error_no_api_key_registered">No API key found</string>
-    <string name="error_server_unreachable">Cannot reach OMW servers\nVerify your connection and try again</string>
+    <string name="error_server_unreachable">Cannot reach OMW servers, verify your connection and try again</string>
     <string name="error_place_not_found">OpenWeatherMaps didn\'t found that place</string>
     <string name="error_wrong_api_key">OpenWeatherMaps didn\'t recognize your API key</string>
-    <string name="error_too_many_request_in_a_day">Cannot get weather data\nToo many requests today</string>
+    <string name="error_too_many_request_in_a_day">Cannot get weather data, too many requests today</string>
     <string name="error_unknow_error">Unknow error happened</string>
 
-    <string name="url_owm_weatherdata"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
-    <string name="url_owm_coordinates"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s]]></string>
+    <string name="url_owm_weatherdata" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
+    <string name="url_owm_coordinates" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s]]></string>
 
     <string name="place_added_succcessfully">was successfully added</string>
 
@@ -87,7 +87,7 @@
     <string name="error_place_already_added">This place is already added</string>
     <string name="error_no_places_registered">No places registered</string>
     <string name="title_forecast_daily">Daily Forecast</string>
-    <string name="splash_screen">Splash Screen</string>
+    <string name="splash_screen" translatable="false">Splash Screen</string>
 
 
 </resources>
