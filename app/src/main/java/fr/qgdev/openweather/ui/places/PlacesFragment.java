@@ -23,6 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.Place;
@@ -37,12 +38,11 @@ public class PlacesFragment extends Fragment {
     private Context mContext;
     private String API_KEY;
     private LinearLayout placeList;
-    private DataPlaces dataPlaces;
 
     private ArrayList<Place> placeArrayList;
 
     private WeatherService weatherService;
-    private WeatherService.WeatherCallback initializePlaceListCallback;
+    // --Commented out by Inspection (28/02/21 17:50):private WeatherService.WeatherCallback initializePlaceListCallback;
     private WeatherService.WeatherCallback refreshPlaceListCallback;
 
 
@@ -89,7 +89,7 @@ public class PlacesFragment extends Fragment {
         final TextView noPlacesRegisteredTextView = root.findViewById(R.id.no_places_registered);
 
         //  Initialize places data storage
-        dataPlaces = new DataPlaces(mContext);
+        DataPlaces dataPlaces = new DataPlaces(mContext);
         Log.d("TEST", mContext.getResources().getConfiguration().locale.getLanguage());
 
         //  Initialize Weather Services and callbacks
@@ -215,11 +215,11 @@ public class PlacesFragment extends Fragment {
                     @Override
                     public void onRefresh() {
                         swipeRefreshLayout.setRefreshing(true);
-                        if(API_KEY != null && API_KEY != "") {
+                        if (API_KEY != null && !Objects.equals(API_KEY, "")) {
 
                             try {
 
-                                for(int index = 0; index < placeArrayList.size(); index++) {
+                                for (int index = 0; index < placeArrayList.size(); index++) {
                                     weatherService.getWeatherDataOWM(placeArrayList.get(index), refreshPlaceListCallback);
                                 }
 

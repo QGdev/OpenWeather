@@ -1,5 +1,6 @@
 package fr.qgdev.openweather.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -32,7 +33,6 @@ import fr.qgdev.openweather.WeatherService;
 
 public class AddPlaceDialog extends Dialog {
 
-    private final TextView title;
     private final TextInputEditText cityEditText;
     private final AutoCompleteTextView countryEditText;
     private final Button verifyButton;
@@ -40,24 +40,20 @@ public class AddPlaceDialog extends Dialog {
     private final List<String> countryNames;
     private final List<String> countryCodes;
 
-    private final View addPlaceFABView;
-
 
     public AddPlaceDialog(Context context, View addPlaceFABView, WeatherService.WeatherCallback callback) {
         super(context);
         setContentView(R.layout.dialog_add_place);
 
-        this.title = findViewById(R.id.title);
+        TextView title = findViewById(R.id.title);
         this.cityEditText = findViewById(R.id.city);
         this.countryEditText = findViewById(R.id.country);
         this.verifyButton = findViewById(R.id.verify_button);
 
-        this.addPlaceFABView = addPlaceFABView;
-
         this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
         this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.select_dialog_item, countryNames);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.select_dialog_item, countryNames);
         countryEditText.setThreshold(1);
         countryEditText.performValidation();
         countryEditText.setAdapter(adapter);
@@ -103,7 +99,7 @@ public class AddPlaceDialog extends Dialog {
                         RequestQueue weatherDataRequest = Volley.newRequestQueue(context);
                         String url = String.format(context.getString(R.string.url_owm_coordinates), place.getCity(), place.getCountryCode(), apiKey);
 
-                        JsonObjectRequest verifyPlaceRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                        @SuppressLint("DefaultLocale") JsonObjectRequest verifyPlaceRequest = new JsonObjectRequest(Request.Method.GET, url, null,
 
                                 response -> {
 
@@ -309,9 +305,11 @@ public class AddPlaceDialog extends Dialog {
         return country.toString();
     }
 
-    public Button getVerifyButton() {
-        return verifyButton;
-    }
+// --Commented out by Inspection START (28/02/21 17:50):
+//    public Button getVerifyButton() {
+//        return verifyButton;
+//    }
+// --Commented out by Inspection STOP (28/02/21 17:50)
 
     public void build() {
         show();

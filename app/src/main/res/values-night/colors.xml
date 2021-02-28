@@ -3,9 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
+    <color name="colorPrimaryDark">#121212</color>
 
     <color name="colorFirstText">@color/colorWhite</color>
     <color name="colorSecondaryText">@color/colorWhiteGrey</color>
+    <color name="colorTertiaryText">@color/colorWhiteGrey1</color>
 
     <color name="colorIcons">@color/colorWhiteGrey</color>
 

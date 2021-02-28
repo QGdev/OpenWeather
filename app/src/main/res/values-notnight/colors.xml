@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingDefaultResource">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingDefaultResource">
+
+    <color name="colorPrimaryDark">@color/colorWhiteGrey1</color>
+    <color name="textColorPrimary">@color/colorBlack</color>
 
     <color name="colorFirstText">@color/colorBlack</color>
     <color name="colorSecondaryText">@color/colorBlackGrey</color>
+    <color name="colorTertiaryText">@color/colorBlackGrey1</color>
 
     <color name="colorIcons">@color/colorBlack</color>
 

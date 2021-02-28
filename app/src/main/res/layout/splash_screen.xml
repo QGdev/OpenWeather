@@ -18,12 +18,12 @@
         android:layout_height="100dp"
         android:layout_marginBottom="10dp"
         android:src="@drawable/ic_logo_small"
-        app:tint="@color/colorPrimaryDark" />
+        app:tint="@color/colorSecondary" />
 
     <ProgressBar
         style="@android:style/Widget.Material.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="15dp"
         android:indeterminate="true"
-        android:indeterminateTint="@color/colorAccent" />
+        android:indeterminateTint="@color/colorSecondary" />
 </GridLayout>

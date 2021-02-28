@@ -11,6 +11,7 @@ import fr.qgdev.openweather.weather.CurrentWeather;
 import fr.qgdev.openweather.weather.DailyWeatherForecast;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
 import fr.qgdev.openweather.weather.MinutelyWeatherForecast;
+import fr.qgdev.openweather.weather.WeatherAlert;
 
 public class Place {
 
@@ -33,11 +34,8 @@ public class Place {
     private ArrayList<MinutelyWeatherForecast> minutelyWeatherForecastArrayList;
     private ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList;
     private ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList;
+    private ArrayList<WeatherAlert> weatherAlertsArrayList;
 
-
-    public Place() {
-
-    }
 
     public Place(String city, String country, String countryCode) {
 
@@ -45,6 +43,7 @@ public class Place {
         this.minutelyWeatherForecastArrayList = new ArrayList<MinutelyWeatherForecast>();
         this.hourlyWeatherForecastArrayList = new ArrayList<HourlyWeatherForecast>();
         this.dailyWeatherForecastArrayList = new ArrayList<DailyWeatherForecast>();
+        this.weatherAlertsArrayList = new ArrayList<WeatherAlert>();
 
         this.city = city;
         this.country = country;
@@ -57,6 +56,7 @@ public class Place {
         this.minutelyWeatherForecastArrayList = new ArrayList<MinutelyWeatherForecast>();
         this.hourlyWeatherForecastArrayList = new ArrayList<HourlyWeatherForecast>();
         this.dailyWeatherForecastArrayList = new ArrayList<DailyWeatherForecast>();
+        this.weatherAlertsArrayList = new ArrayList<WeatherAlert>();
 
         //  Place data set
         //________________________________________________________________
@@ -292,8 +292,16 @@ public class Place {
             throw new JSONException("Cannot find daily weather forecast data in PlaceObjectJSON");
         }
 
-    }
+        if (placeObjectJSON.has("weather_alert")) {
+            JSONArray weatherAlertJSON = placeObjectJSON.optJSONArray("weather_alert");
+            JSONObject weatherAlertJSON_tmp;
 
+            for (int i = 0; i < weatherAlertJSON.length(); i++) {
+                weatherAlertJSON_tmp = weatherAlertJSON.getJSONObject(i);
+                this.weatherAlertsArrayList.add(i, new WeatherAlert(weatherAlertJSON_tmp.getString("sender"), weatherAlertJSON_tmp.getString("event"), weatherAlertJSON_tmp.getLong("start_dt"), weatherAlertJSON_tmp.getLong("end_dt"), weatherAlertJSON_tmp.getString("description")));
+            }
+        }
+    }
 
     public String getCity() {
         return city;
@@ -326,7 +334,6 @@ public class Place {
     public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
-
 
     //public long getLastUpdateWithTimeZoneOffset() {return lastUpdate + timeZoneOffset;}
 
@@ -379,7 +386,7 @@ public class Place {
     }
 
     public CurrentWeather getCurrentWeather() {
-        return currentWeather.clone();
+        return this.currentWeather.clone();
     }
 
     public void setCurrentWeather(CurrentWeather currentWeather) {
@@ -387,7 +394,7 @@ public class Place {
     }
 
     public ArrayList<MinutelyWeatherForecast> getMinutelyWeatherForecastArrayList() {
-        return (ArrayList<MinutelyWeatherForecast>) minutelyWeatherForecastArrayList.clone();
+        return (ArrayList<MinutelyWeatherForecast>) this.minutelyWeatherForecastArrayList.clone();
     }
 
     public void setMinutelyWeatherForecastArrayList(ArrayList<MinutelyWeatherForecast> minutelyWeatherForecastArrayList) {
@@ -395,7 +402,7 @@ public class Place {
     }
 
     public ArrayList<HourlyWeatherForecast> getHourlyWeatherForecastArrayList() {
-        return (ArrayList<HourlyWeatherForecast>) hourlyWeatherForecastArrayList.clone();
+        return (ArrayList<HourlyWeatherForecast>) this.hourlyWeatherForecastArrayList.clone();
     }
 
     public void setHourlyWeatherForecastArrayList(ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList) {
@@ -403,23 +410,41 @@ public class Place {
     }
 
     public ArrayList<DailyWeatherForecast> getDailyWeatherForecastArrayList() {
-        return (ArrayList<DailyWeatherForecast>) dailyWeatherForecastArrayList.clone();
+        return (ArrayList<DailyWeatherForecast>) this.dailyWeatherForecastArrayList.clone();
     }
 
     public void setDailyWeatherForecastArrayList(ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList) {
         this.dailyWeatherForecastArrayList = (ArrayList<DailyWeatherForecast>) dailyWeatherForecastArrayList.clone();
     }
 
+    public ArrayList<WeatherAlert> getWeatherAlertsArrayList() {
+        return (ArrayList<WeatherAlert>) this.weatherAlertsArrayList.clone();
+    }
+
+    public void setWeatherAlertsArrayList(ArrayList<WeatherAlert> weatherAlertsArrayList) {
+        this.weatherAlertsArrayList = (ArrayList<WeatherAlert>) weatherAlertsArrayList.clone();
+    }
+
     public MinutelyWeatherForecast getMinutelyWeatherForecast(int minute) {
         return minutelyWeatherForecastArrayList.get(minute).clone();
     }
 
+
     public HourlyWeatherForecast getHourlyWeatherForecast(int hour) {
+
         return hourlyWeatherForecastArrayList.get(hour).clone();
     }
 
     public DailyWeatherForecast getDailyWeatherForecast(int day) {
         return dailyWeatherForecastArrayList.get(day).clone();
+    }
+
+    public WeatherAlert getMWeatherAlert(int index) {
+        return weatherAlertsArrayList.get(index).clone();
+    }
+
+    public int getMWeatherAlertCount() {
+        return weatherAlertsArrayList.size();
     }
 
     public void setMinutelyWeatherForecast(int minute, MinutelyWeatherForecast minutelyWeatherForecast) {
@@ -432,6 +457,10 @@ public class Place {
 
     public void setDailyWeatherForecast(int day, DailyWeatherForecast dailyWeatherForecast) {
         this.dailyWeatherForecastArrayList.set(day, dailyWeatherForecast.clone());
+    }
+
+    public void setWeatherAlert(int index, WeatherAlert weatherAlert) {
+        this.weatherAlertsArrayList.set(index, weatherAlert.clone());
     }
 
     public void addMinutelyWeatherForecast(int minute, MinutelyWeatherForecast minutelyWeatherForecast) {
@@ -447,24 +476,24 @@ public class Place {
     }
 
 
+    public void addWeatherAlert(int index, WeatherAlert weatherAlert) {
+        this.weatherAlertsArrayList.add(index, weatherAlert.clone());
+    }
+
+
     //  getPlaceJSON()
     //________________________________________________________________
     //
-    public JSONObject getPlaceJSON() {
+    public JSONObject getPlaceJSON() throws Exception {
         JSONObject placeJSON = new JSONObject();
 
-        try {
-            ////    Place
-            placeJSON.accumulate("city", city);
-            placeJSON.accumulate("country", country);
-            placeJSON.accumulate("country_code", countryCode);
-            placeJSON.accumulate("latitude", latitude);
-            placeJSON.accumulate("longitude", longitude);
-            placeJSON.accumulate("timezone", timeZone);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        ////    Place
+        placeJSON.accumulate("city", city);
+        placeJSON.accumulate("country", country);
+        placeJSON.accumulate("country_code", countryCode);
+        placeJSON.accumulate("latitude", latitude);
+        placeJSON.accumulate("longitude", longitude);
+        placeJSON.accumulate("timezone", timeZone);
 
         return placeJSON;
     }
@@ -474,17 +503,12 @@ public class Place {
     //________________________________________________________________
     //
 
-    public JSONObject getUpdateJSON() {
+    public JSONObject getUpdateJSON() throws Exception {
         JSONObject updateJSON = new JSONObject();
 
-        try {
-            ////    Update
-            updateJSON.accumulate("last_update_date", lastUpdateDate);
-            updateJSON.accumulate("last_update", lastUpdate);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        ////    Update
+        updateJSON.accumulate("last_update_date", lastUpdateDate);
+        updateJSON.accumulate("last_update", lastUpdate);
 
         return updateJSON;
     }
@@ -494,17 +518,13 @@ public class Place {
     //________________________________________________________________
     //
 
-    public JSONObject getErrorsJSON() {
+    public JSONObject getErrorsJSON() throws Exception {
         JSONObject errorsJSON = new JSONObject();
 
-        try {
-            ////    Errors during updates
-            errorsJSON.accumulate("error_during_data_acquisition", errorDuringDataAcquisition);
-            errorsJSON.accumulate("error_code", errorCode);
+        ////    Errors during updates
+        errorsJSON.accumulate("error_during_data_acquisition", errorDuringDataAcquisition);
+        errorsJSON.accumulate("error_code", errorCode);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         return errorsJSON;
     }
@@ -514,49 +534,44 @@ public class Place {
     //________________________________________________________________
     //
 
-    public JSONObject getCurrentWeatherJSON() {
+    public JSONObject getCurrentWeatherJSON() throws Exception {
         JSONObject currentWeatherJSON = new JSONObject();
 
-        try {
 
-            //  Weather content
-            ////    Time
-            currentWeatherJSON.put("dt", currentWeather.dt);
+        //  Weather content
+        ////    Time
+        currentWeatherJSON.put("dt", currentWeather.dt);
 
-            ////    Weather
-            currentWeatherJSON.accumulate("weather", currentWeather.weather);
-            currentWeatherJSON.accumulate("weather_description", currentWeather.weatherDescription);
-            currentWeatherJSON.accumulate("weather_code", currentWeather.weatherCode);
+        ////    Weather
+        currentWeatherJSON.accumulate("weather", currentWeather.weather);
+        currentWeatherJSON.accumulate("weather_description", currentWeather.weatherDescription);
+        currentWeatherJSON.accumulate("weather_code", currentWeather.weatherCode);
 
-            ////    Temperatures
-            currentWeatherJSON.accumulate("temperature", currentWeather.temperature);
-            currentWeatherJSON.accumulate("temperature_feels_like", currentWeather.temperatureFeelsLike);
+        ////    Temperatures
+        currentWeatherJSON.accumulate("temperature", currentWeather.temperature);
+        currentWeatherJSON.accumulate("temperature_feels_like", currentWeather.temperatureFeelsLike);
 
-            ////    Environmental Variables
-            currentWeatherJSON.accumulate("pressure", currentWeather.pressure);
-            currentWeatherJSON.accumulate("humidity", currentWeather.humidity);
-            currentWeatherJSON.accumulate("dew_point", currentWeather.dewPoint);
+        ////    Environmental Variables
+        currentWeatherJSON.accumulate("pressure", currentWeather.pressure);
+        currentWeatherJSON.accumulate("humidity", currentWeather.humidity);
+        currentWeatherJSON.accumulate("dew_point", currentWeather.dewPoint);
 
-            ////    Sky
-            currentWeatherJSON.accumulate("cloudiness", currentWeather.cloudiness);
-            currentWeatherJSON.accumulate("uvi", currentWeather.uvIndex);
-            currentWeatherJSON.accumulate("visibility", currentWeather.visibility);
-            currentWeatherJSON.accumulate("sunrise", currentWeather.sunrise);
-            currentWeatherJSON.accumulate("sunset", currentWeather.sunset);
+        ////    Sky
+        currentWeatherJSON.accumulate("cloudiness", currentWeather.cloudiness);
+        currentWeatherJSON.accumulate("uvi", currentWeather.uvIndex);
+        currentWeatherJSON.accumulate("visibility", currentWeather.visibility);
+        currentWeatherJSON.accumulate("sunrise", currentWeather.sunrise);
+        currentWeatherJSON.accumulate("sunset", currentWeather.sunset);
 
-            ////    Wind
-            currentWeatherJSON.accumulate("wind_speed", currentWeather.windSpeed);
-            currentWeatherJSON.accumulate("wind_gust_speed", currentWeather.windGustSpeed);
-            currentWeatherJSON.accumulate("wind_readable_direction", currentWeather.isWindDirectionReadable);
-            currentWeatherJSON.accumulate("wind_direction", currentWeather.windDirection);
+        ////    Wind
+        currentWeatherJSON.accumulate("wind_speed", currentWeather.windSpeed);
+        currentWeatherJSON.accumulate("wind_gust_speed", currentWeather.windGustSpeed);
+        currentWeatherJSON.accumulate("wind_readable_direction", currentWeather.isWindDirectionReadable);
+        currentWeatherJSON.accumulate("wind_direction", currentWeather.windDirection);
 
-            ////    Precipitations
-            currentWeatherJSON.accumulate("rain", currentWeather.rain);
-            currentWeatherJSON.accumulate("snow", currentWeather.snow);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        ////    Precipitations
+        currentWeatherJSON.accumulate("rain", currentWeather.rain);
+        currentWeatherJSON.accumulate("snow", currentWeather.snow);
 
         return currentWeatherJSON;
     }
@@ -570,13 +585,9 @@ public class Place {
         JSONObject minutelyWeatherForecastJSON = new JSONObject();
         MinutelyWeatherForecast minutelyWeatherForecast = this.getMinutelyWeatherForecast(minute);
 
-        try {
-            minutelyWeatherForecastJSON.accumulate("dt", minutelyWeatherForecast.dt);
-            minutelyWeatherForecastJSON.accumulate("precipitation", minutelyWeatherForecast.precipitation);
+        minutelyWeatherForecastJSON.accumulate("dt", minutelyWeatherForecast.dt);
+        minutelyWeatherForecastJSON.accumulate("precipitation", minutelyWeatherForecast.precipitation);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         return minutelyWeatherForecastJSON;
     }
@@ -601,47 +612,42 @@ public class Place {
     //________________________________________________________________
     //
 
-    public JSONObject getHourlyWeatherForecastJSON(int hour) {
+    public JSONObject getHourlyWeatherForecastJSON(int hour) throws Exception {
         JSONObject hourlyWeatherForecastJSON = new JSONObject();
         HourlyWeatherForecast hourlyWeatherForecast = this.getHourlyWeatherForecast(hour);
 
-        try {
+        //  Hourly Weather Forecast
+        ////    Time
+        hourlyWeatherForecastJSON.accumulate("dt", hourlyWeatherForecast.dt);
 
-            //  Hourly Weather Forecast
-            ////    Time
-            hourlyWeatherForecastJSON.accumulate("dt", hourlyWeatherForecast.dt);
+        ////    Weather
+        hourlyWeatherForecastJSON.accumulate("weather", hourlyWeatherForecast.weather);
+        hourlyWeatherForecastJSON.accumulate("weather_description", hourlyWeatherForecast.weatherDescription);
+        hourlyWeatherForecastJSON.accumulate("weather_code", hourlyWeatherForecast.weatherCode);
 
-            ////    Weather
-            hourlyWeatherForecastJSON.accumulate("weather", hourlyWeatherForecast.weather);
-            hourlyWeatherForecastJSON.accumulate("weather_description", hourlyWeatherForecast.weatherDescription);
-            hourlyWeatherForecastJSON.accumulate("weather_code", hourlyWeatherForecast.weatherCode);
+        ////    Temperatures
+        hourlyWeatherForecastJSON.accumulate("temperature", hourlyWeatherForecast.temperature);
+        hourlyWeatherForecastJSON.accumulate("temperature_feels_like", hourlyWeatherForecast.temperatureFeelsLike);
 
-            ////    Temperatures
-            hourlyWeatherForecastJSON.accumulate("temperature", hourlyWeatherForecast.temperature);
-            hourlyWeatherForecastJSON.accumulate("temperature_feels_like", hourlyWeatherForecast.temperatureFeelsLike);
+        ////    Environmental Variables
+        hourlyWeatherForecastJSON.accumulate("pressure", hourlyWeatherForecast.pressure);
+        hourlyWeatherForecastJSON.accumulate("humidity", hourlyWeatherForecast.humidity);
+        hourlyWeatherForecastJSON.accumulate("dew_point", hourlyWeatherForecast.dewPoint);
 
-            ////    Environmental Variables
-            hourlyWeatherForecastJSON.accumulate("pressure", hourlyWeatherForecast.pressure);
-            hourlyWeatherForecastJSON.accumulate("humidity", hourlyWeatherForecast.humidity);
-            hourlyWeatherForecastJSON.accumulate("dew_point", hourlyWeatherForecast.dewPoint);
+        ////    Sky
+        hourlyWeatherForecastJSON.accumulate("cloudiness", hourlyWeatherForecast.cloudiness);
+        hourlyWeatherForecastJSON.accumulate("visibility", hourlyWeatherForecast.visibility);
 
-            ////    Sky
-            hourlyWeatherForecastJSON.accumulate("cloudiness", hourlyWeatherForecast.cloudiness);
-            hourlyWeatherForecastJSON.accumulate("visibility", hourlyWeatherForecast.visibility);
+        ////    Wind
+        hourlyWeatherForecastJSON.accumulate("wind_speed", hourlyWeatherForecast.windSpeed);
+        hourlyWeatherForecastJSON.accumulate("wind_gust_speed", hourlyWeatherForecast.windGustSpeed);
+        hourlyWeatherForecastJSON.accumulate("wind_direction", hourlyWeatherForecast.windDirection);
 
-            ////    Wind
-            hourlyWeatherForecastJSON.accumulate("wind_speed", hourlyWeatherForecast.windSpeed);
-            hourlyWeatherForecastJSON.accumulate("wind_gust_speed", hourlyWeatherForecast.windGustSpeed);
-            hourlyWeatherForecastJSON.accumulate("wind_direction", hourlyWeatherForecast.windDirection);
+        ////    Precipitations
+        hourlyWeatherForecastJSON.accumulate("pop", hourlyWeatherForecast.pop);
+        hourlyWeatherForecastJSON.accumulate("rain", hourlyWeatherForecast.rain);
+        hourlyWeatherForecastJSON.accumulate("snow", hourlyWeatherForecast.snow);
 
-            ////    Precipitations
-            hourlyWeatherForecastJSON.accumulate("pop", hourlyWeatherForecast.pop);
-            hourlyWeatherForecastJSON.accumulate("rain", hourlyWeatherForecast.rain);
-            hourlyWeatherForecastJSON.accumulate("snow", hourlyWeatherForecast.snow);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         return hourlyWeatherForecastJSON;
     }
@@ -651,7 +657,7 @@ public class Place {
     //________________________________________________________________
     //
 
-    public JSONArray getAllHourlyWeatherForecastJSON() {
+    public JSONArray getAllHourlyWeatherForecastJSON() throws Exception {
         JSONArray hourlyForecastWeatherJSON = new JSONArray();
 
         for (int index = 0; index < hourlyWeatherForecastArrayList.size(); index++) {
@@ -665,58 +671,53 @@ public class Place {
     //________________________________________________________________
     //
 
-    public JSONObject getDailyWeatherForecastJSON(int day) {
+    public JSONObject getDailyWeatherForecastJSON(int day) throws Exception {
         JSONObject dailyWeatherForecastJSON = new JSONObject();
         DailyWeatherForecast dailyWeatherForecast = this.getDailyWeatherForecast(day);
 
-        try {
+        //  Daily Weather Forecast
+        ////    Time
+        dailyWeatherForecastJSON.accumulate("dt", dailyWeatherForecast.dt);
 
-            //  Daily Weather Forecast
-            ////    Time
-            dailyWeatherForecastJSON.accumulate("dt", dailyWeatherForecast.dt);
+        ////    Weather
+        dailyWeatherForecastJSON.accumulate("weather", dailyWeatherForecast.weather);
+        dailyWeatherForecastJSON.accumulate("weather_description", dailyWeatherForecast.weatherDescription);
+        dailyWeatherForecastJSON.accumulate("weather_code", dailyWeatherForecast.weatherCode);
 
-            ////    Weather
-            dailyWeatherForecastJSON.accumulate("weather", dailyWeatherForecast.weather);
-            dailyWeatherForecastJSON.accumulate("weather_description", dailyWeatherForecast.weatherDescription);
-            dailyWeatherForecastJSON.accumulate("weather_code", dailyWeatherForecast.weatherCode);
+        ////    Temperatures
+        dailyWeatherForecastJSON.accumulate("temperature_morning", dailyWeatherForecast.temperatureMorning);
+        dailyWeatherForecastJSON.accumulate("temperature_day", dailyWeatherForecast.temperatureDay);
+        dailyWeatherForecastJSON.accumulate("temperature_evening", dailyWeatherForecast.temperatureEvening);
+        dailyWeatherForecastJSON.accumulate("temperature_night", dailyWeatherForecast.temperatureNight);
+        dailyWeatherForecastJSON.accumulate("temperature_minimum", dailyWeatherForecast.temperatureMinimum);
+        dailyWeatherForecastJSON.accumulate("temperature_maximum", dailyWeatherForecast.temperatureMaximum);
 
-            ////    Temperatures
-            dailyWeatherForecastJSON.accumulate("temperature_morning", dailyWeatherForecast.temperatureMorning);
-            dailyWeatherForecastJSON.accumulate("temperature_day", dailyWeatherForecast.temperatureDay);
-            dailyWeatherForecastJSON.accumulate("temperature_evening", dailyWeatherForecast.temperatureEvening);
-            dailyWeatherForecastJSON.accumulate("temperature_night", dailyWeatherForecast.temperatureNight);
-            dailyWeatherForecastJSON.accumulate("temperature_minimum", dailyWeatherForecast.temperatureMinimum);
-            dailyWeatherForecastJSON.accumulate("temperature_maximum", dailyWeatherForecast.temperatureMaximum);
+        ////    Feels Like
+        dailyWeatherForecastJSON.accumulate("temperature_feelslike_morning", dailyWeatherForecast.temperatureMorningFeelsLike);
+        dailyWeatherForecastJSON.accumulate("temperature_feelslike_day", dailyWeatherForecast.temperatureDayFeelsLike);
+        dailyWeatherForecastJSON.accumulate("temperature_feelslike_evening", dailyWeatherForecast.temperatureEveningFeelsLike);
+        dailyWeatherForecastJSON.accumulate("temperature_feelslike_night", dailyWeatherForecast.temperatureNightFeelsLike);
 
-            ////    Feels Like
-            dailyWeatherForecastJSON.accumulate("temperature_feelslike_morning", dailyWeatherForecast.temperatureMorningFeelsLike);
-            dailyWeatherForecastJSON.accumulate("temperature_feelslike_day", dailyWeatherForecast.temperatureDayFeelsLike);
-            dailyWeatherForecastJSON.accumulate("temperature_feelslike_evening", dailyWeatherForecast.temperatureEveningFeelsLike);
-            dailyWeatherForecastJSON.accumulate("temperature_feelslike_night", dailyWeatherForecast.temperatureNightFeelsLike);
+        ////    Environmental Variables
+        dailyWeatherForecastJSON.accumulate("pressure", dailyWeatherForecast.pressure);
+        dailyWeatherForecastJSON.accumulate("humidity", dailyWeatherForecast.humidity);
+        dailyWeatherForecastJSON.accumulate("dew_point", dailyWeatherForecast.dewPoint);
 
-            ////    Environmental Variables
-            dailyWeatherForecastJSON.accumulate("pressure", dailyWeatherForecast.pressure);
-            dailyWeatherForecastJSON.accumulate("humidity", dailyWeatherForecast.humidity);
-            dailyWeatherForecastJSON.accumulate("dew_point", dailyWeatherForecast.dewPoint);
+        ////    Sky
+        dailyWeatherForecastJSON.accumulate("cloudiness", dailyWeatherForecast.cloudiness);
+        dailyWeatherForecastJSON.accumulate("sunrise", dailyWeatherForecast.sunrise);
+        dailyWeatherForecastJSON.accumulate("sunset", dailyWeatherForecast.sunset);
 
-            ////    Sky
-            dailyWeatherForecastJSON.accumulate("cloudiness", dailyWeatherForecast.cloudiness);
-            dailyWeatherForecastJSON.accumulate("sunrise", dailyWeatherForecast.sunrise);
-            dailyWeatherForecastJSON.accumulate("sunset", dailyWeatherForecast.sunset);
+        ////    Wind
+        dailyWeatherForecastJSON.accumulate("wind_speed", dailyWeatherForecast.windSpeed);
+        dailyWeatherForecastJSON.accumulate("wind_gust_speed", dailyWeatherForecast.windGustSpeed);
+        dailyWeatherForecastJSON.accumulate("wind_direction", dailyWeatherForecast.windDirection);
 
-            ////    Wind
-            dailyWeatherForecastJSON.accumulate("wind_speed", dailyWeatherForecast.windSpeed);
-            dailyWeatherForecastJSON.accumulate("wind_gust_speed", dailyWeatherForecast.windGustSpeed);
-            dailyWeatherForecastJSON.accumulate("wind_direction", dailyWeatherForecast.windDirection);
+        ////    Precipitations
+        dailyWeatherForecastJSON.accumulate("pop", dailyWeatherForecast.pop);
+        dailyWeatherForecastJSON.accumulate("rain", dailyWeatherForecast.rain);
+        dailyWeatherForecastJSON.accumulate("snow", dailyWeatherForecast.snow);
 
-            ////    Precipitations
-            dailyWeatherForecastJSON.accumulate("pop", dailyWeatherForecast.pop);
-            dailyWeatherForecastJSON.accumulate("rain", dailyWeatherForecast.rain);
-            dailyWeatherForecastJSON.accumulate("snow", dailyWeatherForecast.snow);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         return dailyWeatherForecastJSON;
     }
@@ -725,7 +726,7 @@ public class Place {
     //________________________________________________________________
     //
 
-    public JSONArray getAllDailyWeatherForecastJSON() {
+    public JSONArray getAllDailyWeatherForecastJSON() throws Exception {
         JSONArray dailyWeatherForecastJSON = new JSONArray();
 
         for (int index = 0; index < dailyWeatherForecastArrayList.size(); index++) {
@@ -736,9 +737,43 @@ public class Place {
         return dailyWeatherForecastJSON;
     }
 
+
+    //  getMinutelyWeatherForecastJSON()
+    //________________________________________________________________
+    //
+
+    public JSONObject getWeatherAlertJSON(int index) throws Exception {
+        JSONObject weatherAlertJSON = new JSONObject();
+        WeatherAlert weatherAlert = this.getMWeatherAlert(index);
+
+        weatherAlertJSON.accumulate("sender", weatherAlert.getSender());
+        weatherAlertJSON.accumulate("event", weatherAlert.getEvent());
+        weatherAlertJSON.accumulate("start_dt", weatherAlert.getStart_dt());
+        weatherAlertJSON.accumulate("end_dt", weatherAlert.getEnd_dt());
+        weatherAlertJSON.accumulate("description", weatherAlert.getDescription());
+
+        return weatherAlertJSON;
+    }
+
+
+    //  getAllMinutelyWeatherForecastJSON()
+    //________________________________________________________________
+    //
+
+    public JSONArray getAllWeatherAlertJSON() throws Exception {
+        JSONArray weatherAlertJSON = new JSONArray();
+
+        for (int index = 0; index < weatherAlertsArrayList.size(); index++) {
+            weatherAlertJSON.put(this.getWeatherAlertJSON(index));
+        }
+
+        return weatherAlertJSON;
+    }
+
     //  getPlaceObjectJSON()
     //________________________________________________________________
     //
+
 
     public JSONObject getPlaceObjectJSON() throws Exception {
         JSONObject placeObjectJSON = new JSONObject();
@@ -752,6 +787,7 @@ public class Place {
             placeObjectJSON.accumulate("minutely_weather_forecast", this.getAllMinutelyWeatherForecastJSON());
             placeObjectJSON.accumulate("hourly_weather_forecast", this.getAllHourlyWeatherForecastJSON());
             placeObjectJSON.accumulate("daily_weather_forecast", this.getAllDailyWeatherForecastJSON());
+            placeObjectJSON.accumulate("weather_alert", this.getAllWeatherAlertJSON());
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -1,5 +1,6 @@
 package fr.qgdev.openweather.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -54,6 +55,7 @@ public class HourlyColumnAdapter extends BaseAdapter {
         return 0;
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         view = inflater.inflate(R.layout.adapter_hourly_column, null);

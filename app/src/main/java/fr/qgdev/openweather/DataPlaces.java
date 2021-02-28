@@ -2,8 +2,6 @@ package fr.qgdev.openweather;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.provider.BaseColumns;
-import android.widget.ArrayAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +18,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class DataPlaces implements SharedPreferences {
 
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
 
     public DataPlaces(@NonNull Context context){
         this.sharedPreferences = context.getSharedPreferences("places", MODE_PRIVATE);
@@ -32,7 +30,6 @@ public class DataPlaces implements SharedPreferences {
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         String dataPlaceName = place.getCity().toUpperCase() + '/' + place.getCountryCode();
-
         ArrayList<String> placeRegister = getPlacesRegister();
 
         if(!placeRegister.contains(dataPlaceName)) return false;
@@ -67,7 +64,6 @@ public class DataPlaces implements SharedPreferences {
         String dataPlaceName = place.getCity().toUpperCase() + '/' + place.getCountryCode();
 
         if(!getPlacesRegister().contains(dataPlaceName)) return false;
-
         editor.putString(dataPlaceName, place.getPlaceObjectJSON().toString());
 
         return editor.commit();
@@ -133,18 +129,16 @@ public class DataPlaces implements SharedPreferences {
                 e.printStackTrace();
             }
         }
-
         return returnedData;
     }
+
 
     //  Get place position in places register from SharedPreferences
     public int getPlacePositionInRegister(@NonNull String dataPlaceName) { return getPlacesRegister().indexOf(dataPlaceName); }
 
     //  Get place position in places register from SharedPreferences
     public int getPlacePositionInRegister(@NonNull Place place) {
-
         String dataPlaceName = place.getCity().toUpperCase() + '/' + place.getCountryCode();
-
         return getPlacesRegister().indexOf(dataPlaceName);
     }
 

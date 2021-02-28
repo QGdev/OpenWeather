@@ -88,6 +88,9 @@
     <string name="error_no_places_registered">No places registered</string>
     <string name="title_forecast_daily">Daily Forecast</string>
     <string name="splash_screen" translatable="false">Splash Screen</string>
+    <string name="from_date">From</string>
+    <string name="until_date">Until</string>
+    <string name="title_dialog_weather_alert">Weather alert</string>
 
 
 </resources>

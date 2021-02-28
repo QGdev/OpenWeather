@@ -28,6 +28,7 @@ import java.util.TimeZone;
 import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
+import fr.qgdev.openweather.dialog.WeatherAlertDialog;
 import fr.qgdev.openweather.weather.CurrentWeather;
 import fr.qgdev.openweather.weather.DailyWeatherForecast;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
@@ -66,6 +67,7 @@ public class PlaceItemAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View view, ViewGroup parent) {
         view = inflater.inflate(R.layout.adapter_places, null);
+        View finalView = view;
 
         LinearLayout adapterPlace = view.findViewById(R.id.adapter_place);
         MaterialCardView cardView = view.findViewById(R.id.card_place);
@@ -78,6 +80,19 @@ public class PlaceItemAdapter extends BaseAdapter {
 
         TextView weatherDescriptionTextView = view.findViewById(R.id.weather_description_adapter);
         ImageView weatherIconImageView = view.findViewById(R.id.weather_icon_adapter);
+
+        LinearLayout weatherAlertLinearLayout = view.findViewById(R.id.weather_alert);
+        ImageView weatherAlertIcon = view.findViewById(R.id.warning_icon);
+
+        weatherAlertLinearLayout.setOnClickListener(v -> {
+            final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, finalView, (Place) getItem(position));
+            weatherAlertDialog.build();
+        });
+
+        weatherAlertIcon.setOnClickListener(v -> {
+            final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, finalView, (Place) getItem(position));
+            weatherAlertDialog.build();
+        });
 
         TextView windDirectionTextView = view.findViewById(R.id.wind_direction_value);
         TextView windSpeedTextView = view.findViewById(R.id.wind_speed_value);
@@ -339,6 +354,14 @@ public class PlaceItemAdapter extends BaseAdapter {
 
         cloudiness = currentWeather.cloudiness + " %";
 
+        if (currentItem.getMWeatherAlertCount() == 0) {
+            weatherAlertLinearLayout.setVisibility(View.GONE);
+            weatherAlertIcon.setVisibility(View.GONE);
+        } else {
+            weatherAlertLinearLayout.setVisibility(View.VISIBLE);
+            weatherAlertIcon.setVisibility(View.VISIBLE);
+        }
+
 
         //  Precipitations
         if (currentWeather.rain > 0 || currentWeather.snow > 0) {
@@ -370,9 +393,9 @@ public class PlaceItemAdapter extends BaseAdapter {
         DateFormat lastUpdateDateFormat;
 
         if (timeFormat.contains("24")) {
-            lastUpdateDateFormat = new SimpleDateFormat("dd/MM/YY HH:mm");
+            lastUpdateDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm");
         } else {
-            lastUpdateDateFormat = new SimpleDateFormat("dd/MM/YY KK:mm a");
+            lastUpdateDateFormat = new SimpleDateFormat("dd/MM/yy KK:mm a");
         }
 
         if (timeOffset.contains("place")) {
@@ -440,6 +463,7 @@ public class PlaceItemAdapter extends BaseAdapter {
             if (detailedInformationsLinearLayout.getVisibility() == View.GONE) {
 
                 detailedInformationsLinearLayout.setVisibility(View.VISIBLE);
+                weatherAlertIcon.setVisibility(View.GONE);
                 windGustInfomationLinearLayout.setVisibility(View.VISIBLE);
                 visibilityInformationLinearLayout.setVisibility(View.VISIBLE);
                 skyInformationsLinearLayout.setVisibility(View.VISIBLE);
@@ -495,6 +519,9 @@ public class PlaceItemAdapter extends BaseAdapter {
                 hourlyForecastLinearLayout.setVisibility(View.GONE);
                 dailyForecastLinearLayout.setVisibility(View.GONE);
                 lastUpdateAvailableLinearLayout.setVisibility(View.GONE);
+
+                if (currentItem.getMWeatherAlertCount() > 0)
+                    weatherAlertIcon.setVisibility(View.VISIBLE);
             }
         });
 

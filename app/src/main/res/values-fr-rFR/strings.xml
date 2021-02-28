@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">OpenWeather</string>
     <string name="title_settings_time_offset_place_country">Par rapport au pays des lieux enregistrés</string>
     <string name="title_settings_time_offset_user_country">Par rapport au pays de l\'utilisateur</string>
     <string name="title_settings_time_format_24h">24 h</string>
@@ -72,4 +71,7 @@
     <string name="error_place_already_added">Ce lieu est déjà ajouté</string>
     <string name="error_no_places_registered">Aucun lieu enregistré</string>
     <string name="title_forecast_daily">Prévisions quotidiennes</string>
+    <string name="from_date">Du</string>
+    <string name="until_date">Au</string>
+    <string name="title_dialog_weather_alert">Alertes Météorologiques</string>
 </resources>

@@ -23,6 +23,7 @@ import fr.qgdev.openweather.weather.CurrentWeather;
 import fr.qgdev.openweather.weather.DailyWeatherForecast;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
 import fr.qgdev.openweather.weather.MinutelyWeatherForecast;
+import fr.qgdev.openweather.weather.WeatherAlert;
 
 public class WeatherService {
 
@@ -313,6 +314,25 @@ public class WeatherService {
                                 }
                                 place.setDailyWeatherForecastArrayList(dailyWeatherForecastArrayList_tmp);
 
+
+                                //  Weather Alert
+                                //________________________________________________________________
+                                //
+
+                                ArrayList<WeatherAlert> weatherAlertArrayList_tmp = new ArrayList<WeatherAlert>();
+
+                                if (response.has("alerts")) {
+                                    JSONArray weatherAlertJSON = response.getJSONArray("alerts");
+                                    JSONObject weatherAlertJSON_tmp;
+
+                                    for (int i = 0; i < weatherAlertJSON.length(); i++) {
+                                        weatherAlertJSON_tmp = weatherAlertJSON.getJSONObject(i);
+                                        weatherAlertArrayList_tmp.add(i, new WeatherAlert(weatherAlertJSON_tmp.getString("sender_name"), weatherAlertJSON_tmp.getString("event"), weatherAlertJSON_tmp.getLong("start") * 1000, weatherAlertJSON_tmp.getLong("end") * 1000, weatherAlertJSON_tmp.getString("description")));
+                                    }
+                                }
+
+                                place.setWeatherAlertsArrayList(weatherAlertArrayList_tmp);
+
                                 Log.d(TAG, "Weather information treatment completed");
                                 callback.onWeatherData(place, dataPlaces);
 
@@ -332,9 +352,9 @@ public class WeatherService {
     }
 
 
-
-
-    public void cancel(){
-        queue.cancelAll(WEATHER_SERVICE_TAG);
-    }
+// --Commented out by Inspection START (28/02/21 17:50):
+//    public void cancel(){
+//        queue.cancelAll(WEATHER_SERVICE_TAG);
+//    }
+// --Commented out by Inspection STOP (28/02/21 17:50)
 }

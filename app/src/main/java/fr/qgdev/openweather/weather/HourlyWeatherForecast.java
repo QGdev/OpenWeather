@@ -1,5 +1,7 @@
 package fr.qgdev.openweather.weather;
 
+import androidx.annotation.NonNull;
+
 public class HourlyWeatherForecast {
 
     public long dt;
@@ -52,6 +54,7 @@ public class HourlyWeatherForecast {
         this.snow = 0;
     }
 
+    @NonNull
     public HourlyWeatherForecast clone() {
         HourlyWeatherForecast returnedHourlyWeatherForecast = new HourlyWeatherForecast();
         returnedHourlyWeatherForecast.dt = this.dt;
