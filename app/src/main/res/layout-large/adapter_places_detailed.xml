@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:animationCache="true">
+    android:animationCache="true"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/weather_alert"
