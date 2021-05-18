@@ -2,6 +2,9 @@ package fr.qgdev.openweather.weather;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class DailyWeatherForecast {
 
     public long dt;
@@ -73,6 +76,103 @@ public class DailyWeatherForecast {
         this.pop = 0;
         this.rain = 0;
         this.snow = 0;
+    }
+
+    public DailyWeatherForecast(JSONObject dailyWeatherForecast) throws JSONException {
+        //  Time
+        this.dt = dailyWeatherForecast.getLong("dt");
+
+        //  Weather
+        this.weather = dailyWeatherForecast.getString("weather");
+        this.weatherDescription = dailyWeatherForecast.getString("weather_description");
+        this.weatherCode = dailyWeatherForecast.getInt("weather_code");
+
+        //  Temperatures
+        this.temperatureMorning = dailyWeatherForecast.getDouble("temperature_morning");
+        this.temperatureDay = dailyWeatherForecast.getDouble("temperature_day");
+        this.temperatureEvening = dailyWeatherForecast.getDouble("temperature_evening");
+        this.temperatureNight = dailyWeatherForecast.getDouble("temperature_night");
+        this.temperatureMinimum = dailyWeatherForecast.getDouble("temperature_minimum");
+        this.temperatureMaximum = dailyWeatherForecast.getDouble("temperature_maximum");
+
+        //  Feels Like Temperatures
+        this.temperatureMorningFeelsLike = dailyWeatherForecast.getDouble("temperature_feelslike_morning");
+        this.temperatureDayFeelsLike = dailyWeatherForecast.getDouble("temperature_feelslike_day");
+        this.temperatureEveningFeelsLike = dailyWeatherForecast.getDouble("temperature_feelslike_evening");
+        this.temperatureNightFeelsLike = dailyWeatherForecast.getDouble("temperature_feelslike_night");
+
+        //  Pressure, Humidity, dewPoint
+        this.pressure = dailyWeatherForecast.getInt("pressure");
+        this.humidity = dailyWeatherForecast.getInt("humidity");
+        this.dewPoint = dailyWeatherForecast.getDouble("dew_point");
+
+        //  Sky
+        this.cloudiness = dailyWeatherForecast.getInt("cloudiness");
+        this.sunrise = dailyWeatherForecast.getLong("sunrise");
+        this.sunset = dailyWeatherForecast.getLong("sunset");
+
+        //  Wind
+        this.windSpeed = dailyWeatherForecast.getDouble("wind_speed");
+        this.windDirection = dailyWeatherForecast.getInt("wind_direction");
+        this.windGustSpeed = dailyWeatherForecast.getDouble("wind_gust_speed");
+
+        //  Precipitations
+        ////    PoP -   Probability of Precipitations
+        this.pop = dailyWeatherForecast.getDouble("pop");
+        ////    Rain
+        this.rain = dailyWeatherForecast.getDouble("rain");
+        ////    Snow
+        this.snow = dailyWeatherForecast.getDouble("snow");
+    }
+
+    public JSONObject getJSONObject() throws JSONException
+    {
+        JSONObject dailyWeatherForecastJSON = new JSONObject();
+
+        //  Daily Weather Forecast
+        ////    Time
+        dailyWeatherForecastJSON.accumulate("dt", this.dt);
+
+        ////    Weather
+        dailyWeatherForecastJSON.accumulate("weather", this.weather);
+        dailyWeatherForecastJSON.accumulate("weather_description", this.weatherDescription);
+        dailyWeatherForecastJSON.accumulate("weather_code", this.weatherCode);
+
+        ////    Temperatures
+        dailyWeatherForecastJSON.accumulate("temperature_morning", this.temperatureMorning);
+        dailyWeatherForecastJSON.accumulate("temperature_day", this.temperatureDay);
+        dailyWeatherForecastJSON.accumulate("temperature_evening", this.temperatureEvening);
+        dailyWeatherForecastJSON.accumulate("temperature_night", this.temperatureNight);
+        dailyWeatherForecastJSON.accumulate("temperature_minimum", this.temperatureMinimum);
+        dailyWeatherForecastJSON.accumulate("temperature_maximum", this.temperatureMaximum);
+
+        ////    Feels Like
+        dailyWeatherForecastJSON.accumulate("temperature_feelslike_morning", this.temperatureMorningFeelsLike);
+        dailyWeatherForecastJSON.accumulate("temperature_feelslike_day", this.temperatureDayFeelsLike);
+        dailyWeatherForecastJSON.accumulate("temperature_feelslike_evening", this.temperatureEveningFeelsLike);
+        dailyWeatherForecastJSON.accumulate("temperature_feelslike_night", this.temperatureNightFeelsLike);
+
+        ////    Environmental Variables
+        dailyWeatherForecastJSON.accumulate("pressure", this.pressure);
+        dailyWeatherForecastJSON.accumulate("humidity", this.humidity);
+        dailyWeatherForecastJSON.accumulate("dew_point", this.dewPoint);
+
+        ////    Sky
+        dailyWeatherForecastJSON.accumulate("cloudiness", this.cloudiness);
+        dailyWeatherForecastJSON.accumulate("sunrise", this.sunrise);
+        dailyWeatherForecastJSON.accumulate("sunset", this.sunset);
+
+        ////    Wind
+        dailyWeatherForecastJSON.accumulate("wind_speed", this.windSpeed);
+        dailyWeatherForecastJSON.accumulate("wind_gust_speed", this.windGustSpeed);
+        dailyWeatherForecastJSON.accumulate("wind_direction", this.windDirection);
+
+        ////    Precipitations
+        dailyWeatherForecastJSON.accumulate("pop", this.pop);
+        dailyWeatherForecastJSON.accumulate("rain", this.rain);
+        dailyWeatherForecastJSON.accumulate("snow", this.snow);
+
+        return dailyWeatherForecastJSON;
     }
 
     @NonNull

@@ -2,6 +2,9 @@ package fr.qgdev.openweather.weather;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class CurrentWeather {
 
     public long dt;
@@ -62,6 +65,42 @@ public class CurrentWeather {
         this.snow = 0;
     }
 
+    public CurrentWeather(JSONObject currentWeather) throws JSONException {
+        //  The time of this update
+        this.dt = currentWeather.getLong("dt");
+
+        //  Weather
+        this.weather = currentWeather.getString("weather");
+        this.weatherDescription = currentWeather.getString("weather_description");
+        this.weatherCode = currentWeather.getInt("weather_code");
+
+        //  Temperatures
+        this.temperature = currentWeather.getDouble("temperature");
+        this.temperatureFeelsLike = currentWeather.getDouble("temperature_feels_like");
+
+        //  Pressure, Humidity, dewPoint
+        this.pressure = currentWeather.getInt("pressure");
+        this.humidity = currentWeather.getInt("humidity");
+        this.dewPoint = currentWeather.getDouble("dew_point");
+
+        //  Sky informations
+        this.cloudiness = currentWeather.getInt("cloudiness");
+        this.uvIndex = currentWeather.getInt("uvi");
+        this.visibility = currentWeather.getInt("visibility");
+        this.sunrise = currentWeather.getLong("sunrise");
+        this.sunset = currentWeather.getLong("sunset");
+
+        //    Wind informations
+        this.windSpeed = currentWeather.getDouble("wind_speed");
+        this.windGustSpeed = currentWeather.getDouble("wind_gust_speed");
+        this.isWindDirectionReadable = currentWeather.getBoolean("wind_readable_direction");
+        this.windDirection = currentWeather.getInt("wind_direction");
+
+        //  Precipitations
+        this.rain = currentWeather.getInt("rain");
+        this.snow = currentWeather.getInt("snow");
+    }
+
     @NonNull
     public CurrentWeather clone() {
         CurrentWeather returnedCurrentWeather = new CurrentWeather();
@@ -95,6 +134,48 @@ public class CurrentWeather {
 
         return returnedCurrentWeather;
     }
+
+    public JSONObject getJSONObject() throws JSONException {
+        JSONObject currentWeatherJSON = new JSONObject();
+
+        //  Weather content
+        ////    Time
+        currentWeatherJSON.put("dt", this.dt);
+
+        ////    Weather
+        currentWeatherJSON.accumulate("weather", this.weather);
+        currentWeatherJSON.accumulate("weather_description", this.weatherDescription);
+        currentWeatherJSON.accumulate("weather_code", this.weatherCode);
+
+        ////    Temperatures
+        currentWeatherJSON.accumulate("temperature", this.temperature);
+        currentWeatherJSON.accumulate("temperature_feels_like", this.temperatureFeelsLike);
+
+        ////    Environmental Variables
+        currentWeatherJSON.accumulate("pressure", this.pressure);
+        currentWeatherJSON.accumulate("humidity", this.humidity);
+        currentWeatherJSON.accumulate("dew_point", this.dewPoint);
+
+        ////    Sky
+        currentWeatherJSON.accumulate("cloudiness", this.cloudiness);
+        currentWeatherJSON.accumulate("uvi", this.uvIndex);
+        currentWeatherJSON.accumulate("visibility", this.visibility);
+        currentWeatherJSON.accumulate("sunrise", this.sunrise);
+        currentWeatherJSON.accumulate("sunset", this.sunset);
+
+        ////    Wind
+        currentWeatherJSON.accumulate("wind_speed", this.windSpeed);
+        currentWeatherJSON.accumulate("wind_gust_speed", this.windGustSpeed);
+        currentWeatherJSON.accumulate("wind_readable_direction", this.isWindDirectionReadable);
+        currentWeatherJSON.accumulate("wind_direction", this.windDirection);
+
+        ////    Precipitations
+        currentWeatherJSON.accumulate("rain", this.rain);
+        currentWeatherJSON.accumulate("snow", this.snow);
+
+        return currentWeatherJSON;
+    }
+
 
     public String getWindDirectionCardinalPoints() {
 

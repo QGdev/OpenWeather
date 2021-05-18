@@ -162,7 +162,7 @@ public class WeatherService {
                                 for (int i = 0; i < minutelyForecastWeatherJSON.length(); i++) {
 
                                     minutelyForecastWeatherJSON_tmp = minutelyForecastWeatherJSON.getJSONObject(i);
-                                    minutelyWeatherForecastArrayList_tmp.add(i, new MinutelyWeatherForecast(minutelyForecastWeatherJSON_tmp.getLong("dt") * 1000, minutelyForecastWeatherJSON_tmp.getInt("precipitation")));
+                                    minutelyWeatherForecastArrayList_tmp.add(i, new MinutelyWeatherForecast(minutelyForecastWeatherJSON_tmp.getLong("dt") * 1000, minutelyForecastWeatherJSON_tmp.getDouble("precipitation")));
                                 }
 
                                 place.setMinutelyWeatherForecastArrayList(minutelyWeatherForecastArrayList_tmp);
@@ -351,10 +351,7 @@ public class WeatherService {
         queue.add(weatherRequest);
     }
 
-
-// --Commented out by Inspection START (28/02/21 17:50):
-//    public void cancel(){
-//        queue.cancelAll(WEATHER_SERVICE_TAG);
-//    }
-// --Commented out by Inspection STOP (28/02/21 17:50)
+    public void cancel(){
+        queue.cancelAll(WEATHER_SERVICE_TAG);
+    }
 }

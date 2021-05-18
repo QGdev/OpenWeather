@@ -2,6 +2,9 @@ package fr.qgdev.openweather.weather;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class HourlyWeatherForecast {
 
     public long dt;
@@ -54,6 +57,41 @@ public class HourlyWeatherForecast {
         this.snow = 0;
     }
 
+    public HourlyWeatherForecast(JSONObject hourlyWeatherForecast) throws JSONException
+    {
+        //  Time
+        this.dt = hourlyWeatherForecast.getLong("dt");
+
+        //  Weather
+        this.weather = hourlyWeatherForecast.getString("weather");
+        this.weatherDescription = hourlyWeatherForecast.getString("weather_description");
+        this.weatherCode = hourlyWeatherForecast.getInt("weather_code");
+
+        //  Temperatures
+        this.temperature = hourlyWeatherForecast.getDouble("temperature");
+        this.temperatureFeelsLike = hourlyWeatherForecast.getDouble("temperature_feels_like");
+
+        //  Pressure, Humidity, dew point, Cloudiness, Visibility
+        this.pressure = hourlyWeatherForecast.getInt("pressure");
+        this.humidity = hourlyWeatherForecast.getInt("humidity");
+        this.dewPoint = hourlyWeatherForecast.getDouble("dew_point");
+        this.cloudiness = hourlyWeatherForecast.getInt("cloudiness");
+        this.visibility = hourlyWeatherForecast.getInt("visibility");
+
+        //  Wind
+        this.windSpeed = hourlyWeatherForecast.getDouble("wind_speed");
+        this.windGustSpeed = hourlyWeatherForecast.getDouble("wind_gust_speed");
+        this.windDirection = hourlyWeatherForecast.getInt("wind_direction");
+
+        //  Precipitations
+        ////    PoP -   Probability of Precipitations
+        this.pop = hourlyWeatherForecast.getDouble("pop");
+        ////    Rain
+        this.rain = hourlyWeatherForecast.getDouble("rain");
+        ////    Snow
+        this.snow = hourlyWeatherForecast.getDouble("snow");
+    }
+
     @NonNull
     public HourlyWeatherForecast clone() {
         HourlyWeatherForecast returnedHourlyWeatherForecast = new HourlyWeatherForecast();
@@ -82,6 +120,45 @@ public class HourlyWeatherForecast {
         returnedHourlyWeatherForecast.snow = this.snow;
 
         return returnedHourlyWeatherForecast;
+    }
+
+    public JSONObject getJSONObject() throws JSONException {
+        JSONObject hourlyWeatherForecastJSON = new JSONObject();
+
+        //  Hourly Weather Forecast
+        ////    Time
+        hourlyWeatherForecastJSON.accumulate("dt", this.dt);
+
+        ////    Weather
+        hourlyWeatherForecastJSON.accumulate("weather", this.weather);
+        hourlyWeatherForecastJSON.accumulate("weather_description", this.weatherDescription);
+        hourlyWeatherForecastJSON.accumulate("weather_code", this.weatherCode);
+
+        ////    Temperatures
+        hourlyWeatherForecastJSON.accumulate("temperature", this.temperature);
+        hourlyWeatherForecastJSON.accumulate("temperature_feels_like", this.temperatureFeelsLike);
+
+        ////    Environmental Variables
+        hourlyWeatherForecastJSON.accumulate("pressure", this.pressure);
+        hourlyWeatherForecastJSON.accumulate("humidity", this.humidity);
+        hourlyWeatherForecastJSON.accumulate("dew_point", this.dewPoint);
+
+        ////    Sky
+        hourlyWeatherForecastJSON.accumulate("cloudiness", this.cloudiness);
+        hourlyWeatherForecastJSON.accumulate("visibility", this.visibility);
+
+        ////    Wind
+        hourlyWeatherForecastJSON.accumulate("wind_speed", this.windSpeed);
+        hourlyWeatherForecastJSON.accumulate("wind_gust_speed", this.windGustSpeed);
+        hourlyWeatherForecastJSON.accumulate("wind_direction", this.windDirection);
+
+        ////    Precipitations
+        hourlyWeatherForecastJSON.accumulate("pop", this.pop);
+        hourlyWeatherForecastJSON.accumulate("rain", this.rain);
+        hourlyWeatherForecastJSON.accumulate("snow", this.snow);
+
+
+        return hourlyWeatherForecastJSON;
     }
 
     public String getWindDirectionCardinalPoints() {
