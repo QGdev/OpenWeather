@@ -125,6 +125,70 @@ public class DailyWeatherForecast {
         this.snow = dailyWeatherForecast.getDouble("snow");
     }
 
+    public void fillWithOWMData(JSONObject dailyWeather) throws JSONException
+    {
+        //  Time
+        this.dt = dailyWeather.getLong("dt") * 1000;
+
+        //    Weather descriptions
+        JSONObject dailyWeatherDescriptionsJSON = dailyWeather.getJSONArray("weather").getJSONObject(0);
+        this.weather = dailyWeatherDescriptionsJSON.getString("main");
+        this.weatherDescription = dailyWeatherDescriptionsJSON.getString("description");
+        this.weatherCode = dailyWeatherDescriptionsJSON.getInt("id");
+
+        //  Temperatures
+        JSONObject dailyWeatherTemperaturesJSON = dailyWeather.getJSONObject("temp");
+        this.temperatureMorning = dailyWeatherTemperaturesJSON.getDouble("morn");
+        this.temperatureDay = dailyWeatherTemperaturesJSON.getDouble("day");
+        this.temperatureEvening = dailyWeatherTemperaturesJSON.getDouble("eve");
+        this.temperatureNight = dailyWeatherTemperaturesJSON.getDouble("night");
+        this.temperatureMinimum = dailyWeatherTemperaturesJSON.getDouble("min");
+        this.temperatureMaximum = dailyWeatherTemperaturesJSON.getDouble("max");
+
+        //  Feels Like Temperatures
+        JSONObject dailyWeatherTemperaturesFeelsLikeJSON = dailyWeather.getJSONObject("feels_like");
+        this.temperatureMorningFeelsLike = dailyWeatherTemperaturesFeelsLikeJSON.getDouble("morn");
+        this.temperatureDayFeelsLike = dailyWeatherTemperaturesFeelsLikeJSON.getDouble("day");
+        this.temperatureEveningFeelsLike = dailyWeatherTemperaturesFeelsLikeJSON.getDouble("eve");
+        this.temperatureNightFeelsLike = dailyWeatherTemperaturesFeelsLikeJSON.getDouble("night");
+
+        //  Pressure, Humidity, dewPoint
+        this.pressure = dailyWeather.getInt("pressure");
+        this.humidity = dailyWeather.getInt("humidity");
+        this.dewPoint = dailyWeather.getDouble("dew_point");
+
+        //  Sky
+        this.cloudiness = dailyWeather.getInt("clouds");
+        this.sunrise = dailyWeather.getLong("sunrise") * 1000;
+        this.sunset = dailyWeather.getLong("sunset") * 1000;
+
+        //  Wind
+        this.windSpeed = dailyWeather.getDouble("wind_speed");
+        this.windDirection = dailyWeather.getInt("wind_deg");
+        ////    Wind Gusts
+        if (dailyWeather.has("wind_gust")) {
+            this.windGustSpeed = dailyWeather.getDouble("wind_gust");
+        } else {
+            this.windGustSpeed = 0;
+        }
+
+        //  Precipitations
+        ////    PoP -   Probability of Precipitations
+        this.pop = dailyWeather.getDouble("pop");
+        ////    Rain
+        if (dailyWeather.has("rain")) {
+            this.rain = dailyWeather.getDouble("rain");
+        } else {
+            this.rain = 0;
+        }
+        ////    Snow
+        if (dailyWeather.has("snow")) {
+            this.snow = dailyWeather.getDouble("snow");
+        } else {
+            this.snow = 0;
+        }
+    }
+
     public JSONObject getJSONObject() throws JSONException
     {
         JSONObject dailyWeatherForecastJSON = new JSONObject();

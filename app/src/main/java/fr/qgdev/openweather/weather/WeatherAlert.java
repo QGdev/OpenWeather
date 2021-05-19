@@ -2,20 +2,19 @@ package fr.qgdev.openweather.weather;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 
 public class WeatherAlert {
-    private final String sender;
-    private final String event;
-    private final long start_dt;
-    private final long end_dt;
-    private final String description;
+    private String sender;
+    private String event;
+    private long start_dt;
+    private long end_dt;
+    private String description;
 
-// --Commented out by Inspection START (28/02/21 17:50):
-//    public WeatherAlert(){
-//
-//    }
-// --Commented out by Inspection STOP (28/02/21 17:50)
+    public WeatherAlert(){}
 
     public WeatherAlert(String sender, String event, long start_dt, long end_dt, String description) {
         this.sender = sender;
@@ -23,6 +22,24 @@ public class WeatherAlert {
         this.start_dt = start_dt;
         this.end_dt = end_dt;
         this.description = description;
+    }
+
+    public WeatherAlert(JSONObject weatherAlert) throws JSONException
+    {
+        this.sender = weatherAlert.getString("sender");
+        this.event = weatherAlert.getString("event");
+        this.start_dt = weatherAlert.getLong("start_dt");
+        this.end_dt = weatherAlert.getLong("end_dt");
+        this.description = weatherAlert.getString("description");
+    }
+
+    public void fillWithOWMData(JSONObject weatherAlert) throws JSONException
+    {
+        this.sender = weatherAlert.getString("sender_name");
+        this.event = weatherAlert.getString("event");
+        this.start_dt = weatherAlert.getLong("start") * 1000;
+        this.end_dt = weatherAlert.getLong("end") * 1000;
+        this.description = weatherAlert.getString("description");
     }
 
     public String getSender() {
@@ -51,6 +68,19 @@ public class WeatherAlert {
 
     public String getDescription() {
         return description;
+    }
+
+    public JSONObject getJSONObject() throws JSONException
+    {
+        JSONObject weatherAlertJSON = new JSONObject();
+
+        weatherAlertJSON.accumulate("sender", this.sender);
+        weatherAlertJSON.accumulate("event", this.event);
+        weatherAlertJSON.accumulate("start_dt", this.start_dt);
+        weatherAlertJSON.accumulate("end_dt", this.end_dt);
+        weatherAlertJSON.accumulate("description", this.description);
+
+        return weatherAlertJSON;
     }
 
     @NonNull

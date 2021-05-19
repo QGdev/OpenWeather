@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+
 public class CurrentWeather {
 
     public long dt;
@@ -100,6 +102,70 @@ public class CurrentWeather {
         this.rain = currentWeather.getInt("rain");
         this.snow = currentWeather.getInt("snow");
     }
+
+
+    public void fillWithOWMData(JSONObject currentWeather) throws JSONException
+    {
+        //  The time of this update
+        this.dt = currentWeather.getLong("dt") * 1000;
+
+        //    Weather descriptions
+        JSONObject currentWeatherDescriptionsJSON = currentWeather.getJSONArray("weather").getJSONObject(0);    //  Get only the first station
+        this.weather = currentWeatherDescriptionsJSON.getString("main");
+        this.weatherDescription = currentWeatherDescriptionsJSON.getString("description");
+        this.weatherCode = currentWeatherDescriptionsJSON.getInt("id");
+
+        //    Temperatures
+        this.temperature = currentWeather.getDouble("temp");
+        this.temperatureFeelsLike = currentWeather.getDouble("feels_like");
+
+        //    Pressure, Humidity, dewPoint, uvIndex
+        this.pressure = currentWeather.getInt("pressure");
+        this.humidity = currentWeather.getInt("humidity");
+        this.dewPoint = currentWeather.getDouble("dew_point");
+
+        if (currentWeather.has("uvi")) {
+            this.uvIndex = currentWeather.getInt("uvi");
+        } else {
+            this.uvIndex = 0;
+        }
+
+        //    Sky informations
+        this.cloudiness = currentWeather.getInt("clouds");
+        this.visibility = currentWeather.getInt("visibility");
+        this.sunrise = currentWeather.getLong("sunrise") * 1000;
+        this.sunset = currentWeather.getLong("sunset") * 1000;
+
+        //    Wind informations
+        this.windSpeed = currentWeather.getDouble("wind_speed");
+
+        ////  Enough wind for a viable wind direction information
+        this.isWindDirectionReadable = currentWeather.has("wind_deg");
+        if (this.isWindDirectionReadable) {
+            this.windDirection = currentWeather.getInt("wind_deg");
+        }
+        ////    Wind Gusts
+        if (currentWeather.has("wind_gust")) {
+            this.windGustSpeed = currentWeather.getDouble("wind_gust");
+        } else {
+            this.windGustSpeed = 0;
+        }
+
+        //  Precipitations
+        ////    Rain
+        if (currentWeather.has("rain") && currentWeather.getJSONObject("rain").has("1h")) {
+            this.rain = currentWeather.getJSONObject("rain").getDouble("1h");
+        } else {
+            this.rain = 0;
+        }
+        ////    Snow
+        if (currentWeather.has("snow") && currentWeather.getJSONObject("snow").has("1h")) {
+            this.snow = currentWeather.getJSONObject("snow").getDouble("1h");
+        } else {
+            this.snow = 0;
+        }
+    }
+
 
     @NonNull
     public CurrentWeather clone() {

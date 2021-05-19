@@ -121,14 +121,10 @@ public class Place {
         //________________________________________________________________
         //
         if (placeObjectJSON.has("minutely_weather_forecast")) {
-            JSONArray minutelyForecastWeatherJSON = placeObjectJSON.optJSONArray("minutely_weather_forecast");
-            JSONObject minutelyForecastWeatherJSON_tmp;
+            JSONArray minutelyWeatherJSON = placeObjectJSON.optJSONArray("minutely_weather_forecast");
 
-            for (int i = 0; i < minutelyForecastWeatherJSON.length(); i++) {
-
-                minutelyForecastWeatherJSON_tmp = minutelyForecastWeatherJSON.getJSONObject(i);
-
-                this.minutelyWeatherForecastArrayList.add(i, new MinutelyWeatherForecast(minutelyForecastWeatherJSON_tmp.getLong("dt"), minutelyForecastWeatherJSON_tmp.getDouble("precipitation")));
+            for (int i = 0; i < minutelyWeatherJSON.length(); i++) {
+                this.minutelyWeatherForecastArrayList.add(i, new MinutelyWeatherForecast(minutelyWeatherJSON.getJSONObject(i)));
             }
         } else {
             throw new JSONException("Cannot find minutely weather forecast in PlaceObjectJSON");
@@ -140,9 +136,9 @@ public class Place {
         //
 
         if (placeObjectJSON.has("hourly_weather_forecast")) {
-            JSONArray hourlyForecastWeatherJSON = placeObjectJSON.getJSONArray("hourly_weather_forecast");
-            for (int i = 0; i < hourlyForecastWeatherJSON.length(); i++) {
-                this.hourlyWeatherForecastArrayList.add(i, new HourlyWeatherForecast(hourlyForecastWeatherJSON.getJSONObject(i)));
+            JSONArray hourlyWeatherJSON = placeObjectJSON.getJSONArray("hourly_weather_forecast");
+            for (int i = 0; i < hourlyWeatherJSON.length(); i++) {
+                this.hourlyWeatherForecastArrayList.add(i, new HourlyWeatherForecast(hourlyWeatherJSON.getJSONObject(i)));
             }
         } else {
             throw new JSONException("Cannot find hourly weather forecast data in PlaceObjectJSON");
@@ -163,13 +159,16 @@ public class Place {
             throw new JSONException("Cannot find daily weather forecast data in PlaceObjectJSON");
         }
 
+
+        //  Weather Alerts
+        //________________________________________________________________
+        //
+
         if (placeObjectJSON.has("weather_alert")) {
             JSONArray weatherAlertJSON = placeObjectJSON.optJSONArray("weather_alert");
-            JSONObject weatherAlertJSON_tmp;
 
             for (int i = 0; i < weatherAlertJSON.length(); i++) {
-                weatherAlertJSON_tmp = weatherAlertJSON.getJSONObject(i);
-                this.weatherAlertsArrayList.add(i, new WeatherAlert(weatherAlertJSON_tmp.getString("sender"), weatherAlertJSON_tmp.getString("event"), weatherAlertJSON_tmp.getLong("start_dt"), weatherAlertJSON_tmp.getLong("end_dt"), weatherAlertJSON_tmp.getString("description")));
+                this.weatherAlertsArrayList.add(i, new WeatherAlert(weatherAlertJSON.getJSONObject(i)));
             }
         }
     }
@@ -401,22 +400,6 @@ public class Place {
     }
 
 
-    //  getMinutelyWeatherForecastJSON()
-    //________________________________________________________________
-    //
-
-    public JSONObject getMinutelyWeatherForecastJSON(int minute) throws Exception {
-        JSONObject minutelyWeatherForecastJSON = new JSONObject();
-        MinutelyWeatherForecast minutelyWeatherForecast = this.getMinutelyWeatherForecast(minute);
-
-        minutelyWeatherForecastJSON.accumulate("dt", minutelyWeatherForecast.dt);
-        minutelyWeatherForecastJSON.accumulate("precipitation", minutelyWeatherForecast.precipitation);
-
-
-        return minutelyWeatherForecastJSON;
-    }
-
-
     //  getAllMinutelyWeatherForecastJSON()
     //________________________________________________________________
     //
@@ -424,8 +407,8 @@ public class Place {
     public JSONArray getAllMinutelyWeatherForecastJSON() throws Exception {
         JSONArray minutelyWeatherForecastJSON = new JSONArray();
 
-        for (int index = 0; index < minutelyWeatherForecastArrayList.size(); index++) {
-            minutelyWeatherForecastJSON.put(this.getMinutelyWeatherForecastJSON(index));
+        for (MinutelyWeatherForecast minutelyWeatherForecast : minutelyWeatherForecastArrayList) {
+            minutelyWeatherForecastJSON.put(minutelyWeatherForecast.getJSONObject());
         }
 
         return minutelyWeatherForecastJSON;
@@ -460,25 +443,6 @@ public class Place {
         return dailyWeatherForecastJSON;
     }
 
-
-    //  getMinutelyWeatherForecastJSON()
-    //________________________________________________________________
-    //
-
-    public JSONObject getWeatherAlertJSON(int index) throws Exception {
-        JSONObject weatherAlertJSON = new JSONObject();
-        WeatherAlert weatherAlert = this.getMWeatherAlert(index);
-
-        weatherAlertJSON.accumulate("sender", weatherAlert.getSender());
-        weatherAlertJSON.accumulate("event", weatherAlert.getEvent());
-        weatherAlertJSON.accumulate("start_dt", weatherAlert.getStart_dt());
-        weatherAlertJSON.accumulate("end_dt", weatherAlert.getEnd_dt());
-        weatherAlertJSON.accumulate("description", weatherAlert.getDescription());
-
-        return weatherAlertJSON;
-    }
-
-
     //  getAllMinutelyWeatherForecastJSON()
     //________________________________________________________________
     //
@@ -486,8 +450,8 @@ public class Place {
     public JSONArray getAllWeatherAlertJSON() throws Exception {
         JSONArray weatherAlertJSON = new JSONArray();
 
-        for (int index = 0; index < weatherAlertsArrayList.size(); index++) {
-            weatherAlertJSON.put(this.getWeatherAlertJSON(index));
+        for (WeatherAlert weatherAlert : weatherAlertsArrayList) {
+            weatherAlertJSON.put(weatherAlert.getJSONObject());
         }
 
         return weatherAlertJSON;

@@ -92,6 +92,55 @@ public class HourlyWeatherForecast {
         this.snow = hourlyWeatherForecast.getDouble("snow");
     }
 
+    public void fillWithOWMData(JSONObject hourlyWeather) throws JSONException
+    {
+        //  Time
+        this.dt = hourlyWeather.getLong("dt") * 1000;
+
+        //    Weather descriptions
+        JSONObject hourlyForecastWeatherDescriptionsJSON = hourlyWeather.getJSONArray("weather").getJSONObject(0);
+        this.weather = hourlyForecastWeatherDescriptionsJSON.getString("main");
+        this.weatherDescription = hourlyForecastWeatherDescriptionsJSON.getString("description");
+        this.weatherCode = hourlyForecastWeatherDescriptionsJSON.getInt("id");
+
+        //  Temperatures
+        this.temperature = hourlyWeather.getDouble("temp");
+        this.temperatureFeelsLike = hourlyWeather.getDouble("feels_like");
+
+        //  Pressure, Humidity, Visibility, cloudiness, dewPoint
+        this.pressure = hourlyWeather.getInt("pressure");
+        this.humidity = hourlyWeather.getInt("humidity");
+        this.visibility = hourlyWeather.getInt("visibility");
+        this.cloudiness = hourlyWeather.getInt("clouds");
+        this.dewPoint = hourlyWeather.getDouble("dew_point");
+
+        //  Wind
+        this.windSpeed = hourlyWeather.getDouble("wind_speed");
+        this.windDirection = hourlyWeather.getInt("wind_deg");
+        ////    Wind Gusts
+        if (hourlyWeather.has("wind_gust")) {
+            this.windGustSpeed = hourlyWeather.getDouble("wind_gust");
+        } else {
+            this.windGustSpeed = 0;
+        }
+
+        //  Precipitations
+        ////    PoP -   Probability of Precipitations
+        this.pop = hourlyWeather.getDouble("pop");
+        ////    Rain
+        if (hourlyWeather.has("rain") && hourlyWeather.getJSONObject("rain").has("1h")) {
+            this.rain = hourlyWeather.getJSONObject("rain").getDouble("1h");
+        } else {
+            this.rain = 0;
+        }
+        ////    Snow
+        if (hourlyWeather.has("snow") && hourlyWeather.getJSONObject("snow").has("1h")) {
+            this.snow = hourlyWeather.getJSONObject("snow").getDouble("1h");
+        } else {
+            this.snow = 0;
+        }
+    }
+
     @NonNull
     public HourlyWeatherForecast clone() {
         HourlyWeatherForecast returnedHourlyWeatherForecast = new HourlyWeatherForecast();
