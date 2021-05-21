@@ -1,16 +1,12 @@
 package fr.qgdev.openweather.dialog;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,285 +29,260 @@ import fr.qgdev.openweather.WeatherService;
 
 public class AddPlaceDialog extends Dialog {
 
-    private final TextInputEditText cityEditText;
-    private final AutoCompleteTextView countryEditText;
-    private final Button verifyButton;
+	private final TextInputEditText cityEditText;
+	private final AutoCompleteTextView countryEditText;
+	private final Button verifyButton;
 
-    private final List<String> countryNames;
-    private final List<String> countryCodes;
+	private final List<String> countryNames;
+	private final List<String> countryCodes;
 
-
-    public AddPlaceDialog(Context context, View addPlaceFABView, WeatherService.WeatherCallback callback) {
-        super(context);
-        setContentView(R.layout.dialog_add_place);
-
-        TextView title = findViewById(R.id.title);
-        this.cityEditText = findViewById(R.id.city);
-        this.countryEditText = findViewById(R.id.country);
-        this.verifyButton = findViewById(R.id.verify_button);
-
-        this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
-        this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.select_dialog_item, countryNames);
-        countryEditText.setThreshold(1);
-        countryEditText.performValidation();
-        countryEditText.setAdapter(adapter);
-
-        verifyButton.setOnClickListener(
-                verifyButtonView -> {
-                    verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button_verification));
-                    verifyButton.setEnabled(false);
-
-                    SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(context);
-                    String apiKey = apiKeyPref.getString("api_key", null);
-
-                    //  Nothing was registered
-                    if (getCity().isEmpty() || getCountryName().isEmpty() || !countryNames.contains(getCountryName())) {
-
-                        Snackbar.make(addPlaceFABView, context.getString(R.string.error_no_place_settings_registered), Snackbar.LENGTH_LONG)
-                                .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                .setMaxInlineActionWidth(3)
-                                .show();
-                        verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                        verifyButton.setEnabled(true);
-                        return;
-
-                    }
-                    //  No API key is registered
-                    else if (apiKey == null || apiKey.length() != 32) {
-
-                        dismiss();
-                        Snackbar.make(addPlaceFABView, context.getString(R.string.error_no_api_key_registered), Snackbar.LENGTH_LONG)
-                                .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                .setMaxInlineActionWidth(3)
-                                .show();
-                        verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                        verifyButton.setEnabled(true);
-                        return;
-
-                    }
-                    //  API key and place settings is correctly registered
-                    else {
-
-                        Place place = new Place(getCity(), getCountryName(), getCountryCode());
-
-                        RequestQueue weatherDataRequest = Volley.newRequestQueue(context);
-                        String url = String.format(context.getString(R.string.url_owm_coordinates), place.getCity(), place.getCountryCode(), apiKey);
-
-                        @SuppressLint("DefaultLocale") JsonObjectRequest verifyPlaceRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-
-                                response -> {
-
-                                    place.setErrorDuringDataAcquisition(false);
-                                    place.setErrorCode(200);
+	private final String apiKey;
 
 
-                                    try {
-                                        //  Get correct city name
-                                        //place.setCity(response.getString("name"));
-                                        //String cityName = place.getCity();
-                                        //cityName.charAt(0) = cityName.charAt(0)
+	public AddPlaceDialog(Context context, View addPlaceFABView, String apiKey, WeatherService weatherService, WeatherService.WeatherCallback callback) {
+		super(context);
+		setContentView(R.layout.dialog_add_place);
 
-                                        //  Set current timeOffset of the place
-                                        final int timeZoneOffSet = response.getInt("timezone");
+		this.cityEditText = findViewById(R.id.city);
+		this.countryEditText = findViewById(R.id.country);
+		this.verifyButton = findViewById(R.id.verify_button);
 
-                                        int UTCnumber = timeZoneOffSet / 3600;
+		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
+		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
 
-                                        if (timeZoneOffSet == 0) {
-                                            place.setTimeZone("UTC");
-                                        } else if (timeZoneOffSet < 0) {
-                                            place.setTimeZone(String.format("%d", UTCnumber));
-                                        } else {
-                                            place.setTimeZone(String.format("+%d", UTCnumber));
-                                        }
+		this.apiKey = apiKey;
 
+		ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.select_dialog_item, countryNames);
+		countryEditText.setThreshold(1);
+		countryEditText.performValidation();
+		countryEditText.setAdapter(adapter);
 
-                                        JSONObject coordinatesJSON = response.getJSONObject("coord");
-                                        place.setLongitude(coordinatesJSON.getDouble("lon"));
-                                        place.setLatitude(coordinatesJSON.getDouble("lat"));
+		//  Verify button click listener
+		verifyButton.setOnClickListener(
+				verifyButtonView -> {
+					verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button_verification));
+					verifyButton.setEnabled(false);
 
+					//  Nothing was registered
+					if (getCity().isEmpty() || getCountryName().isEmpty() || !countryNames.contains(getCountryName())) {
 
-                                        DataPlaces dataPlaces = new DataPlaces(context);
+						Snackbar.make(addPlaceFABView, context.getString(R.string.error_no_place_settings_registered), Snackbar.LENGTH_LONG).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
+								.show();
+						verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+						verifyButton.setEnabled(true);
+						return;
 
-                                        WeatherService weatherService = new WeatherService(getContext(), apiKey, context.getResources().getConfiguration().locale.getLanguage(), dataPlaces);
-                                        WeatherService.WeatherCallback weatherCallback = new WeatherService.WeatherCallback() {
-                                            @Override
-                                            public void onWeatherData(final Place place, DataPlaces dataPlaces) {
+					}
+					//  No API key is registered
+					else if (apiKey == null || apiKey.length() != 32) {
+						dismiss();
+						Snackbar.make(addPlaceFABView, context.getString(R.string.error_no_api_key_registered), Snackbar.LENGTH_LONG).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
+								.show();
+						verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+						verifyButton.setEnabled(true);
+						return;
 
-                                                String dataPlaceName = place.getCity().toUpperCase() + '/' + place.getCountryCode();
+					}
+					//  API key and place settings is correctly registered
+					else {
+						Place place = new Place(getCity(), getCountryName(), getCountryCode());
 
-                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                                                verifyButton.setEnabled(true);
+						RequestQueue weatherDataRequest = Volley.newRequestQueue(context);
+						String url = String.format(context.getString(R.string.url_owm_coordinates), place.getCity(), place.getCountryCode(), apiKey);
 
-                                                try {
+						JsonObjectRequest verifyPlaceRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+								response -> {
+									place.setErrorDuringDataAcquisition(false);
+									place.setErrorCode(200);
 
-                                                    if (!dataPlaces.getPlacesRegister().contains(dataPlaceName)) {
+									try {
+										//  Set current timeOffset of the place
+										final int timeZoneOffSet = response.getInt("timezone");
 
-                                                        //  Save Place in the register
-                                                        if (!dataPlaces.savePlaceInRegister(dataPlaceName)) {
-                                                            dismiss();
-                                                            Snackbar.make(addPlaceFABView, context.getString(R.string.error_cannot_save_place_in_register), Snackbar.LENGTH_LONG)
-                                                                    .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                                    .setMaxInlineActionWidth(3)
-                                                                    .show();
-                                                            return;
-                                                        }
-                                                        //  Save Place
-                                                        if (!dataPlaces.savePlace(place)) {
-                                                            dismiss();
-                                                            Snackbar.make(addPlaceFABView, context.getString(R.string.error_cannot_save_place), Snackbar.LENGTH_LONG)
-                                                                    .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                                    .setMaxInlineActionWidth(3)
-                                                                    .show();
-                                                            return;
-                                                        }
-                                                        dismiss();
-                                                        Snackbar.make(addPlaceFABView, String.format("%s, %s %s", place.getCity(), getCountryCode(), context.getString(R.string.place_added_succcessfully)), Snackbar.LENGTH_LONG)
-                                                                .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                                .setMaxInlineActionWidth(3)
-                                                                .show();
-                                                        callback.onWeatherData(place, dataPlaces);
-                                                    } else {
-                                                        dismiss();
-                                                        Snackbar.make(addPlaceFABView, context.getString(R.string.error_place_already_added), Snackbar.LENGTH_LONG)
-                                                                .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                                .setMaxInlineActionWidth(3)
-                                                                .show();
-                                                    }
+										int UTCnumber = timeZoneOffSet / 3600;
+										if (timeZoneOffSet == 0) {
+											place.setTimeZone("UTC");
+										} else if (timeZoneOffSet < 0) {
+											place.setTimeZone(String.format("%d", UTCnumber));
+										} else {
+											place.setTimeZone(String.format("+%d", UTCnumber));
+										}
 
+										JSONObject coordinatesJSON = response.getJSONObject("coord");
+										place.setLongitude(coordinatesJSON.getDouble("lon"));
+										place.setLatitude(coordinatesJSON.getDouble("lat"));
 
-                                                } catch (Exception e) {
-                                                    dismiss();
-                                                    Snackbar.make(addPlaceFABView, context.getString(R.string.error_unknow_error), Snackbar.LENGTH_LONG)
-                                                            .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                            .setMaxInlineActionWidth(3)
-                                                            .show();
-                                                    e.printStackTrace();
-                                                }
-                                            }
+										WeatherService.WeatherCallback weatherCallback = new WeatherService.WeatherCallback() {
+											@Override
+											public void onWeatherData(final Place place, DataPlaces dataPlaces) {
+												String dataPlaceName = place.getCity().toUpperCase() + '/' + place.getCountryCode();
 
-                                            @Override
-                                            public void onError(Exception exception, Place place, DataPlaces dataPlaces) {
-                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                                                verifyButton.setEnabled(true);
-                                            }
+												verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+												verifyButton.setEnabled(true);
 
-                                            @Override
-                                            public void onConnectionError(VolleyError error, Place place, DataPlaces dataPlaces) {
-                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                                                verifyButton.setEnabled(true);
-                                            }
-                                        };
+												try {
 
-                                        weatherService.getWeatherDataOWM(place, weatherCallback);
+													if (!dataPlaces.getPlacesRegister().contains(dataPlaceName)) {
 
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                        verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                                        verifyButton.setEnabled(true);
-                                    }
+														//  Save Place in the register
+														if (!dataPlaces.savePlaceInRegister(dataPlaceName)) {
+															dismiss();
+															Snackbar.make(addPlaceFABView, context.getString(R.string.error_cannot_save_place_in_register), Snackbar.LENGTH_LONG)
+																	.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+																	.setMaxInlineActionWidth(3)
+																	.show();
+															return;
+														}
+														//  Save Place
+														if (!dataPlaces.savePlace(place)) {
+															dismiss();
+															Snackbar.make(addPlaceFABView, context.getString(R.string.error_cannot_save_place), Snackbar.LENGTH_LONG)
+																	.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+																	.setMaxInlineActionWidth(3)
+																	.show();
+															return;
+														}
+														dismiss();
+														Snackbar.make(addPlaceFABView, String.format("%s, %s %s", place.getCity(), getCountryCode(), context.getString(R.string.place_added_succcessfully)), Snackbar.LENGTH_LONG)
+																.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+																.setMaxInlineActionWidth(3)
+																.show();
+														callback.onWeatherData(place, dataPlaces);
 
-
-                                },
-
-                                error -> {
-
-                                    //  no server response (NO INTERNET or SERVER DOWN)
-                                    if (error.networkResponse == null) {
-                                        dismiss();
-                                        Snackbar.make(addPlaceFABView, context.getString(R.string.error_server_unreachable), Snackbar.LENGTH_LONG)
-                                                .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                .setMaxInlineActionWidth(3)
-                                                .show();
-                                        verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                                        verifyButton.setEnabled(true);
-                                    }
-                                    //  Server response
-                                    else {
-
-                                        place.setErrorDuringDataAcquisition(true);
-                                        place.setErrorCode(error.networkResponse.statusCode);
-
-                                        switch (place.getErrorCode()) {
-                                            case 429:
-                                                dismiss();
-                                                Snackbar.make(addPlaceFABView, context.getString(R.string.error_too_many_request_in_a_day), Snackbar.LENGTH_LONG)
-                                                        .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                        .setMaxInlineActionWidth(3)
-                                                        .show();
-                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                                                verifyButton.setEnabled(true);
-                                                break;
-                                            case 404:
-                                                Snackbar.make(addPlaceFABView, context.getString(R.string.error_place_not_found), Snackbar.LENGTH_LONG)
-                                                        .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                        .setMaxInlineActionWidth(3)
-                                                        .show();
-                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                                                verifyButton.setEnabled(true);
-                                                break;
-
-                                            case 401:
-                                                dismiss();
-                                                Snackbar.make(addPlaceFABView, context.getString(R.string.error_wrong_api_key), Snackbar.LENGTH_LONG)
-                                                        .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                        .setMaxInlineActionWidth(3)
-                                                        .show();
-                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                                                verifyButton.setEnabled(true);
-                                                break;
-
-                                            default:
-                                                dismiss();
-                                                Snackbar.make(addPlaceFABView, context.getString(R.string.error_unknow_error), Snackbar.LENGTH_LONG)
-                                                        .setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-                                                        .setMaxInlineActionWidth(3)
-                                                        .show();
-                                                verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
-                                                verifyButton.setEnabled(true);
-                                                break;
-                                        }
-                                    }
-                                });
-                        weatherDataRequest.add(verifyPlaceRequest);
-                    }
-                });
-    }
+													} else {
+														dismiss();
+														Snackbar.make(addPlaceFABView, context.getString(R.string.error_place_already_added), Snackbar.LENGTH_LONG)
+																.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+																.setMaxInlineActionWidth(3)
+																.show();
+													}
 
 
-    public String getCity() {
-        Editable city = cityEditText.getText();
-        if (city.length() == 0) {
-            return "";
-        }
-        return city.toString();
-    }
+												} catch (Exception e) {
+													dismiss();
+													Snackbar.make(addPlaceFABView, context.getString(R.string.error_unknow_error), Snackbar.LENGTH_LONG)
+															.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+															.setMaxInlineActionWidth(3)
+															.show();
+													e.printStackTrace();
+												}
+											}
 
-    public String getCountryCode() {
-        int indexOf = countryNames.indexOf(getCountryName());
+											@Override
+											public void onError(Exception exception, Place place, DataPlaces dataPlaces) {
+												verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+												verifyButton.setEnabled(true);
+											}
 
-        if (indexOf == -1) {
-            return null;
-        }
-        return countryCodes.get(indexOf);
-    }
+											@Override
+											public void onConnectionError(VolleyError error, Place place, DataPlaces dataPlaces) {
+												verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+												verifyButton.setEnabled(true);
+											}
+										};
 
-    public String getCountryName() {
-        Editable country = countryEditText.getText();
-        if (country.length() == 0) {
-            return "";
-        }
-        return country.toString();
-    }
+										weatherService.getWeatherDataOWM(place, weatherCallback);
 
-// --Commented out by Inspection START (28/02/21 17:50):
-//    public Button getVerifyButton() {
-//        return verifyButton;
-//    }
-// --Commented out by Inspection STOP (28/02/21 17:50)
+									} catch (JSONException e) {
+										e.printStackTrace();
+										verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+										verifyButton.setEnabled(true);
+									}
 
-    public void build() {
-        show();
-    }
+
+								},
+
+								error -> {
+
+									//  no server response (NO INTERNET or SERVER DOWN)
+									if (error.networkResponse == null) {
+										dismiss();
+										Snackbar.make(addPlaceFABView, context.getString(R.string.error_server_unreachable), Snackbar.LENGTH_LONG)
+												.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+												.setMaxInlineActionWidth(3)
+												.show();
+										verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+										verifyButton.setEnabled(true);
+									}
+									//  Server response
+									else {
+
+										place.setErrorDuringDataAcquisition(true);
+										place.setErrorCode(error.networkResponse.statusCode);
+
+										switch (place.getErrorCode()) {
+											case 429:
+												dismiss();
+												Snackbar.make(addPlaceFABView, context.getString(R.string.error_too_many_request_in_a_day), Snackbar.LENGTH_LONG)
+														.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+														.setMaxInlineActionWidth(3)
+														.show();
+												verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+												verifyButton.setEnabled(true);
+												break;
+											case 404:
+												Snackbar.make(addPlaceFABView, context.getString(R.string.error_place_not_found), Snackbar.LENGTH_LONG)
+														.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+														.setMaxInlineActionWidth(3)
+														.show();
+												verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+												verifyButton.setEnabled(true);
+												break;
+
+											case 401:
+												dismiss();
+												Snackbar.make(addPlaceFABView, context.getString(R.string.error_wrong_api_key), Snackbar.LENGTH_LONG)
+														.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+														.setMaxInlineActionWidth(3)
+														.show();
+												verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+												verifyButton.setEnabled(true);
+												break;
+
+											default:
+												dismiss();
+												Snackbar.make(addPlaceFABView, context.getString(R.string.error_unknow_error), Snackbar.LENGTH_LONG)
+														.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
+														.setMaxInlineActionWidth(3)
+														.show();
+												verifyButton.setText(context.getString(R.string.title_dialog_add_place_verify_button));
+												verifyButton.setEnabled(true);
+												break;
+										}
+									}
+								});
+						weatherDataRequest.add(verifyPlaceRequest);
+					}
+				});
+	}
+
+
+	public String getCity() {
+		Editable city = cityEditText.getText();
+		if (city.length() == 0) {
+			return "";
+		}
+		return city.toString();
+	}
+
+	public String getCountryCode() {
+		int indexOf = countryNames.indexOf(getCountryName());
+
+		if (indexOf == -1) {
+			return null;
+		}
+		return countryCodes.get(indexOf);
+	}
+
+	public String getCountryName() {
+		Editable country = countryEditText.getText();
+		if (country.length() == 0) {
+			return "";
+		}
+		return country.toString();
+	}
+
+	public void build() {
+		show();
+	}
 }

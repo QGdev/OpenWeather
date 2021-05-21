@@ -26,10 +26,8 @@
     </style>
 
     <style name="MaterialThemeDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
-
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
-
     </style>
 
     <style name="ShapeAppearance.MaterialTheme.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">

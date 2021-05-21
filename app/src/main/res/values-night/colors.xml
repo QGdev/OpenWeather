@@ -12,6 +12,6 @@
     <color name="colorIcons">@color/colorWhiteGrey</color>
 
     <color name="colorBackground">@color/colorBlack</color>
-    <color name="colorBackgroundPlaces">@color/colorBlackGrey</color>
+    <color name="colorBackgroundTiles">@color/colorBlackGrey</color>
 
 </resources>
