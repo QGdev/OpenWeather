@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/adapter_place"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -13,8 +14,8 @@
         android:animateLayoutChanges="true"
         android:backgroundTint="@color/colorBackgroundTiles"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="20dp">
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:ignore="HardcodedText">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,7 +39,7 @@
 
                     <TextView
                         android:id="@+id/city_adapter"
-                        android:layout_width="220dp"
+                        android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:isScrollContainer="false"
                         android:maxHeight="50dp"
@@ -49,7 +50,7 @@
 
                     <TextView
                         android:id="@+id/country_adapter"
-                        android:layout_width="200dp"
+                        android:layout_width="180dp"
                         android:layout_height="50dp"
                         android:isScrollContainer="false"
                         android:text="Country"
@@ -99,14 +100,16 @@
 
                     <ImageView
                         android:id="@+id/weather_icon_adapter"
-                        android:layout_width="120dp"
+                        android:layout_width="match_parent"
+                        android:minWidth="70dp"
+                        android:maxWidth="120dp"
                         android:layout_height="120dp"
-                        android:layout_gravity="end|top"
+                        android:scaleType="fitEnd"
                         android:src="@drawable/clouds_and_sun_flat" />
 
                     <TextView
                         android:id="@+id/weather_description_adapter"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end|top"
                         android:layout_marginTop="10dp"
@@ -314,6 +317,7 @@
                     android:layout_gravity="end|bottom"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/danger"
                     app:tint="@color/colorIcons" />
 

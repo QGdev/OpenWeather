@@ -29,17 +29,21 @@ import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.WeatherService;
-import fr.qgdev.openweather.adapters.PlaceAdapter;
+import fr.qgdev.openweather.adapters.PlaceRecyclerViewAdapter;
 import fr.qgdev.openweather.dialog.AddPlaceDialog;
 
 public class PlacesFragment extends Fragment {
 
 	private Context mContext;
 	private String API_KEY;
-	private RecyclerView placeList;
-	private PlaceAdapter placeAdapter;
 
-	private ArrayList<Place> placeArrayList;
+	private TextView noPlacesRegisteredTextView;
+	private SwipeRefreshLayout swipeRefreshLayout;
+	private FloatingActionButton addPlacesFab;
+	private RecyclerView placeRecyclerView;
+	private PlaceRecyclerViewAdapter placeRecyclerViewAdapter;
+
+	private static ArrayList<Place> placeArrayList;
 	private DataPlaces dataPlaces;
 
 	private WeatherService weatherService;
@@ -69,23 +73,42 @@ public class PlacesFragment extends Fragment {
 	                         ViewGroup container, Bundle savedInstanceState) {
 
 		View root = inflater.inflate(R.layout.fragment_places, container, false);
+		noPlacesRegisteredTextView = root.findViewById(R.id.no_places_registered);
+		swipeRefreshLayout = root.findViewById(R.id.swiperefresh);
+		addPlacesFab = root.findViewById(R.id.add_places);
 
 		//  Initialize places data storage
 		dataPlaces = new DataPlaces(mContext);
 
-
 		//  Initialize the list and the ArrayList where all places registered
 		placeArrayList = new ArrayList<>();
-		placeList = root.findViewById(R.id.place_list);
+		placeRecyclerView = root.findViewById(R.id.place_list);
 
 
 		//  Initialisation of the RecycleView
 		LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
 		layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-		placeAdapter = new PlaceAdapter(mContext, placeArrayList);
-		placeList.setLayoutManager(layoutManager);
-		placeList.setAdapter(placeAdapter);
 
+		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, placeArrayList, new PlaceRecyclerViewAdapter.ActionCallback() {
+			@Override
+			public void onPlaceDeletion(int position) {
+				String dataPlaceName = placeArrayList.get(position).getCity().toUpperCase() + '/' + placeArrayList.get(position).getCountryCode();
+				dataPlaces.deletePlace(dataPlaceName);
+				placeArrayList.remove(position);
+
+				if (!placeArrayList.isEmpty()) {
+					noPlacesRegisteredTextView.setVisibility(View.GONE);
+					swipeRefreshLayout.setVisibility(View.VISIBLE);
+
+				} else {
+					noPlacesRegisteredTextView.setVisibility(View.VISIBLE);
+					swipeRefreshLayout.setVisibility(View.GONE);
+				}
+			}
+		});
+
+		placeRecyclerView.setLayoutManager(layoutManager);
+		placeRecyclerView.setAdapter(placeRecyclerViewAdapter);
 
 		//  Get API key
 		SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -102,19 +125,22 @@ public class PlacesFragment extends Fragment {
 				try {
 					if (dataPlaces.savePlace(place)) {
 						int index = dataPlaces.getPlacePositionInRegister(place);
-						int nbPlacesBefore = placeArrayList.size();
+						int nbPlacesBefore = placeRecyclerViewAdapter.getItemCount();
 
 						//  New Place has been added
 						if (nbPlacesBefore < index + 1) {
+							placeRecyclerViewAdapter.add(place);
 							placeArrayList.add(place);
-							placeAdapter.notifyItemInserted(index);
-							placeAdapter.notifyItemRangeChanged(0, index + 1);
 						}
 						//  Nothing new
 						else {
+							placeRecyclerViewAdapter.set(index, place);
 							placeArrayList.set(index, place);
-							placeAdapter.notifyItemChanged(index);
 						}
+
+						noPlacesRegisteredTextView.setVisibility(View.GONE);
+						swipeRefreshLayout.setVisibility(View.VISIBLE);
+
 					} else {
 						Snackbar.make(container, mContext.getString(R.string.error_cannot_refresh_place_list), Snackbar.LENGTH_LONG)
 								.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
@@ -180,9 +206,7 @@ public class PlacesFragment extends Fragment {
 		//________________________________________________________________
 		//
 		//  Initialize buttons and actions behavior
-		SwipeRefreshLayout swipeRefreshLayout = root.findViewById(R.id.swiperefresh);
-		TextView noPlacesRegisteredTextView = root.findViewById(R.id.no_places_registered);
-		FloatingActionButton addPlacesFab = getActivity().findViewById(R.id.add_places);
+
 
 		//  No API key registered
 		if (API_KEY == null || API_KEY.length() != 32) {
@@ -210,6 +234,7 @@ public class PlacesFragment extends Fragment {
 							try {
 								placeArrayList.clear();
 								placeArrayList.addAll(dataPlaces.getPlaces());
+								placeRecyclerViewAdapter.remplaceSet(placeArrayList);
 
 								for (Place place : placeArrayList) {
 									weatherService.getWeatherDataOWM(place, getPlaceListCallback);
@@ -234,7 +259,7 @@ public class PlacesFragment extends Fragment {
 			//  Show current saved data
 			placeArrayList.clear();
 			placeArrayList.addAll(dataPlaces.getPlaces());
-			placeAdapter.notifyDataSetChanged();
+			placeRecyclerViewAdapter.remplaceSet(placeArrayList);
 
 			if (!placeArrayList.isEmpty()) {
 				noPlacesRegisteredTextView.setVisibility(View.GONE);
@@ -243,7 +268,6 @@ public class PlacesFragment extends Fragment {
 				//  Refresh data
 				for (Place place : placeArrayList) {
 					weatherService.getWeatherDataOWM(place, getPlaceListCallback);
-					placeAdapter.notifyDataSetChanged();
 				}
 
 			} else {

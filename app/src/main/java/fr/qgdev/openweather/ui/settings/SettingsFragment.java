@@ -15,9 +15,6 @@ public class SettingsFragment extends PreferenceFragmentCompat
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.settings_preferences, rootKey);
-
-        //  Hide the Floating Action Button to add Places
-        getActivity().findViewById(R.id.add_places).setVisibility(View.GONE);
     }
 
 }

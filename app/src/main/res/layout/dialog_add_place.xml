@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:minWidth="300dp"
-    android:minHeight="255dp"
+    android:minWidth="350dp"
+    android:minHeight="245dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -14,60 +15,67 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="start"
+        android:layout_gravity="start"
         android:text="@string/title_dialog_add_place"
         android:textSize="25sp"
-        />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.material.textfield.TextInputLayout
 
+        android:id="@+id/textInputLayout3"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="20dp"
-        android:hint="@string/title_dialog_add_place_textinput_city"
         android:layout_gravity="center"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:hint="@string/title_dialog_add_place_textinput_city"
+        app:layout_constraintTop_toBottomOf="@+id/title">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="50dp"
-            android:maxLines="3"/>
+            android:maxLines="3"
+            android:minHeight="50dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout4"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        androidgravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
         android:hint="@string/title_dialog_add_place_spinner_country"
-        androidgravity="center_vertical"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
 
         <AutoCompleteTextView
             android:id="@+id/country"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="50dp"
-            android:maxLines="3"
-            android:inputType="textAutoComplete" />
+            android:inputType="textAutoComplete"
+            android:minHeight="50dp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
-
     <Button
         android:id="@+id/verify_button"
-        android:enabled="true"
+        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:height="50dp"
-        android:layout_marginTop="20dp"
         android:layout_gravity="end"
+        android:layout_marginTop="16dp"
+        android:height="50dp"
+        android:enabled="true"
+        android:text="@string/title_dialog_add_place_verify_button"
         android:textSize="20sp"
-        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-        android:text="@string/title_dialog_add_place_verify_button"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

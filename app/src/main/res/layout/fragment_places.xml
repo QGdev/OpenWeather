@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
-
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:backgroundTint="@color/colorBackground"
-
 	tools:context=".ui.places.PlacesFragment"
 	android:orientation="vertical">
 
@@ -17,7 +17,9 @@
 		android:gravity="center"
 		android:text="@string/error_no_places_registered"
 		android:textSize="20sp"
-		android:visibility="visible" />
+		android:visibility="visible"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintTop_toTopOf="parent" />
 
 	<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 		android:id="@+id/swiperefresh"
@@ -31,9 +33,22 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:orientation="vertical"
-			android:paddingBottom="120dp"
+			android:paddingBottom="70dp"
 			android:clipToPadding="false"
-			android:scrollbarStyle="outsideOverlay"/>
+			android:scrollbarStyle="outsideOverlay"
+			app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+			android:animationCache="true"/>
 
 	</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+	<com.google.android.material.floatingactionbutton.FloatingActionButton
+		android:id="@+id/add_places"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_margin="10dp"
+		android:contentDescription=""
+		android:src="@drawable/add_place_24dp"
+		app:layout_constraintBottom_toBottomOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		tools:srcCompat="@tools:sample/avatars" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/adapter_place"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -14,7 +15,7 @@
         android:backgroundTint="@color/colorBackgroundTiles"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="20dp">
+        tools:ignore="HardcodedText">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -102,7 +103,7 @@
                         android:layout_width="150dp"
                         android:layout_height="150dp"
                         android:layout_gravity="end|top"
-                        android:contentDescription="TODO"
+                        android:scaleType="fitEnd"
                         android:src="@drawable/clouds_and_sun_flat" />
 
                     <TextView
@@ -315,6 +316,7 @@
                     android:layout_gravity="end|bottom"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/danger"
                     app:tint="@color/colorIcons" />
 

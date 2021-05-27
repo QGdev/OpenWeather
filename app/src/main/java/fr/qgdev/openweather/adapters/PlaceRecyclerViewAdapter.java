@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,52 +33,107 @@ import fr.qgdev.openweather.weather.DailyWeatherForecast;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
 
 
-public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapterViewHolder> {
+public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecyclerViewAdapter.PlaceAdapterViewHolder> {
 
 	private final Context context;
-	private final ArrayList<Place> placeArrayList;
+	private final ArrayList<PlaceView> placeViewArrayList;
+	private final ActionCallback actionCallback;
 
-
-	public PlaceAdapter(Context context, ArrayList<Place> placeArrayList) {
-		this.context = context;
-		this.placeArrayList = placeArrayList;
+	public interface ActionCallback{
+		void onPlaceDeletion(int position);
 	}
 
-	private void setListeners(Place place, PlaceAdapterViewHolder holder) {
+	public static class PlaceView{
+
+		public int viewType;
+		public Place place;
+
+		public static final int COMPACT = 0;
+		public static final int EXTENDED = 1;
+
+		public PlaceView(Place place, int viewType) {
+			this.place = place;
+			this.viewType = viewType;
+		}
+	}
+
+	public ArrayList<PlaceView> generatePlaceViewArrayList(final ArrayList<Place> placeArrayList)
+	{
+		ArrayList<PlaceView> placeViewArrayList = new ArrayList<>();
+
+		for(Place place : placeArrayList)
+		{
+			placeViewArrayList.add(new PlaceView(place, PlaceView.COMPACT));
+		}
+
+		return placeViewArrayList;
+	}
+
+	public void add(final Place place)
+	{
+		this.placeViewArrayList.add(new PlaceView(place, PlaceView.COMPACT));
+		this.notifyItemInserted(this.placeViewArrayList.size() - 1);
+	}
+
+	public void add(int position, final Place place)
+	{
+		this.placeViewArrayList.add(position, new PlaceView(place, PlaceView.COMPACT));
+		this.notifyItemInserted(position);
+	}
+
+	public void remove(int position)
+	{
+		this.placeViewArrayList.remove(position);
+		this.notifyItemRemoved(position);
+	}
+
+	public void set(int position, final Place place)
+	{
+		this.placeViewArrayList.set(position, new PlaceView(place, PlaceView.COMPACT));
+		this.notifyItemChanged(position);
+	}
+
+	public void remplaceSet(final ArrayList<Place> placeArrayList)
+	{
+		this.placeViewArrayList.clear();
+		for(Place place : placeArrayList)
+		{
+			this.placeViewArrayList.add(new PlaceView(place, PlaceView.COMPACT));
+		}
+		notifyDataSetChanged();
+	}
+
+	@Override
+	public int getItemViewType(int position)
+	{
+		return this.placeViewArrayList.get(position).viewType;
+	}
+
+	public PlaceRecyclerViewAdapter(Context context, ArrayList<Place> placeViewArrayList, ActionCallback actionCallback) {
+		this.context = context;
+		this.placeViewArrayList = generatePlaceViewArrayList(placeViewArrayList);
+		this.actionCallback = actionCallback;
+	}
+
+
+	private void setListeners(PlaceView placeView, PlaceAdapterViewHolder holder) {
+
 		holder.cardView.setOnClickListener(v -> {
+			if (placeView.viewType == PlaceView.COMPACT) {
 
-			if (holder.detailedInformationsLayout.getVisibility() == View.GONE) {
-
-				holder.detailedInformationsLayout.setVisibility(View.VISIBLE);
-				holder.weatherAlertIcon.setVisibility(View.GONE);
-				holder.windGustInfomationLayout.setVisibility(View.VISIBLE);
-				holder.visibilityInformationLayout.setVisibility(View.VISIBLE);
-				holder.skyInformationsLayout.setVisibility(View.VISIBLE);
-				holder.forecastInformationsLayout.setVisibility(View.VISIBLE);
-				holder.hourlyForecastExpandIcon.setRotation(0);
-				holder.dailyForecastExpandIcon.setRotation(0);
-				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
+				placeView.viewType = PlaceView.EXTENDED;
 
 			} else {
-				holder.detailedInformationsLayout.setVisibility(View.GONE);
-				holder.windGustInfomationLayout.setVisibility(View.GONE);
-				holder.visibilityInformationLayout.setVisibility(View.GONE);
-				holder.skyInformationsLayout.setVisibility(View.GONE);
-				holder.forecastInformationsLayout.setVisibility(View.GONE);
-				holder.hourlyForecastLayout.setVisibility(View.GONE);
-				holder.dailyForecastLayout.setVisibility(View.GONE);
-				holder.lastUpdateAvailableLayout.setVisibility(View.GONE);
-
-				if (place.getMWeatherAlertCount() > 0)
-					holder.weatherAlertIcon.setVisibility(View.VISIBLE);
+				placeView.viewType = PlaceView.COMPACT;
 			}
+			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
-		ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList = place.getHourlyWeatherForecastArrayList();
-		HourlyColumnAdapter hourlyColumnAdapter = new HourlyColumnAdapter(context, place);
+		ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList = placeView.place.getHourlyWeatherForecastArrayList();
+		HourlyColumnAdapter hourlyColumnAdapter = new HourlyColumnAdapter(context, placeView.place);
 
-		ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList = place.getDailyWeatherForecastArrayList();
-		DailyColumnAdapter dailyColumnAdapter = new DailyColumnAdapter(context, place);
+		ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList = placeView.place.getDailyWeatherForecastArrayList();
+		DailyColumnAdapter dailyColumnAdapter = new DailyColumnAdapter(context, placeView.place);
 
 
 		holder.hourlyForecast.setOnClickListener(hourlyView -> {
@@ -120,12 +176,12 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
 		});
 
 		holder.weatherAlertLayout.setOnClickListener(v -> {
-			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, place);
+			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, placeView.place);
 			weatherAlertDialog.build();
 		});
 
 		holder.weatherAlertIcon.setOnClickListener(v -> {
-			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, place);
+			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, placeView.place);
 			weatherAlertDialog.build();
 		});
 	}
@@ -149,9 +205,51 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
 		String timeOffset = userPref.getString("time_offset", null);
 		String timeFormat = userPref.getString("time_format", null);
 
-		Place currentPlace = this.placeArrayList.get(position);
+		Place currentPlace = this.placeViewArrayList.get(position).place;
 
-		setListeners(currentPlace, holder);
+		switch (this.placeViewArrayList.get(position).viewType)
+		{
+			case PlaceView.COMPACT:
+				holder.detailedInformationsLayout.setVisibility(View.GONE);
+				holder.windGustInfomationLayout.setVisibility(View.GONE);
+				holder.visibilityInformationLayout.setVisibility(View.GONE);
+				holder.skyInformationsLayout.setVisibility(View.GONE);
+				holder.forecastInformationsLayout.setVisibility(View.GONE);
+				holder.hourlyForecastLayout.setVisibility(View.GONE);
+				holder.dailyForecastLayout.setVisibility(View.GONE);
+				holder.lastUpdateAvailableLayout.setVisibility(View.GONE);
+				if(currentPlace.getMWeatherAlertCount() > 0)
+				{
+					holder.weatherAlertIcon.setVisibility(View.VISIBLE);
+				}
+				else
+				{
+					holder.weatherAlertIcon.setVisibility(View.GONE);
+				}
+
+				break;
+			case PlaceView.EXTENDED:
+				holder.detailedInformationsLayout.setVisibility(View.VISIBLE);
+				holder.weatherAlertIcon.setVisibility(View.GONE);
+				holder.windGustInfomationLayout.setVisibility(View.VISIBLE);
+				holder.visibilityInformationLayout.setVisibility(View.VISIBLE);
+				holder.skyInformationsLayout.setVisibility(View.VISIBLE);
+				holder.forecastInformationsLayout.setVisibility(View.VISIBLE);
+				holder.hourlyForecastExpandIcon.setRotation(0);
+				holder.dailyForecastExpandIcon.setRotation(0);
+				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
+				if(currentPlace.getMWeatherAlertCount() > 0)
+				{
+					holder.weatherAlertLayout.setVisibility(View.VISIBLE);
+				}
+				else
+				{
+					holder.weatherAlertLayout.setVisibility(View.GONE);
+				}
+				break;
+		}
+
+		setListeners(this.placeViewArrayList.get(position), holder);
 
 		holder.cityNameTextView.setText(currentPlace.getCity());
 		holder.countryNameTextVIew.setText(currentPlace.getCountry());
@@ -362,14 +460,6 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
 
 		holder.cloudinessTextView.setText(currentWeather.cloudiness + " %");
 
-		if (currentPlace.getMWeatherAlertCount() == 0) {
-			holder.weatherAlertLayout.setVisibility(View.GONE);
-			holder.weatherAlertIcon.setVisibility(View.GONE);
-		} else {
-			holder.weatherAlertLayout.setVisibility(View.VISIBLE);
-			holder.weatherAlertIcon.setVisibility(View.VISIBLE);
-		}
-
 		//  Precipitations
 		if (currentWeather.rain > 0 || currentWeather.snow > 0) {
 			holder.precipitationLayout.setVisibility(View.VISIBLE);
@@ -422,19 +512,9 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
 					.setMessage(String.format(context.getString(R.string.dialog_confirmation_message_delete_place), currentPlace.getCity(), currentPlace.getCountryCode()))
 					.setPositiveButton(context.getString(R.string.dialog_confirmation_choice_yes), (dialog, which) -> {
 
-						DataPlaces dataPlaces = new DataPlaces(context);
-						String dataPlaceName = currentPlace.getCity().toUpperCase() + '/' + currentPlace.getCountryCode();
-						int index = dataPlaces.getPlacePositionInRegister(dataPlaceName);
-
-						try {
-							dataPlaces.deletePlace(dataPlaceName);
-							placeArrayList.clear();
-							placeArrayList.addAll(dataPlaces.getPlaces());
-							notifyItemRemoved(index);
-
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+						int index = holder.getAbsoluteAdapterPosition();
+						actionCallback.onPlaceDeletion(index);
+						remove(index);
 					})
 					.setNegativeButton(context.getString(R.string.dialog_confirmation_choice_no), null)
 					.show();
@@ -444,8 +524,9 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.PlaceAdapter
 
 	@Override
 	public int getItemCount() {
-		return this.placeArrayList.size();
+		return this.placeViewArrayList.size();
 	}
+
 
 	public static class PlaceAdapterViewHolder extends RecyclerView.ViewHolder {
 
