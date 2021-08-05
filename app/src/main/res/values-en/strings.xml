@@ -74,4 +74,10 @@
     <string name="error_place_already_added">This place is already added</string>
     <string name="error_no_places_registered">No places registered</string>
     <string name="title_forecast_daily">Daily Forecast</string>
+	<string name="about_us">About us</string>
+	<string name="title_dialog_exit_button">Exit</string>
+    <string name="about_your_data_section_content">The data is only stored on your phone, apart from you, no one has access to it.\nThe application only sends some data to openweathermap.org, this data is linked to cities, the first time a city is entered, we send the city as well as its country, after once this city is registered, we only send the city coordinates.\nThere is no intermediary between OpenWeatherMaps and the application, the data received is directly processed on the application.\nThe OpenWeatherMaps privacy policy is available here: openweather.co.uk/privacy-policy</string>
+    <string name="about_the_developer_section_title">About the developer</string>
+    <string name="about_your_data_section_title">About your data</string>
+    <string name="about_the_developer_section_content">I am French computer science student, who had an idea during lockdown and turned it into an application to practice Java and Android development.</string>
 </resources>

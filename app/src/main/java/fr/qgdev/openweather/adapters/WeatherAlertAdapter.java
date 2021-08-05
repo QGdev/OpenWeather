@@ -58,6 +58,9 @@ public class WeatherAlertAdapter extends BaseAdapter {
         TextView endDateTextView = view.findViewById(R.id.end_date);
         TextView descriptionTextView = view.findViewById(R.id.description);
 
+        descriptionTextView.setLinksClickable(true);
+        descriptionTextView.setLinkTextColor(this.context.getColor(R.color.colorAccent));
+
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         String timeOffset = pref.getString("time_offset", null);
         String timeFormat = pref.getString("time_format", null);

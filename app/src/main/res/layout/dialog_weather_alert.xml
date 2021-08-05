@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/MaterialTheme"
-    android:layout_width="@dimen/weather_alert_dialog_width"
+    android:layout_width="@dimen/dialog_max_width"
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:layout_margin="20dp"
@@ -26,7 +26,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:orientation="vertical" />
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/exit_button"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="bottom|end"
+                android:height="50dp"
+                android:enabled="true"
+                android:text="@string/title_dialog_exit_button"
+                android:textSize="20sp"/>
+
+        </LinearLayout>
     </ScrollView>
 
 </LinearLayout>

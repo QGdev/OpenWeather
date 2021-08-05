@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.Place;
@@ -38,7 +40,7 @@ public class PlacesFragment extends Fragment {
 	private String API_KEY;
 
 	private TextView noPlacesRegisteredTextView;
-	private SwipeRefreshLayout swipeRefreshLayout;
+	private static SwipeRefreshLayout swipeRefreshLayout;
 	private FloatingActionButton addPlacesFab;
 	private RecyclerView placeRecyclerView;
 	private PlaceRecyclerViewAdapter placeRecyclerViewAdapter;
@@ -48,6 +50,8 @@ public class PlacesFragment extends Fragment {
 
 	private WeatherService weatherService;
 	private WeatherService.WeatherCallback getPlaceListCallback;
+
+	private static AtomicInteger refreshCounter;
 
 
 	@Override
@@ -83,6 +87,8 @@ public class PlacesFragment extends Fragment {
 		//  Initialize the list and the ArrayList where all places registered
 		placeArrayList = new ArrayList<>();
 		placeRecyclerView = root.findViewById(R.id.place_list);
+		refreshCounter = new AtomicInteger();
+		refreshCounter.set(0);
 
 
 		//  Initialisation of the RecycleView
@@ -152,6 +158,13 @@ public class PlacesFragment extends Fragment {
 							.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
 							.show();
 				}
+
+				// TEST
+				if(placeArrayList.size() == refreshCounter.incrementAndGet()){
+					swipeRefreshLayout.setRefreshing(false);
+					refreshCounter.set(0);
+				}
+
 			}
 
 			@Override
@@ -160,6 +173,12 @@ public class PlacesFragment extends Fragment {
 						.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
 						.show();
 				exception.printStackTrace();
+
+				// TEST
+				if(placeArrayList.size() == refreshCounter.incrementAndGet()){
+					swipeRefreshLayout.setRefreshing(false);
+					refreshCounter.set(0);
+				}
 			}
 
 			@Override
@@ -198,6 +217,13 @@ public class PlacesFragment extends Fragment {
 							break;
 					}
 				}
+
+				// TEST
+				if(placeArrayList.size() == refreshCounter.incrementAndGet()){
+					swipeRefreshLayout.setRefreshing(false);
+					refreshCounter.set(0);
+				}
+
 			}
 		};
 
@@ -226,30 +252,27 @@ public class PlacesFragment extends Fragment {
 
 		//  Swipe to refresh listener
 		swipeRefreshLayout.setOnRefreshListener(
-				new SwipeRefreshLayout.OnRefreshListener() {
-					@Override
-					public void onRefresh() {
-						swipeRefreshLayout.setRefreshing(true);
-						if (API_KEY != null && !Objects.equals(API_KEY, "")) {
-							try {
-								placeArrayList.clear();
-								placeArrayList.addAll(dataPlaces.getPlaces());
-								placeRecyclerViewAdapter.remplaceSet(placeArrayList);
+				() -> {
+					swipeRefreshLayout.setRefreshing(true);
+					if (API_KEY != null && !Objects.equals(API_KEY, "")) {
+						try {
+							placeArrayList.clear();
+							placeArrayList.addAll(dataPlaces.getPlaces());
+							placeRecyclerViewAdapter.remplaceSet(placeArrayList);
 
-								for (Place place : placeArrayList) {
-									weatherService.getWeatherDataOWM(place, getPlaceListCallback);
-								}
-								swipeRefreshLayout.setRefreshing(false);
-							} catch (Exception e) {
-								Snackbar.make(container, mContext.getString(R.string.error_cannot_refresh_place_list), Snackbar.LENGTH_LONG).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-										.show();
-								e.printStackTrace();
+							for (Place place : placeArrayList) {
+								weatherService.getWeatherDataOWM(place, getPlaceListCallback);
 							}
-						} else {
-							swipeRefreshLayout.setRefreshing(false);
-							Snackbar.make(container, mContext.getString(R.string.error_no_api_key_registered), Snackbar.LENGTH_LONG).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
+							//swipeRefreshLayout.setRefreshing(false);
+						} catch (Exception e) {
+							Snackbar.make(container, mContext.getString(R.string.error_cannot_refresh_place_list), Snackbar.LENGTH_LONG).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
 									.show();
+							e.printStackTrace();
 						}
+					} else {
+						swipeRefreshLayout.setRefreshing(false);
+						Snackbar.make(container, mContext.getString(R.string.error_no_api_key_registered), Snackbar.LENGTH_LONG).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
+								.show();
 					}
 				}
 		);

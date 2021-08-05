@@ -74,4 +74,10 @@
     <string name="from_date">Du</string>
     <string name="until_date">Au</string>
     <string name="title_dialog_weather_alert">Alertes Météorologiques</string>
+	<string name="about_us">À propos</string>
+	<string name="title_dialog_exit_button">Quitter</string>
+	<string name="about_your_data_section_content">Les données sont uniquement stockées sur votre téléphone, à part vous, personne n\'y a accès.\nL\'application n\'envoie que certaines données à OpenWeatherMaps, ces données sont liées aux villes, la première fois, qu\'une ville est renseignée, nous envoyons la ville ainsi que son pays, une fois cette ville enregistrée, nous n\'enverons uniquement les coordonnées de cette ville./n Il n\'y a aucun intermédiaire entre OpenWeatherMaps et l\'application, les données reçues sont directement traîtées sur l\'application.\nLa politique de confidentialité de OpenWeatherMaps est disponible ici: openweather.co.uk/privacy-policy</string>
+    <string name="about_the_developer_section_title">À propos du développeur</string>
+    <string name="about_your_data_section_title">À propos de vos données</string>
+    <string name="about_the_developer_section_content">Je suis un étudiant français en informatique, qui a eu une idée pendant le confinement et l\'a transformée en une application pour pratiquer le développement Java et Android.</string>
 </resources>

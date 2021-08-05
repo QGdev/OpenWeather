@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:minWidth="350dp"
-    android:minHeight="245dp"
+    android:minWidth="@dimen/dialog_max_width"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
@@ -24,13 +23,11 @@
 
     <com.google.android.material.textfield.TextInputLayout
 
-        android:id="@+id/textInputLayout3"
+        android:id="@+id/cityTextInputLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:gravity="center"
         android:hint="@string/title_dialog_add_place_textinput_city"
         app:layout_constraintTop_toBottomOf="@+id/title">
 
@@ -39,27 +36,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="3"
-            android:minHeight="50dp" />
+            android:dropDownAnchor="@style/MaterialTheme"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout4"
+        android:id="@+id/countryTextInputLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-        androidgravity="center_vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginTop="16dp"
         android:hint="@string/title_dialog_add_place_spinner_country"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
+        app:layout_constraintTop_toBottomOf="@+id/cityTextInputLayout">
 
         <AutoCompleteTextView
             android:id="@+id/country"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textAutoComplete"
-            android:minHeight="50dp" />
+            android:inputType="textAutoComplete|textAutoCorrect"
+            android:dropDownSelector="@color/colorPrimary"
+            android:cursorVisible="true"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -68,14 +64,12 @@
         style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
         android:layout_marginTop="16dp"
         android:height="50dp"
         android:enabled="true"
         android:text="@string/title_dialog_add_place_verify_button"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />
+        app:layout_constraintTop_toBottomOf="@+id/countryTextInputLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

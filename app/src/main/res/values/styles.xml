@@ -9,6 +9,7 @@
 
         <item name="android:dialogTheme">@style/MaterialThemeDialog</item>
         <item name="floatingActionButtonStyle">@style/MaterialThemeFloatingActionButton</item>
+        <item name="extendedFloatingActionButtonStyle">@style/MaterialThemeExtendedFloatingActionButton</item>
         <item name="snackbarStyle">@style/MaterialTheme.SnackBar</item>
 
         <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.MaterialTheme.SmallComponent</item>
@@ -20,9 +21,11 @@
 
     
     <style name="MaterialThemeFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
-
         <item name="backgroundTint">@color/colorPrimary</item>
+    </style>
 
+    <style name="MaterialThemeExtendedFloatingActionButton" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
+        <item name="backgroundTint">@color/colorPrimary</item>
     </style>
 
     <style name="MaterialThemeDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
@@ -32,7 +35,7 @@
 
     <style name="ShapeAppearance.MaterialTheme.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">40dp</item>
+        <item name="cornerSize">15dp</item>
     </style>
 
     <style name="ShapeAppearance.MaterialTheme.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">

@@ -3,6 +3,7 @@ package fr.qgdev.openweather.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +22,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import fr.qgdev.openweather.DataPlaces;
@@ -37,6 +40,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 	private final Context context;
 	private final ArrayList<PlaceView> placeViewArrayList;
+	private final List<String> countryNames;
+	private final List<String> countryCodes;
 	private final ActionCallback actionCallback;
 
 	public interface ActionCallback{
@@ -113,8 +118,16 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		this.context = context;
 		this.placeViewArrayList = generatePlaceViewArrayList(placeViewArrayList);
 		this.actionCallback = actionCallback;
+
+		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
+		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
 	}
 
+	private String getCountryName(String countryCode)
+	{
+		int index = this.countryCodes.indexOf(countryCode);
+		return this.countryNames.get(index);
+	}
 
 	private void setListeners(PlaceView placeView, PlaceAdapterViewHolder holder) {
 
@@ -252,7 +265,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		setListeners(this.placeViewArrayList.get(position), holder);
 
 		holder.cityNameTextView.setText(currentPlace.getCity());
-		holder.countryNameTextVIew.setText(currentPlace.getCountry());
+		holder.countryNameTextVIew.setText(this.getCountryName(currentPlace.getCountryCode()));
 
 		CurrentWeather currentWeather = currentPlace.getCurrentWeather();
 
@@ -424,7 +437,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		}
 
 		//  Humidity
-		holder.humidityTextView.setText(currentWeather.humidity + " %");
+		holder.humidityTextView.setText(String.format("%d %%", currentWeather.humidity));
 
 		//  Pressure
 		if (pressureUnit.contains("hpa")) {

@@ -114,6 +114,8 @@
         android:gravity="start"
         android:isScrollContainer="false"
         android:paddingBottom="5dp"
+        android:linksClickable="true"
+        android:autoLink="web"
         android:text="Description"
         android:textColor="@color/colorSecondaryText"
         android:textSize="18sp" />

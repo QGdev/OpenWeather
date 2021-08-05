@@ -6,8 +6,7 @@
 	android:layout_height="match_parent"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:backgroundTint="@color/colorBackground"
-	tools:context=".ui.places.PlacesFragment"
-	android:orientation="vertical">
+	tools:context=".ui.places.PlacesFragment">
 
 	<TextView
 		android:id="@+id/no_places_registered"
@@ -45,10 +44,11 @@
 		android:id="@+id/add_places"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_margin="10dp"
+		android:layout_margin="@dimen/floating_action_button_margin"
 		android:contentDescription=""
-		android:src="@drawable/add_place_24dp"
+		android:src="@drawable/ic_add_place_24dp"
 		app:layout_constraintBottom_toBottomOf="parent"
 		app:layout_constraintEnd_toEndOf="parent"
 		tools:srcCompat="@tools:sample/avatars" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

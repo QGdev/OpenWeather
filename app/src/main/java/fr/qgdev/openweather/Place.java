@@ -16,7 +16,6 @@ import fr.qgdev.openweather.weather.WeatherAlert;
 public class Place {
 
     private String city;
-    private String country;
     private String countryCode;
 
     private double latitude;
@@ -37,7 +36,7 @@ public class Place {
     private ArrayList<WeatherAlert> weatherAlertsArrayList;
 
 
-    public Place(String city, String country, String countryCode) {
+    public Place(String city, String countryCode) {
 
         this.currentWeather = new CurrentWeather();
         this.minutelyWeatherForecastArrayList = new ArrayList<MinutelyWeatherForecast>();
@@ -46,7 +45,6 @@ public class Place {
         this.weatherAlertsArrayList = new ArrayList<WeatherAlert>();
 
         this.city = city;
-        this.country = country;
         this.countryCode = countryCode;
     }
 
@@ -66,7 +64,6 @@ public class Place {
             JSONObject placeJSON = placeObjectJSON.optJSONObject("place");
 
             this.city = placeJSON.getString("city");
-            this.country = placeJSON.getString("country");
             this.countryCode = placeJSON.getString("country_code");
             this.latitude = placeJSON.getDouble("latitude");
             this.longitude = placeJSON.getDouble("longitude");
@@ -179,14 +176,6 @@ public class Place {
 
     public void setCity(String city) {
         this.city = city;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
     }
 
     public String getCountryCode() {
@@ -359,7 +348,6 @@ public class Place {
 
         ////    Place
         placeJSON.accumulate("city", city);
-        placeJSON.accumulate("country", country);
         placeJSON.accumulate("country_code", countryCode);
         placeJSON.accumulate("latitude", latitude);
         placeJSON.accumulate("longitude", longitude);

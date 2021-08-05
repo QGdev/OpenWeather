@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import fr.qgdev.openweather.DataPlaces;
@@ -29,11 +30,13 @@ import fr.qgdev.openweather.WeatherService;
 
 public class AddPlaceDialog extends Dialog {
 
+	private  final Context context;
 	private final TextInputEditText cityEditText;
 	private final AutoCompleteTextView countryEditText;
 	private final Button verifyButton;
 
 	private final List<String> countryNames;
+	private final List<String> countryNamesSorted;
 	private final List<String> countryCodes;
 
 	private final String apiKey;
@@ -43,16 +46,20 @@ public class AddPlaceDialog extends Dialog {
 		super(context);
 		setContentView(R.layout.dialog_add_place);
 
+		this.context = context;
+
 		this.cityEditText = findViewById(R.id.city);
 		this.countryEditText = findViewById(R.id.country);
 		this.verifyButton = findViewById(R.id.verify_button);
 
 		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
+		this.countryNamesSorted = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
+		Collections.sort(this.countryNamesSorted);
 		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
 
 		this.apiKey = apiKey;
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.select_dialog_item, countryNames);
+		ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.dialog_country_list_item, countryNamesSorted);
 		countryEditText.setThreshold(1);
 		countryEditText.performValidation();
 		countryEditText.setAdapter(adapter);
@@ -85,7 +92,7 @@ public class AddPlaceDialog extends Dialog {
 					}
 					//  API key and place settings is correctly registered
 					else {
-						Place place = new Place(getCity(), getCountryName(), getCountryCode());
+						Place place = new Place(getCity(), getCountryCode());
 
 						RequestQueue weatherDataRequest = Volley.newRequestQueue(context);
 						String url = String.format(context.getString(R.string.url_owm_coordinates), place.getCity(), place.getCountryCode(), apiKey);
