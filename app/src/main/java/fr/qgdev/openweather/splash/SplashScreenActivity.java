@@ -17,7 +17,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
 
-        int SPLASH_TIME_OUT = 2000;
+        int SPLASH_TIME_OUT = 1000;
         new Handler().postDelayed(() -> {
             // This method will be executed once the timer is over
             // Start your app main activity
