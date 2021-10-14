@@ -1,26 +1,18 @@
 package fr.qgdev.openweather.dialog;
 
 import android.app.Dialog;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import fr.qgdev.openweather.BuildConfig;
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.adapters.AttributionItemAdapter;
+import fr.qgdev.openweather.adapter.AttributionItemAdapter;
 
 public class AboutAppDialog extends Dialog {
 
@@ -28,7 +20,6 @@ public class AboutAppDialog extends Dialog {
 	private final LinearLayout attributionLinearLayout;
 	private final List<String> attributionTitleList;
 	private final List <String> attributionContentList;
-	private AttributionItemAdapter attributionItemAdapter;
 	private final Button exitButton;
 
 	public AboutAppDialog(Context context) {

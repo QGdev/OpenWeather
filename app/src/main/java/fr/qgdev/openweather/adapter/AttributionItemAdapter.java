@@ -1,4 +1,4 @@
-package fr.qgdev.openweather.adapters;
+package fr.qgdev.openweather.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
