@@ -24,7 +24,7 @@ import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.WeatherService;
 import fr.qgdev.openweather.dataplaces.DataPlaces;
 import fr.qgdev.openweather.dataplaces.PlaceAlreadyExistException;
-import fr.qgdev.openweather.ui.places.PlacesFragment;
+import fr.qgdev.openweather.fragment.places.PlacesFragment;
 
 public class AddPlaceDialog extends Dialog {
 

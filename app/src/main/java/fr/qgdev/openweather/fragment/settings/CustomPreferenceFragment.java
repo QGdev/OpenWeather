@@ -1,4 +1,4 @@
-package fr.qgdev.openweather.ui.settings;
+package fr.qgdev.openweather.fragment.settings;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

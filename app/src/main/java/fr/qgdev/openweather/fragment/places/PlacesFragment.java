@@ -1,4 +1,4 @@
-package fr.qgdev.openweather.ui.places;
+package fr.qgdev.openweather.fragment.places;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

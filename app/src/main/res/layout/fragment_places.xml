@@ -5,7 +5,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:backgroundTint="@color/colorBackground"
-	tools:context=".ui.places.PlacesFragment">
+	tools:context=".fragment.places.PlacesFragment">
 
 	<TextView
 		android:id="@+id/no_places_registered"
