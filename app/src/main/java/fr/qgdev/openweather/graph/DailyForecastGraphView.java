@@ -16,7 +16,6 @@ import androidx.annotation.Px;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
@@ -36,8 +35,6 @@ public class DailyForecastGraphView extends View {
 	private Bitmap temperaturesGraph, windSpeedsGraph, precipitationsGraph;
 	private ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList;
 
-
-	private String timeFormat;
 	private TimeZone timeZone;
 	private Paint datePaint,
 			hourPaint,
@@ -139,7 +136,7 @@ public class DailyForecastGraphView extends View {
 		this.sunIconPaint.setTextAlign(Paint.Align.CENTER);
 	}
 
-	public void initialisation(@NonNull ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, @NonNull String timeFormat, TimeZone timeZone, FormattingService unitsFormattingService) {
+	public void initialisation(@NonNull ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, TimeZone timeZone, FormattingService unitsFormattingService) {
 
 		float[] firstCurve, secondCurve;
 
@@ -147,8 +144,6 @@ public class DailyForecastGraphView extends View {
 		this.height = dpToPx(850);
 
 		this.dailyWeatherForecastArrayList = dailyWeatherForecastArrayList;
-
-		this.timeFormat = timeFormat;
 		this.timeZone = timeZone;
 
 		this.formattingService = unitsFormattingService;
@@ -237,29 +232,11 @@ public class DailyForecastGraphView extends View {
 	}
 
 	// Draw the main structure, day and hours divs and date
-	private void drawStructureAndDate(Canvas canvas, float columnWidthDp, ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, TimeZone timeZone, boolean is24HourFormat) {
+	private void drawStructureAndDate(Canvas canvas, float columnWidthDp, ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, TimeZone timeZone) {
 
 		float x_div = 0, x_div_hours = QUARTER_COLUMN_WIDTH / 2F;
 		float dateFirstLineY, dateSecondLineY, hourLineY;
-		SimpleDateFormat dateFormatDayName, dateFormatDayMonth, dateFormatHours;
 		Date date;
-
-		//  dateFormatDayName -> "Mon", "Thu", "Wed"...
-		//  dateFormatDayMonth -> "31/12"...
-		dateFormatDayName = new SimpleDateFormat("EE");
-		dateFormatDayMonth = new SimpleDateFormat("dd/MM");
-
-		//  dateFormatHours -> 23:45 or 11:45 PM depending on the time format
-		if (is24HourFormat) {
-			dateFormatHours = new SimpleDateFormat("HH:mm");
-		} else {
-			dateFormatHours = new SimpleDateFormat("KK:mm a");
-		}
-
-		//  Changing the timeZone
-		dateFormatDayName.setTimeZone(timeZone);
-		dateFormatDayMonth.setTimeZone(timeZone);
-		dateFormatHours.setTimeZone(timeZone);
 
 		dateFirstLineY = dpToPx(15);
 		dateSecondLineY = dpToPx(35);
@@ -271,8 +248,8 @@ public class DailyForecastGraphView extends View {
 
 			date = new Date(dailyWeatherForecastArrayList.get(index).dt);
 
-			canvas.drawText(dateFormatDayName.format(date), x_div + 10, dateFirstLineY, this.datePaint);
-			canvas.drawText(dateFormatDayMonth.format(date), x_div + 10, dateSecondLineY, this.datePaint);
+			canvas.drawText(formattingService.getFormattedShortDayName(date, timeZone), x_div + 10, dateFirstLineY, this.datePaint);
+			canvas.drawText(formattingService.getFormattedDayMonth(date, timeZone), x_div + 10, dateSecondLineY, this.datePaint);
 
 			for (int indexHour = 1; indexHour < 4; indexHour++) {
 				canvas.drawLine(x_div + QUARTER_COLUMN_WIDTH * indexHour, hourLineY, x_div + QUARTER_COLUMN_WIDTH * indexHour, hourLineY * 2, this.hourPaint);
@@ -450,7 +427,7 @@ public class DailyForecastGraphView extends View {
 
 		float halfOfColumnWidth = HALF_COLUMN_WIDTH, quarterOfColumnWidth = QUARTER_COLUMN_WIDTH, sixthOfColumnWidth = SIXTH_COLUMN_WIDTH;
 
-		drawStructureAndDate(canvas, COLUMN_WIDTH, dailyWeatherForecastArrayList, timeZone, timeFormat.contains("24"));
+		drawStructureAndDate(canvas, COLUMN_WIDTH, dailyWeatherForecastArrayList, timeZone);
 
 		for (DailyWeatherForecast dailyWeatherForecast : dailyWeatherForecastArrayList) {
 
