@@ -13,18 +13,18 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Context context = getApplicationContext();
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		Context context = getApplicationContext();
 
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
+		BottomNavigationView navView = findViewById(R.id.nav_view);
 
-        //  NavigationBar for Live data, Forecasts or settings
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupWithNavController(navView, navController);
-    }
+		//  NavigationBar for Live data, Forecasts or settings
+		NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+		NavigationUI.setupWithNavController(navView, navController);
+	}
 
 }
