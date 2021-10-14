@@ -67,7 +67,8 @@ public class Place {
 			this.latitude = placeJSON.getDouble("latitude");
 			this.longitude = placeJSON.getDouble("longitude");
 			//  Moving from a timeZone in a String form to a timeZoneOffset int since version 0.9
-			if (placeJSON.has("time_offset")) this.timeOffset = placeJSON.getInt("time_offset");
+			if (placeJSON.has("timezone_offset"))
+				this.timeOffset = placeJSON.getInt("timezone_offset");
 			else this.timeOffset = 0;
 
 		} else {
