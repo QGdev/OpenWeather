@@ -46,6 +46,14 @@
             app:defaultValue="hpa"
             app:useSimpleSummaryProvider="true" />
 
+        <ListPreference
+            app:defaultValue="cardinal"
+            app:entries="@array/wind_direction_units"
+            app:entryValues="@array/wind_direction_units_values"
+            app:key="direction_unit"
+            app:title="@string/title_settings_units_direction"
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
