@@ -1,9 +1,7 @@
 package fr.qgdev.openweather.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.preference.PreferenceManager;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,8 +41,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	private static DataPlaces dataPlaces;
 	private final List<String> countryNames;
 	private final List<String> countryCodes;
-	private static String timeOffset;
-	private static String timeFormat;
 	private static FormattingService formattingService;
 	private final PlacesFragment.Interactions placesFragmentInteractions;
 
@@ -59,10 +55,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
 
 		formattingService = new FormattingService(context);
-
-		SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
-		this.timeOffset = userPref.getString("time_offset", null);
-		this.timeFormat = userPref.getString("time_format", null);
 	}
 
 	public ArrayList<PlaceView> generatePlaceViewArray() {
@@ -525,7 +517,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		}
 
 		holder.hourlyForecastGraphView.initialisation(currentPlace.getHourlyWeatherForecastArrayList(), currentPlace.getDailyWeatherForecastArrayList(), formattingService, currentPlace.getTimeZone());
-		holder.dailyForecastGraphView.initialisation(currentPlace.getDailyWeatherForecastArrayList(), timeFormat, currentPlace.getTimeZone(), formattingService);
+		holder.dailyForecastGraphView.initialisation(currentPlace.getDailyWeatherForecastArrayList(), currentPlace.getTimeZone(), formattingService);
 
 
 		/*
