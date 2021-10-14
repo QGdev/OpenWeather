@@ -3,9 +3,29 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.75" />
+        <entry key="app/src/main/res/drawable/cloudy_tornado_material.xml" value="0.396875" />
+        <entry key="app/src/main/res/drawable/compass_black_24dp.xml" value="0.78" />
+        <entry key="app/src/main/res/drawable/danger.xml" value="0.396875" />
+        <entry key="app/src/main/res/drawable/dew_point_material.xml" value="0.17564102564102563" />
+        <entry key="app/src/main/res/drawable/round_square.xml" value="0.45897435897435895" />
+        <entry key="app/src/main/res/drawable/sun_flat.xml" value="0.78" />
+        <entry key="app/src/main/res/drawable/temperature_maximum_material.xml" value="0.30512820512820515" />
+        <entry key="app/src/main/res/layout-large/adapter_places.xml" value="0.25" />
+        <entry key="app/src/main/res/layout-large/adapter_places_detailed.xml" value="0.53359375" />
+        <entry key="app/src/main/res/layout-large/adapter_places_forecast.xml" value="0.266796875" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.11965811965811966" />
+        <entry key="app/src/main/res/layout/adapter_daily_column.xml" value="0.22467105263157894" />
+        <entry key="app/src/main/res/layout/adapter_hourly_column.xml" value="0.2918803418803419" />
+        <entry key="app/src/main/res/layout/adapter_places.xml" value="1.0" />
+        <entry key="app/src/main/res/layout/adapter_places_detailed.xml" value="0.2918803418803419" />
+        <entry key="app/src/main/res/layout/adapter_places_forecast.xml" value="0.22467105263157894" />
+        <entry key="app/src/main/res/layout/column_daily_forecast.xml" value="0.10811965811965812" />
+        <entry key="app/src/main/res/layout/column_hourly_forecast.xml" value="1.0" />
         <entry key="app/src/main/res/layout/dialog_about_us.xml" value="0.22467105263157894" />
-        <entry key="app/src/main/res/layout/dialog_add_place.xml" value="0.22467105263157894" />
+        <entry key="app/src/main/res/layout/dialog_add_place.xml" value="0.5" />
         <entry key="app/src/main/res/layout/fragment_places.xml" value="0.22467105263157894" />
+        <entry key="app/src/main/res/xml/settings_preferences.xml" value="0.2918803418803419" />
       </map>
     </option>
   </component>

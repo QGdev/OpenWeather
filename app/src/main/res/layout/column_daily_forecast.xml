@@ -86,7 +86,7 @@
         android:layout_width="30dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:src="@drawable/weather_vane_material"
+        android:src="@drawable/wind_vane_material"
         app:tint="@color/colorIcons" />
 
     <ImageView
