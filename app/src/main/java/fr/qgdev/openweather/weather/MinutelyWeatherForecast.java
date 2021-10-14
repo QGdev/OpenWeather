@@ -5,34 +5,32 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+
 public class MinutelyWeatherForecast {
 
-    public long dt;
-    public double precipitation;
+	public long dt;
+	public float precipitation;
 
-    public MinutelyWeatherForecast()
-    {
-        this.dt = 0;
-        this.precipitation = 0;
-    }
+	public MinutelyWeatherForecast() {
+		this.dt = 0;
+		this.precipitation = 0;
+	}
 
-    public MinutelyWeatherForecast(long dt, double precipitation)
-    {
-        this.dt = dt;
-        this.precipitation = precipitation;
-    }
+	public MinutelyWeatherForecast(long dt, float precipitation) {
+		this.dt = dt;
+		this.precipitation = precipitation;
+	}
 
-    public MinutelyWeatherForecast(JSONObject minutelyWeatherForecast) throws JSONException
-    {
-        this.dt = minutelyWeatherForecast.getLong("dt");
-        this.precipitation =  minutelyWeatherForecast.getDouble("precipitation");
-    }
+	public MinutelyWeatherForecast(JSONObject minutelyWeatherForecast) throws JSONException {
+		this.dt = minutelyWeatherForecast.getLong("dt");
+		this.precipitation = BigDecimal.valueOf(minutelyWeatherForecast.getDouble("precipitation")).floatValue();
+	}
 
-    public void fillWithOWMData(JSONObject minutelyWeather) throws JSONException
-    {
-        this.dt = minutelyWeather.getLong("dt") * 1000;
-        this.precipitation = minutelyWeather.getDouble("precipitation");
-    }
+	public void fillWithOWMData(JSONObject minutelyWeather) throws JSONException {
+		this.dt = minutelyWeather.getLong("dt") * 1000;
+		this.precipitation = BigDecimal.valueOf(minutelyWeather.getDouble("precipitation")).floatValue();
+	}
 
     public JSONObject getJSONObject() throws JSONException
     {

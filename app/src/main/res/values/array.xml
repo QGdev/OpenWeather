@@ -506,10 +506,14 @@
     </string-array>
 
     <string-array name="attribution_title">
+        <item>"Weather data and Forecasts"</item>
+        <item>"API OpenWeatherMaps"</item>
         <item>"Icons"</item>
     </string-array>
 
     <string-array name="attribution_content">
+        <item>"Weather data and forecasts are acquired through openweathermap.org, they are licensed under ODbL"</item>
+        <item>"Use of openweathermap.org APIs is licensed under CC BY-SA 4.O"</item>
         <item>"Icons made by freepik.com from flaticon.com "</item>
     </string-array>
 
@@ -542,7 +546,7 @@
     </string-array>
 
     <string-array name="measure_units">
-        <item name="default">@string/title_settings_units_measure_metric</item>
+        <item>@string/title_settings_units_measure_metric</item>
         <item>@string/title_settings_units_measure_imperial</item>
     </string-array>
     <string-array name="measure_units_values">
@@ -551,12 +555,25 @@
     </string-array>
 
     <string-array name="pressure_units">
-        <item name="default">@string/title_settings_units_pressure_hpa</item>
-        <item>@string/title_settings_units__pressure_bar</item>
+        <item>@string/title_settings_units_pressure_hpa</item>
+        <item>@string/title_settings_units_pressure_mbar</item>
+        <item>@string/title_settings_units_pressure_psi</item>
+        <item>@string/title_settings_units_pressure_inhg</item>
     </string-array>
     <string-array name="pressure_units_values">
         <item>hpa</item>
-        <item>bar</item>
+        <item>mbar</item>
+        <item>psi</item>
+        <item>inhg</item>
+    </string-array>
+
+    <string-array name="wind_direction_units">
+        <item name="default">@string/title_settings_units_direction_cardinal</item>
+        <item>@string/title_settings_units_direction_degrees</item>
+    </string-array>
+    <string-array name="wind_direction_units_values">
+        <item>cardinal</item>
+        <item>angular</item>
     </string-array>
 
     <string name="title_settings_time_offset_place_country">Relative to the country of the registered places</string>

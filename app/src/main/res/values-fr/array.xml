@@ -255,10 +255,14 @@
 
 
 	<string-array name="attribution_title">
+		<item>"Données météo et prévisions"</item>
+		<item>"API OpenWeatherMaps"</item>
 		<item>"Icônes"</item>
 	</string-array>
 
 	<string-array name="attribution_content">
+		<item>"Les données météorologiques et les prévisions sont acquises grâce à openweathermap.org, elles sont sous licence ODbL"</item>
+		<item>"L'utilisation des API de openweathermap.org est sous licence CC BY-SA 4.0"</item>
 		<item>"Icônes réalisées par freepik.com et disponibles sur flaticon.com "</item>
 	</string-array>
 </resources>

@@ -88,17 +88,16 @@
                 <include layout="@layout/column_hourly_forecast" />
 
                 <HorizontalScrollView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:hapticFeedbackEnabled="true"
-                    android:nestedScrollingEnabled="true">
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:hapticFeedbackEnabled="true"
+					android:nestedScrollingEnabled="true">
 
-                    <LinearLayout
-                        android:id="@+id/hourly_forecast_scrollView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal" />
-                </HorizontalScrollView>
+					<fr.qgdev.openweather.graph.HourlyForecastGraphView
+						android:id="@+id/hourly_graphview"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content" />
+				</HorizontalScrollView>
 
             </LinearLayout>
         </LinearLayout>
@@ -142,27 +141,27 @@
 
             </GridLayout>
 
-            <LinearLayout
-                android:id="@+id/daily_forecast"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:visibility="gone">
+			<LinearLayout
+				android:id="@+id/daily_forecast"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="10dp"
+				android:visibility="gone">
 
-                <include layout="@layout/column_daily_forecast" />
+				<include layout="@layout/column_daily_forecast" />
 
-                <HorizontalScrollView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:hapticFeedbackEnabled="true">
+				<HorizontalScrollView
+					android:layout_width="wrap_content"
+					android:layout_height="match_parent"
+					android:hapticFeedbackEnabled="true">
 
-                    <LinearLayout
-                        android:id="@+id/daily_forecast_scrollView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal" />
-                </HorizontalScrollView>
-            </LinearLayout>
+					<fr.qgdev.openweather.graph.DailyForecastGraphView
+						android:id="@+id/daily_forecast_graphView"
+						android:layout_width="match_parent"
+						android:layout_height="match_parent"
+						android:orientation="horizontal" />
+				</HorizontalScrollView>
+			</LinearLayout>
         </LinearLayout>
 
 

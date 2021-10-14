@@ -25,78 +25,121 @@
     <string name="description_delete_icon">Delete the place</string>
 
 
-    <string name="title_settings">Settings</string>
+	<string name="title_settings">Settings</string>
 
-    <string name="title_settings_api_key">API key</string>
-    <string name="title_settings_api" translatable="false">OpenWeatherMaps API</string>
+	<string name="title_settings_api_key">API key</string>
+	<string name="title_settings_api" translatable="false">OpenWeatherMaps API</string>
 
-    <string name="title_settings_units">Units</string>
-    <string name="title_settings_units_temperature">Temperature</string>
-    <string name="title_settings_units_temperature_celsius">Celsius</string>
-    <string name="title_settings_units_temperature_fahrenheit">Fahrenheit</string>
-    <string name="default_temperature">celsius</string>
+	<string name="title_settings_units">Units</string>
 
-    <string name="title_settings_units_measure">Measure</string>
-    <string name="title_settings_units_measure_imperial">Imperial</string>
-    <string name="title_settings_units_measure_metric">Metric</string>
-    <string name="title_settings_units_pressure">Pressure</string>
-    <string name="title_settings_units__pressure_bar">Barometric</string>
-    <string name="title_settings_units_pressure_hpa">HectoPascal</string>
-    <string name="default_measure">metric</string>
+	<string name="title_settings_units_temperature">Temperature</string>
+	<string name="default_temperature" translatable="false">celsius</string>
+	<string name="title_settings_units_temperature_celsius">Celsius</string>
+	<string name="title_settings_units_temperature_fahrenheit">Fahrenheit</string>
 
-    <string name="title_settings_time">Time</string>
-    <string name="title_settings_hour_timeoffset">Time Offset</string>
-    <string name="default_timeoffset">place</string>
-    <string name="title_settings_hour_format">Time Format</string>
-    <string name="default_hourformat">24</string>
+	<string name="title_settings_units_measure">Measure</string>
+	<string name="default_measure" translatable="false">metric</string>
+	<string name="title_settings_units_measure_imperial">Imperial</string>
+	<string name="title_settings_units_measure_metric">Metric</string>
+
+	<string name="title_settings_units_pressure">Pressure</string>
+	<string name="default_pressure" translatable="false">hpa</string>
+	<string name="title_settings_units_pressure_mbar">mBar - Barometric</string>
+	<string name="title_settings_units_pressure_hpa">hPa - HectoPascal</string>
+	<string name="title_settings_units_pressure_psi">PSI - Pound per square inch</string>
+	<string name="title_settings_units_pressure_inhg">inHg - Inch of mercury</string>
+
+	<string name="title_settings_units_direction">Wind direction</string>
+	<string name="default_direction" translatable="false">cardinal</string>
+	<string name="title_settings_units_direction_cardinal">Cardinal points</string>
+	<string name="title_settings_units_direction_degrees">Angular</string>
 
 
-    <string name="title_dialog_add_place">Add place</string>
-    <string name="title_dialog_add_place_textinput_city">City</string>
-    <string name="title_dialog_add_place_spinner_country">Country</string>
-    <string name="title_dialog_add_place_verify_button">Verify</string>
-    <string name="title_dialog_add_place_verify_button_verification">Verification</string>
+	<string name="title_settings_time">Time</string>
+	<string name="default_timeoffset" translatable="false">place</string>
+	<string name="title_settings_hour_timeoffset">Time Offset</string>
+	<string name="default_hourformat" translatable="false">24</string>
+	<string name="title_settings_hour_format">Time Format</string>
 
-    <string name="error_no_api_key_registered">No API key found</string>
-    <string name="error_server_unreachable">Cannot reach OMW servers, verify your connection and try again</string>
-    <string name="error_place_not_found">OpenWeatherMaps didn\'t found that place</string>
-    <string name="error_wrong_api_key">OpenWeatherMaps didn\'t recognize your API key</string>
-    <string name="error_too_many_request_in_a_day">Cannot get weather data, too many requests today</string>
-    <string name="error_unknow_error">Unknow error happened</string>
 
-    <string name="url_owm_weatherdata" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
-    <string name="url_owm_coordinates" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s]]></string>
+	<string name="title_dialog_add_place">Add place</string>
+	<string name="title_dialog_add_place_textinput_city">City</string>
+	<string name="title_dialog_add_place_spinner_country">Country</string>
+	<string name="dialog_add_place_add_button_text">Add</string>
 
-    <string name="place_added_succcessfully">was successfully added</string>
+	<string name="error_no_api_key_registered">No API key found</string>
+	<string name="error_server_unreachable">Cannot reach OMW servers, verify your connection and try again</string>
+	<string name="error_place_not_found">Place not found</string>
+	<string name="error_wrong_api_key">OpenWeatherMaps didn\'t recognize your API key</string>
+	<string name="error_too_many_request_in_a_day">Cannot get weather data, too many requests today</string>
+	<string name="error_unknow_error">Unknow error happened</string>
+	<string name="error_device_not_connected">Cannot connect to internet, please verify your connection and try again</string>
 
-    <string name="error_no_place_settings_registered">Place settings are not correctly entered</string>
-    <string name="error_cannot_save_place_in_register">Cannot save the place (Err SPR)</string>
-    <string name="error_cannot_save_place">Cannot save the place (Err SP)</string>
-    <string name="error_cannot_refresh_place_list">Cannot refresh places</string>
+	<string name="url_owm_weatherdata" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
+	<string name="url_owm_coordinates" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s]]></string>
 
-    <string name="dialog_confirmation_title_delete_place">Deleting a place</string>
-    <string name="dialog_confirmation_message_delete_place">Delete %s, %s ?</string>
-    <string name="dialog_confirmation_choice_yes">Yes, delete it</string>
-    <string name="dialog_confirmation_choice_no">No, keep it</string>
-    <string name="title_precipitations_1h">Precipitations - 1h</string>
-    <string name="title_precipitation_rain">Rain :</string>
-    <string name="title_precipitation_snow">Snow :</string>
-    <string name="title_forecast">Weather Forecast</string>
-    <string name="title_forecast_hourly">Hourly Forecast</string>
-    <string name="error_cannot_refresh_place_list_network">Cannot refresh place list due to a network error</string>
-    <string name="error_place_already_added">This place is already added</string>
-    <string name="error_no_places_registered">No places registered</string>
-    <string name="title_forecast_daily">Daily Forecast</string>
-    <string name="splash_screen" translatable="false">Splash Screen</string>
-    <string name="from_date">From</string>
-    <string name="until_date">Until</string>
-    <string name="title_dialog_weather_alert">Weather alert</string>
-	<string name="about_us" >About us</string>
-    <string name="title_dialog_exit_button" >Exit</string>
+	<string name="place_added_succcessfully">was successfully added</string>
 
-    <string name="about_the_developer_section_title">About the developer</string>
-    <string name="about_the_developer_section_content">I am French computer science student, who had an idea during lockdown and turned it into an application to practice Java and Android development.</string>
-    <string name="about_your_data_section_title">About your data</string>
-    <string name="about_your_data_section_content">The data is only stored on your phone, apart from you, no one has access to it.\nThe application only sends some data to openweathermap.org, this data is linked to cities, the first time a city is entered, we send the city as well as its country, after once this city is registered, we only send the city coordinates.\nThere is no intermediary between OpenWeatherMaps and the application, the data received is directly processed on the application.\nThe OpenWeatherMaps privacy policy is available here: openweather.co.uk/privacy-policy</string>
+	<string name="error_place_country_not_in_list">The country must exist in the list</string>
+	<string name="error_cannot_save_place">Cannot save the place</string>
+	<string name="error_cannot_refresh_place_list">Cannot refresh places</string>
+	<string name="error_place_deletion">An error occurred while deleting</string>
+	<string name="error_cannot_save_place_treatment">Cannot save place due to a treatment error</string>
+
+
+	<string name="dialog_confirmation_title_delete_place">Deleting a place</string>
+	<string name="dialog_confirmation_message_delete_place">Delete %s, %s ?</string>
+	<string name="dialog_confirmation_choice_yes">Yes, delete it</string>
+	<string name="dialog_confirmation_choice_no">No, keep it</string>
+	<string name="title_precipitations_1h">Precipitations - 1h</string>
+	<string name="title_precipitation_rain">Rain :</string>
+	<string name="title_precipitation_snow">Snow :</string>
+	<string name="title_forecast">Weather Forecast</string>
+	<string name="title_forecast_hourly">Hourly Forecast</string>
+	<string name="error_cannot_refresh_place_list_network">Cannot refresh place list due to a network error</string>
+	<string name="error_place_already_added">This place is already added</string>
+	<string name="error_no_places_registered">No places registered</string>
+	<string name="title_forecast_daily">Daily Forecast</string>
+	<string name="splash_screen" translatable="false">Splash Screen</string>
+	<string name="from_date">From</string>
+	<string name="until_date">Until</string>
+	<string name="title_dialog_weather_alert">Weather alert</string>
+	<string name="about_us">About us</string>
+	<string name="title_dialog_exit_button">Exit</string>
+
+	<string name="about_the_developer_section_title">About the developer</string>
+	<string name="about_the_developer_section_content">I am French computer science student, who had an idea during lockdown and turned it into an application to practice Java and Android development.</string>
+	<string name="about_your_data_section_title">About your data</string>
+	<string name="about_your_data_section_content">The data is only stored on your phone, apart from you, no one has access to it.\nThe application only sends some data to openweathermap.org, this data is linked to cities, the first time a city is entered, we send the city as well as its country, after once this city is registered, we only send the city coordinates.\nThere is no intermediary between OpenWeatherMaps and the application, the data received is directly processed on the application.\nThe OpenWeatherMaps privacy policy is available here: openweather.co.uk/privacy-policy</string>
+	<string name="place_deletion_successful">Successfully deleted !</string>
+	<string name="icon_legend_data_time">Date and hour</string>
+	<string name="icon_legend_weather_condition">Weather conditions</string>
+	<string name="icon_legend_temperature">Temperature</string>
+	<string name="icon_legend_feel_like_temperature">Feel like temperature</string>
+	<string name="icon_legend_humidity">Humidity</string>
+	<string name="icon_legend_atmo_pressure">Atmospheric pressure</string>
+	<string name="icon_legend_uv_index">UV index</string>
+	<string name="icon_legend_dew_point">Dew point</string>
+	<string name="icon_legend_cloudiness">Cloudiness</string>
+	<string name="icon_legend_visibility">Visibility</string>
+	<string name="icon_legend_wind_speed">Wind speed</string>
+	<string name="icon_legend_wind_gust_speed">Wind gust speed</string>
+	<string name="icon_legend_wind_direction">Wind direction</string>
+	<string name="icon_legend_rain">Rain</string>
+	<string name="icon_legend_snow">Snow</string>
+	<string name="icon_legend_pop">Probability of precipitation</string>
+	<string name="error_place_city_field_empty">Please give the name of the city</string>
+	<string name="error_place_country_field_empty">Please where is that city</string>
+	<string name="summary_time">The choice of time zone does not affect the daily forecast</string>
+	<string name="description_wind_direction">Wind direction</string>
+	<string name="description_wind_speed">Wind speed</string>
+	<string name="description_wind_gust_speed">Wind gust speed</string>
+	<string name="description_humidity">Humidity</string>
+	<string name="description_pressure">Pressure</string>
+	<string name="description_visibility">Visibility</string>
+	<string name="description_sunrise">Sunrise time</string>
+	<string name="description_sunset">Sunset time</string>
+	<string name="description_cloudiness">Cloudiness</string>
+	<string name="description_weather_alert">Weather alerts</string>
 
 </resources>

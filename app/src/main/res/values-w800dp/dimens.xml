@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="dialog_max_width">750dp</dimen>
+	<dimen name="dialog_max_width">750dp</dimen>
+
+	<dimen name="env_variables_width">200dp</dimen>
 </resources>

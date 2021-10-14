@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+
 public class HourlyWeatherForecast {
 
     public long dt;
@@ -13,23 +15,24 @@ public class HourlyWeatherForecast {
     public String weatherDescription;
     public int weatherCode;
 
-    public double temperature;
-    public double temperatureFeelsLike;
+    public float temperature;
+    public float temperatureFeelsLike;
 
     public int pressure;
     public int humidity;
-    public double dewPoint;
+    public float dewPoint;
 
     public int cloudiness;
     public int visibility;
+    public int uvIndex;
 
-    public double windSpeed;
-    public double windGustSpeed;
-    public int windDirection;
+    public float windSpeed;
+    public float windGustSpeed;
+    public short windDirection;
 
-    public double pop;
-    public double rain;
-    public double snow;
+    public float pop;
+    public float rain;
+    public float snow;
 
     public HourlyWeatherForecast() {
         this.dt = 0;
@@ -47,6 +50,7 @@ public class HourlyWeatherForecast {
 
         this.cloudiness = 0;
         this.visibility = 0;
+        this.uvIndex = 0;
 
         this.windSpeed = 0;
         this.windGustSpeed = 0;
@@ -57,8 +61,7 @@ public class HourlyWeatherForecast {
         this.snow = 0;
     }
 
-    public HourlyWeatherForecast(JSONObject hourlyWeatherForecast) throws JSONException
-    {
+    public HourlyWeatherForecast(JSONObject hourlyWeatherForecast) throws JSONException {
         //  Time
         this.dt = hourlyWeatherForecast.getLong("dt");
 
@@ -68,28 +71,31 @@ public class HourlyWeatherForecast {
         this.weatherCode = hourlyWeatherForecast.getInt("weather_code");
 
         //  Temperatures
-        this.temperature = hourlyWeatherForecast.getDouble("temperature");
-        this.temperatureFeelsLike = hourlyWeatherForecast.getDouble("temperature_feels_like");
+        this.temperature = BigDecimal.valueOf(hourlyWeatherForecast.getDouble("temperature")).floatValue();
+        this.temperatureFeelsLike = BigDecimal.valueOf(hourlyWeatherForecast.getDouble("temperature_feels_like")).floatValue();
 
         //  Pressure, Humidity, dew point, Cloudiness, Visibility
         this.pressure = hourlyWeatherForecast.getInt("pressure");
         this.humidity = hourlyWeatherForecast.getInt("humidity");
-        this.dewPoint = hourlyWeatherForecast.getDouble("dew_point");
+        this.dewPoint = BigDecimal.valueOf(hourlyWeatherForecast.getDouble("dew_point")).floatValue();
         this.cloudiness = hourlyWeatherForecast.getInt("cloudiness");
         this.visibility = hourlyWeatherForecast.getInt("visibility");
+        //  To assure retrocompatibility with older versions
+        if (hourlyWeatherForecast.has("uvi")) this.uvIndex = hourlyWeatherForecast.getInt("uvi");
+        else this.uvIndex = 0;
 
         //  Wind
-        this.windSpeed = hourlyWeatherForecast.getDouble("wind_speed");
-        this.windGustSpeed = hourlyWeatherForecast.getDouble("wind_gust_speed");
-        this.windDirection = hourlyWeatherForecast.getInt("wind_direction");
+        this.windSpeed = BigDecimal.valueOf(hourlyWeatherForecast.getDouble("wind_speed")).floatValue();
+        this.windGustSpeed = BigDecimal.valueOf(hourlyWeatherForecast.getDouble("wind_gust_speed")).floatValue();
+        this.windDirection = BigDecimal.valueOf(hourlyWeatherForecast.getInt("wind_direction")).shortValue();
 
         //  Precipitations
         ////    PoP -   Probability of Precipitations
-        this.pop = hourlyWeatherForecast.getDouble("pop");
+        this.pop = BigDecimal.valueOf(hourlyWeatherForecast.getDouble("pop")).floatValue();
         ////    Rain
-        this.rain = hourlyWeatherForecast.getDouble("rain");
+        this.rain = BigDecimal.valueOf(hourlyWeatherForecast.getDouble("rain")).floatValue();
         ////    Snow
-        this.snow = hourlyWeatherForecast.getDouble("snow");
+        this.snow = BigDecimal.valueOf(hourlyWeatherForecast.getDouble("snow")).floatValue();
     }
 
     public void fillWithOWMData(JSONObject hourlyWeather) throws JSONException
@@ -104,38 +110,39 @@ public class HourlyWeatherForecast {
         this.weatherCode = hourlyForecastWeatherDescriptionsJSON.getInt("id");
 
         //  Temperatures
-        this.temperature = hourlyWeather.getDouble("temp");
-        this.temperatureFeelsLike = hourlyWeather.getDouble("feels_like");
+        this.temperature = BigDecimal.valueOf(hourlyWeather.getDouble("temp")).floatValue();
+        this.temperatureFeelsLike = BigDecimal.valueOf(hourlyWeather.getDouble("feels_like")).floatValue();
 
-        //  Pressure, Humidity, Visibility, cloudiness, dewPoint
+        //  Pressure, Humidity, Visibility, cloudiness, dewPoint and uvIndex
         this.pressure = hourlyWeather.getInt("pressure");
         this.humidity = hourlyWeather.getInt("humidity");
+        this.dewPoint = BigDecimal.valueOf(hourlyWeather.getDouble("dew_point")).floatValue();
         this.visibility = hourlyWeather.getInt("visibility");
         this.cloudiness = hourlyWeather.getInt("clouds");
-        this.dewPoint = hourlyWeather.getDouble("dew_point");
+        this.uvIndex = BigDecimal.valueOf(hourlyWeather.getDouble("uvi")).intValue();
 
         //  Wind
-        this.windSpeed = hourlyWeather.getDouble("wind_speed");
-        this.windDirection = hourlyWeather.getInt("wind_deg");
+        this.windSpeed = BigDecimal.valueOf(hourlyWeather.getDouble("wind_speed")).floatValue();
+        this.windDirection = BigDecimal.valueOf(hourlyWeather.getInt("wind_deg")).shortValue();
         ////    Wind Gusts
         if (hourlyWeather.has("wind_gust")) {
-            this.windGustSpeed = hourlyWeather.getDouble("wind_gust");
+            this.windGustSpeed = BigDecimal.valueOf(hourlyWeather.getDouble("wind_gust")).floatValue();
         } else {
             this.windGustSpeed = 0;
         }
 
         //  Precipitations
         ////    PoP -   Probability of Precipitations
-        this.pop = hourlyWeather.getDouble("pop");
+        this.pop = BigDecimal.valueOf(hourlyWeather.getDouble("pop")).floatValue();
         ////    Rain
         if (hourlyWeather.has("rain") && hourlyWeather.getJSONObject("rain").has("1h")) {
-            this.rain = hourlyWeather.getJSONObject("rain").getDouble("1h");
+            this.rain = BigDecimal.valueOf(hourlyWeather.getJSONObject("rain").getDouble("1h")).floatValue();
         } else {
             this.rain = 0;
         }
         ////    Snow
         if (hourlyWeather.has("snow") && hourlyWeather.getJSONObject("snow").has("1h")) {
-            this.snow = hourlyWeather.getJSONObject("snow").getDouble("1h");
+            this.snow = BigDecimal.valueOf(hourlyWeather.getJSONObject("snow").getDouble("1h")).floatValue();
         } else {
             this.snow = 0;
         }
@@ -159,6 +166,7 @@ public class HourlyWeatherForecast {
 
         returnedHourlyWeatherForecast.cloudiness = this.cloudiness;
         returnedHourlyWeatherForecast.visibility = this.visibility;
+        returnedHourlyWeatherForecast.uvIndex = this.uvIndex;
 
         returnedHourlyWeatherForecast.windSpeed = this.windSpeed;
         returnedHourlyWeatherForecast.windGustSpeed = this.windGustSpeed;
@@ -195,6 +203,7 @@ public class HourlyWeatherForecast {
         ////    Sky
         hourlyWeatherForecastJSON.accumulate("cloudiness", this.cloudiness);
         hourlyWeatherForecastJSON.accumulate("visibility", this.visibility);
+        hourlyWeatherForecastJSON.accumulate("uvi", this.uvIndex);
 
         ////    Wind
         hourlyWeatherForecastJSON.accumulate("wind_speed", this.windSpeed);
@@ -209,75 +218,4 @@ public class HourlyWeatherForecast {
 
         return hourlyWeatherForecastJSON;
     }
-
-    public String getWindDirectionCardinalPoints() {
-
-        //  N
-        if (windDirection > 348.75 || windDirection < 11.25) {
-            return "N";
-        }
-
-        //  NNE
-        if (windDirection >= 11.25 && windDirection < 33.75) {
-            return "NNE";
-        }
-        //  NE
-        if (windDirection >= 33.75 && windDirection <= 56.25) {
-            return "NE";
-        }
-        //  ENE
-        if (windDirection > 56.25 && windDirection <= 78.75) {
-            return "ENE";
-        }
-        //  E
-        if (windDirection > 78.75 && windDirection < 101.25) {
-            return "E";
-        }
-        //  ESE
-        if (windDirection >=101.25 && windDirection < 123.75) {
-            return "ESE";
-        }
-        //  SE
-        if (windDirection >= 123.75 && windDirection <= 146.25) {
-            return "SE";
-        }
-        // SSE
-        if (windDirection > 146.25 && windDirection <= 168.75) {
-            return "SSE";
-        }
-        //  S
-        if (windDirection > 168.75 && windDirection < 191.25) {
-            return "S";
-        }
-        //  SSW
-        if (windDirection >= 191.25 && windDirection < 213.75) {
-            return "SSW";
-        }
-        //  SW
-        if (windDirection >= 213.75 && windDirection <= 236.25) {
-            return "SW";
-        }
-        //  WSW
-        if (windDirection > 236.25 && windDirection <= 258.75) {
-            return "WSW";
-        }
-        //  W
-        if (windDirection > 258.75 && windDirection < 281.25) {
-            return "W";
-        }
-        //  WNW
-        if (windDirection >= 281.25 && windDirection < 303.75) {
-            return "WNW";
-        }
-        //  NW
-        if (windDirection >= 303.75 && windDirection <= 326.25) {
-            return "NW";
-        }
-        //  NNW
-        if (windDirection > 326.25 && windDirection <= 348.75) {
-            return "NNW";
-        }
-        return "";
-    }
 }
-

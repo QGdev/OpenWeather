@@ -1,75 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:minWidth="@dimen/dialog_max_width"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:layout_margin="20dp"
-    style="@style/MaterialTheme">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/dialog_window"
+	style="@style/MaterialTheme"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center"
+	android:layout_margin="20dp"
+	android:minWidth="@dimen/dialog_max_width"
+	android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:text="@string/title_dialog_add_place"
-        android:textSize="25sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+	<TextView
+		android:id="@+id/title"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="start"
+		android:text="@string/title_dialog_add_place"
+		android:textSize="25sp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintVertical_bias="0.0" />
 
-    <com.google.android.material.textfield.TextInputLayout
+	<com.google.android.material.textfield.TextInputLayout
 
-        android:id="@+id/cityTextInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="@string/title_dialog_add_place_textinput_city"
-        app:layout_constraintTop_toBottomOf="@+id/title">
+		android:id="@+id/cityTextInputLayout"
+		style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:hint="@string/title_dialog_add_place_textinput_city"
+		app:boxStrokeErrorColor="@color/colorRedError"
+		app:errorEnabled="false"
+		app:errorIconTint="@color/colorRedError"
+		app:errorTextColor="@color/colorRedError"
+		app:layout_constraintTop_toBottomOf="@+id/title">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/city"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="3"
-            android:dropDownAnchor="@style/MaterialTheme"/>
+		<com.google.android.material.textfield.TextInputEditText
+			android:id="@+id/city"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:dropDownAnchor="@style/MaterialTheme"
+			android:maxLines="3" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+	</com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/countryTextInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="@string/title_dialog_add_place_spinner_country"
-        app:layout_constraintTop_toBottomOf="@+id/cityTextInputLayout">
+	<com.google.android.material.textfield.TextInputLayout
+		android:id="@+id/countryTextInputLayout"
+		style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:hint="@string/title_dialog_add_place_spinner_country"
+		app:boxStrokeErrorColor="@color/colorRedError"
+		app:errorEnabled="false"
+		app:errorIconTint="@color/colorRedError"
+		app:errorTextColor="@color/colorRedError"
+		app:layout_constraintTop_toBottomOf="@+id/cityTextInputLayout">
 
-        <AutoCompleteTextView
-            android:id="@+id/country"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textAutoComplete|textAutoCorrect"
-            android:dropDownSelector="@color/colorPrimary"
-            android:cursorVisible="true"/>
+		<AutoCompleteTextView
+			android:id="@+id/country"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:cursorVisible="true"
+			android:dropDownSelector="@color/colorPrimary"
+			android:inputType="textAutoComplete|textAutoCorrect" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+	</com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/verify_button"
-        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:height="50dp"
-        android:enabled="true"
-        android:text="@string/title_dialog_add_place_verify_button"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countryTextInputLayout" />
+	<Button
+		android:id="@+id/exit_button"
+		style="@style/Widget.MaterialComponents.Button.TextButton.Dialog.Flush"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:height="50dp"
+		android:enabled="true"
+		android:text="@string/title_dialog_exit_button"
+		android:textSize="20sp"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/countryTextInputLayout" />
+
+	<Button
+		android:id="@+id/add_button"
+		style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:height="50dp"
+		android:enabled="true"
+		android:text="@string/dialog_add_place_add_button_text"
+		android:textSize="20sp"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintTop_toBottomOf="@+id/countryTextInputLayout"></Button>
+
+	<ProgressBar
+		android:id="@+id/add_button_progress_spinner"
+		style="@android:style/Widget.Holo.ProgressBar.Small"
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:indeterminate="true"
+		android:indeterminateTint="@color/colorSecondary"
+		android:visibility="gone"
+		app:layout_constraintBottom_toBottomOf="@id/add_button"
+		app:layout_constraintEnd_toEndOf="@+id/add_button"
+		app:layout_constraintStart_toStartOf="@+id/add_button"
+		app:layout_constraintTop_toTopOf="@+id/add_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

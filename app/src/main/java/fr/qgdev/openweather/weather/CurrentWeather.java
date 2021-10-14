@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
+import java.math.BigDecimal;
 
 public class CurrentWeather {
 
@@ -15,12 +15,12 @@ public class CurrentWeather {
     public String weatherDescription;
     public int weatherCode;
 
-    public double temperature;
-    public double temperatureFeelsLike;
+    public float temperature;
+    public float temperatureFeelsLike;
 
     public int pressure;
     public int humidity;
-    public double dewPoint;
+    public float dewPoint;
 
     public int cloudiness;
     public int uvIndex;
@@ -29,13 +29,13 @@ public class CurrentWeather {
     public long sunrise;
     public long sunset;
 
-    public double windSpeed;
-    public double windGustSpeed;
+    public float windSpeed;
+    public float windGustSpeed;
     public boolean isWindDirectionReadable;
-    public int windDirection;
+    public short windDirection;
 
-    public double rain;
-    public double snow;
+    public float rain;
+    public float snow;
 
     public CurrentWeather() {
         this.dt = 0;
@@ -77,13 +77,13 @@ public class CurrentWeather {
         this.weatherCode = currentWeather.getInt("weather_code");
 
         //  Temperatures
-        this.temperature = currentWeather.getDouble("temperature");
-        this.temperatureFeelsLike = currentWeather.getDouble("temperature_feels_like");
+        this.temperature = BigDecimal.valueOf(currentWeather.getDouble("temperature")).floatValue();
+        this.temperatureFeelsLike = BigDecimal.valueOf(currentWeather.getDouble("temperature_feels_like")).floatValue();
 
         //  Pressure, Humidity, dewPoint
         this.pressure = currentWeather.getInt("pressure");
         this.humidity = currentWeather.getInt("humidity");
-        this.dewPoint = currentWeather.getDouble("dew_point");
+        this.dewPoint = BigDecimal.valueOf(currentWeather.getDouble("dew_point")).floatValue();
 
         //  Sky informations
         this.cloudiness = currentWeather.getInt("cloudiness");
@@ -93,10 +93,10 @@ public class CurrentWeather {
         this.sunset = currentWeather.getLong("sunset");
 
         //    Wind informations
-        this.windSpeed = currentWeather.getDouble("wind_speed");
-        this.windGustSpeed = currentWeather.getDouble("wind_gust_speed");
+        this.windSpeed = BigDecimal.valueOf(currentWeather.getDouble("wind_speed")).floatValue();
+        this.windGustSpeed = BigDecimal.valueOf(currentWeather.getDouble("wind_gust_speed")).floatValue();
         this.isWindDirectionReadable = currentWeather.getBoolean("wind_readable_direction");
-        this.windDirection = currentWeather.getInt("wind_direction");
+        this.windDirection = BigDecimal.valueOf(currentWeather.getInt("wind_direction")).shortValue();
 
         //  Precipitations
         this.rain = currentWeather.getInt("rain");
@@ -116,13 +116,13 @@ public class CurrentWeather {
         this.weatherCode = currentWeatherDescriptionsJSON.getInt("id");
 
         //    Temperatures
-        this.temperature = currentWeather.getDouble("temp");
-        this.temperatureFeelsLike = currentWeather.getDouble("feels_like");
+        this.temperature = BigDecimal.valueOf(currentWeather.getDouble("temp")).floatValue();
+        this.temperatureFeelsLike = BigDecimal.valueOf(currentWeather.getDouble("feels_like")).floatValue();
 
         //    Pressure, Humidity, dewPoint, uvIndex
         this.pressure = currentWeather.getInt("pressure");
         this.humidity = currentWeather.getInt("humidity");
-        this.dewPoint = currentWeather.getDouble("dew_point");
+        this.dewPoint = BigDecimal.valueOf(currentWeather.getDouble("dew_point")).floatValue();
 
         if (currentWeather.has("uvi")) {
             this.uvIndex = currentWeather.getInt("uvi");
@@ -137,16 +137,16 @@ public class CurrentWeather {
         this.sunset = currentWeather.getLong("sunset") * 1000;
 
         //    Wind informations
-        this.windSpeed = currentWeather.getDouble("wind_speed");
+        this.windSpeed = BigDecimal.valueOf(currentWeather.getDouble("wind_speed")).floatValue();
 
         ////  Enough wind for a viable wind direction information
         this.isWindDirectionReadable = currentWeather.has("wind_deg");
         if (this.isWindDirectionReadable) {
-            this.windDirection = currentWeather.getInt("wind_deg");
+            this.windDirection = BigDecimal.valueOf(currentWeather.getInt("wind_deg")).shortValue();
         }
         ////    Wind Gusts
         if (currentWeather.has("wind_gust")) {
-            this.windGustSpeed = currentWeather.getDouble("wind_gust");
+            this.windGustSpeed = BigDecimal.valueOf(currentWeather.getDouble("wind_gust")).floatValue();
         } else {
             this.windGustSpeed = 0;
         }
@@ -154,13 +154,13 @@ public class CurrentWeather {
         //  Precipitations
         ////    Rain
         if (currentWeather.has("rain") && currentWeather.getJSONObject("rain").has("1h")) {
-            this.rain = currentWeather.getJSONObject("rain").getDouble("1h");
+            this.rain = BigDecimal.valueOf(currentWeather.getJSONObject("rain").getDouble("1h")).floatValue();
         } else {
             this.rain = 0;
         }
         ////    Snow
         if (currentWeather.has("snow") && currentWeather.getJSONObject("snow").has("1h")) {
-            this.snow = currentWeather.getJSONObject("snow").getDouble("1h");
+            this.snow = BigDecimal.valueOf(currentWeather.getJSONObject("snow").getDouble("1h")).floatValue();
         } else {
             this.snow = 0;
         }

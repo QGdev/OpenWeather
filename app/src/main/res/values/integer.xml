@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="dialog_max_width">900dp</dimen>
+	<integer name="env_variables_column_count">3</integer>
 </resources>

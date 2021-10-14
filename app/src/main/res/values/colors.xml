@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FA825C</color>
-    <color name="colorSecondary">#F4511E</color>
-    <color name="colorAccent">#F96824</color>
+	<color name="colorPrimary">#FA825C</color>
+	<color name="colorSecondary">#F4511E</color>
+	<color name="colorAccent">#F96824</color>
 
-    <color name="colorBlack">#000000</color>
-    <color name="colorBlackGrey">#222725</color>
-    <color name="colorBlackGrey1">#393032</color>
+	<color name="colorRedError">#E01C15</color>
 
-    <color name="colorWhite">#FFFFFF</color>
-    <color name="colorWhiteGrey">#E1E1E1</color>
-    <color name="colorWhiteGrey1">#E0E0E2</color>
+	<color name="colorBlack">#000000</color>
+	<color name="colorBlackGrey">#222725</color>
+	<color name="colorBlackGrey1">#393032</color>
 
-    <color name="colorLightBlue">#3C91E6</color>
+	<color name="colorWhite">#FFFFFF</color>
+	<color name="colorWhiteGrey">#E1E1E1</color>
+	<color name="colorWhiteGrey1">#E0E0E2</color>
+
+	<color name="colorLightBlue">#5DA3EA</color>
+
+	<color name="colorUvLow">#83C88B</color>
+	<color name="colorUvModerate">#FFDC01</color>
+	<color name="colorUvHigh">#F89C1C</color>
+	<color name="colorUvVeryHigh">#EE1D23</color>
+	<color name="colorUvExtreme">#D83484</color>
 
 </resources>
