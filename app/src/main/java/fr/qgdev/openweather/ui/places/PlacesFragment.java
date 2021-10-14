@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,24 +18,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.android.volley.VolleyError;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import fr.qgdev.openweather.DataPlaces;
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.WeatherService;
-import fr.qgdev.openweather.adapters.PlaceRecyclerViewAdapter;
+import fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter;
+import fr.qgdev.openweather.dataplaces.DataPlaces;
 import fr.qgdev.openweather.dialog.AddPlaceDialog;
 
 public class PlacesFragment extends Fragment {
 
-	private Context mContext;
+	private static Context mContext;
 	private String API_KEY;
 
 	private TextView noPlacesRegisteredTextView;
@@ -44,14 +43,28 @@ public class PlacesFragment extends Fragment {
 	private FloatingActionButton addPlacesFab;
 	private RecyclerView placeRecyclerView;
 	private PlaceRecyclerViewAdapter placeRecyclerViewAdapter;
-
+	private static DataPlaces dataPlaces;
+	private PlacesFragment.Interactions interactions;
 	private static ArrayList<Place> placeArrayList;
-	private DataPlaces dataPlaces;
 
 	private WeatherService weatherService;
-	private WeatherService.WeatherCallback getPlaceListCallback;
+	private WeatherService.WeatherCallbackGetData getPlaceListCallback;
 
 	private static AtomicInteger refreshCounter;
+
+	private void showSnackbar(View view, String message) {
+		Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+				.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+				.setMaxInlineActionWidth(3)
+				.show();
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		weatherService.cancel();
+		mContext = null;
+	}
 
 
 	@Override
@@ -61,14 +74,9 @@ public class PlacesFragment extends Fragment {
 	}
 
 	@Override
-	public void onDetach() {
-		super.onDetach();
-		mContext = null;
-	}
-
-	@Override
-	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-		super.onViewStateRestored(savedInstanceState);
+	public void onDestroyView() {
+		super.onDestroyView();
+		placeRecyclerView.destroyDrawingCache();
 	}
 
 	@SuppressLint("WrongThread")
@@ -77,42 +85,77 @@ public class PlacesFragment extends Fragment {
 	                         ViewGroup container, Bundle savedInstanceState) {
 
 		View root = inflater.inflate(R.layout.fragment_places, container, false);
+
 		noPlacesRegisteredTextView = root.findViewById(R.id.no_places_registered);
 		swipeRefreshLayout = root.findViewById(R.id.swiperefresh);
 		addPlacesFab = root.findViewById(R.id.add_places);
 
+
 		//  Initialize places data storage
 		dataPlaces = new DataPlaces(mContext);
+		placeArrayList = new ArrayList<Place>();
+
+		try {
+			placeArrayList.addAll(dataPlaces.getAllPlacesStored());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 
 		//  Initialize the list and the ArrayList where all places registered
-		placeArrayList = new ArrayList<>();
 		placeRecyclerView = root.findViewById(R.id.place_list);
 		refreshCounter = new AtomicInteger();
 		refreshCounter.set(0);
 
 
+		this.interactions = new Interactions() {
+			@Override
+			public void onPlaceDeletion(DataPlaces dataPlaces, int position) {
+				try {
+					if (dataPlaces.deletePlace(position)) {
+						placeArrayList.remove(position);
+						showSnackbar(container, mContext.getString(R.string.place_deletion_successful));
+					} else {
+						showSnackbar(container, mContext.getString(R.string.error_place_deletion));
+					}
+
+					if (placeArrayList.isEmpty()) {
+						noPlacesRegisteredTextView.setVisibility(View.VISIBLE);
+						swipeRefreshLayout.setVisibility(View.GONE);
+
+					}
+
+				} catch (ArrayIndexOutOfBoundsException e) {
+					showSnackbar(container, mContext.getString(R.string.error_place_deletion));
+				}
+			}
+
+			@Override
+			public void onAddingPlace(DataPlaces dataPlaces, int position, Place place) {
+				if (placeArrayList.isEmpty()) {
+					noPlacesRegisteredTextView.setVisibility(View.GONE);
+					swipeRefreshLayout.setVisibility(View.VISIBLE);
+				}
+
+				placeArrayList.add(place);
+				placeRecyclerViewAdapter.add(position);
+			}
+
+			@Override
+			public void onPlaceUpdate(DataPlaces dataPlaces, int position, Place place) {
+				placeArrayList.set(position, place);
+				placeRecyclerViewAdapter.notifyItemChanged(position);
+			}
+		};
+
+
 		//  Initialisation of the RecycleView
+		//________________________________________________________________
+		//
 		LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
 		layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, placeArrayList, new PlaceRecyclerViewAdapter.ActionCallback() {
-			@Override
-			public void onPlaceDeletion(int position) {
-				String dataPlaceName = placeArrayList.get(position).getCity().toUpperCase() + '/' + placeArrayList.get(position).getCountryCode();
-				dataPlaces.deletePlace(dataPlaceName);
-				placeArrayList.remove(position);
-
-				if (!placeArrayList.isEmpty()) {
-					noPlacesRegisteredTextView.setVisibility(View.GONE);
-					swipeRefreshLayout.setVisibility(View.VISIBLE);
-
-				} else {
-					noPlacesRegisteredTextView.setVisibility(View.VISIBLE);
-					swipeRefreshLayout.setVisibility(View.GONE);
-				}
-			}
-		});
-
+		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, this, this.interactions, dataPlaces);
 		placeRecyclerView.setLayoutManager(layoutManager);
 		placeRecyclerView.setAdapter(placeRecyclerViewAdapter);
 
@@ -125,105 +168,68 @@ public class PlacesFragment extends Fragment {
 		weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), dataPlaces);
 
 		//  acquire data of the places callback
-		getPlaceListCallback = new WeatherService.WeatherCallback() {
+		getPlaceListCallback = new WeatherService.WeatherCallbackGetData() {
 			@Override
 			public void onWeatherData(final Place place, DataPlaces dataPlaces) {
 				try {
-					if (dataPlaces.savePlace(place)) {
-						int index = dataPlaces.getPlacePositionInRegister(place);
-						int nbPlacesBefore = placeRecyclerViewAdapter.getItemCount();
+					if (dataPlaces.updatePlace(place)) {
+						interactions.onPlaceUpdate(dataPlaces, dataPlaces.getPlacePositionInRegister(place), place);
 
-						//  New Place has been added
-						if (nbPlacesBefore < index + 1) {
-							placeRecyclerViewAdapter.add(place);
-							placeArrayList.add(place);
+						if (noPlacesRegisteredTextView.getVisibility() == View.VISIBLE) {
+							noPlacesRegisteredTextView.setVisibility(View.GONE);
+							swipeRefreshLayout.setVisibility(View.VISIBLE);
 						}
-						//  Nothing new
-						else {
-							placeRecyclerViewAdapter.set(index, place);
-							placeArrayList.set(index, place);
-						}
-
-						noPlacesRegisteredTextView.setVisibility(View.GONE);
-						swipeRefreshLayout.setVisibility(View.VISIBLE);
 
 					} else {
-						Snackbar.make(container, mContext.getString(R.string.error_cannot_refresh_place_list), Snackbar.LENGTH_LONG)
-								.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-								.show();
+						showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-					Snackbar.make(container, mContext.getString(R.string.error_cannot_refresh_place_list), Snackbar.LENGTH_LONG)
-							.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-							.show();
-				}
-
-				// TEST
-				if(placeArrayList.size() == refreshCounter.incrementAndGet()){
-					swipeRefreshLayout.setRefreshing(false);
-					refreshCounter.set(0);
-				}
-
-			}
-
-			@Override
-			public void onError(Exception exception, Place place, DataPlaces dataPlaces) {
-				Snackbar.make(container, mContext.getString(R.string.error_cannot_refresh_place_list_network), Snackbar.LENGTH_LONG)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-						.show();
-				exception.printStackTrace();
-
-				// TEST
-				if(placeArrayList.size() == refreshCounter.incrementAndGet()){
-					swipeRefreshLayout.setRefreshing(false);
-					refreshCounter.set(0);
+					showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
 				}
 			}
 
 			@Override
-			public void onConnectionError(VolleyError error, Place place, DataPlaces dataPlaces) {
+			public void onTreatmentError() {
+				showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list_network));
+			}
 
-				//  no server response (NO INTERNET or SERVER DOWN)
-				if (error.networkResponse == null) {
-					Snackbar.make(container, mContext.getString(R.string.error_server_unreachable), Snackbar.LENGTH_LONG)
-							.setAnimationMode(Snackbar.ANIMATION_MODE_FADE)
-							.show();
-				}
-				//  Server response
-				else {
-					place.setErrorDuringDataAcquisition(true);
-					place.setErrorCode(error.networkResponse.statusCode);
-					switch (place.getErrorCode()) {
-						case 429:   //  Too many requests
-							Snackbar.make(container, mContext.getString(R.string.error_too_many_request_in_a_day), Snackbar.LENGTH_LONG)
-									.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-									.show();
-							break;
-						case 404:   //  Place not found
-							Snackbar.make(container, mContext.getString(R.string.error_place_not_found), Snackbar.LENGTH_LONG)
-									.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-									.show();
-							break;
-						case 401:   //  Unknown or wrong API key
-							Snackbar.make(container, mContext.getString(R.string.error_wrong_api_key), Snackbar.LENGTH_LONG)
-									.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-									.show();
-							break;
-						default:    //  Unknown error
-							Snackbar.make(container, mContext.getString(R.string.error_unknow_error), Snackbar.LENGTH_LONG)
-									.setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-									.show();
-							break;
-					}
-				}
+			@Override
+			public void onNoResponseError() {
+				showSnackbar(container, mContext.getString(R.string.error_server_unreachable));
+			}
 
-				// TEST
-				if(placeArrayList.size() == refreshCounter.incrementAndGet()){
+			@Override
+			public void onTooManyRequestsError() {
+				showSnackbar(container, mContext.getString(R.string.error_too_many_request_in_a_day));
+			}
+
+			@Override
+			public void onPlaceNotFoundError() {
+				showSnackbar(container, mContext.getString(R.string.error_place_not_found));
+			}
+
+			@Override
+			public void onWrongOrUnknownApiKeyError() {
+				showSnackbar(container, mContext.getString(R.string.error_wrong_api_key));
+			}
+
+			@Override
+			public void onUnknownError() {
+				showSnackbar(container, mContext.getString(R.string.error_unknow_error));
+			}
+
+			@Override
+			public void onDeviceNotConnected() {
+				showSnackbar(container, mContext.getString(R.string.error_device_not_connected));
+			}
+
+			@Override
+			public void onTheEndOfTheRequest() {
+				if (placeArrayList.size() == refreshCounter.incrementAndGet()) {
 					swipeRefreshLayout.setRefreshing(false);
 					refreshCounter.set(0);
 				}
-
 			}
 		};
 
@@ -243,12 +249,14 @@ public class PlacesFragment extends Fragment {
 			addPlacesFab.setVisibility(View.VISIBLE);
 		}
 
+
 		//  A simple click to add a place
 		addPlacesFab.setOnClickListener(
 				placeFabView -> {
-					final AddPlaceDialog addPlaceDialog = new AddPlaceDialog(mContext, placeFabView, API_KEY, weatherService, getPlaceListCallback);
+					final AddPlaceDialog addPlaceDialog = new AddPlaceDialog(mContext, placeFabView, this.API_KEY, this.weatherService, this.interactions);
 					addPlaceDialog.build();
 				});
+
 
 		//  Swipe to refresh listener
 		swipeRefreshLayout.setOnRefreshListener(
@@ -256,41 +264,28 @@ public class PlacesFragment extends Fragment {
 					swipeRefreshLayout.setRefreshing(true);
 					if (API_KEY != null && !Objects.equals(API_KEY, "")) {
 						try {
-							placeArrayList.clear();
-							placeArrayList.addAll(dataPlaces.getPlaces());
-							placeRecyclerViewAdapter.remplaceSet(placeArrayList);
-
 							for (Place place : placeArrayList) {
-								weatherService.getWeatherDataOWM(place, getPlaceListCallback);
+								weatherService.getWeatherDataOWM(place, dataPlaces, getPlaceListCallback);
 							}
-							//swipeRefreshLayout.setRefreshing(false);
+
 						} catch (Exception e) {
-							Snackbar.make(container, mContext.getString(R.string.error_cannot_refresh_place_list), Snackbar.LENGTH_LONG).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-									.show();
-							e.printStackTrace();
+							showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
 						}
 					} else {
 						swipeRefreshLayout.setRefreshing(false);
-						Snackbar.make(container, mContext.getString(R.string.error_no_api_key_registered), Snackbar.LENGTH_LONG).setAnimationMode(Snackbar.ANIMATION_MODE_FADE).setMaxInlineActionWidth(3)
-								.show();
+						showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered));
 					}
 				}
 		);
 
-		//  Display data about places
-		try {
-			//  Show current saved data
-			placeArrayList.clear();
-			placeArrayList.addAll(dataPlaces.getPlaces());
-			placeRecyclerViewAdapter.remplaceSet(placeArrayList);
 
+		try {
 			if (!placeArrayList.isEmpty()) {
 				noPlacesRegisteredTextView.setVisibility(View.GONE);
 				swipeRefreshLayout.setVisibility(View.VISIBLE);
 
-				//  Refresh data
 				for (Place place : placeArrayList) {
-					weatherService.getWeatherDataOWM(place, getPlaceListCallback);
+					weatherService.getWeatherDataOWM(place, dataPlaces, getPlaceListCallback);
 				}
 
 			} else {
@@ -302,5 +297,30 @@ public class PlacesFragment extends Fragment {
 		}
 
 		return root;
+	}
+
+	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+	}
+
+	public Place getPlace(int index) {
+		return placeArrayList.get(index);
+	}
+
+	public int getPlaceArrayListSize() {
+		return placeArrayList.size();
+	}
+
+	public TimeZone getTimeZonePlaceInArray(int index) {
+		return placeArrayList.get(index).getTimeZone();
+	}
+
+	public interface Interactions {
+		void onPlaceDeletion(DataPlaces dataPlaces, int position);
+
+		void onAddingPlace(DataPlaces dataPlaces, int position, Place place);
+
+		void onPlaceUpdate(DataPlaces dataPlaces, int position, Place place);
 	}
 }
