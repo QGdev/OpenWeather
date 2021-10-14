@@ -1,4 +1,4 @@
-package fr.qgdev.openweather.adapters;
+package fr.qgdev.openweather.adapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -75,7 +75,7 @@ public class WeatherAlertAdapter extends BaseAdapter {
         }
 
         if (timeOffset.contains("place"))
-            hourFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(place.getTimeZone())));
+            hourFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(place.getTimeZoneStringForm())));
 
         eventTextView.setText(currentWeatherAlert.getEvent());
         senderTextView.setText(currentWeatherAlert.getSender());

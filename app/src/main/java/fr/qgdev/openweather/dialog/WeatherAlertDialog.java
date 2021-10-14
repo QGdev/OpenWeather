@@ -7,7 +7,7 @@ import android.widget.LinearLayout;
 
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.adapters.WeatherAlertAdapter;
+import fr.qgdev.openweather.adapter.WeatherAlertAdapter;
 
 public class WeatherAlertDialog extends Dialog {
 
