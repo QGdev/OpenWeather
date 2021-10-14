@@ -29,10 +29,6 @@ public class FormattingService {
 	private String speedFormatSpecifierFloat;
 	//  Pressure format specifier
 	private String pressureFormatSpecifier;
-	//  Direction format specifier
-	private String directionFormatSpecifier;
-	private String directionFormatSpecifierDegrees;
-	private String directionFormatSpecifierCardinalPoints;
 	//  TimeHour format specifier
 	private SimpleDateFormat hourFormat;
 	private SimpleDateFormat timeFormat;
@@ -229,20 +225,20 @@ public class FormattingService {
 	//  Direction formatting
 	////    Selected choice
 	public String getFormattedDirection(short direction, boolean isReadable) {
-		return String.format(directionFormatSpecifier, convertDirection(direction, isReadable));
+		return convertDirection(direction, isReadable);
 	}
 
 	////    Cardinal points
 	public String getFormattedDirectionInCardinalPoints(short direction) {
 		if (direction >= 0 && direction <= 360)
-			return String.format(directionFormatSpecifierCardinalPoints, toCardinal(direction));
+			return toCardinal(direction);
 		else return "N/A";
 	}
 
 	////    Degrees direction
 	public String getFormattedDirectionInDegrees(short direction) {
 		if (direction >= 0 && direction <= 360)
-			return String.format(directionFormatSpecifierDegrees, toDegrees(direction));
+			return toDegrees(direction);
 		else return "N/A";
 	}
 
@@ -297,10 +293,10 @@ public class FormattingService {
 		//  Measure
 		switch (userPref.getString("measure_unit", "")) {
 			case "imperial": {
-				shortDistanceFormatSpecifierInt = "%d%smi.";
-				shortDistanceFormatSpecifierFloat = "%.1f%smi.";
-				distanceFormatSpecifierInt = "%d%sin.";
-				distanceFormatSpecifierFloat = "%.1f%sin.";
+				shortDistanceFormatSpecifierInt = "%d%sin.";
+				shortDistanceFormatSpecifierFloat = "%.2f%sin.";
+				distanceFormatSpecifierInt = "%d%smi.";
+				distanceFormatSpecifierFloat = "%.1f%smi.";
 				speedFormatSpecifierInt = "%d%smph";
 				speedFormatSpecifierFloat = "%.1f%smph";
 
@@ -380,17 +376,13 @@ public class FormattingService {
 
 	private void directionUnitInit(SharedPreferences userPref) {
 		//  Direction
-		directionFormatSpecifierDegrees = "%s°";
-		directionFormatSpecifierCardinalPoints = "%s";
 		switch (userPref.getString("direction_unit", "")) {
 			case "angular": {
-				directionFormatSpecifier = "%s°";
 				this.directionConversion = direction -> toDegrees(direction);
 				break;
 			}
 			default:    //  Default case is using cardinal
 			{
-				directionFormatSpecifier = "%s";
 				this.directionConversion = direction -> toCardinal(direction);
 				break;
 			}
