@@ -1,7 +1,6 @@
 package fr.qgdev.openweather.ui.settings;
 
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +19,7 @@ public class CustomPreferenceFragment extends PreferenceFragmentCompat {
 		View root = super.onCreateView(inflater, container, savedInstanceState);
 		RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
 
-		recyclerView.setPadding(0,0,0, getResources().getDimensionPixelSize(R.dimen.floating_action_button_margin)*2);
+		recyclerView.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.recycler_view_bottom_padding));
 		recyclerView.setClipToPadding(false);
 
 		return root;
