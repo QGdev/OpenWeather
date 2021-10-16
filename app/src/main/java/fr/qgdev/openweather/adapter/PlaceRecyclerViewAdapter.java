@@ -472,23 +472,10 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		//  Pressure
 		holder.pressureTextView.setText(formattingService.getFormattedPressure(currentWeather.pressure, true));
 
-
 		//  Visibility
 		holder.visibilityTextView.setText(formattingService.getIntFormattedDistance(currentWeather.visibility, true));
 
-
-		/*
-		DateFormat simpleDateFormat;
-
-		if (this.timeFormat.contains("24")) {
-			simpleDateFormat = new SimpleDateFormat("HH:mm");
-		} else {
-			simpleDateFormat = new SimpleDateFormat("KK:mm a");
-		}
-
-		if (this.timeOffset.contains("place"))
-			simpleDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(currentPlace.getTimeZone())));
-		 */
+		//  Sunrise and sunset
 		holder.sunriseTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.sunrise), currentPlace.getTimeZone()));
 		holder.sunsetTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.sunset), currentPlace.getTimeZone()));
 
@@ -519,27 +506,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		holder.hourlyForecastGraphView.initialisation(currentPlace.getHourlyWeatherForecastArrayList(), currentPlace.getDailyWeatherForecastArrayList(), formattingService, currentPlace.getTimeZone());
 		holder.dailyForecastGraphView.initialisation(currentPlace.getDailyWeatherForecastArrayList(), currentPlace.getTimeZone(), formattingService);
 
-
-		/*
-		DateFormat lastUpdateDateFormat;
-
-		if (this.timeFormat.contains("24")) {
-			lastUpdateDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm");
-		} else {
-			lastUpdateDateFormat = new SimpleDateFormat("dd/MM/yy KK:mm a");
-		}
-
-
-		if (this.timeOffset.contains("place")) {
-			lastUpdateDateFormat.setTimeZone(TimeZone.getTimeZone(ZoneId.of(currentPlace.getTimeZone())));
-		*/
 		holder.lastUpdateAvailableTextView.setText(String.format("%s %s", formattingService.getFormattedFullTimeHour(new Date(currentWeather.dt), currentPlace.getTimeZone()), currentPlace.getTimeZoneStringForm()));
-			/*
-		} else {
-			holder.lastUpdateAvailableTextView.setText(formattingService.getFormattedFullTimeHour(new Date(currentWeather.dt)));
-		}
-		*/
-
 
 		Place finalCurrentPlace = currentPlace;
 		holder.cardView.setOnLongClickListener(v -> {
