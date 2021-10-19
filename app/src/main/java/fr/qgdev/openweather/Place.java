@@ -38,10 +38,10 @@ public class Place {
 	public Place(String city, String countryCode) {
 
 		this.currentWeather = new CurrentWeather();
-		this.minutelyWeatherForecastArrayList = new ArrayList<MinutelyWeatherForecast>();
-		this.hourlyWeatherForecastArrayList = new ArrayList<HourlyWeatherForecast>();
-		this.dailyWeatherForecastArrayList = new ArrayList<DailyWeatherForecast>();
-		this.weatherAlertsArrayList = new ArrayList<WeatherAlert>();
+		this.minutelyWeatherForecastArrayList = new ArrayList<>();
+		this.hourlyWeatherForecastArrayList = new ArrayList<>();
+		this.dailyWeatherForecastArrayList = new ArrayList<>();
+		this.weatherAlertsArrayList = new ArrayList<>();
 
 		this.city = city;
 		this.countryCode = countryCode;
@@ -50,10 +50,10 @@ public class Place {
 	public Place(JSONObject placeObjectJSON) throws JSONException {
 
 		this.currentWeather = new CurrentWeather();
-		this.minutelyWeatherForecastArrayList = new ArrayList<MinutelyWeatherForecast>();
-		this.hourlyWeatherForecastArrayList = new ArrayList<HourlyWeatherForecast>();
-		this.dailyWeatherForecastArrayList = new ArrayList<DailyWeatherForecast>();
-		this.weatherAlertsArrayList = new ArrayList<WeatherAlert>();
+		this.minutelyWeatherForecastArrayList = new ArrayList<>();
+		this.hourlyWeatherForecastArrayList = new ArrayList<>();
+		this.dailyWeatherForecastArrayList = new ArrayList<>();
+		this.weatherAlertsArrayList = new ArrayList<>();
 
 		//  Place data set
 		//________________________________________________________________
