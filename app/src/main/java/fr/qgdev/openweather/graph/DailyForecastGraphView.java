@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -37,7 +38,7 @@ public class DailyForecastGraphView extends View {
 
 	private TimeZone timeZone;
 	private Paint datePaint,
-			hourPaint,
+			dayPeriodPaint,
 			primaryPaint,
 			secondaryPaint,
 			primaryGraphPaint,
@@ -63,7 +64,7 @@ public class DailyForecastGraphView extends View {
 		this.context = context;
 
 		this.datePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.hourPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		this.dayPeriodPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.primaryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.secondaryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.primaryGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -79,11 +80,11 @@ public class DailyForecastGraphView extends View {
 		this.datePaint.setStrokeWidth(0.65F);
 		this.datePaint.setTextAlign(Paint.Align.LEFT);
 
-		this.hourPaint.setColor(getResources().getColor(R.color.colorFirstText, null));
-		this.hourPaint.setAlpha(255);
-		this.hourPaint.setTextSize(spToPx(16));
-		this.hourPaint.setStrokeWidth(0.55F);
-		this.hourPaint.setTextAlign(Paint.Align.CENTER);
+		this.dayPeriodPaint.setColor(getResources().getColor(R.color.colorFirstText, null));
+		this.dayPeriodPaint.setAlpha(255);
+		this.dayPeriodPaint.setTextSize(spToPx(16));
+		this.dayPeriodPaint.setStrokeWidth(0.55F);
+		this.dayPeriodPaint.setTextAlign(Paint.Align.CENTER);
 
 		this.primaryPaint.setColor(getResources().getColor(R.color.colorFirstText, null));
 		this.primaryPaint.setStrokeWidth(2);
@@ -148,13 +149,13 @@ public class DailyForecastGraphView extends View {
 
 		this.formattingService = unitsFormattingService;
 
-		/*
+
 		try {
 			//  Temperatures graph
-			firstCurve = dailyWeatherForecastArrayToSelectedAttributeFloatArray(dailyWeatherForecastArrayList, "temperature");
-			secondCurve = dailyWeatherForecastArrayToSelectedAttributeFloatArray(dailyWeatherForecastArrayList, "temperatureFeelsLike");
-			this.temperaturesGraph = generateBitmap2CurvesGraphPath(firstCurve, secondCurve, this.width, dpToPx(50), primaryGraphPaint, secondaryGraphPaint);
-
+			this.temperaturesGraph = generateBitmap2CurvesGraphPath(
+					extractTemperaturesFromDailyWeatherForecastArrayList(dailyWeatherForecastArrayList),
+					extractFeelsLikeTemperaturesFromDailyWeatherForecastArrayList(dailyWeatherForecastArrayList), this.width, dpToPx(50), primaryGraphPaint, secondaryGraphPaint);
+/*
 			//  Wind speeds graph
 			firstCurve = dailyWeatherForecastArrayToSelectedAttributeFloatArray(dailyWeatherForecastArrayList, "windSpeed");
 			secondCurve = dailyWeatherForecastArrayToSelectedAttributeFloatArray(dailyWeatherForecastArrayList, "windGustSpeed");
@@ -168,11 +169,11 @@ public class DailyForecastGraphView extends View {
 			////    Pop graph
 			firstCurve = dailyWeatherForecastArrayToSelectedAttributeFloatArray(dailyWeatherForecastArrayList, "pop");
 			//calculate1BarGraphPath(firstCurve, popGraphPath, dpToPx(760), dpToPx(800), 0, this.width);
-
+*/
 		}
-		catch (Exception e){
+		catch (Exception e) {
 			e.printStackTrace();
-		}*/
+		}
 	}
 
 	@Override
@@ -205,13 +206,12 @@ public class DailyForecastGraphView extends View {
 	private float[] extractTemperaturesFromDailyWeatherForecastArrayList(ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList) {
 		float[] returnedAttributeArray = new float[dailyWeatherForecastArrayList.size() * 4];
 		int arrayIndex = 0;
-		for (int index = 0; index < dailyWeatherForecastArrayList.size(); index++) {
-			arrayIndex = index * 4;
 
-			returnedAttributeArray[arrayIndex] = dailyWeatherForecastArrayList.get(index).temperatureMorning;
-			returnedAttributeArray[arrayIndex + 1] = dailyWeatherForecastArrayList.get(index).temperatureDay;
-			returnedAttributeArray[arrayIndex + 2] = dailyWeatherForecastArrayList.get(index).temperatureEvening;
-			returnedAttributeArray[arrayIndex + 3] = dailyWeatherForecastArrayList.get(index).temperatureNight;
+		for (DailyWeatherForecast dailyWeatherForecast : dailyWeatherForecastArrayList) {
+			returnedAttributeArray[arrayIndex++] = dailyWeatherForecast.temperatureMorning;
+			returnedAttributeArray[arrayIndex++] = dailyWeatherForecast.temperatureDay;
+			returnedAttributeArray[arrayIndex++] = dailyWeatherForecast.temperatureEvening;
+			returnedAttributeArray[arrayIndex++] = dailyWeatherForecast.temperatureNight;
 		}
 		return returnedAttributeArray;
 	}
@@ -220,51 +220,45 @@ public class DailyForecastGraphView extends View {
 		float[] returnedAttributeArray = new float[dailyWeatherForecastArrayList.size() * 4];
 		int arrayIndex = 0;
 
-		for (int index = 0; index < dailyWeatherForecastArrayList.size(); index++) {
-			arrayIndex = index * 4;
-
-			returnedAttributeArray[arrayIndex] = dailyWeatherForecastArrayList.get(index).temperatureMorningFeelsLike;
-			returnedAttributeArray[arrayIndex + 1] = dailyWeatherForecastArrayList.get(index).temperatureDayFeelsLike;
-			returnedAttributeArray[arrayIndex + 2] = dailyWeatherForecastArrayList.get(index).temperatureEveningFeelsLike;
-			returnedAttributeArray[arrayIndex + 3] = dailyWeatherForecastArrayList.get(index).temperatureNightFeelsLike;
+		for (DailyWeatherForecast dailyWeatherForecast : dailyWeatherForecastArrayList) {
+			returnedAttributeArray[arrayIndex++] = dailyWeatherForecast.temperatureMorningFeelsLike;
+			returnedAttributeArray[arrayIndex++] = dailyWeatherForecast.temperatureDayFeelsLike;
+			returnedAttributeArray[arrayIndex++] = dailyWeatherForecast.temperatureEveningFeelsLike;
+			returnedAttributeArray[arrayIndex++] = dailyWeatherForecast.temperatureNightFeelsLike;
 		}
 		return returnedAttributeArray;
 	}
 
-	// Draw the main structure, day and hours divs and date
-	private void drawStructureAndDate(Canvas canvas, float columnWidthDp, ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, TimeZone timeZone) {
+	// Draw the main structure, day, divs and date
+	private void drawStructureAndDate(Canvas canvas, float dateFirstLineY, float dateSecondLineY, float dayPeriodStartLineY, float dayPeriodStopLineY, ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, TimeZone timeZone) {
 
-		float x_div = 0, x_div_hours = QUARTER_COLUMN_WIDTH / 2F;
-		float dateFirstLineY, dateSecondLineY, hourLineY;
+		float xDiv = 0,
+				xDivDayPeriod = QUARTER_COLUMN_WIDTH / 2F,
+				textLineY = dayPeriodStartLineY + 20;
 		Date date;
-
-		dateFirstLineY = dpToPx(15);
-		dateSecondLineY = dpToPx(35);
-		hourLineY = dpToPx(150);
 
 		for (int index = 0; index < dailyWeatherForecastArrayList.size(); index++) {
 
-			canvas.drawLine(x_div, 0, x_div, canvas.getHeight(), this.hourPaint);
+			canvas.drawLine(xDiv, 0, xDiv, canvas.getHeight(), this.dayPeriodPaint);
 
 			date = new Date(dailyWeatherForecastArrayList.get(index).dt);
 
-			canvas.drawText(formattingService.getFormattedShortDayName(date, timeZone), x_div + 10, dateFirstLineY, this.datePaint);
-			canvas.drawText(formattingService.getFormattedDayMonth(date, timeZone), x_div + 10, dateSecondLineY, this.datePaint);
+			canvas.drawText(formattingService.getFormattedShortDayName(date, timeZone), xDiv + 10, dateFirstLineY, this.datePaint);
+			canvas.drawText(formattingService.getFormattedDayMonth(date, timeZone), xDiv + 10, dateSecondLineY, this.datePaint);
 
-			for (int indexHour = 1; indexHour < 4; indexHour++) {
-				canvas.drawLine(x_div + QUARTER_COLUMN_WIDTH * indexHour, hourLineY, x_div + QUARTER_COLUMN_WIDTH * indexHour, hourLineY * 2, this.hourPaint);
-			}
+			for (int i = 1; i < 4; i++)
+				canvas.drawLine(xDiv + QUARTER_COLUMN_WIDTH * i, dayPeriodStartLineY, xDiv + QUARTER_COLUMN_WIDTH * i, dayPeriodStopLineY, this.dayPeriodPaint);
 
-			canvas.drawText("Matin", x_div + x_div_hours, hourLineY, this.hourPaint);
-			x_div_hours += QUARTER_COLUMN_WIDTH;
-			canvas.drawText("Midi", x_div + x_div_hours, hourLineY, this.hourPaint);
-			x_div_hours += QUARTER_COLUMN_WIDTH;
-			canvas.drawText("Soirée", x_div + x_div_hours, hourLineY, this.hourPaint);
-			x_div_hours += QUARTER_COLUMN_WIDTH;
-			canvas.drawText("Nuit", x_div + x_div_hours, hourLineY, this.hourPaint);
+			canvas.drawText(getContext().getString(R.string.title_daily_forecast_morning), xDiv + xDivDayPeriod, dayPeriodStartLineY, this.dayPeriodPaint);
+			xDivDayPeriod += QUARTER_COLUMN_WIDTH;
+			canvas.drawText(getContext().getString(R.string.title_daily_forecast_noon), xDiv + xDivDayPeriod, dayPeriodStartLineY, this.dayPeriodPaint);
+			xDivDayPeriod += QUARTER_COLUMN_WIDTH;
+			canvas.drawText(getContext().getString(R.string.title_daily_forecast_evening), xDiv + xDivDayPeriod, dayPeriodStartLineY, this.dayPeriodPaint);
+			xDivDayPeriod += QUARTER_COLUMN_WIDTH;
+			canvas.drawText(getContext().getString(R.string.title_daily_forecast_night), xDiv + xDivDayPeriod, dayPeriodStartLineY, this.dayPeriodPaint);
 
-			x_div += columnWidthDp;
-			x_div_hours = QUARTER_COLUMN_WIDTH / 2F;
+			xDiv += COLUMN_WIDTH;
+			xDivDayPeriod = QUARTER_COLUMN_WIDTH / 2F;
 		}
 	}
 
@@ -386,55 +380,184 @@ public class DailyForecastGraphView extends View {
 	}
 
 	//  Draw temperatures max and min temps and
-	private void drawHourTemperatures(Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left) {
+	private void drawMaxMinTemperatures(Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left) {
 		//  Temperatures
 		drawTextWithDrawable(canvas,
 				getResources().getDrawable(this.context.getResources().getIdentifier("temperature_maximum_material", "drawable", this.context.getPackageName()), null),
 				formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureMaximum, true),
 				top,
 				left,
-				50,
+				dpToPx(10),
 				this.secondaryPaint);
 		drawTextWithDrawable(canvas,
 				getResources().getDrawable(this.context.getResources().getIdentifier("temperature_minimum_material", "drawable", this.context.getPackageName()), null),
 				formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureMinimum, true),
-				top + 100,
+				top + dpToPx(40),
 				left,
-				50,
+				dpToPx(10),
 				this.tertiaryPaint);
 	}
 
 	//  Draw temperatures max and min temps and
+	private void drawTemperatures(Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left) {
+		float textX = left + QUARTER_COLUMN_WIDTH / 2F,
+				textY1 = top,
+				textY2 = top + dpToPx(20);
+		//  Temperatures
+		////    Morning
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureMorning, false), textX, textY1, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureMorningFeelsLike, false), textX, textY2, this.secondaryPaint);
+		textX += QUARTER_COLUMN_WIDTH;
+		////    Noon
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureDay, false), textX, textY1, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureDayFeelsLike, false), textX, textY2, this.secondaryPaint);
+		textX += QUARTER_COLUMN_WIDTH;
+		////    Evening
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureEvening, false), textX, textY1, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureEveningFeelsLike, false), textX, textY2, this.secondaryPaint);
+		textX += QUARTER_COLUMN_WIDTH;
+		////    Night
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureNight, false), textX, textY1, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureNightFeelsLike, false), textX, textY2, this.secondaryPaint);
+
+
+	}
+
+	//  Draw temperatures max and min temps and
 	private void drawTextWithDrawable(@NonNull Canvas canvas, @NonNull Drawable drawable, @NonNull String text, @Px float top, @Px float left, @Px float spaceBetween, @NonNull Paint paint) {
-		float height = paint.getTextSize() + 2,
+		int deltaDrawableText = 10;
+		float height = paint.getTextSize() + deltaDrawableText * 2,
 				textWidth = paint.measureText(text),
-				bottom = top + height;
+				bottom = top + height,
+				textX = left + height + spaceBetween + textWidth / 2F,
+				textY = bottom - deltaDrawableText;
 
 		//  Set Color and Dimensions of the drawable and print it on canvas
 		drawable.setTint(paint.getColor());
 		drawable.setBounds(BigDecimal.valueOf(left).intValue(),
 				BigDecimal.valueOf(top).intValue(),
-				BigDecimal.valueOf(left + height * 2).intValue(),
-				BigDecimal.valueOf(bottom + height).intValue());
+				BigDecimal.valueOf(left + height).intValue(),
+				BigDecimal.valueOf(bottom).intValue());
 		drawable.draw(canvas);
 
-		canvas.drawText(text, left + height + spaceBetween + textWidth / 2F, bottom + height / 2F, paint);
+		canvas.drawText(text, textX, textY, paint);
 	}
+
+	//  Generate a bitmap of GraphPath for two arrays
+	//
+	////    firstCurveData and secondCurveData must have the same number of elements !
+	private Bitmap generateBitmap2CurvesGraphPath(float[] firstCurveData, float[] secondCurveData, int width, int height, @NonNull Paint firstCurvePaint, @NonNull Paint secondCurvePaint) {
+
+		//  Initializing graph paths
+		Path firstCurvePath = new Path();
+		Path secondCurvePath = new Path();
+
+		//  Searching for max and min values in arrays
+		float minValue = firstCurveData[0],
+				maxValue = firstCurveData[0];
+
+		for (int index = 0; index < firstCurveData.length; index++) {
+			if (firstCurveData[index] > maxValue) maxValue = firstCurveData[index];
+			if (firstCurveData[index] < minValue) minValue = firstCurveData[index];
+
+			if (secondCurveData[index] > maxValue) maxValue = secondCurveData[index];
+			if (secondCurveData[index] < minValue) minValue = secondCurveData[index];
+		}
+
+		//  Find the value to adjust all values so that the minimum is 0
+		float addValueMinTo0 = minValue * (-1);
+		//  Find scale factor of Y axis
+		float scaleFactorY = 1 / (maxValue + addValueMinTo0);
+
+		//  Doing Bezier curve calculations for each curves
+		float connectionPointsX, point1_X, point1_Y, point2_Y, point1_Y_2, point2_X, point2_Y_2;
+		float columnWidth = width / firstCurveData.length,
+				halfColumnWidth = columnWidth / 2F,
+				//  To avoid curve trimming
+				top = 4,
+				bottom = height - 4,
+				drawHeight = bottom - top;
+
+		//  Clear each paths
+		firstCurvePath.reset();
+		secondCurvePath.reset();
+
+		//  If min and max values are the same, the resulting curves are flat curves
+		if (minValue != maxValue) {
+			//  Position calculation for the first point
+			point1_X = halfColumnWidth;
+			point1_Y = bottom - drawHeight * (firstCurveData[0] + addValueMinTo0) * scaleFactorY;
+			point1_Y_2 = bottom - drawHeight * (secondCurveData[0] + addValueMinTo0) * scaleFactorY;
+
+			firstCurvePath.moveTo(0, point1_Y);
+			secondCurvePath.moveTo(0, point1_Y_2);
+
+			for (int index = 1; index < firstCurveData.length; index++) {
+
+				//  Position calculations
+				point2_X = index * columnWidth + halfColumnWidth;
+				point2_Y = bottom - drawHeight * (firstCurveData[index] + addValueMinTo0) * scaleFactorY;
+				point2_Y_2 = bottom - drawHeight * (secondCurveData[index] + addValueMinTo0) * scaleFactorY;
+
+				//  Middle connection point
+				connectionPointsX = (point1_X + point2_X) / 2F;
+
+				//  Extending each curves
+				firstCurvePath.cubicTo(connectionPointsX, point1_Y, connectionPointsX, point2_Y, point2_X, point2_Y);
+				secondCurvePath.cubicTo(connectionPointsX, point1_Y_2, connectionPointsX, point2_Y_2, point2_X, point2_Y_2);
+
+				//  Moving to new points to old points
+				point1_X = point2_X;
+				point1_Y = point2_Y;
+				point1_Y_2 = point2_Y_2;
+			}
+
+			firstCurvePath.lineTo(width, point1_Y);
+			secondCurvePath.lineTo(width, point1_Y_2);
+			firstCurvePath.moveTo(width, point1_Y);
+			secondCurvePath.moveTo(width, point1_Y_2);
+		} else {
+			firstCurvePath.moveTo(0, drawHeight);
+			secondCurvePath.moveTo(0, drawHeight);
+
+			firstCurvePath.lineTo(0, drawHeight);
+			secondCurvePath.lineTo(0, drawHeight);
+			firstCurvePath.lineTo(width, drawHeight);
+			secondCurvePath.lineTo(width, drawHeight);
+
+			firstCurvePath.moveTo(width, drawHeight);
+			secondCurvePath.moveTo(width, drawHeight);
+		}
+		//  Close paths
+		firstCurvePath.close();
+		secondCurvePath.close();
+
+		//  Generating returned Bitmap
+		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444);
+		Canvas canvas = new Canvas(returnedBitmap);
+		canvas.drawPath(firstCurvePath, firstCurvePaint);
+		canvas.drawPath(secondCurvePath, secondCurvePaint);
+
+
+		return returnedBitmap;
+	}
+
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 
-		float halfOfColumnWidth = HALF_COLUMN_WIDTH, quarterOfColumnWidth = QUARTER_COLUMN_WIDTH, sixthOfColumnWidth = SIXTH_COLUMN_WIDTH;
+		float leftOfColumn = 0, halfOfColumnWidth = HALF_COLUMN_WIDTH, quarterOfColumnWidth = QUARTER_COLUMN_WIDTH, sixthOfColumnWidth = SIXTH_COLUMN_WIDTH;
 
-		drawStructureAndDate(canvas, COLUMN_WIDTH, dailyWeatherForecastArrayList, timeZone);
+		drawStructureAndDate(canvas, dpToPx(15), dpToPx(35), dpToPx(140), dpToPx(250), dailyWeatherForecastArrayList, timeZone);
 
 		for (DailyWeatherForecast dailyWeatherForecast : dailyWeatherForecastArrayList) {
 
-			drawHourWeatherConditionIcons(canvas, dailyWeatherForecast.weatherCode, dpToPx(50), sixthOfColumnWidth, dpToPx(70), dpToPx(70));
+			drawHourWeatherConditionIcons(canvas, dailyWeatherForecast.weatherCode, dpToPx(40), sixthOfColumnWidth, dpToPx(70), dpToPx(70));
 
 
-			drawHourTemperatures(canvas, dailyWeatherForecast, dpToPx(40), halfOfColumnWidth);
+			drawMaxMinTemperatures(canvas, dailyWeatherForecast, dpToPx(40), halfOfColumnWidth);
+			drawTemperatures(canvas, dailyWeatherForecast, dpToPx(230), leftOfColumn);
 			//canvas.drawText(String.format("%d%%", currentDailyWeatherForecast.humidity), halfColumnWidth, dpToPx(245), this.tertiaryPaint);
 			//drawTextWithDrawable(canvas, currentDailyWeatherForecast, dpToPx(315), halfColumnWidth, pressureUnit.contains("hpa"));
 			/*
@@ -450,18 +573,19 @@ public class DailyForecastGraphView extends View {
 			drawHourPrecipitations(canvas, currentDailyWeatherForecast,dpToPx(725), halfColumnWidth, measureUnit.contains("metric"));
 			*/
 
+			leftOfColumn += COLUMN_WIDTH;
 			sixthOfColumnWidth += COLUMN_WIDTH;
 			quarterOfColumnWidth += COLUMN_WIDTH;
 			halfOfColumnWidth += COLUMN_WIDTH;
 
 		}
 
+
+		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(150), null);
 		/*
-		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(175),null);
 		canvas.drawBitmap(this.windSpeedsGraph, 0,dpToPx(570),null);
 		canvas.drawBitmap(this.precipitationsGraph, 0, dpToPx(785),null);
-
-		 */
+		*/
 	}
 
 
