@@ -112,4 +112,8 @@
 	<string name="description_sunset">Heure du couché de soleil</string>
 	<string name="description_cloudiness">Couverture nuageuse</string>
 	<string name="description_weather_alert">Alertes météorologiques</string>
+	<string name="title_daily_forecast_morning">Matin</string>
+	<string name="title_daily_forecast_noon">Midi</string>
+	<string name="title_daily_forecast_evening">Soirée</string>
+	<string name="title_daily_forecast_night">Nuit</string>
 </resources>

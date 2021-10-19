@@ -112,4 +112,8 @@
 	<string name="description_humidity">Humidity</string>
 	<string name="description_cloudiness">Cloudiness</string>
 	<string name="description_weather_alert">Weather alerts</string>
+	<string name="title_daily_forecast_morning">Morning</string>
+	<string name="title_daily_forecast_noon">Noon</string>
+	<string name="title_daily_forecast_evening">Evening</string>
+	<string name="title_daily_forecast_night">Night</string>
 </resources>
