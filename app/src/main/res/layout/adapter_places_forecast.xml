@@ -148,8 +148,6 @@
 				android:layout_marginTop="10dp"
 				android:visibility="gone">
 
-				<include layout="@layout/column_daily_forecast" />
-
 				<HorizontalScrollView
 					android:layout_width="wrap_content"
 					android:layout_height="match_parent"
