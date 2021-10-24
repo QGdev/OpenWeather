@@ -22,4 +22,7 @@
 	<color name="colorUvVeryHigh">#EE1D23</color>
 	<color name="colorUvExtreme">#D83484</color>
 
+	<color name="colorMoonLight">#FDBF00</color>
+	<color name="colorMoonShadow">#416675</color>
+
 </resources>

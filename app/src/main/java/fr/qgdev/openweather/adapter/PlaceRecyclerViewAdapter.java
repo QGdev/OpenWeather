@@ -27,9 +27,9 @@ import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.dataplaces.DataPlaces;
 import fr.qgdev.openweather.dialog.WeatherAlertDialog;
+import fr.qgdev.openweather.forecastView.DailyForecastGraphView;
+import fr.qgdev.openweather.forecastView.HourlyForecastGraphView;
 import fr.qgdev.openweather.fragment.places.PlacesFragment;
-import fr.qgdev.openweather.graph.DailyForecastGraphView;
-import fr.qgdev.openweather.graph.HourlyForecastGraphView;
 import fr.qgdev.openweather.weather.CurrentWeather;
 
 
