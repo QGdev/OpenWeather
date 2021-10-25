@@ -37,6 +37,7 @@ public abstract class ForecastView extends View {
 			secondaryGraphPaint,
 			tertiaryPaint,
 			tertiaryGraphPaint,
+			popBarGraphPaint,
 			iconsPaint,
 			sunIconPaint,
 			moonLightIconPaint,
@@ -172,10 +173,121 @@ public abstract class ForecastView extends View {
 		return returnedBitmap;
 	}
 
+	//  Generate precipitations graph
+	//
+	////    rainData, snowData and popData must have the same number of elements !
+	protected Bitmap generateBitmapPrecipitationsGraphPath(float[] rainData, float[] snowData, float[] popData, int width, int height, @NonNull Paint rainCurvePaint, @NonNull Paint snowCurvePaint, @NonNull Paint popCurvePaint) {
+
+		//  Initializing graph paths
+		Path rainCurvePath = new Path(),
+				snowCurvePath = new Path(),
+				popCurvePath = new Path();
+
+		//  Searching for max and min values in arrays
+		float minValue = rainData[0],
+				maxValue = rainData[0];
+
+		for (int index = 0; index < rainData.length; index++) {
+			if (rainData[index] > maxValue) maxValue = rainData[index];
+			if (rainData[index] < minValue) minValue = rainData[index];
+
+			if (snowData[index] > maxValue) maxValue = snowData[index];
+			if (snowData[index] < minValue) minValue = snowData[index];
+		}
+
+		//  Find the value to adjust all values so that the minimum is 0
+		float addValueMinTo0 = minValue * (-1);
+		//  Find scale factor of Y axis
+		float scaleFactorY = 1 / (maxValue + addValueMinTo0);
+
+		//  Doing Bezier curve calculations for each curves
+		float connectionPointsX, point1_X, point1_Y, point2_Y, point1_Y_2, point2_X, point2_Y_2;
+		float columnWidth = width / rainData.length,
+				halfColumnWidth = columnWidth / 2F,
+				halfPopBarWidth = COLUMN_WIDTH / 6F,
+				//  To avoid curve trimming
+				top = 4,
+				bottom = height - 4,
+				drawHeight = bottom - top;
+
+		//  Clear each paths
+		rainCurvePath.reset();
+		snowCurvePath.reset();
+
+		//  If min and max values are the same, the resulting curves are flat curves
+		if (minValue != maxValue) {
+			//  Position calculation for the first point
+			point1_X = halfColumnWidth;
+			point1_Y = bottom - drawHeight * (rainData[0] + addValueMinTo0) * scaleFactorY;
+			point1_Y_2 = bottom - drawHeight * (snowData[0] + addValueMinTo0) * scaleFactorY;
+
+			rainCurvePath.moveTo(0, point1_Y);
+			snowCurvePath.moveTo(0, point1_Y_2);
+			popCurvePath.moveTo(0, bottom);
+
+			popCurvePath.addRect(point1_X - halfPopBarWidth, (float) (bottom - height * popData[0]), point1_X + halfPopBarWidth, (float) bottom, Path.Direction.CW);
+
+
+			for (int index = 1; index < rainData.length; index++) {
+
+				//  Position calculations
+				point2_X = index * columnWidth + halfColumnWidth;
+				point2_Y = bottom - drawHeight * (rainData[index] + addValueMinTo0) * scaleFactorY;
+				point2_Y_2 = bottom - drawHeight * (snowData[index] + addValueMinTo0) * scaleFactorY;
+
+				//  Middle connection point
+				connectionPointsX = (point1_X + point2_X) / 2F;
+
+				//  Extending each curves
+				rainCurvePath.cubicTo(connectionPointsX, point1_Y, connectionPointsX, point2_Y, point2_X, point2_Y);
+				snowCurvePath.cubicTo(connectionPointsX, point1_Y_2, connectionPointsX, point2_Y_2, point2_X, point2_Y_2);
+
+				//  Add pop bar
+				popCurvePath.addRect(point2_X - halfPopBarWidth, (float) (bottom - height * popData[index]), point2_X + halfPopBarWidth, (float) bottom, Path.Direction.CW);
+
+				//  Moving to new points to old points
+				point1_X = point2_X;
+				point1_Y = point2_Y;
+				point1_Y_2 = point2_Y_2;
+			}
+
+			rainCurvePath.lineTo(width, point1_Y);
+			snowCurvePath.lineTo(width, point1_Y_2);
+			rainCurvePath.moveTo(width, point1_Y);
+			snowCurvePath.moveTo(width, point1_Y_2);
+		} else {
+			rainCurvePath.moveTo(0, drawHeight);
+			snowCurvePath.moveTo(0, drawHeight);
+			popCurvePath.moveTo(0, drawHeight);
+
+			rainCurvePath.lineTo(0, drawHeight);
+			snowCurvePath.lineTo(0, drawHeight);
+			rainCurvePath.lineTo(width, drawHeight);
+			snowCurvePath.lineTo(width, drawHeight);
+
+			rainCurvePath.moveTo(width, drawHeight);
+			snowCurvePath.moveTo(width, drawHeight);
+		}
+
+		//  Close paths
+		rainCurvePath.close();
+		snowCurvePath.close();
+		popCurvePath.close();
+
+		//  Generating returned Bitmap
+		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444);
+		Canvas canvas = new Canvas(returnedBitmap);
+		canvas.drawPath(popCurvePath, popCurvePaint);
+		canvas.drawPath(rainCurvePath, rainCurvePaint);
+		canvas.drawPath(snowCurvePath, snowCurvePaint);
+
+		return returnedBitmap;
+	}
+
 
 	//  Draw temperatures max and min temps and
 	protected void drawTextWithDrawable(@NonNull Canvas canvas, @NonNull Drawable drawable, @NonNull String text, @Px float top, @Px float left, @Px float spaceBetween, @NonNull Paint paint) {
-		int deltaDrawableText = 10;
+		int deltaDrawableText = 5;
 		float height = paint.getTextSize() + deltaDrawableText * 2,
 				textWidth = paint.measureText(text),
 				bottom = top + height,
@@ -434,6 +546,7 @@ public abstract class ForecastView extends View {
 		this.secondaryGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.tertiaryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.tertiaryGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		this.popBarGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.iconsPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.sunIconPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -484,6 +597,12 @@ public abstract class ForecastView extends View {
 		this.tertiaryGraphPaint.setAlpha(155);
 		this.tertiaryGraphPaint.setPathEffect(null);
 		this.tertiaryGraphPaint.setStyle(Paint.Style.STROKE);
+
+		this.popBarGraphPaint.setColor(getResources().getColor(R.color.colorAccent, null));
+		this.popBarGraphPaint.setStrokeWidth(5);
+		this.popBarGraphPaint.setAlpha(155);
+		this.popBarGraphPaint.setPathEffect(null);
+		this.popBarGraphPaint.setStyle(Paint.Style.FILL);
 
 		this.iconsPaint.setColor(getResources().getColor(R.color.colorIcons, null));
 		this.iconsPaint.setStrokeWidth(3);
