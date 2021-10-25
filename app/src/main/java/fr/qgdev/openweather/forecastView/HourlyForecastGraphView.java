@@ -135,9 +135,11 @@ public class HourlyForecastGraphView extends ForecastView {
 			this.windSpeedsGraph = generateBitmap2CurvesGraphPath(firstCurve, secondCurve, this.width, dpToPx(50), primaryGraphPaint, secondaryGraphPaint);
 
 			//  Precipitations graph
-			firstCurve = hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastArrayList, "rain");
-			secondCurve = hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastArrayList, "snow");
-			this.precipitationsGraph = generateBitmap2CurvesGraphPath(firstCurve, secondCurve, this.width, dpToPx(40), tertiaryGraphPaint, primaryGraphPaint);
+			this.precipitationsGraph = generateBitmapPrecipitationsGraphPath(
+					hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastArrayList, "rain"),
+					hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastArrayList, "snow"),
+					hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastArrayList, "pop"),
+					this.width, dpToPx(40), tertiaryGraphPaint, primaryGraphPaint, popBarGraphPaint);
 
 			////    Pop graph
 			firstCurve = hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastArrayList, "pop");
@@ -238,13 +240,12 @@ public class HourlyForecastGraphView extends ForecastView {
 	}
 
 	//  Draw wind direction
-	private void drawWindDirection(Canvas canvas, short windDirection, float top, float bottom, float middleOfColumnX) {
-		float sideLength = bottom - top - dpToPx(60),
-				middle = sideLength / 2F;
-		drawWindDirectionIcon(canvas, windDirection, middleOfColumnX - middle, top, sideLength);
+	private void drawWindDirection(Canvas canvas, short windDirection, float top, float left, float width) {
+		float middle = width / 2F;
+		drawWindDirectionIcon(canvas, windDirection, left + dpToPx(5), top, width - dpToPx(10));
 
-		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(windDirection), middleOfColumnX, bottom - dpToPx(40), this.primaryPaint);
-		canvas.drawText(formattingService.getFormattedDirectionInDegrees(windDirection), middleOfColumnX, bottom - dpToPx(20), this.primaryPaint);
+		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(windDirection), left + middle, top + width + dpToPx(5), this.primaryPaint);
+		canvas.drawText(formattingService.getFormattedDirectionInDegrees(windDirection), left + middle, top + width + dpToPx(25), this.primaryPaint);
 
 	}
 
@@ -328,34 +329,6 @@ public class HourlyForecastGraphView extends ForecastView {
 		return returnedBitmap;
 	}
 
-
-	//  Generate BarGraphPath for one array
-	//
-	////    curvePath must have been initialized correctly !
-	private void calculate1BarGraphPath(float[] curveData, @NonNull Path curvePath, float top, float bottom, float left, float right) {
-		float halfGraphColumnWidth, middleOfColumnX, height = bottom - top;
-
-		//  Clear each paths
-		curvePath.reset();
-
-		//  Position calculation for the first point
-		halfGraphColumnWidth = COLUMN_WIDTH / 6F;
-
-		curvePath.moveTo(left, bottom);
-
-		for (int index = 0; index < curveData.length; index++) {
-
-			//  Position calculations
-			middleOfColumnX = index * COLUMN_WIDTH + COLUMN_WIDTH / 2F;
-
-			curvePath.addRect(middleOfColumnX - halfGraphColumnWidth, (float) (bottom - height * curveData[index]), middleOfColumnX + halfGraphColumnWidth, (float) bottom, Path.Direction.CW);
-		}
-
-		// Close path
-		curvePath.moveTo(right, bottom);
-		curvePath.close();
-	}
-
 	//  Draw dewPoint
 	private void drawPrecipitations(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
 		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.rain, true), middleOfColumnX, y, this.tertiaryPaint);
@@ -390,30 +363,32 @@ public class HourlyForecastGraphView extends ForecastView {
 		super.onDraw(canvas);
 
 		HourlyWeatherForecast currentHourlyWeatherForecast;
-		float halfColumnWidth = COLUMN_WIDTH / 2F;
+		float halfWidthX = COLUMN_WIDTH / 2F, drawableX = halfWidthX - dpToPx(25);
 
 		drawStructureAndDate(canvas, COLUMN_WIDTH, hourlyWeatherForecastArrayList, timeZone);
 
 		for (int index = 0; index < hourlyWeatherForecastArrayList.size(); index++) {
 			currentHourlyWeatherForecast = hourlyWeatherForecastArrayList.get(index);
 
-			drawWeatherConditionIcons(canvas, currentHourlyWeatherForecast.weatherCode, dpToPx(70), halfColumnWidth - dpToPx(25), dpToPx(50), dpToPx(50), isDayTime[index]);
-			drawTemperatures(canvas, currentHourlyWeatherForecast, dpToPx(140), halfColumnWidth);
-			canvas.drawText(String.format("%d%%", currentHourlyWeatherForecast.humidity), halfColumnWidth, dpToPx(245), this.tertiaryPaint);
-			drawPressure(canvas, currentHourlyWeatherForecast, dpToPx(315), halfColumnWidth);
+			drawWeatherConditionIcons(canvas, currentHourlyWeatherForecast.weatherCode, dpToPx(70), drawableX, dpToPx(50), dpToPx(50), isDayTime[index]);
 
-			drawUvIndex(canvas, currentHourlyWeatherForecast.uvIndex, halfColumnWidth - dpToPx(25), dpToPx(370), dpToPx(50));
+			drawTemperatures(canvas, currentHourlyWeatherForecast, dpToPx(140), halfWidthX);
+			canvas.drawText(String.format("%d%%", currentHourlyWeatherForecast.humidity), halfWidthX, dpToPx(245), this.tertiaryPaint);
+			drawPressure(canvas, currentHourlyWeatherForecast, dpToPx(315), halfWidthX);
 
-			drawDewPoint(canvas, currentHourlyWeatherForecast, dpToPx(445), halfColumnWidth);
-			canvas.drawText(String.format("%d%%", currentHourlyWeatherForecast.cloudiness), halfColumnWidth, dpToPx(475), this.primaryPaint);
-			drawVisibility(canvas, currentHourlyWeatherForecast, dpToPx(505), halfColumnWidth);
+			drawUvIndex(canvas, currentHourlyWeatherForecast.uvIndex, drawableX, dpToPx(370), dpToPx(50));
 
-			drawWindSpeed(canvas, currentHourlyWeatherForecast, dpToPx(540), halfColumnWidth);
-			drawWindDirection(canvas, currentHourlyWeatherForecast.windDirection, dpToPx(625), dpToPx(715), halfColumnWidth);
+			drawDewPoint(canvas, currentHourlyWeatherForecast, dpToPx(445), halfWidthX);
+			canvas.drawText(String.format("%d%%", currentHourlyWeatherForecast.cloudiness), halfWidthX, dpToPx(475), this.primaryPaint);
+			drawVisibility(canvas, currentHourlyWeatherForecast, dpToPx(505), halfWidthX);
 
-			drawPrecipitations(canvas, currentHourlyWeatherForecast, dpToPx(725), halfColumnWidth);
+			drawWindSpeed(canvas, currentHourlyWeatherForecast, dpToPx(540), halfWidthX);
+			drawWindDirection(canvas, currentHourlyWeatherForecast.windDirection, dpToPx(625), drawableX, dpToPx(50));
 
-			halfColumnWidth += COLUMN_WIDTH;
+			drawPrecipitations(canvas, currentHourlyWeatherForecast, dpToPx(725), halfWidthX);
+
+			halfWidthX += COLUMN_WIDTH;
+			drawableX += COLUMN_WIDTH;
 		}
 
 		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(175), null);
