@@ -4,20 +4,56 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.75" />
+        <entry key="app/src/main/res/drawable/clouds_and_sun_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/cloudy_night_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/cloudy_night_material.xml" value="0.45897435897435895" />
         <entry key="app/src/main/res/drawable/cloudy_tornado_material.xml" value="0.396875" />
         <entry key="app/src/main/res/drawable/compass_black_24dp.xml" value="0.78" />
+        <entry key="app/src/main/res/drawable/crescent_moon_material.xml" value="0.45897435897435895" />
         <entry key="app/src/main/res/drawable/danger.xml" value="0.396875" />
         <entry key="app/src/main/res/drawable/dew_point_material.xml" value="0.17564102564102563" />
+        <entry key="app/src/main/res/drawable/fog_and_night_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/fog_and_night_material.xml" value="0.45897435897435895" />
+        <entry key="app/src/main/res/drawable/fog_flat.xml" value="0.2772151898734177" />
+        <entry key="app/src/main/res/drawable/hail_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/heavy_rain_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/high_night_temperature_material.xml" value="0.45897435897435895" />
+        <entry key="app/src/main/res/drawable/high_temperature_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/high_temperature_material.xml" value="0.45897435897435895" />
+        <entry key="app/src/main/res/drawable/humidity_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/humidity_material.xml" value="0.45897435897435895" />
+        <entry key="app/src/main/res/drawable/ic_add_place_24dp.xml" value="0.45897435897435895" />
+        <entry key="app/src/main/res/drawable/ic_logo_small.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/moon_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/moon_phase_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/moon_phase_material.xml" value="0.45897435897435895" />
+        <entry key="app/src/main/res/drawable/moonrise_material.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/moonset_material.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/rain_and_sun_flat.xml" value="0.45897435897435895" />
+        <entry key="app/src/main/res/drawable/rain_flat.xml" value="0.45897435897435895" />
         <entry key="app/src/main/res/drawable/round_square.xml" value="0.45897435897435895" />
-        <entry key="app/src/main/res/drawable/sun_flat.xml" value="0.78" />
+        <entry key="app/src/main/res/drawable/snow_and_night_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/snow_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/snowflake_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/storm_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/sun_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/sunrise_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/sunset_flat.xml" value="0.28076923076923077" />
         <entry key="app/src/main/res/drawable/temperature_maximum_material.xml" value="0.30512820512820515" />
+        <entry key="app/src/main/res/drawable/thunderstorm_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/tornado_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/umbrella_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/uv_index_material.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/weather_vane_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/wind_and_clouds_flat.xml" value="0.28076923076923077" />
+        <entry key="app/src/main/res/drawable/wind_flat.xml" value="0.28076923076923077" />
         <entry key="app/src/main/res/layout-large/adapter_places.xml" value="0.25" />
         <entry key="app/src/main/res/layout-large/adapter_places_detailed.xml" value="0.53359375" />
         <entry key="app/src/main/res/layout-large/adapter_places_forecast.xml" value="0.266796875" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.11965811965811966" />
         <entry key="app/src/main/res/layout/adapter_daily_column.xml" value="0.22467105263157894" />
         <entry key="app/src/main/res/layout/adapter_hourly_column.xml" value="0.2918803418803419" />
-        <entry key="app/src/main/res/layout/adapter_places.xml" value="1.0" />
+        <entry key="app/src/main/res/layout/adapter_places.xml" value="0.2918803418803419" />
         <entry key="app/src/main/res/layout/adapter_places_detailed.xml" value="0.2918803418803419" />
         <entry key="app/src/main/res/layout/adapter_places_forecast.xml" value="0.22467105263157894" />
         <entry key="app/src/main/res/layout/column_daily_forecast.xml" value="0.10811965811965812" />

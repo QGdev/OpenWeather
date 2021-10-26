@@ -116,4 +116,20 @@
 	<string name="title_daily_forecast_noon">Midi</string>
 	<string name="title_daily_forecast_evening">Soirée</string>
 	<string name="title_daily_forecast_night">Nuit</string>
+	<string name="wind_direction_north">N</string>
+	<string name="wind_direction_northeast">NE</string>
+	<string name="wind_direction_eastnortheast">ENE</string>
+	<string name="wind_direction_east">E</string>
+	<string name="wind_direction_eastsoutheast">ESE</string>
+	<string name="wind_direction_southeast">SE</string>
+	<string name="wind_direction_southsoutheast">SSE</string>
+	<string name="wind_direction_south">S</string>
+	<string name="wind_direction_northnorthwest">NNO</string>
+	<string name="wind_direction_northwest">NO</string>
+	<string name="wind_direction_northnortheast">NNE</string>
+	<string name="wind_direction_southsouthwest">SSO</string>
+	<string name="wind_direction_southwest">SO</string>
+	<string name="wind_direction_westsouthwest">OSO</string>
+	<string name="wind_direction_west">O</string>
+	<string name="wind_direction_westnorthwest">ONO</string>
 </resources>
