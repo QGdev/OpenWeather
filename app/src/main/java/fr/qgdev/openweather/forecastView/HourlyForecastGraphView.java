@@ -141,10 +141,6 @@ public class HourlyForecastGraphView extends ForecastView {
 					hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastArrayList, "pop"),
 					this.width, dpToPx(40), tertiaryGraphPaint, primaryGraphPaint, popBarGraphPaint);
 
-			////    Pop graph
-			firstCurve = hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastArrayList, "pop");
-			//calculate1BarGraphPath(firstCurve, popGraphPath, dpToPx(760), dpToPx(800), 0, this.width);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
