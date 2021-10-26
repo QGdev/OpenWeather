@@ -11,6 +11,7 @@ import java.util.TimeZone;
 
 public class FormattingService {
 
+	private static Context context;
 	private TemperatureConversion temperatureConversion;
 	private MeasureConversion measureConversion;
 	private PressureConversion pressureConversion;
@@ -37,6 +38,8 @@ public class FormattingService {
 	private SimpleDateFormat fullTimeHourFormat;
 
 	public FormattingService(Context context) {
+		this.context = context;
+
 		SharedPreferences userPref = PreferenceManager.getDefaultSharedPreferences(context);
 
 		temperatureUnitInit(userPref);
@@ -102,41 +105,57 @@ public class FormattingService {
 
 	private String toCardinal(short direction) {
 		//  N
-		if (direction > 348.75 || direction < 11.25) return "N";
+		if (direction > 348.75 || direction < 11.25)
+			return context.getResources().getString(R.string.wind_direction_north);
 			//  NNE
-		else if (direction >= 11.25 && direction < 33.75) return "NNE";
+		else if (direction >= 11.25 && direction < 33.75)
+			return context.getResources().getString(R.string.wind_direction_northnortheast);
 			//  NE
-		else if (direction >= 33.75 && direction <= 56.25) return "NE";
+		else if (direction >= 33.75 && direction <= 56.25)
+			return context.getResources().getString(R.string.wind_direction_northeast);
 
 			//  ENE
-		else if (direction > 56.25 && direction <= 78.75) return "ENE";
+		else if (direction > 56.25 && direction <= 78.75)
+			return context.getResources().getString(R.string.wind_direction_eastnortheast);
 			//  E
-		else if (direction > 78.75 && direction < 101.25) return "E";
+		else if (direction > 78.75 && direction < 101.25)
+			return context.getResources().getString(R.string.wind_direction_east);
 			//  ESE
-		else if (direction >= 101.25 && direction < 123.75) return "ESE";
+		else if (direction >= 101.25 && direction < 123.75)
+			return context.getResources().getString(R.string.wind_direction_eastsoutheast);
 
 			//  SE
-		else if (direction >= 123.75 && direction <= 146.25) return "SE";
+		else if (direction >= 123.75 && direction <= 146.25)
+			return context.getResources().getString(R.string.wind_direction_southeast);
 			// SSE
-		else if (direction > 146.25 && direction <= 168.75) return "SSE";
+		else if (direction > 146.25 && direction <= 168.75)
+			return context.getResources().getString(R.string.wind_direction_southsoutheast);
 			//  S
-		else if (direction > 168.75 && direction < 191.25) return "S";
+		else if (direction > 168.75 && direction < 191.25)
+			return context.getResources().getString(R.string.wind_direction_south);
 			//  SSW
-		else if (direction >= 191.25 && direction < 213.75) return "SSW";
+		else if (direction >= 191.25 && direction < 213.75)
+			return context.getResources().getString(R.string.wind_direction_southsouthwest);
 			//  SW
-		else if (direction >= 213.75 && direction <= 236.25) return "SW";
+		else if (direction >= 213.75 && direction <= 236.25)
+			return context.getResources().getString(R.string.wind_direction_southwest);
 
 			//  WSW
-		else if (direction > 236.25 && direction <= 258.75) return "WSW";
+		else if (direction > 236.25 && direction <= 258.75)
+			return context.getResources().getString(R.string.wind_direction_westsouthwest);
 			//  W
-		else if (direction > 258.75 && direction < 281.25) return "W";
+		else if (direction > 258.75 && direction < 281.25)
+			return context.getResources().getString(R.string.wind_direction_west);
 			//  WNW
-		else if (direction >= 281.25 && direction < 303.75) return "WNW";
+		else if (direction >= 281.25 && direction < 303.75)
+			return context.getResources().getString(R.string.wind_direction_westnorthwest);
 
 			//  NW
-		else if (direction >= 303.75 && direction <= 326.25) return "NW";
+		else if (direction >= 303.75 && direction <= 326.25)
+			return context.getResources().getString(R.string.wind_direction_northwest);
 			//  NNW
-		else if (direction > 326.25 && direction <= 348.75) return "NNW";
+		else if (direction > 326.25 && direction <= 348.75)
+			return context.getResources().getString(R.string.wind_direction_northnorthwest);
 
 		else return "N/A";
 	}
