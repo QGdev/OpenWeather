@@ -611,7 +611,7 @@ public abstract class ForecastView extends View {
 		this.iconsPaint.setStyle(Paint.Style.STROKE);
 
 		this.sunIconPaint.setColor(getResources().getColor(R.color.colorUvExtreme, null));
-		this.sunIconPaint.setStrokeWidth(3);
+		this.sunIconPaint.setStrokeWidth(5);
 		this.sunIconPaint.setAlpha(255);
 		this.sunIconPaint.setTextSize(spToPx(15));
 		this.sunIconPaint.setPathEffect(null);
