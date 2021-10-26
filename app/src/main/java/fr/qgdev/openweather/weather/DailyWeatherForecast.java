@@ -130,7 +130,7 @@ public class DailyWeatherForecast {
 		if (dailyWeatherForecast.has("moonrise") && dailyWeatherForecast.has("moonset") && dailyWeatherForecast.has("moon_phase")) {
 			this.moonrise = dailyWeatherForecast.getInt("moonrise");
 			this.moonset = dailyWeatherForecast.getInt("moonset");
-			this.moonPhase = dailyWeatherForecast.getInt("moon_phase");
+			this.moonPhase = BigDecimal.valueOf(dailyWeatherForecast.getDouble("moon_phase")).floatValue();
 		} else {
 			this.moonrise = 0;
 			this.moonset = 0;
