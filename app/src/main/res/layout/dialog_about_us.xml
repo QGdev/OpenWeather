@@ -80,6 +80,21 @@
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:text="@string/about_thanks_section_title"
+				android:textSize="24sp" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingStart="10dp"
+				android:paddingBottom="5dp"
+				android:text="@string/about_thanks_section_content"
+				android:textSize="20sp" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:text="@string/about_your_data_section_title"
 				android:layout_margin="5dp"
 				android:textSize="24sp" />

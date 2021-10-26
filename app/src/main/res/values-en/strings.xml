@@ -132,4 +132,6 @@
 	<string name="wind_direction_westsouthwest">WSW</string>
 	<string name="wind_direction_west">W</string>
 	<string name="wind_direction_westnorthwest">WNW</string>
+	<string name="about_thanks_section_title">Thanks</string>
+	<string name="about_thanks_section_content">I would like to say thank you to my best friend who tested the application in the very early stages of development and always had good ideas.</string>
 </resources>

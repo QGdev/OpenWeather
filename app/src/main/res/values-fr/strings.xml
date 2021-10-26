@@ -132,4 +132,6 @@
 	<string name="wind_direction_westsouthwest">OSO</string>
 	<string name="wind_direction_west">O</string>
 	<string name="wind_direction_westnorthwest">ONO</string>
+	<string name="about_thanks_section_content">Je voudrais dire merci à mon meilleur ami qui a testé l\'application lors des toutes premières phases de développement et qui a toujours eu de bonnes idées.</string>
+	<string name="about_thanks_section_title">Remerciement</string>
 </resources>
