@@ -204,7 +204,7 @@ public abstract class ForecastView extends View {
 		float connectionPointsX, point1_X, point1_Y, point2_Y, point1_Y_2, point2_X, point2_Y_2;
 		float columnWidth = width / rainData.length,
 				halfColumnWidth = columnWidth / 2F,
-				halfPopBarWidth = COLUMN_WIDTH / 6F,
+				halfPopBarWidth = columnWidth / 6F,
 				//  To avoid curve trimming
 				top = 4,
 				bottom = height - 4,
@@ -225,7 +225,7 @@ public abstract class ForecastView extends View {
 			snowCurvePath.moveTo(0, point1_Y_2);
 			popCurvePath.moveTo(0, bottom);
 
-			popCurvePath.addRect(point1_X - halfPopBarWidth, (float) (bottom - height * popData[0]), point1_X + halfPopBarWidth, (float) bottom, Path.Direction.CW);
+			popCurvePath.addRect(point1_X - halfPopBarWidth, bottom - drawHeight * popData[0], point1_X + halfPopBarWidth, bottom, Path.Direction.CW);
 
 
 			for (int index = 1; index < rainData.length; index++) {
@@ -243,7 +243,7 @@ public abstract class ForecastView extends View {
 				snowCurvePath.cubicTo(connectionPointsX, point1_Y_2, connectionPointsX, point2_Y_2, point2_X, point2_Y_2);
 
 				//  Add pop bar
-				popCurvePath.addRect(point2_X - halfPopBarWidth, (float) (bottom - height * popData[index]), point2_X + halfPopBarWidth, (float) bottom, Path.Direction.CW);
+				popCurvePath.addRect(point2_X - halfPopBarWidth, bottom - drawHeight * popData[index], point2_X + halfPopBarWidth, bottom, Path.Direction.CW);
 
 				//  Moving to new points to old points
 				point1_X = point2_X;
@@ -260,13 +260,13 @@ public abstract class ForecastView extends View {
 			snowCurvePath.moveTo(0, drawHeight);
 			popCurvePath.moveTo(0, drawHeight);
 
-			rainCurvePath.lineTo(0, drawHeight);
-			snowCurvePath.lineTo(0, drawHeight);
 			rainCurvePath.lineTo(width, drawHeight);
 			snowCurvePath.lineTo(width, drawHeight);
 
 			rainCurvePath.moveTo(width, drawHeight);
 			snowCurvePath.moveTo(width, drawHeight);
+			popCurvePath.moveTo(width, drawHeight);
+
 		}
 
 		//  Close paths
@@ -535,7 +535,7 @@ public abstract class ForecastView extends View {
 		canvas.drawBitmap(compassBitmap, x, y, null);
 	}
 
-	private void init(Context context) {
+	protected void init(Context context) {
 		this.context = context;
 
 		this.datePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
