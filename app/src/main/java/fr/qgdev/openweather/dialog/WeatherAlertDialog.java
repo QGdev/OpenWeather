@@ -5,6 +5,7 @@ import android.content.Context;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import fr.qgdev.openweather.FormattingService;
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.adapter.WeatherAlertAdapter;
@@ -15,7 +16,7 @@ public class WeatherAlertDialog extends Dialog {
 	private final Button exitButton;
 	private final LinearLayout alertListLinearLayout;
 
-	public WeatherAlertDialog(Context context, Place place) {
+	public WeatherAlertDialog(Context context, Place place, FormattingService formattingService) {
 		super(context);
 		setContentView(R.layout.dialog_weather_alert);
 
@@ -23,7 +24,7 @@ public class WeatherAlertDialog extends Dialog {
 		this.exitButton = findViewById(R.id.exit_button);
 		this.exitButton.setOnClickListener(v -> dismiss());
 
-		this.weatherAlertAdapter = new WeatherAlertAdapter(context, place);
+		this.weatherAlertAdapter = new WeatherAlertAdapter(context, place, formattingService);
 		for (int i = 0; i < place.getMWeatherAlertCount(); i++) {
 			alertListLinearLayout.addView(weatherAlertAdapter.getView(i, null, null), i);
 		}

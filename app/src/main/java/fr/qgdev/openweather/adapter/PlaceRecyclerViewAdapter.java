@@ -46,10 +46,10 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 	public PlaceRecyclerViewAdapter(Context context, PlacesFragment placesFragment, PlacesFragment.Interactions placesFragmentInteractions, DataPlaces dataPlaces) {
 		this.context = context;
-		this.placesFragment = placesFragment;
+		PlaceRecyclerViewAdapter.placesFragment = placesFragment;
 		this.placesFragmentInteractions = placesFragmentInteractions;
-		this.placeViewArrayList = generatePlaceViewArray();
-		this.dataPlaces = dataPlaces;
+		placeViewArrayList = generatePlaceViewArray();
+		PlaceRecyclerViewAdapter.dataPlaces = dataPlaces;
 
 		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
 		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
@@ -83,72 +83,72 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 	@Override
 	public int getItemViewType(int position) {
-		return this.placeViewArrayList.get(position).viewType;
+		return placeViewArrayList.get(position).viewType;
 	}
 
 	private void setListeners(int position, Place currentPlace, PlaceAdapterViewHolder holder) {
 
 		holder.cardView.setOnClickListener(v -> {
-			switch (this.placeViewArrayList.get(position).viewType) {
+			switch (placeViewArrayList.get(position).viewType) {
 				case PlaceView.COMPACT:
-					this.placeViewArrayList.get(position).viewType = PlaceView.EXTENDED;
+					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED;
 					break;
 				default:
-					this.placeViewArrayList.get(position).viewType = PlaceView.COMPACT;
+					placeViewArrayList.get(position).viewType = PlaceView.COMPACT;
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
 		holder.hourlyForecast.setOnClickListener(v -> {
-			switch (this.placeViewArrayList.get(position).viewType) {
+			switch (placeViewArrayList.get(position).viewType) {
 				case PlaceView.EXTENDED:
-					this.placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_HOURLY;
+					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_HOURLY;
 					break;
 				case PlaceView.EXTENDED_HOURLY:
-					this.placeViewArrayList.get(position).viewType = PlaceView.EXTENDED;
+					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED;
 					break;
 				case PlaceView.EXTENDED_DAILY:
-					this.placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_FULLY;
+					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_FULLY;
 					break;
 				case PlaceView.EXTENDED_FULLY:
-					this.placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_DAILY;
+					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_DAILY;
 					break;
 				default:
-					this.placeViewArrayList.get(position).viewType = PlaceView.COMPACT;
+					placeViewArrayList.get(position).viewType = PlaceView.COMPACT;
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
 		holder.dailyForecast.setOnClickListener(v -> {
-			switch (this.placeViewArrayList.get(position).viewType) {
+			switch (placeViewArrayList.get(position).viewType) {
 				case PlaceView.EXTENDED:
-					this.placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_DAILY;
+					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_DAILY;
 					break;
 				case PlaceView.EXTENDED_DAILY:
-					this.placeViewArrayList.get(position).viewType = PlaceView.EXTENDED;
+					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED;
 					break;
 				case PlaceView.EXTENDED_HOURLY:
-					this.placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_FULLY;
+					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_FULLY;
 					break;
 				case PlaceView.EXTENDED_FULLY:
-					this.placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_HOURLY;
+					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_HOURLY;
 					break;
 				default:
-					this.placeViewArrayList.get(position).viewType = PlaceView.COMPACT;
+					placeViewArrayList.get(position).viewType = PlaceView.COMPACT;
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
 		holder.weatherAlertLayout.setOnClickListener(v -> {
-			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, currentPlace);
+			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, currentPlace, formattingService);
 			weatherAlertDialog.build();
 		});
 
 		holder.weatherAlertIcon.setOnClickListener(v -> {
-			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, currentPlace);
+			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, currentPlace, formattingService);
 			weatherAlertDialog.build();
 		});
 	}
@@ -170,9 +170,9 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	@Override
 	public void onBindViewHolder(@NonNull PlaceAdapterViewHolder holder, final int position) {
 
-		Place currentPlace = this.placesFragment.getPlace(position);
+		Place currentPlace = placesFragment.getPlace(position);
 
-		switch (this.placeViewArrayList.get(position).viewType) {
+		switch (placeViewArrayList.get(position).viewType) {
 			case PlaceView.COMPACT:
 			default: {
 				//  Compact view
@@ -539,7 +539,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 	@Override
 	public int getItemCount() {
-		return this.placeViewArrayList.size();
+		return placeViewArrayList.size();
 	}
 
 	public static class PlaceAdapterViewHolder extends RecyclerView.ViewHolder {
