@@ -13,7 +13,7 @@ Only the necessary data are used by the application, these data are:
 * OpenWeatherMaps API key, only used to retrieve data from registered cities by the user.
 * Registered cities, only used to know for which city the application need to search and display data.
 
-OpenWeatherMaps privacy policy: [openweather.co.uk/privacy-policy](openweather.co.uk/privacy-policy)
+OpenWeatherMaps privacy policy: [openweather.co.uk/privacy-policy](https://openweather.co.uk/privacy-policy)
 
 ## ⚠️ Disclamer
 This application is powered by the OpenWeatherMaps APIs but has no connection or affiliation with this company.
