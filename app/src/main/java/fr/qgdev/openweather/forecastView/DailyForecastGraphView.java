@@ -349,9 +349,9 @@ public class DailyForecastGraphView extends ForecastView {
 			//  Draw shadow part
 			for (int i = startX; i <= stopX; i++) {
 				if (left + i < middle)  //  First half
-					moonCanvas.drawArc(left + i, top2, right - i, bottom2, 90, 180, false, this.moonShadowIconPaint);
+					moonCanvas.drawArc(left + i, top2, right - i, bottom2, -90, 180, false, this.moonShadowIconPaint);
 				else                    //  Last haft
-					moonCanvas.drawArc(right - i, top2, left + i, bottom2, -90, 180, false, this.moonShadowIconPaint);
+					moonCanvas.drawArc(right - i, top2, left + i, bottom2, 90, 180, false, this.moonShadowIconPaint);
 			}
 		}
 		canvas.drawBitmap(moonBitmap, x, y, null);
