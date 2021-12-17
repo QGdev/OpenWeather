@@ -87,56 +87,57 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	}
 
 	private void setListeners(int position, Place currentPlace, PlaceAdapterViewHolder holder) {
+		PlaceView placeView = placeViewArrayList.get(position);
 
 		holder.cardView.setOnClickListener(v -> {
-			switch (placeViewArrayList.get(position).viewType) {
+			switch (placeView.viewType) {
 				case PlaceView.COMPACT:
-					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED;
+					placeView.viewType = PlaceView.EXTENDED;
 					break;
 				default:
-					placeViewArrayList.get(position).viewType = PlaceView.COMPACT;
+					placeView.viewType = PlaceView.COMPACT;
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
 		holder.hourlyForecast.setOnClickListener(v -> {
-			switch (placeViewArrayList.get(position).viewType) {
+			switch (placeView.viewType) {
 				case PlaceView.EXTENDED:
-					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_HOURLY;
+					placeView.viewType = PlaceView.EXTENDED_HOURLY;
 					break;
 				case PlaceView.EXTENDED_HOURLY:
-					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED;
+					placeView.viewType = PlaceView.EXTENDED;
 					break;
 				case PlaceView.EXTENDED_DAILY:
-					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_FULLY;
+					placeView.viewType = PlaceView.EXTENDED_FULLY;
 					break;
 				case PlaceView.EXTENDED_FULLY:
-					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_DAILY;
+					placeView.viewType = PlaceView.EXTENDED_DAILY;
 					break;
 				default:
-					placeViewArrayList.get(position).viewType = PlaceView.COMPACT;
+					placeView.viewType = PlaceView.COMPACT;
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
 		holder.dailyForecast.setOnClickListener(v -> {
-			switch (placeViewArrayList.get(position).viewType) {
+			switch (placeView.viewType) {
 				case PlaceView.EXTENDED:
-					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_DAILY;
+					placeView.viewType = PlaceView.EXTENDED_DAILY;
 					break;
 				case PlaceView.EXTENDED_DAILY:
-					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED;
+					placeView.viewType = PlaceView.EXTENDED;
 					break;
 				case PlaceView.EXTENDED_HOURLY:
-					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_FULLY;
+					placeView.viewType = PlaceView.EXTENDED_FULLY;
 					break;
 				case PlaceView.EXTENDED_FULLY:
-					placeViewArrayList.get(position).viewType = PlaceView.EXTENDED_HOURLY;
+					placeView.viewType = PlaceView.EXTENDED_HOURLY;
 					break;
 				default:
-					placeViewArrayList.get(position).viewType = PlaceView.COMPACT;
+					placeView.viewType = PlaceView.COMPACT;
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
