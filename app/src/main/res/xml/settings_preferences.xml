@@ -7,6 +7,14 @@
             app:title="@string/title_settings_api_key"
             app:useSimpleSummaryProvider="true" />
 
+        <!--
+        <CheckBoxPreference
+            app:defaultValue="true"
+            app:key="aqi_state"
+            app:title="@string/title_settings_aqi_state"
+            app:summaryOn="@string/summary_enable_settings_aqi_state"
+            app:summaryOff="@string/summary_disable_settings_aqi_state" />
+        !-->
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/title_settings_time">

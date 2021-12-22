@@ -11,7 +11,7 @@ import java.util.TimeZone;
 
 public class FormattingService {
 
-	private static Context context;
+	private final Context context;
 	private TemperatureConversion temperatureConversion;
 	private MeasureConversion measureConversion;
 	private PressureConversion pressureConversion;

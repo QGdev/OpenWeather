@@ -76,6 +76,7 @@
 	<string name="error_device_not_connected">Cannot connect to internet, please verify your connection and try again</string>
 
 	<string name="url_owm_weatherdata" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
+	<string name="url_owm_airqualitydata" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/air_pollution?lat=%f&lon=%f&appid=%s]]></string>
 	<string name="url_owm_coordinates" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s]]></string>
 
 	<string name="place_added_succcessfully">was successfully added</string>
@@ -130,7 +131,6 @@
 	<string name="icon_legend_pop">Probability of precipitation</string>
 	<string name="error_place_city_field_empty">Please give the name of the city</string>
 	<string name="error_place_country_field_empty">Please where is that city</string>
-	<string name="summary_time">The choice of time zone does not affect the daily forecast</string>
 	<string name="description_wind_direction">Wind direction</string>
 	<string name="description_wind_speed">Wind speed</string>
 	<string name="description_wind_gust_speed">Wind gust speed</string>
@@ -163,5 +163,8 @@
 	<string name="wind_direction_westnorthwest">WNW</string>
 	<string name="about_thanks_section_title">Thanks</string>
 	<string name="about_thanks_section_content">I would like to say thank you to my best friend who tested the application in the very early stages of development and always had good ideas.</string>
+	<string name="title_settings_aqi_state">Air quality</string>
+	<string name="summary_enable_settings_aqi_state">Air quality will be fetch and displayed</string>
+	<string name="summary_disable_settings_aqi_state">Air quality will be ignored</string>
 
 </resources>
