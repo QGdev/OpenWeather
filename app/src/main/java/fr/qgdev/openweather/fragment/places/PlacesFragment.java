@@ -35,11 +35,11 @@ import fr.qgdev.openweather.dialog.AddPlaceDialog;
 
 public class PlacesFragment extends Fragment {
 
-	private static Context mContext;
+	private Context mContext;
 	private String API_KEY;
 
 	private TextView noPlacesRegisteredTextView;
-	private static SwipeRefreshLayout swipeRefreshLayout;
+	private SwipeRefreshLayout swipeRefreshLayout;
 	private FloatingActionButton addPlacesFab;
 	private RecyclerView placeRecyclerView;
 	private PlaceRecyclerViewAdapter placeRecyclerViewAdapter;
@@ -48,7 +48,7 @@ public class PlacesFragment extends Fragment {
 	private static ArrayList<Place> placeArrayList;
 
 	private WeatherService weatherService;
-	private WeatherService.WeatherCallbackGetData getPlaceListCallback;
+	private WeatherService.CallbackGetData getDataPlaceListCallback;
 
 	private static AtomicInteger refreshCounter;
 
@@ -93,7 +93,7 @@ public class PlacesFragment extends Fragment {
 
 		//  Initialize places data storage
 		dataPlaces = new DataPlaces(mContext);
-		placeArrayList = new ArrayList<Place>();
+		placeArrayList = new ArrayList<>();
 
 		try {
 			placeArrayList.addAll(dataPlaces.getAllPlacesStored());
@@ -163,69 +163,70 @@ public class PlacesFragment extends Fragment {
 		SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(mContext);
 		API_KEY = apiKeyPref.getString("api_key", null);
 
-
-		//  Initialize Weather Services and callbacks
-		weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), dataPlaces);
+		if (API_KEY != null) {
+			//  Initialize Weather Services and callbacks
+			weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), dataPlaces);
+		}
 
 		//  acquire data of the places callback
-		getPlaceListCallback = new WeatherService.WeatherCallbackGetData() {
-			@Override
-			public void onWeatherData(final Place place, DataPlaces dataPlaces) {
-				try {
-					if (dataPlaces.updatePlace(place)) {
-						interactions.onPlaceUpdate(dataPlaces, dataPlaces.getPlacePositionInRegister(place), place);
-
-						if (noPlacesRegisteredTextView.getVisibility() == View.VISIBLE) {
-							noPlacesRegisteredTextView.setVisibility(View.GONE);
-							swipeRefreshLayout.setVisibility(View.VISIBLE);
-						}
-
-					} else {
-						showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
-				}
-			}
+		getDataPlaceListCallback = new WeatherService.CallbackGetData() {
 
 			@Override
-			public void onTreatmentError() {
+			public void onTreatmentError(RequestStatus requestStatus) {
 				showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list_network));
 			}
 
 			@Override
-			public void onNoResponseError() {
+			public void onNoResponseError(RequestStatus requestStatus) {
 				showSnackbar(container, mContext.getString(R.string.error_server_unreachable));
 			}
 
 			@Override
-			public void onTooManyRequestsError() {
+			public void onTooManyRequestsError(RequestStatus requestStatus) {
 				showSnackbar(container, mContext.getString(R.string.error_too_many_request_in_a_day));
 			}
 
 			@Override
-			public void onPlaceNotFoundError() {
+			public void onPlaceNotFoundError(RequestStatus requestStatus) {
 				showSnackbar(container, mContext.getString(R.string.error_place_not_found));
 			}
 
 			@Override
-			public void onWrongOrUnknownApiKeyError() {
+			public void onWrongOrUnknownApiKeyError(RequestStatus requestStatus) {
 				showSnackbar(container, mContext.getString(R.string.error_wrong_api_key));
 			}
 
 			@Override
-			public void onUnknownError() {
+			public void onUnknownError(RequestStatus requestStatus) {
 				showSnackbar(container, mContext.getString(R.string.error_unknow_error));
 			}
 
 			@Override
-			public void onDeviceNotConnected() {
+			public void onDeviceNotConnected(RequestStatus requestStatus) {
 				showSnackbar(container, mContext.getString(R.string.error_device_not_connected));
 			}
 
 			@Override
-			public void onTheEndOfTheRequest() {
+			public void onTheEndOfTheRequest(Place place, DataPlaces dataPlaces, RequestStatus requestStatus) {
+				if (requestStatus != RequestStatus.WEATHER_REQUEST_FAIL) {
+					try {
+						if (dataPlaces.updatePlace(place)) {
+							interactions.onPlaceUpdate(dataPlaces, dataPlaces.getPlacePositionInRegister(place), place);
+
+							if (noPlacesRegisteredTextView.getVisibility() == View.VISIBLE) {
+								noPlacesRegisteredTextView.setVisibility(View.GONE);
+								swipeRefreshLayout.setVisibility(View.VISIBLE);
+							}
+
+						} else {
+							showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
+					}
+				}
+
 				if (placeArrayList.size() == refreshCounter.incrementAndGet()) {
 					swipeRefreshLayout.setRefreshing(false);
 					refreshCounter.set(0);
@@ -265,7 +266,7 @@ public class PlacesFragment extends Fragment {
 					if (API_KEY != null && !Objects.equals(API_KEY, "")) {
 						try {
 							for (Place place : placeArrayList) {
-								weatherService.getWeatherDataOWM(place, dataPlaces, getPlaceListCallback);
+								weatherService.getWeatherDataOWM(place, dataPlaces, getDataPlaceListCallback);
 							}
 
 						} catch (Exception e) {
@@ -285,7 +286,7 @@ public class PlacesFragment extends Fragment {
 				swipeRefreshLayout.setVisibility(View.VISIBLE);
 
 				for (Place place : placeArrayList) {
-					weatherService.getWeatherDataOWM(place, dataPlaces, getPlaceListCallback);
+					weatherService.getWeatherDataOWM(place, dataPlaces, getDataPlaceListCallback);
 				}
 
 			} else {

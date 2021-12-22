@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import fr.qgdev.openweather.dataplaces.DataPlaces;
+import fr.qgdev.openweather.weather.AirQuality;
 import fr.qgdev.openweather.weather.CurrentWeather;
 import fr.qgdev.openweather.weather.DailyWeatherForecast;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
@@ -51,7 +52,7 @@ public class WeatherService {
 	}
 
 	@WorkerThread
-	public void getCoordinatesOWM(Place place, WeatherCallbackGetCoordinates callback) {
+	public void getCoordinatesOWM(Place place, CallbackGetCoordinates callback) {
 
 		//  Setting up important variables and objects for weather data request
 		String url = String.format(context.getString(R.string.url_owm_coordinates), place.getCity(), place.getCountryCode(), apiKey);
@@ -119,7 +120,7 @@ public class WeatherService {
 	}
 
 	@WorkerThread
-	public void getWeatherDataOWM(Place place, DataPlaces dataPlaces, WeatherCallbackGetData callback) {
+	public void getWeatherDataOWM(Place place, DataPlaces dataPlaces, CallbackGetData callback) {
 
 		//  Setting up important variables and objects for weather data request
 		String url = String.format(context.getString(R.string.url_owm_weatherdata), place.getLatitude(), place.getLongitude(), apiKey, language);
@@ -221,45 +222,44 @@ public class WeatherService {
 
 
 									Log.d(TAG, "Weather information treatment completed");
-									callback.onWeatherData(place, dataPlaces);
+									getAirQualityDataOWM(place, dataPlaces, callback);
 
 								} catch (JSONException e) {
 									Log.w(TAG, "Weather information treatment failed due to a JSONException");
 									e.printStackTrace();
-									callback.onTreatmentError();
-								} finally {
-									callback.onTheEndOfTheRequest();
+									callback.onTreatmentError(CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
+									callback.onTheEndOfTheRequest(null, null, CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
 								}
 							},
 							error -> {
 								//  no server response (NO INTERNET or SERVER DOWN)
 								if (error.networkResponse == null) {
-									callback.onNoResponseError();
+									callback.onNoResponseError(CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
 									Log.w(TAG, "Weather information request failed - NO RESPONSE");
 								}
 								//  Server response
 								else {
 									switch (error.networkResponse.statusCode) {
 										case 429:   //  Too many requests
-											callback.onTooManyRequestsError();
+											callback.onTooManyRequestsError(CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
 											Log.w(TAG, "Weather information request failed - TOO MANY REQUESTS");
 											break;
 										case 404:   //  Place not found
-											callback.onPlaceNotFoundError();
+											callback.onPlaceNotFoundError(CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
 											Log.w(TAG, "Weather information request failed - PLACE NOT FOUND");
 											break;
 										case 401:   //  Unknown or wrong API key
-											callback.onWrongOrUnknownApiKeyError();
+											callback.onWrongOrUnknownApiKeyError(CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
 											Log.w(TAG, "Weather information request failed - API KEY PROBLEM");
 											break;
 										default:    //  Unknown error
-											callback.onUnknownError();
+											callback.onUnknownError(CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
 											Log.w(TAG, "Weather information request failed - UNKNOWN ERROR");
 											error.printStackTrace();
 											break;
 									}
 								}
-								callback.onTheEndOfTheRequest();
+								callback.onTheEndOfTheRequest(null, null, CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
 							});
 
 			queue.add(weatherRequest);
@@ -268,7 +268,78 @@ public class WeatherService {
 		//  The device isn't connected to an INTERNET capable network
 		else {
 			Log.w(TAG, "Weather information request failed from OWM");
-			callback.onDeviceNotConnected();
+			callback.onDeviceNotConnected(CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
+		}
+	}
+
+
+	@WorkerThread
+	public void getAirQualityDataOWM(Place place, DataPlaces dataPlaces, CallbackGetData callback) {
+
+		//  Setting up important variables and objects for weather data request
+		String url = String.format(context.getString(R.string.url_owm_airqualitydata), place.getLatitude(), place.getLongitude(), apiKey);
+
+		//  Before launching request, we must have to verify that if the device is connected to a network
+		//  The device is connected to an INTERNET capable network
+		if (this.deviceIsConnected()) {
+			JsonObjectRequest airQualityRequest = new JsonObjectRequest
+					(Request.Method.GET, url, null,
+							response -> {
+								try {
+									//  Air quality
+									//________________________________________________________________
+									//
+									AirQuality airQuality = new AirQuality();
+									airQuality.fillWithOWMData(response);
+									place.setAirQuality(airQuality);
+
+									Log.d(TAG, "Air quality information treatment completed");
+									callback.onTheEndOfTheRequest(place, dataPlaces, CallbackGetData.RequestStatus.COMPLETE);
+								} catch (JSONException e) {
+									Log.w(TAG, "Air quality information treatment failed due to a JSONException");
+									e.printStackTrace();
+									callback.onTreatmentError(CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
+									callback.onTheEndOfTheRequest(place, dataPlaces, CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
+								}
+							},
+							error -> {
+								//  no server response (NO INTERNET or SERVER DOWN)
+								if (error.networkResponse == null) {
+									callback.onNoResponseError(CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
+									Log.w(TAG, "Air quality information request failed - NO RESPONSE");
+								}
+								//  Server response
+								else {
+									switch (error.networkResponse.statusCode) {
+										case 429:   //  Too many requests
+											callback.onTooManyRequestsError(CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
+											Log.w(TAG, "Air quality information request failed - TOO MANY REQUESTS");
+											break;
+										case 404:   //  Place not found
+											callback.onPlaceNotFoundError(CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
+											Log.w(TAG, "Air quality information request failed - PLACE NOT FOUND");
+											break;
+										case 401:   //  Unknown or wrong API key
+											callback.onWrongOrUnknownApiKeyError(CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
+											Log.w(TAG, "Air quality information request failed - API KEY PROBLEM");
+											break;
+										default:    //  Unknown error
+											callback.onUnknownError(CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
+											Log.w(TAG, "Air quality information request failed - UNKNOWN ERROR");
+											error.printStackTrace();
+											break;
+									}
+								}
+								callback.onTheEndOfTheRequest(place, dataPlaces, CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
+							});
+
+			queue.add(airQualityRequest);
+		}
+
+		//  The device isn't connected to an INTERNET capable network
+		else {
+			Log.w(TAG, "Air quality information request failed from OWM");
+			callback.onDeviceNotConnected(CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
 		}
 	}
 
@@ -292,28 +363,33 @@ public class WeatherService {
 		queue.cancelAll(WEATHER_SERVICE_TAG);
 	}
 
+	public interface CallbackGetData {
+		void onTreatmentError(RequestStatus requestStatus);
 
-	public interface WeatherCallbackGetData {
-		void onWeatherData(final Place place, DataPlaces dataPlaces);
+		void onNoResponseError(RequestStatus requestStatus);
 
-		void onTreatmentError();
+		void onTooManyRequestsError(RequestStatus requestStatus);
 
-		void onNoResponseError();
+		void onPlaceNotFoundError(RequestStatus requestStatus);
 
-		void onTooManyRequestsError();
+		void onWrongOrUnknownApiKeyError(RequestStatus requestStatus);
 
-		void onPlaceNotFoundError();
+		void onUnknownError(RequestStatus requestStatus);
 
-		void onWrongOrUnknownApiKeyError();
+		void onDeviceNotConnected(RequestStatus requestStatus);
 
-		void onUnknownError();
+		void onTheEndOfTheRequest(Place place, DataPlaces dataPlaces, RequestStatus requestStatus);
 
-		void onDeviceNotConnected();
+		//	To know at which state the request terminated and to treat it differently
+		enum RequestStatus {
+			WEATHER_REQUEST_FAIL,
+			AIR_QUALITY_REQUEST_FAIL,
+			COMPLETE
 
-		void onTheEndOfTheRequest();
+		}
 	}
 
-	public interface WeatherCallbackGetCoordinates {
+	public interface CallbackGetCoordinates {
 		void onPlaceFound(final Place place, DataPlaces dataPlaces);
 
 		void onTreatmentError();

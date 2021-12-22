@@ -36,8 +36,8 @@ public class AddPlaceDialog extends Dialog {
 	private final ProgressBar addButtonProgressSpinner;
 	private final Button exitButton, addButton;
 
-	private final WeatherService.WeatherCallbackGetCoordinates getCoordinatesCallback;
-	private final WeatherService.WeatherCallbackGetData getDataCallback;
+	private final WeatherService.CallbackGetCoordinates getCoordinatesCallback;
+	private final WeatherService.CallbackGetData getDataCallback;
 
 	private final List<String> countryNames;
 	private final List<String> countryNamesSorted;
@@ -95,7 +95,7 @@ public class AddPlaceDialog extends Dialog {
 		//  WeatherService Callbacks
 		//________________________________________________________________
 		//  This callback will fill place with data
-		getCoordinatesCallback = new WeatherService.WeatherCallbackGetCoordinates() {
+		getCoordinatesCallback = new WeatherService.CallbackGetCoordinates() {
 			@Override
 			public void onPlaceFound(Place place, DataPlaces dataPlaces) {
 				weatherService.getWeatherDataOWM(place, dataPlaces, getDataCallback);
@@ -166,9 +166,45 @@ public class AddPlaceDialog extends Dialog {
 
 		//________________________________________________________________
 		//  This callback will fill place with data
-		this.getDataCallback = new WeatherService.WeatherCallbackGetData() {
+		this.getDataCallback = new WeatherService.CallbackGetData() {
+
 			@Override
-			public void onWeatherData(final Place place, DataPlaces dataPlaces) {
+			public void onTreatmentError(RequestStatus requestStatus) {
+				showSnackbar(dialogWindow, context.getString(R.string.error_cannot_refresh_place_list_network));
+			}
+
+			@Override
+			public void onNoResponseError(RequestStatus requestStatus) {
+				showSnackbar(dialogWindow, context.getString(R.string.error_server_unreachable));
+			}
+
+			@Override
+			public void onTooManyRequestsError(RequestStatus requestStatus) {
+				showSnackbar(dialogWindow, context.getString(R.string.error_too_many_request_in_a_day));
+			}
+
+			@Override
+			public void onPlaceNotFoundError(RequestStatus requestStatus) {
+				showSnackbar(dialogWindow, context.getString(R.string.error_place_not_found));
+			}
+
+			@Override
+			public void onWrongOrUnknownApiKeyError(RequestStatus requestStatus) {
+				showSnackbar(dialogWindow, context.getString(R.string.error_wrong_api_key));
+			}
+
+			@Override
+			public void onUnknownError(RequestStatus requestStatus) {
+				showSnackbar(dialogWindow, context.getString(R.string.error_unknow_error));
+			}
+
+			@Override
+			public void onDeviceNotConnected(RequestStatus requestStatus) {
+				showSnackbar(dialogWindow, context.getString(R.string.error_device_not_connected));
+			}
+
+			@Override
+			public void onTheEndOfTheRequest(Place place, DataPlaces dataPlaces, RequestStatus requestStatus) {
 				try {
 					if (dataPlaces.addPlace(place)) {
 						placeFragmentInteractions.onAddingPlace(dataPlaces, dataPlaces.getPlacePositionInRegister(place), place);
@@ -185,59 +221,7 @@ public class AddPlaceDialog extends Dialog {
 							.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
 							.show();
 				}
-			}
 
-			@Override
-			public void onTreatmentError() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_cannot_save_place_treatment), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
-			}
-
-			@Override
-			public void onNoResponseError() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_server_unreachable), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-						.show();
-			}
-
-			@Override
-			public void onTooManyRequestsError() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_too_many_request_in_a_day), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
-			}
-
-			@Override
-			public void onPlaceNotFoundError() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_place_not_found), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
-			}
-
-			@Override
-			public void onWrongOrUnknownApiKeyError() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_wrong_api_key), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
-			}
-
-			@Override
-			public void onUnknownError() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_unknow_error), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
-			}
-
-			@Override
-			public void onDeviceNotConnected() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_device_not_connected), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
-			}
-
-			@Override
-			public void onTheEndOfTheRequest() {
 				enableDialogWindowControls();
 			}
 		};
@@ -308,6 +292,13 @@ public class AddPlaceDialog extends Dialog {
 			return "";
 		}
 		return country.toString();
+	}
+
+	private void showSnackbar(View view, String message) {
+		Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
+				.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+				.setMaxInlineActionWidth(3)
+				.show();
 	}
 
 	public void disableDialogWindowControls() {

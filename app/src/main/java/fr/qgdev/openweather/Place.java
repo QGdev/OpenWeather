@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
+import fr.qgdev.openweather.weather.AirQuality;
 import fr.qgdev.openweather.weather.CurrentWeather;
 import fr.qgdev.openweather.weather.DailyWeatherForecast;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
@@ -29,6 +30,7 @@ public class Place {
 	private int timeOffset;
 
 	private CurrentWeather currentWeather;
+	private AirQuality airQuality;
 	private ArrayList<MinutelyWeatherForecast> minutelyWeatherForecastArrayList;
 	private ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList;
 	private ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList;
@@ -38,6 +40,7 @@ public class Place {
 	public Place(String city, String countryCode) {
 
 		this.currentWeather = new CurrentWeather();
+		this.airQuality = new AirQuality();
 		this.minutelyWeatherForecastArrayList = new ArrayList<>();
 		this.hourlyWeatherForecastArrayList = new ArrayList<>();
 		this.dailyWeatherForecastArrayList = new ArrayList<>();
@@ -50,6 +53,7 @@ public class Place {
 	public Place(JSONObject placeObjectJSON) throws JSONException {
 
 		this.currentWeather = new CurrentWeather();
+		this.airQuality = new AirQuality();
 		this.minutelyWeatherForecastArrayList = new ArrayList<>();
 		this.hourlyWeatherForecastArrayList = new ArrayList<>();
 		this.dailyWeatherForecastArrayList = new ArrayList<>();
@@ -98,6 +102,17 @@ public class Place {
 			this.currentWeather = new CurrentWeather(placeObjectJSON.optJSONObject("current_weather"));
 		} else {
 			throw new JSONException("Cannot find current weather data in PlaceObjectJSON");
+		}
+
+
+		//  Air Quality data set
+		//________________________________________________________________
+		//
+		//  To assure retrocompatibility with older versions
+		if (placeObjectJSON.has("air_quality")) {
+			this.airQuality = new AirQuality(placeObjectJSON.optJSONObject("air_quality"));
+		} else {
+			this.airQuality = new AirQuality();
 		}
 
 
@@ -223,6 +238,10 @@ public class Place {
 
 	public void setCurrentWeather(CurrentWeather currentWeather) {
 		this.currentWeather = currentWeather.clone();
+	}
+
+	public void setAirQuality(AirQuality airQuality) {
+		this.airQuality = airQuality.clone();
 	}
 
 	public ArrayList<MinutelyWeatherForecast> getMinutelyWeatherForecastArrayList() {
@@ -414,6 +433,7 @@ public class Place {
 		placeObjectJSON.accumulate("update", this.getUpdateJSON());
 
 		placeObjectJSON.accumulate("current_weather", this.currentWeather.getJSONObject());
+		placeObjectJSON.accumulate("air_quality", this.airQuality.getJSONObject());
 
 		//  Minutely weather forecasts can be empty so it doesn't have to appear in the resulting JSON
 		if (!this.minutelyWeatherForecastArrayList.isEmpty())
@@ -437,6 +457,7 @@ public class Place {
 				", lastUpdate=" + lastUpdate +
 				", timeOffset=" + timeOffset +
 				", currentWeather=" + currentWeather +
+				", airQuality=" + airQuality +
 				", minutelyWeatherForecastArrayList=" + minutelyWeatherForecastArrayList +
 				", hourlyWeatherForecastArrayList=" + hourlyWeatherForecastArrayList +
 				", dailyWeatherForecastArrayList=" + dailyWeatherForecastArrayList +
