@@ -1,4 +1,4 @@
-package fr.qgdev.openweather.forecastView;
+package fr.qgdev.openweather.customView;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -108,7 +108,7 @@ public class HourlyForecastGraphView extends ForecastView {
 
 		this.hourlyWeatherForecastArrayList = hourlyWeatherForecastArrayList;
 
-		this.formattingService = unitsFormattingService;
+		formattingService = unitsFormattingService;
 
 		this.timeZone = timeZone;
 
