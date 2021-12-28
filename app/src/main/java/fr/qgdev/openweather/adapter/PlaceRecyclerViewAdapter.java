@@ -1,6 +1,7 @@
 package fr.qgdev.openweather.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ import fr.qgdev.openweather.customView.HourlyForecastGraphView;
 import fr.qgdev.openweather.dataplaces.DataPlaces;
 import fr.qgdev.openweather.dialog.WeatherAlertDialog;
 import fr.qgdev.openweather.fragment.places.PlacesFragment;
+import fr.qgdev.openweather.weather.AirQuality;
 import fr.qgdev.openweather.weather.CurrentWeather;
 
 
@@ -311,6 +313,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		holder.countryNameTextVIew.setText(this.getCountryName(currentPlace.getCountryCode()));
 
 		CurrentWeather currentWeather = currentPlace.getCurrentWeather();
+		AirQuality airQuality = currentPlace.getAirQuality();
 
 		holder.temperatureTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.temperature, true));
 		holder.temperatureFeelsLikeTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.temperatureFeelsLike, true));
@@ -482,6 +485,48 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 		holder.cloudinessTextView.setText(currentWeather.cloudiness + " %");
 
+		//	Air quality
+		holder.airQualityIndex.setText(String.valueOf(airQuality.aqi));
+
+		switch (airQuality.aqi) {
+
+			case 5:
+				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvExtreme)));
+				holder.airQualityMessage.setText(context.getText(R.string.air_quality_5));
+				break;
+
+			case 4:
+				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvVeryHigh)));
+				holder.airQualityMessage.setText(context.getText(R.string.air_quality_4));
+				break;
+
+			case 3:
+				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvHigh)));
+				holder.airQualityMessage.setText(context.getText(R.string.air_quality_3));
+				break;
+
+			case 2:
+				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvModerate)));
+				holder.airQualityMessage.setText(context.getText(R.string.air_quality_2));
+				break;
+
+			case 1:
+			default:
+				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvLow)));
+				holder.airQualityMessage.setText(context.getText(R.string.air_quality_1));
+				break;
+		}
+
+		holder.airQualityCO.setText(String.format("%.3f", airQuality.co));
+		holder.airQualityNO.setText(String.format("%.3f", airQuality.no));
+		holder.airQualityNO2.setText(String.format("%.3f", airQuality.no2));
+		holder.airQualityO3.setText(String.format("%.3f", airQuality.o3));
+		holder.airQualitySO2.setText(String.format("%.3f", airQuality.so2));
+		holder.airQualityNH3.setText(String.format("%.3f", airQuality.nh3));
+		holder.airQualityPM25.setText(String.format("%.3f", airQuality.pm2_5));
+		holder.airQualityPM10.setText(String.format("%.3f", airQuality.pm10));
+
+
 		//  Precipitations
 		if (currentWeather.rain > 0 || currentWeather.snow > 0) {
 			holder.precipitationLayout.setVisibility(View.VISIBLE);
@@ -571,6 +616,18 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		public TextView sunsetTextView;
 		public TextView cloudinessTextView;
 
+		public ImageView airQualityCircle;
+		public TextView airQualityIndex;
+		public TextView airQualityMessage;
+		public TextView airQualityCO;
+		public TextView airQualityNO;
+		public TextView airQualityNO2;
+		public TextView airQualityO3;
+		public TextView airQualitySO2;
+		public TextView airQualityNH3;
+		public TextView airQualityPM25;
+		public TextView airQualityPM10;
+
 		public LinearLayout precipitationLayout;
 		public TextView rainTextView;
 		public TextView snowTextView;
@@ -619,6 +676,18 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			this.sunriseTextView = itemView.findViewById(R.id.sunrise_value);
 			this.sunsetTextView = itemView.findViewById(R.id.sunset_value);
 			this.cloudinessTextView = itemView.findViewById(R.id.cloudiness_value);
+
+			this.airQualityCircle = itemView.findViewById(R.id.airquality_circle);
+			this.airQualityIndex = itemView.findViewById(R.id.airquality_number);
+			this.airQualityMessage = itemView.findViewById(R.id.airquality_text);
+			this.airQualityCO = itemView.findViewById(R.id.textview_co);
+			this.airQualityNO = itemView.findViewById(R.id.textview_no);
+			this.airQualityNO2 = itemView.findViewById(R.id.textview_no2);
+			this.airQualityO3 = itemView.findViewById(R.id.textview_o3);
+			this.airQualitySO2 = itemView.findViewById(R.id.textview_so2);
+			this.airQualityNH3 = itemView.findViewById(R.id.textview_nh3);
+			this.airQualityPM25 = itemView.findViewById(R.id.textview_pm2_5);
+			this.airQualityPM10 = itemView.findViewById(R.id.textview_pm10);
 
 			this.precipitationLayout = itemView.findViewById(R.id.precipitations);
 			this.rainTextView = itemView.findViewById(R.id.rain_precipitations_current_value);

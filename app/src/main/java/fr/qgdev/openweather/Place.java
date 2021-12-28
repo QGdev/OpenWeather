@@ -240,6 +240,10 @@ public class Place {
 		this.currentWeather = currentWeather.clone();
 	}
 
+	public AirQuality getAirQuality() {
+		return this.airQuality.clone();
+	}
+
 	public void setAirQuality(AirQuality airQuality) {
 		this.airQuality = airQuality.clone();
 	}
