@@ -143,4 +143,9 @@
                 android:textSize="20sp" />
         </LinearLayout>
     </LinearLayout>
+
+    <include
+        android:id="@+id/aqi_informations"
+        layout="@layout/adapter_air_quality_index"
+        android:visibility="visible" />
 </LinearLayout>

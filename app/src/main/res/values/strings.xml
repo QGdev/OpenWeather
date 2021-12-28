@@ -166,5 +166,12 @@
 	<string name="title_settings_aqi_state">Air quality</string>
 	<string name="summary_enable_settings_aqi_state">Air quality will be fetch and displayed</string>
 	<string name="summary_disable_settings_aqi_state">Air quality will be ignored</string>
+	<string name="title_air_quality">Air Quality</string>
+	<string name="air_quality_1">Good</string>
+	<string name="air_quality_concentrations_title">Composition (in µg/m³) :</string>
+	<string name="air_quality_2">Moderate</string>
+	<string name="air_quality_3">Unhealthy (sensitives)</string>
+	<string name="air_quality_4">Unhealthy</string>
+	<string name="air_quality_5">Very unhealthy</string>
 
 </resources>
