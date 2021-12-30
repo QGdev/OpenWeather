@@ -10,7 +10,7 @@
     android:animationCache="true"
     android:background="@drawable/round_square"
     android:orientation="vertical"
-    android:paddingStart="15dp"
+    android:paddingStart="18dp"
     android:paddingTop="10dp"
     android:paddingEnd="10dp"
     android:paddingBottom="10dp"
@@ -24,19 +24,20 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="40dp"
+            android:layout_width="30dp"
             android:layout_height="30dp"
-            android:paddingEnd="10dp"
             android:src="@drawable/airquality"
             app:tint="@color/colorIcons" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:gravity="center_vertical"
             android:text="@string/title_air_quality"
             android:textColor="@color/colorFirstText"
             android:textSize="20sp" />
+
     </LinearLayout>
 
 
@@ -69,7 +70,7 @@
                 android:id="@+id/airquality_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingBottom="15dp"
+                android:paddingBottom="18dp"
                 android:text="1"
                 android:textColor="@color/colorFirstText"
                 android:textSize="35sp"
@@ -97,7 +98,7 @@
                 android:maxLines="2"
                 android:text="@string/air_quality_1"
                 android:textColor="@color/colorFirstText"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -113,141 +114,188 @@
 
             <TextView
                 android:id="@+id/composition_title"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="5dp"
                 android:text="@string/air_quality_concentrations_title"
                 android:textColor="@color/colorFirstText"
-                android:textSize="17sp"
+                android:textSize="19sp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <GridLayout
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:paddingLeft="25dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/composition_title">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="CO"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="NO"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="NO₂"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="O₃"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="SO₂"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="NH₃"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PM₂.₅"
-                    android:textSize="15sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PM₁₀"
-                    android:textSize="15sp" />
-
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingEnd="50dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/composition_title">
 
-                <TextView
-                    android:id="@+id/textview_co"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="201.941"
-                    android:textSize="15sp" />
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/textview_no"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.019"
-                    android:textSize="15sp" />
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:text="CO"
+                        android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/textview_no2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.771"
-                    android:textSize="15sp" />
+                    <TextView
+                        android:id="@+id/textview_co"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="201.941"
+                        android:textSize="18sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textview_o3"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="68.665"
-                    android:textSize="15sp" />
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/textview_so2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.641"
-                    android:textSize="15sp" />
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:text="NO"
+                        android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/textview_nh3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.5"
-                    android:textSize="15sp" />
+                    <TextView
+                        android:id="@+id/textview_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.019"
+                        android:textSize="18sp" />
+                </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textview_pm2.5"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.54"
-                    android:textSize="15sp" />
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/textview_pm10"
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:text="NO₂"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textview_no2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.771"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0.124"
-                    android:textSize="15sp" />
-            </LinearLayout>
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:text="O₃"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textview_o3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="68.665"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:text="SO₂"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textview_so2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.641"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:text="NH₃"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textview_nh3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.5"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:text="PM₂.₅"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textview_pm2.5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.54"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:text="PM₁₀"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/textview_pm10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0.124"
+                        android:textSize="18sp" />
+                </LinearLayout>
+
+
+            </GridLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

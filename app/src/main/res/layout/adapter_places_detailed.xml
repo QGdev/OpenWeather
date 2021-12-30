@@ -25,14 +25,13 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:layout_gravity="end"
             android:src="@drawable/danger"
             app:tint="@color/colorIcons" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
             android:layout_marginStart="10dp"
             android:text="@string/title_dialog_weather_alert"
             android:textColor="@color/colorFirstText"
