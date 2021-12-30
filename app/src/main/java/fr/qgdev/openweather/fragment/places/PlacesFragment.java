@@ -62,7 +62,7 @@ public class PlacesFragment extends Fragment {
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		weatherService.cancel();
+		if (weatherService != null) weatherService.cancel();
 		mContext = null;
 	}
 
