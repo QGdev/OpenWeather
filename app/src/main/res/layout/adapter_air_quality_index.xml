@@ -21,8 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingBottom="10dp">
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="40dp"
@@ -44,15 +43,16 @@
     <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:columnCount="4"
+        android:layout_margin="10dp"
+        android:columnCount="2"
+        android:columnOrderPreserved="true"
         android:orientation="horizontal"
         android:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="1">
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_columnWeight="0">
 
             <ImageView
                 android:id="@+id/airquality_circle"
@@ -84,7 +84,7 @@
                 android:paddingTop="45dp"
                 android:text="AQI"
                 android:textColor="@color/colorFirstText"
-                android:textSize="15sp"
+                android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="@id/airquality_circle"
                 app:layout_constraintLeft_toLeftOf="@id/airquality_circle"
                 app:layout_constraintRight_toRightOf="@id/airquality_circle"
@@ -97,7 +97,7 @@
                 android:maxLines="2"
                 android:text="@string/air_quality_1"
                 android:textColor="@color/colorFirstText"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -108,8 +108,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_columnWeight="4">
+            android:layout_height="match_parent"
+            android:layout_columnWeight="2">
 
             <TextView
                 android:id="@+id/composition_title"

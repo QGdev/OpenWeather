@@ -16,11 +16,11 @@
 
 	<color name="colorLightBlue">#5DA3EA</color>
 
-	<color name="colorUvLow">#83C88B</color>
+	<color name="colorUvLow">#089718</color>
 	<color name="colorUvModerate">#FFDC01</color>
-	<color name="colorUvHigh">#F89C1C</color>
-	<color name="colorUvVeryHigh">#EE1D23</color>
-	<color name="colorUvExtreme">#D83484</color>
+	<color name="colorUvHigh">#FF9400</color>
+	<color name="colorUvVeryHigh">#FF0007</color>
+	<color name="colorUvExtreme">#FF007C</color>
 
 	<color name="colorMoonLight">#FDBF00</color>
 	<color name="colorMoonShadow">#416675</color>
