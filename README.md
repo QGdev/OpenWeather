@@ -18,7 +18,7 @@ OpenWeatherMaps privacy policy: [openweather.co.uk/privacy-policy](https://openw
 ## ⚠️ Disclamer
 This application is powered by the OpenWeatherMaps APIs but has no connection or affiliation with this company.
 
-## ⚖️ Licences
+## ⚖️ Credits
 
 ### Weather data and Forecasts
 Weather data and forecasts are acquired through [openweathermap.org](https://openweathermap.org/), they are licensed under ODbL.
