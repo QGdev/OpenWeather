@@ -143,4 +143,5 @@
 	<string name="air_quality_5">Très Mauvais</string>
 	<string name="air_quality_4">Mauvais</string>
 	<string name="air_quality_3">Mauvais (sensible)</string>
+    <string name="error_place_move">Une erreur est survenue lors du déplacement</string>
 </resources>

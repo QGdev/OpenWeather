@@ -133,14 +133,15 @@
 	<string name="wind_direction_westnorthwest">WNW</string>
 	<string name="about_thanks_section_title">Thanks</string>
 	<string name="about_thanks_section_content">I would like to say thank you to my best friend who tested the application in the very early stages of development and always had good ideas.</string>
-	<string name="title_settings_aqi_state">Air quality</string>
-	<string name="summary_enable_settings_aqi_state">"Air quality will be fetch and displayed "</string>
-	<string name="summary_disable_settings_aqi_state">Air quality will be ignored</string>
-	<string name="title_air_quality">Air Quality</string>
-	<string name="air_quality_1">Good</string>
-	<string name="air_quality_concentrations_title">Composition (in µg/m³) :</string>
-	<string name="air_quality_2">Moderate</string>
-	<string name="air_quality_5">Very unhealthy</string>
-	<string name="air_quality_4">Unhealthy</string>
-	<string name="air_quality_3">Unhealthy (sensitives)</string>
+    <string name="title_settings_aqi_state">Air quality</string>
+    <string name="summary_enable_settings_aqi_state">"Air quality will be fetch and displayed "</string>
+    <string name="summary_disable_settings_aqi_state">Air quality will be ignored</string>
+    <string name="title_air_quality">Air Quality</string>
+    <string name="air_quality_1">Good</string>
+    <string name="air_quality_concentrations_title">Composition (in µg/m³) :</string>
+    <string name="air_quality_2">Moderate</string>
+    <string name="air_quality_5">Very unhealthy</string>
+    <string name="air_quality_4">Unhealthy</string>
+    <string name="air_quality_3">Unhealthy (sensitives)</string>
+    <string name="error_place_move">An error occurred while moving place</string>
 </resources>

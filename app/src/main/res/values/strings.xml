@@ -85,6 +85,7 @@
 	<string name="error_cannot_save_place">Cannot save the place</string>
 	<string name="error_cannot_refresh_place_list">Cannot refresh places</string>
 	<string name="error_place_deletion">An error occurred while deleting</string>
+	<string name="error_place_move">An error occurred while moving place</string>
 	<string name="error_cannot_save_place_treatment">Cannot save place due to a treatment error</string>
 
 
