@@ -28,7 +28,6 @@ import fr.qgdev.openweather.fragment.places.PlacesFragment;
 
 public class AddPlaceDialog extends Dialog {
 
-	private final Context context;
 	private final ConstraintLayout dialogWindow;
 	private final TextInputLayout cityTextInputLayout, countryTextInputLayout;
 	private final TextInputEditText cityEditText;
@@ -40,14 +39,11 @@ public class AddPlaceDialog extends Dialog {
 	private final WeatherService.CallbackGetData getDataCallback;
 
 	private final List<String> countryNames;
-	private final List<String> countryNamesSorted;
 	private final List<String> countryCodes;
 
 	public AddPlaceDialog(Context context, View addPlaceFABView, String apiKey, WeatherService weatherService, PlacesFragment.Interactions placeFragmentInteractions) {
 		super(context);
 		setContentView(R.layout.dialog_add_place);
-
-		this.context = context;
 
 		this.dialogWindow = findViewById(R.id.dialog_window);
 		this.cityTextInputLayout = findViewById(R.id.cityTextInputLayout);
@@ -61,8 +57,8 @@ public class AddPlaceDialog extends Dialog {
 		addButtonProgressSpinner.setVisibility(View.GONE);
 
 		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
-		this.countryNamesSorted = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
-		Collections.sort(this.countryNamesSorted);
+		List<String> countryNamesSorted = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
+		Collections.sort(countryNamesSorted);
 		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
 
 		ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.dialog_country_list_item, countryNamesSorted);
@@ -71,25 +67,17 @@ public class AddPlaceDialog extends Dialog {
 		countryEditText.setAdapter(adapter);
 
 		//  Observe country field to show an error if the registered country name doesn't exist
-		countryEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				//  The country name doesn't exist, the field is not focused and the field isn't empty
-				if (getCountryCode() == null && !hasFocus && !getCountryField().isEmpty()) {
-					countryTextInputLayout.setError(context.getString(R.string.error_place_country_not_in_list));
-				} else {
-					countryTextInputLayout.setErrorEnabled(false);
-				}
+		countryEditText.setOnFocusChangeListener((v, hasFocus) -> {
+			//  The country name doesn't exist, the field is not focused and the field isn't empty
+			if (getCountryCode() == null && !hasFocus && !getCountryField().isEmpty()) {
+				countryTextInputLayout.setError(context.getString(R.string.error_place_country_not_in_list));
+			} else {
+				countryTextInputLayout.setErrorEnabled(false);
 			}
 		});
 
 		//  Observe city field to turn off any errors
-		cityEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View v, boolean hasFocus) {
-				cityTextInputLayout.setErrorEnabled(false);
-			}
-		});
+		cityEditText.setOnFocusChangeListener((v, hasFocus) -> cityTextInputLayout.setErrorEnabled(false));
 
 
 		//  WeatherService Callbacks
@@ -207,7 +195,7 @@ public class AddPlaceDialog extends Dialog {
 			public void onTheEndOfTheRequest(Place place, DataPlaces dataPlaces, RequestStatus requestStatus) {
 				try {
 					if (dataPlaces.addPlace(place)) {
-						placeFragmentInteractions.onAddingPlace(dataPlaces, dataPlaces.getPlacePositionInRegister(place), place);
+						placeFragmentInteractions.onAddingPlace(place);
 						dismiss();
 					} else {
 						throw new Exception("Commit Error");
@@ -260,18 +248,13 @@ public class AddPlaceDialog extends Dialog {
 					}
 				});
 
-		exitButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dismiss();
-			}
-		});
+		exitButton.setOnClickListener(v -> dismiss());
 	}
 
 
 	public String getCityField() {
 		Editable city = cityEditText.getText();
-		if (city.length() == 0) {
+		if (city == null || city.length() == 0) {
 			return "";
 		}
 		return city.toString();
