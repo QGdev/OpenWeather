@@ -1,6 +1,7 @@
 package fr.qgdev.openweather.fragment.places;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -22,8 +24,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
-import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.qgdev.openweather.Place;
@@ -40,7 +42,6 @@ public class PlacesFragment extends Fragment {
 
 	private TextView noPlacesRegisteredTextView;
 	private SwipeRefreshLayout swipeRefreshLayout;
-	private FloatingActionButton addPlacesFab;
 	private RecyclerView placeRecyclerView;
 	private PlaceRecyclerViewAdapter placeRecyclerViewAdapter;
 	private static DataPlaces dataPlaces;
@@ -79,16 +80,22 @@ public class PlacesFragment extends Fragment {
 		placeRecyclerView.destroyDrawingCache();
 	}
 
+	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+		super.onViewStateRestored(savedInstanceState);
+	}
+
+
 	@SuppressLint("WrongThread")
 	@UiThread
 	public View onCreateView(@NonNull LayoutInflater inflater,
-	                         ViewGroup container, Bundle savedInstanceState) {
+							 ViewGroup container, Bundle savedInstanceState) {
 
 		View root = inflater.inflate(R.layout.fragment_places, container, false);
 
 		noPlacesRegisteredTextView = root.findViewById(R.id.no_places_registered);
 		swipeRefreshLayout = root.findViewById(R.id.swiperefresh);
-		addPlacesFab = root.findViewById(R.id.add_places);
+		FloatingActionButton addPlacesFab = root.findViewById(R.id.add_places);
 
 
 		//  Initialize places data storage
@@ -99,6 +106,7 @@ public class PlacesFragment extends Fragment {
 			placeArrayList.addAll(dataPlaces.getAllPlacesStored());
 		} catch (Exception e) {
 			e.printStackTrace();
+			placeArrayList.clear();
 		}
 
 
@@ -108,6 +116,7 @@ public class PlacesFragment extends Fragment {
 		refreshCounter.set(0);
 
 
+		//	Initialize Fragment Interactions
 		this.interactions = new Interactions() {
 			@Override
 			public void onPlaceDeletion(DataPlaces dataPlaces, int position) {
@@ -119,26 +128,28 @@ public class PlacesFragment extends Fragment {
 						showSnackbar(container, mContext.getString(R.string.error_place_deletion));
 					}
 
+					placeRecyclerViewAdapter.remove(position);
+
 					if (placeArrayList.isEmpty()) {
 						noPlacesRegisteredTextView.setVisibility(View.VISIBLE);
 						swipeRefreshLayout.setVisibility(View.GONE);
-
 					}
 
 				} catch (ArrayIndexOutOfBoundsException e) {
+					e.printStackTrace();
 					showSnackbar(container, mContext.getString(R.string.error_place_deletion));
 				}
 			}
 
 			@Override
-			public void onAddingPlace(DataPlaces dataPlaces, int position, Place place) {
+			public void onAddingPlace(Place place) {
 				if (placeArrayList.isEmpty()) {
 					noPlacesRegisteredTextView.setVisibility(View.GONE);
 					swipeRefreshLayout.setVisibility(View.VISIBLE);
 				}
 
 				placeArrayList.add(place);
-				placeRecyclerViewAdapter.add(position);
+				placeRecyclerViewAdapter.add(placeArrayList.size() - 1);
 			}
 
 			@Override
@@ -146,18 +157,79 @@ public class PlacesFragment extends Fragment {
 				placeArrayList.set(position, place);
 				placeRecyclerViewAdapter.notifyItemChanged(position);
 			}
+
+			@Override
+			public void onMovedPlace(DataPlaces dataPlaces, int initialPosition, int finalPosition) {
+				try {
+					dataPlaces.movePlace(initialPosition, finalPosition);
+					placeRecyclerViewAdapter.move(initialPosition, finalPosition);
+				} catch (Exception e) {
+					e.printStackTrace();
+					showSnackbar(container, mContext.getString(R.string.error_place_move));
+				}
+			}
 		};
 
 
-		//  Initialisation of the RecycleView
+		//  Initialisation of the RecyclerView
 		//________________________________________________________________
 		//
 		LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
 		layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
-		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, this, this.interactions, dataPlaces);
+		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, this);
 		placeRecyclerView.setLayoutManager(layoutManager);
 		placeRecyclerView.setAdapter(placeRecyclerViewAdapter);
+
+		//	Used to manage drag & drop reorganisation of place cards and swipe to delete
+		//
+		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START | ItemTouchHelper.END) {
+
+			int _initialPosition;
+			boolean itemAsBeenMoved = false;
+
+			@Override
+			public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+				if (!itemAsBeenMoved) {
+					_initialPosition = viewHolder.getAbsoluteAdapterPosition();
+					itemAsBeenMoved = true;
+				}
+				int initialPosition = viewHolder.getAbsoluteAdapterPosition();
+				int finalPosition = target.getAbsoluteAdapterPosition();
+
+				Collections.swap(placeArrayList, initialPosition, finalPosition);
+				placeRecyclerViewAdapter.notifyItemMoved(initialPosition, finalPosition);
+
+				return false;
+			}
+
+			@Override
+			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+				if (direction == ItemTouchHelper.START || direction == ItemTouchHelper.END) {
+					int index = viewHolder.getLayoutPosition();
+					Place place = placeArrayList.get(index);
+					new AlertDialog.Builder(mContext)
+							.setTitle(mContext.getString(R.string.dialog_confirmation_title_delete_place))
+							.setMessage(String.format(mContext.getString(R.string.dialog_confirmation_message_delete_place), place.getCity(), place.getCountryCode()))
+							.setPositiveButton(mContext.getString(R.string.dialog_confirmation_choice_yes), (dialog, which) -> interactions.onPlaceDeletion(dataPlaces, index))
+							.setNegativeButton(mContext.getString(R.string.dialog_confirmation_choice_no), (dialogInterface, i) -> placeRecyclerViewAdapter.notifyItemChanged(index))
+							.setCancelable(false)
+							.show();
+				}
+			}
+
+			//	This handles the ending of the drag & drop feature
+			@Override
+			public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+				super.clearView(recyclerView, viewHolder);
+				if (itemAsBeenMoved)
+					interactions.onMovedPlace(dataPlaces, _initialPosition, viewHolder.getAbsoluteAdapterPosition());
+				itemAsBeenMoved = false;
+			}
+		});
+
+		itemTouchHelper.attachToRecyclerView(placeRecyclerView);
+
 
 		//  Get API key
 		SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -280,6 +352,7 @@ public class PlacesFragment extends Fragment {
 		);
 
 
+		//	Initialisation the UI part and refreshing data of each places
 		try {
 			if (!placeArrayList.isEmpty()) {
 				noPlacesRegisteredTextView.setVisibility(View.GONE);
@@ -300,11 +373,6 @@ public class PlacesFragment extends Fragment {
 		return root;
 	}
 
-	@Override
-	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-		super.onViewStateRestored(savedInstanceState);
-	}
-
 	public Place getPlace(int index) {
 		return placeArrayList.get(index);
 	}
@@ -313,15 +381,13 @@ public class PlacesFragment extends Fragment {
 		return placeArrayList.size();
 	}
 
-	public TimeZone getTimeZonePlaceInArray(int index) {
-		return placeArrayList.get(index).getTimeZone();
-	}
-
 	public interface Interactions {
 		void onPlaceDeletion(DataPlaces dataPlaces, int position);
 
-		void onAddingPlace(DataPlaces dataPlaces, int position, Place place);
+		void onAddingPlace(Place place);
 
 		void onPlaceUpdate(DataPlaces dataPlaces, int position, Place place);
+
+		void onMovedPlace(DataPlaces dataPlaces, int initialPosition, int finalPosition);
 	}
 }

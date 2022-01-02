@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -28,36 +27,32 @@ import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.customView.DailyForecastGraphView;
 import fr.qgdev.openweather.customView.HourlyForecastGraphView;
-import fr.qgdev.openweather.dataplaces.DataPlaces;
 import fr.qgdev.openweather.dialog.WeatherAlertDialog;
 import fr.qgdev.openweather.fragment.places.PlacesFragment;
 import fr.qgdev.openweather.weather.AirQuality;
 import fr.qgdev.openweather.weather.CurrentWeather;
 
 
-public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecyclerViewAdapter.PlaceAdapterViewHolder> {
+public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecyclerViewAdapter.PlaceViewHolder> {
 
 	private final Context context;
-	private static PlacesFragment placesFragment;
+	private final PlacesFragment placesFragment;
 	private static ArrayList<PlaceView> placeViewArrayList;
-	private static DataPlaces dataPlaces;
 	private final List<String> countryNames;
 	private final List<String> countryCodes;
-	private static FormattingService formattingService;
-	private final PlacesFragment.Interactions placesFragmentInteractions;
+	private final FormattingService formattingService;
 
-	public PlaceRecyclerViewAdapter(Context context, PlacesFragment placesFragment, PlacesFragment.Interactions placesFragmentInteractions, DataPlaces dataPlaces) {
+	public PlaceRecyclerViewAdapter(Context context, PlacesFragment placesFragment) {
 		this.context = context;
-		PlaceRecyclerViewAdapter.placesFragment = placesFragment;
-		this.placesFragmentInteractions = placesFragmentInteractions;
+		this.placesFragment = placesFragment;
 		placeViewArrayList = generatePlaceViewArray();
-		PlaceRecyclerViewAdapter.dataPlaces = dataPlaces;
 
 		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
 		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
 
 		formattingService = new FormattingService(context);
 	}
+
 
 	public ArrayList<PlaceView> generatePlaceViewArray() {
 		ArrayList<PlaceView> placeViewArray = new ArrayList<>();
@@ -75,30 +70,38 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		this.notifyItemInserted(position);
 	}
 
-
 	public void remove(int position) {
-		this.placesFragmentInteractions.onPlaceDeletion(dataPlaces, position);
 		placeViewArrayList.remove(position);
 		this.notifyItemRemoved(position);
 	}
 
+	public void move(int initialPosition, int finalPosition) {
+
+		if (initialPosition != finalPosition) {
+			if (finalPosition == placeViewArrayList.size() - 1)
+				placeViewArrayList.add(placeViewArrayList.get(initialPosition));
+			else if (initialPosition < finalPosition)
+				placeViewArrayList.add(finalPosition + 1, placeViewArrayList.get(initialPosition));
+			else placeViewArrayList.add(finalPosition, placeViewArrayList.get(initialPosition));
+
+			if (initialPosition < finalPosition) placeViewArrayList.remove(initialPosition);
+			else placeViewArrayList.remove(initialPosition + 1);
+		}
+	}
 
 	@Override
 	public int getItemViewType(int position) {
 		return placeViewArrayList.get(position).viewType;
 	}
 
-	private void setListeners(int position, Place currentPlace, PlaceAdapterViewHolder holder) {
+	private void setListeners(int position, Place currentPlace, PlaceViewHolder holder) {
 		PlaceView placeView = placeViewArrayList.get(position);
 
 		holder.cardView.setOnClickListener(v -> {
-			switch (placeView.viewType) {
-				case PlaceView.COMPACT:
-					placeView.viewType = PlaceView.EXTENDED;
-					break;
-				default:
-					placeView.viewType = PlaceView.COMPACT;
-					break;
+			if (placeView.viewType == PlaceView.COMPACT) {
+				placeView.viewType = PlaceView.EXTENDED;
+			} else {
+				placeView.viewType = PlaceView.COMPACT;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
@@ -163,15 +166,15 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 	@NonNull
 	@Override
-	public PlaceAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+	public PlaceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View view = inflater.inflate(R.layout.adapter_places, parent, false);
 
-		return new PlaceAdapterViewHolder(context, view);
+		return new PlaceViewHolder(context, view);
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull PlaceAdapterViewHolder holder, final int position) {
+	public void onBindViewHolder(@NonNull PlaceViewHolder holder, final int position) {
 
 		Place currentPlace = placesFragment.getPlace(position);
 
@@ -317,7 +320,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 		holder.temperatureTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.temperature, true));
 		holder.temperatureFeelsLikeTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.temperatureFeelsLike, true));
-
 
 		holder.weatherDescription.setText(currentWeather.weatherDescription);
 
@@ -553,21 +555,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		holder.dailyForecastGraphView.initialisation(currentPlace.getDailyWeatherForecastArrayList(), currentPlace.getTimeZone(), formattingService);
 
 		holder.lastUpdateAvailableTextView.setText(String.format("%s %s", formattingService.getFormattedFullTimeHour(new Date(currentWeather.dt), currentPlace.getTimeZone()), currentPlace.getTimeZoneStringForm()));
-
-		Place finalCurrentPlace = currentPlace;
-		holder.cardView.setOnLongClickListener(v -> {
-			new AlertDialog.Builder(context)
-					.setTitle(context.getString(R.string.dialog_confirmation_title_delete_place))
-					.setMessage(String.format(context.getString(R.string.dialog_confirmation_message_delete_place), finalCurrentPlace.getCity(), finalCurrentPlace.getCountryCode()))
-					.setPositiveButton(context.getString(R.string.dialog_confirmation_choice_yes), (dialog, which) -> {
-
-						int index = holder.getAbsoluteAdapterPosition();
-						remove(index);
-					})
-					.setNegativeButton(context.getString(R.string.dialog_confirmation_choice_no), null)
-					.show();
-			return false;
-		});
 	}
 
 	public static class PlaceView {
@@ -588,7 +575,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		return placeViewArrayList.size();
 	}
 
-	public static class PlaceAdapterViewHolder extends RecyclerView.ViewHolder {
+	public static class PlaceViewHolder extends RecyclerView.ViewHolder {
 
 		public MaterialCardView cardView;
 		public LinearLayout adapterPlaceLayout;
@@ -653,7 +640,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 		public ImageView dailyForecastExpandIcon;
 
-		public PlaceAdapterViewHolder(@NonNull Context context, @NonNull View itemView) {
+		public PlaceViewHolder(@NonNull Context context, @NonNull View itemView) {
 			super(itemView);
 
 			this.cardView = itemView.findViewById(R.id.card_place);
@@ -727,6 +714,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			this.sunriseTextView.setVisibility(View.GONE);
 			this.sunsetTextView.setVisibility(View.GONE);
 			this.cloudinessTextView.setVisibility(View.GONE);
+
 		}
 
 		// dp --> px
@@ -737,7 +725,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 					context.getResources().getDisplayMetrics());
 		}
 
-		private void setDrawableCompoundTextView(Context context, TextView textView, @DrawableRes int id) {
+		private void setDrawableCompoundTextView(Context context, @NonNull TextView textView, @DrawableRes int id) {
 			int compoundDrawableSideSize = dpToPx(context, 20);
 			Drawable drawable = context.getDrawable(id);
 			drawable.setBounds(0, 0, compoundDrawableSideSize, compoundDrawableSideSize);

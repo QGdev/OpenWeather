@@ -61,6 +61,7 @@ public class DataPlaces implements SharedPreferences {
 	public boolean deletePlace(int deletionPosition) throws ArrayIndexOutOfBoundsException {
 		SharedPreferences.Editor editor = sharedPreferences.edit();
 		ArrayList<String> placeRegister = getPlacesRegister();
+
 		if (0 <= deletionPosition && deletionPosition < placeRegister.size()) {
 
 			//  Remove place from the register and "place_list" in storage but keep the dataPlaceName linked to it
@@ -88,9 +89,9 @@ public class DataPlaces implements SharedPreferences {
 		if (this.contains(dataPlaceName)) throw new PlaceAlreadyExistException();
 
 		//  Add place from the register and "place_list" in storage
-		ArrayList<String> placeRegister = getPlacesRegister();
-		placeRegister.add(dataPlaceName);
-		JSONArray placeRegisterJSON = new JSONArray(placeRegister);
+		ArrayList<String> placesRegister = getPlacesRegister();
+		placesRegister.add(dataPlaceName);
+		JSONArray placeRegisterJSON = new JSONArray(placesRegister);
 		editor.putString(PREFERENCE_LIST_NAME, placeRegisterJSON.toString());
 
 		//  Create and add place data
@@ -106,7 +107,7 @@ public class DataPlaces implements SharedPreferences {
 		String dataPlaceName = this.getDataPlaceString(place);
 
 		//  The place must exist in storage, if it is not the case we throw an exception
-		if (!this.contains(dataPlaceName)) new PlaceDoesntExistException();
+		if (!this.contains(dataPlaceName)) throw new PlaceDoesntExistException();
 
 		//  Update place data
 		editor.putString(dataPlaceName, place.getPlaceObjectJSON().toString());
@@ -114,6 +115,34 @@ public class DataPlaces implements SharedPreferences {
 		return editor.commit();
 	}
 
+	//  Move place data position in SharedPreferences
+	public boolean movePlace(int initialPosition, int finalPosition) throws ArrayIndexOutOfBoundsException {
+		SharedPreferences.Editor editor = sharedPreferences.edit();
+		ArrayList<String> placesRegister = getPlacesRegister();
+
+		//  Positions must in array bounds, if it is not the case we throw an exception
+		if (initialPosition < 0 || placesRegister.size() < initialPosition)
+			throw new ArrayIndexOutOfBoundsException(String.format("initialPosition is out of array bounds !	Size: %d, Index: %d", placesRegister.size(), initialPosition));
+		if (finalPosition < 0 || placesRegister.size() < finalPosition)
+			throw new ArrayIndexOutOfBoundsException(String.format("finalPosition is out of array bounds !	Size: %d, Index: %d", placesRegister.size(), finalPosition));
+
+		//  Move place data
+		if (initialPosition != finalPosition) {
+			if (finalPosition == placesRegister.size() - 1)
+				placesRegister.add(placesRegister.get(initialPosition));
+			else if (initialPosition < finalPosition)
+				placesRegister.add(finalPosition + 1, placesRegister.get(initialPosition));
+			else placesRegister.add(finalPosition, placesRegister.get(initialPosition));
+
+			if (initialPosition < finalPosition) placesRegister.remove(initialPosition);
+			else placesRegister.remove(initialPosition + 1);
+		}
+
+		JSONArray placeRegisterJSON = new JSONArray(placesRegister);
+		editor.putString(PREFERENCE_LIST_NAME, placeRegisterJSON.toString());
+
+		return editor.commit();
+	}
 
 	//  Get key string of a place
 	public String getDataPlaceString(@NonNull Place place) {
@@ -125,11 +154,9 @@ public class DataPlaces implements SharedPreferences {
 	public Place getPlace(String placeKey) throws Exception {
 
 		//  Take the value inside the placeKey to transform it into a JSONObject that can be transform into a place Object
-		String placeStringData = sharedPreferences.getString(placeKey, null);
-		assert placeStringData != null;
-		JSONObject placeJSONData = new JSONObject(placeStringData);
+		String placeStringData = sharedPreferences.getString(placeKey, "");
 
-		return new Place(placeJSONData);
+		return new Place(new JSONObject(placeStringData));
 	}
 
 
