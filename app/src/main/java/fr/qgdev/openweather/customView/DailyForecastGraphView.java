@@ -281,7 +281,7 @@ public class DailyForecastGraphView extends ForecastView {
 		drawTextWithDrawable(canvas,
 				getResources().getDrawable(this.context.getResources().getIdentifier("temperature_minimum_material", "drawable", this.context.getPackageName()), null),
 				formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureMinimum, true),
-				top + dpToPx(40),
+				top + dpToPx(30),
 				left,
 				dpToPx(10),
 				this.tertiaryPaint);
@@ -291,7 +291,7 @@ public class DailyForecastGraphView extends ForecastView {
 	private void drawTemperatures(Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left) {
 		float textX = left + QUARTER_COLUMN_WIDTH / 2F,
 				textY1 = top,
-				textY2 = top + dpToPx(20);
+				textY2 = top + dpToPx(25);
 		//  Temperatures
 		////    Morning
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.temperatureMorning, false), textX, textY1, this.primaryPaint);

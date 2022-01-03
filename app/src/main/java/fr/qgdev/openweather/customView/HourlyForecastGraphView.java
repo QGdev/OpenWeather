@@ -210,7 +210,7 @@ public class HourlyForecastGraphView extends ForecastView {
 	private void drawTemperatures(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
 		//Temperatures
 		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.temperature, false), middleOfColumnX, y, this.primaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.temperatureFeelsLike, false), middleOfColumnX, y + 50, this.secondaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.temperatureFeelsLike, false), middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
 	}
 
 
@@ -232,7 +232,7 @@ public class HourlyForecastGraphView extends ForecastView {
 	//  Draw wind and gust speeds
 	private void drawWindSpeed(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
 		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.windSpeed, true), middleOfColumnX, y, this.primaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.windGustSpeed, true), middleOfColumnX, y + 50, this.secondaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.windGustSpeed, true), middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
 	}
 
 	//  Draw wind direction
@@ -328,9 +328,9 @@ public class HourlyForecastGraphView extends ForecastView {
 	//  Draw dewPoint
 	private void drawPrecipitations(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
 		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.rain, true), middleOfColumnX, y, this.tertiaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.snow, true), middleOfColumnX, y + 50, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.snow, true), middleOfColumnX, y + dpToPx(25), this.primaryPaint);
 
-		canvas.drawText(String.format("%d %%", (int) (currentHourlyWeatherForecast.pop * 100)), middleOfColumnX, y + 100, this.secondaryPaint);
+		canvas.drawText(String.format("%d %%", (int) (currentHourlyWeatherForecast.pop * 100)), middleOfColumnX, y + dpToPx(50), this.secondaryPaint);
 
 	}
 
@@ -390,7 +390,7 @@ public class HourlyForecastGraphView extends ForecastView {
 		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(175), null);
 		canvas.drawBitmap(this.humidityGraph, 0, dpToPx(260), null);
 		canvas.drawBitmap(this.pressureGraph, 0, dpToPx(330), null);
-		canvas.drawBitmap(this.windSpeedsGraph, 0, dpToPx(570), null);
+		canvas.drawBitmap(this.windSpeedsGraph, 0, dpToPx(575), null);
 		canvas.drawBitmap(this.precipitationsGraph, 0, dpToPx(785), null);
 	}
 }

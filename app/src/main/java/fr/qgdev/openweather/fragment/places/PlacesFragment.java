@@ -250,7 +250,6 @@ public class PlacesFragment extends Fragment {
 					binDrawable.setTint(paintSwipeDelete.getColor());
 
 					if (Math.abs(dX) > 0.1) {
-
 						if (dX > 0) {
 							backgroundRect = new Rect(viewHolder.itemView.getLeft(), viewHolder.itemView.getTop(), viewHolder.itemView.getLeft() + (int) dX, viewHolder.itemView.getBottom());
 						} else {
