@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -37,7 +36,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 	private final Context context;
 	private final PlacesFragment placesFragment;
-	private static ArrayList<PlaceView> placeViewArrayList;
 	private final List<String> countryNames;
 	private final List<String> countryCodes;
 	private final FormattingService formattingService;
@@ -45,7 +43,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	public PlaceRecyclerViewAdapter(Context context, PlacesFragment placesFragment) {
 		this.context = context;
 		this.placesFragment = placesFragment;
-		placeViewArrayList = generatePlaceViewArray();
 
 		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
 		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
@@ -53,96 +50,62 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		formattingService = new FormattingService(context);
 	}
 
-
-	public ArrayList<PlaceView> generatePlaceViewArray() {
-		ArrayList<PlaceView> placeViewArray = new ArrayList<>();
-
-		for (int index = 0; index < placesFragment.getPlaceArrayListSize(); index++) {
-			placeViewArray.add(new PlaceView(PlaceView.COMPACT));
-		}
-
-		return placeViewArray;
-	}
-
-
 	public void add(int position) {
-		placeViewArrayList.add(position, new PlaceView(PlaceView.COMPACT));
 		this.notifyItemInserted(position);
 	}
 
 	public void remove(int position) {
-		placeViewArrayList.remove(position);
 		this.notifyItemRemoved(position);
 	}
 
-	public void move(int initialPosition, int finalPosition) {
-
-		if (initialPosition != finalPosition) {
-			if (finalPosition == placeViewArrayList.size() - 1)
-				placeViewArrayList.add(placeViewArrayList.get(initialPosition));
-			else if (initialPosition < finalPosition)
-				placeViewArrayList.add(finalPosition + 1, placeViewArrayList.get(initialPosition));
-			else placeViewArrayList.add(finalPosition, placeViewArrayList.get(initialPosition));
-
-			if (initialPosition < finalPosition) placeViewArrayList.remove(initialPosition);
-			else placeViewArrayList.remove(initialPosition + 1);
-		}
-	}
-
-	@Override
-	public int getItemViewType(int position) {
-		return placeViewArrayList.get(position).viewType;
-	}
-
-	private void setListeners(int position, Place currentPlace, PlaceViewHolder holder) {
-		PlaceView placeView = placeViewArrayList.get(position);
+	private void setListeners(Place currentPlace, PlaceViewHolder holder) {
 
 		holder.cardView.setOnClickListener(v -> {
-			if (placeView.viewType == PlaceView.COMPACT) {
-				placeView.viewType = PlaceView.EXTENDED;
+			if (PlaceViewHolder.itemViewType == PlaceViewHolder.COMPACT) {
+				PlaceViewHolder.itemViewType = PlaceViewHolder.EXTENDED;
 			} else {
-				placeView.viewType = PlaceView.COMPACT;
+				PlaceViewHolder.itemViewType = PlaceViewHolder.COMPACT;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
 		holder.hourlyForecast.setOnClickListener(v -> {
-			switch (placeView.viewType) {
-				case PlaceView.EXTENDED:
-					placeView.viewType = PlaceView.EXTENDED_HOURLY;
+			switch (PlaceViewHolder.itemViewType) {
+				case PlaceViewHolder.EXTENDED:
+					PlaceViewHolder.itemViewType = PlaceViewHolder.EXTENDED_HOURLY;
 					break;
-				case PlaceView.EXTENDED_HOURLY:
-					placeView.viewType = PlaceView.EXTENDED;
+				case PlaceViewHolder.EXTENDED_HOURLY:
+					PlaceViewHolder.itemViewType = PlaceViewHolder.EXTENDED;
 					break;
-				case PlaceView.EXTENDED_DAILY:
-					placeView.viewType = PlaceView.EXTENDED_FULLY;
+				case PlaceViewHolder.EXTENDED_DAILY:
+					PlaceViewHolder.itemViewType = PlaceViewHolder.EXTENDED_FULLY;
 					break;
-				case PlaceView.EXTENDED_FULLY:
-					placeView.viewType = PlaceView.EXTENDED_DAILY;
+				case PlaceViewHolder.EXTENDED_FULLY:
+					PlaceViewHolder.itemViewType = PlaceViewHolder.EXTENDED_DAILY;
 					break;
 				default:
-					placeView.viewType = PlaceView.COMPACT;
+					PlaceViewHolder.itemViewType = PlaceViewHolder.COMPACT;
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
 		holder.dailyForecast.setOnClickListener(v -> {
-			switch (placeView.viewType) {
-				case PlaceView.EXTENDED:
-					placeView.viewType = PlaceView.EXTENDED_DAILY;
+			switch (PlaceViewHolder.itemViewType) {
+				case PlaceViewHolder.EXTENDED:
+					PlaceViewHolder.itemViewType = PlaceViewHolder.EXTENDED_DAILY;
 					break;
-				case PlaceView.EXTENDED_DAILY:
-					placeView.viewType = PlaceView.EXTENDED;
+				case PlaceViewHolder.EXTENDED_DAILY:
+					PlaceViewHolder.itemViewType = PlaceViewHolder.EXTENDED;
 					break;
-				case PlaceView.EXTENDED_HOURLY:
-					placeView.viewType = PlaceView.EXTENDED_FULLY;
+				case PlaceViewHolder.EXTENDED_HOURLY:
+					PlaceViewHolder.itemViewType = PlaceViewHolder.EXTENDED_FULLY;
 					break;
-				case PlaceView.EXTENDED_FULLY:
-					placeView.viewType = PlaceView.EXTENDED_HOURLY;
+				case PlaceViewHolder.EXTENDED_FULLY:
+					PlaceViewHolder.itemViewType = PlaceViewHolder.EXTENDED_HOURLY;
 					break;
 				default:
-					placeView.viewType = PlaceView.COMPACT;
+					PlaceViewHolder.itemViewType = PlaceViewHolder.COMPACT;
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
@@ -178,8 +141,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 		Place currentPlace = placesFragment.getPlace(position);
 
-		switch (placeViewArrayList.get(position).viewType) {
-			case PlaceView.COMPACT:
+		switch (PlaceViewHolder.itemViewType) {
+			case PlaceViewHolder.COMPACT:
 			default: {
 				//  Compact view
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
@@ -191,6 +154,16 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				holder.sunsetTextView.setVisibility(View.GONE);
 				holder.cloudinessTextView.setVisibility(View.GONE);
 
+				holder.detailedInformationsLayout.setVisibility(View.GONE);
+				holder.weatherAlertIcon.setVisibility(View.GONE);
+
+				holder.forecastInformationsLayout.setVisibility(View.GONE);
+				holder.hourlyForecastExpandIcon.setRotation(0);
+				holder.hourlyForecastLayout.setVisibility(View.GONE);
+				holder.dailyForecastExpandIcon.setRotation(0);
+				holder.dailyForecastLayout.setVisibility(View.GONE);
+				holder.lastUpdateAvailableLayout.setVisibility(View.GONE);
+
 				if (currentPlace.getMWeatherAlertCount() > 0) {
 					holder.weatherAlertIcon.setVisibility(View.VISIBLE);
 				} else {
@@ -199,7 +172,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 				break;
 			}
-			case PlaceView.EXTENDED: {
+			case PlaceViewHolder.EXTENDED: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
 				else holder.windGustSpeedTextView.setVisibility(View.VISIBLE);
@@ -227,7 +200,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				break;
 			}
 
-			case PlaceView.EXTENDED_HOURLY: {
+			case PlaceViewHolder.EXTENDED_HOURLY: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
 				else holder.windGustSpeedTextView.setVisibility(View.VISIBLE);
@@ -254,7 +227,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				break;
 			}
 
-			case PlaceView.EXTENDED_DAILY: {
+			case PlaceViewHolder.EXTENDED_DAILY: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
 				else holder.windGustSpeedTextView.setVisibility(View.VISIBLE);
@@ -281,7 +254,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				}
 				break;
 			}
-			case PlaceView.EXTENDED_FULLY: {
+			case PlaceViewHolder.EXTENDED_FULLY: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
 				else holder.windGustSpeedTextView.setVisibility(View.VISIBLE);
@@ -310,7 +283,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			}
 		}
 
-		setListeners(position, currentPlace, holder);
+		setListeners(currentPlace, holder);
 
 		holder.cityNameTextView.setText(currentPlace.getCity());
 		holder.countryNameTextVIew.setText(this.getCountryName(currentPlace.getCountryCode()));
@@ -485,7 +458,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		holder.sunriseTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.sunrise), currentPlace.getTimeZone()));
 		holder.sunsetTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.sunset), currentPlace.getTimeZone()));
 
-		holder.cloudinessTextView.setText(currentWeather.cloudiness + " %");
+		holder.cloudinessTextView.setText(String.format("%d%%", currentWeather.cloudiness));
 
 		//	Air quality
 		holder.airQualityIndex.setText(String.valueOf(airQuality.aqi));
@@ -557,25 +530,20 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		holder.lastUpdateAvailableTextView.setText(String.format("%s %s", formattingService.getFormattedFullTimeHour(new Date(currentWeather.dt), currentPlace.getTimeZone()), currentPlace.getTimeZoneStringForm()));
 	}
 
-	public static class PlaceView {
-		public static final byte COMPACT = 0;
-		public static final byte EXTENDED = 1;
-		public static final byte EXTENDED_HOURLY = 2;
-		public static final byte EXTENDED_DAILY = 3;
-		public static final byte EXTENDED_FULLY = 4;
-		public byte viewType;
-
-		public PlaceView(byte viewType) {
-			this.viewType = viewType;
-		}
-	}
-
 	@Override
 	public int getItemCount() {
-		return placeViewArrayList.size();
+		return this.placesFragment.getPlaceArrayListSize();
 	}
 
 	public static class PlaceViewHolder extends RecyclerView.ViewHolder {
+
+		public static final int COMPACT = 0;
+		public static final int EXTENDED = 1;
+		public static final int EXTENDED_HOURLY = 2;
+		public static final int EXTENDED_DAILY = 3;
+		public static final int EXTENDED_FULLY = 4;
+
+		public static int itemViewType;
 
 		public MaterialCardView cardView;
 		public LinearLayout adapterPlaceLayout;
@@ -642,6 +610,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 		public PlaceViewHolder(@NonNull Context context, @NonNull View itemView) {
 			super(itemView);
+
+			itemViewType = COMPACT;
 
 			this.cardView = itemView.findViewById(R.id.card_place);
 			this.adapterPlaceLayout = itemView.findViewById(R.id.adapter_place);

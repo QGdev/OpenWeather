@@ -97,7 +97,6 @@ public class PlacesFragment extends Fragment {
 		swipeRefreshLayout = root.findViewById(R.id.swiperefresh);
 		FloatingActionButton addPlacesFab = root.findViewById(R.id.add_places);
 
-
 		//  Initialize places data storage
 		dataPlaces = new DataPlaces(mContext);
 		placeArrayList = new ArrayList<>();
@@ -162,7 +161,6 @@ public class PlacesFragment extends Fragment {
 			public void onMovedPlace(DataPlaces dataPlaces, int initialPosition, int finalPosition) {
 				try {
 					dataPlaces.movePlace(initialPosition, finalPosition);
-					placeRecyclerViewAdapter.move(initialPosition, finalPosition);
 				} catch (Exception e) {
 					e.printStackTrace();
 					showSnackbar(container, mContext.getString(R.string.error_place_move));
@@ -183,10 +181,22 @@ public class PlacesFragment extends Fragment {
 
 		//	Used to manage drag & drop reorganisation of place cards and swipe to delete
 		//
-		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START | ItemTouchHelper.END) {
+		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
 
 			int _initialPosition;
 			boolean itemAsBeenMoved = false;
+
+			@Override
+			public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+				//	If the holder is an other view type than COMPACT or if there is no items in the recyclerView, swipe and drag&drop are disabled
+				if (recyclerView.getChildCount() == 0 || viewHolder.getItemViewType() != 0)
+					return 0;
+				//	When there is only one item, drag&drop will be disabled
+				if (recyclerView.getChildCount() < 2)
+					return makeMovementFlags(0, ItemTouchHelper.START | ItemTouchHelper.END);
+				//	When it is in COMPACT view type, swipe and drag&drop are enabled
+				return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START | ItemTouchHelper.END);
+			}
 
 			@Override
 			public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -227,7 +237,6 @@ public class PlacesFragment extends Fragment {
 				itemAsBeenMoved = false;
 			}
 		});
-
 		itemTouchHelper.attachToRecyclerView(placeRecyclerView);
 
 
