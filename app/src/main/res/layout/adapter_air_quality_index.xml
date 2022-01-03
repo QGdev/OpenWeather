@@ -41,19 +41,18 @@
     </LinearLayout>
 
 
-    <GridLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:columnCount="2"
-        android:columnOrderPreserved="true"
-        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
         android:visibility="visible">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="100dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_columnWeight="0">
+            android:layout_marginBottom="5dp">
 
             <ImageView
                 android:id="@+id/airquality_circle"
@@ -63,7 +62,7 @@
                 android:backgroundTint="@color/colorUvLow"
                 android:backgroundTintMode="src_in"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/airquality_text"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -98,19 +97,19 @@
                 android:maxLines="2"
                 android:text="@string/air_quality_1"
                 android:textColor="@color/colorFirstText"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/airquality_circle"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/airquality_circle" />
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_columnWeight="2">
+            android:paddingStart="5dp">
 
             <TextView
                 android:id="@+id/composition_title"
@@ -119,16 +118,20 @@
                 android:paddingBottom="5dp"
                 android:text="@string/air_quality_concentrations_title"
                 android:textColor="@color/colorFirstText"
-                android:textSize="19sp"
+                android:textSize="20sp"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/composition_title"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
             <GridLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingLeft="25dp"
+                android:layout_marginHorizontal="10dp"
+                android:columnCount="2"
+                android:columnOrderPreserved="true"
+                android:paddingLeft="10dp"
+                android:useDefaultMargins="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -299,5 +302,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </GridLayout>
+    </LinearLayout>
 </LinearLayout>
