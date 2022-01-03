@@ -4,6 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -161,6 +165,7 @@ public class PlacesFragment extends Fragment {
 			public void onMovedPlace(DataPlaces dataPlaces, int initialPosition, int finalPosition) {
 				try {
 					dataPlaces.movePlace(initialPosition, finalPosition);
+					placeRecyclerViewAdapter.move(initialPosition, finalPosition);
 				} catch (Exception e) {
 					e.printStackTrace();
 					showSnackbar(container, mContext.getString(R.string.error_place_move));
@@ -189,11 +194,13 @@ public class PlacesFragment extends Fragment {
 			@Override
 			public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
 				//	If the holder is an other view type than COMPACT or if there is no items in the recyclerView, swipe and drag&drop are disabled
-				if (recyclerView.getChildCount() == 0 || viewHolder.getItemViewType() != 0)
-					return 0;
+				if (recyclerView.getChildCount() == 0 || viewHolder.getItemViewType() != 0) {
+					return makeMovementFlags(0, 0);
+				}
 				//	When there is only one item, drag&drop will be disabled
-				if (recyclerView.getChildCount() < 2)
+				if (recyclerView.getChildCount() < 2) {
 					return makeMovementFlags(0, ItemTouchHelper.START | ItemTouchHelper.END);
+				}
 				//	When it is in COMPACT view type, swipe and drag&drop are enabled
 				return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START | ItemTouchHelper.END);
 			}
@@ -228,6 +235,40 @@ public class PlacesFragment extends Fragment {
 				}
 			}
 
+			@Override
+			public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+				super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+				if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
+					Paint paintSwipeDelete = new Paint();
+					Rect backgroundRect;
+					int halfScreenWidth = recyclerView.getMeasuredWidth();
+					paintSwipeDelete.setColor(getResources().getColor(R.color.colorRedError, null));
+
+					Drawable binDrawable = getResources().getDrawable(R.drawable.ic_trash_can, null);
+					//  Set Color and Dimensions of the drawable and print it on canvas
+					binDrawable.setTint(paintSwipeDelete.getColor());
+
+					if (Math.abs(dX) > 0.1) {
+
+						if (dX > 0) {
+							backgroundRect = new Rect(viewHolder.itemView.getLeft(), viewHolder.itemView.getTop(), viewHolder.itemView.getLeft() + (int) dX, viewHolder.itemView.getBottom());
+						} else {
+							backgroundRect = new Rect(viewHolder.itemView.getRight(), viewHolder.itemView.getTop(), viewHolder.itemView.getRight() + (int) dX, viewHolder.itemView.getBottom());
+						}
+
+						binDrawable.setBounds(backgroundRect.centerX() - 40, backgroundRect.centerY() - 40,
+								backgroundRect.centerX() + 40, backgroundRect.centerY() + 40);
+
+						binDrawable.setAlpha((int) (Math.abs(dX) * 0.75F));
+						viewHolder.itemView.setAlpha((halfScreenWidth - Math.abs(dX)) / halfScreenWidth);
+
+						binDrawable.draw(c);
+					}
+				}
+			}
+
+
 			//	This handles the ending of the drag & drop feature
 			@Override
 			public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
@@ -235,6 +276,7 @@ public class PlacesFragment extends Fragment {
 				if (itemAsBeenMoved)
 					interactions.onMovedPlace(dataPlaces, _initialPosition, viewHolder.getAbsoluteAdapterPosition());
 				itemAsBeenMoved = false;
+				viewHolder.itemView.setAlpha(1);
 			}
 		});
 		itemTouchHelper.attachToRecyclerView(placeRecyclerView);
