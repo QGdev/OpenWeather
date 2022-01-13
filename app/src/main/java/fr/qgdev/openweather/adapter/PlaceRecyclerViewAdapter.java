@@ -3,7 +3,6 @@ package fr.qgdev.openweather.adapter;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -165,7 +164,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	public PlaceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View view = inflater.inflate(R.layout.adapter_places, parent, false);
-		Log.d("TEST", "Just a simple indicator");
 		return new PlaceViewHolder(context, view);
 	}
 
