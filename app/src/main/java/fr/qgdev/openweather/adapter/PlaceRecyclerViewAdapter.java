@@ -32,7 +32,17 @@ import fr.qgdev.openweather.fragment.places.PlacesFragment;
 import fr.qgdev.openweather.weather.AirQuality;
 import fr.qgdev.openweather.weather.CurrentWeather;
 
-
+/**
+ * PlaceRecyclerViewAdapter
+ * <p>
+ * Used to generate places items in main section of the app.
+ * But can be used like any other adapter.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see android.widget.BaseAdapter
+ */
 public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecyclerViewAdapter.PlaceViewHolder> {
 
 	private final Context context;
@@ -42,6 +52,15 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	private static ArrayList<PlaceView> placeViewArrayList;
 	private final FormattingService formattingService;
 
+	/**
+	 * PlaceRecyclerViewAdapter Constructor
+	 * <p>
+	 *     Just build an PlaceRecyclerViewAdapter Object
+	 * </p>
+	 *
+	 * @param context               Current context, only used for LayoutInflater
+	 * @param placesFragment        Reference of the parent PlacesFragment
+	 */
 	public PlaceRecyclerViewAdapter(Context context, PlacesFragment placesFragment) {
 		this.context = context;
 		this.placesFragment = placesFragment;
@@ -54,15 +73,40 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		formattingService = new FormattingService(context);
 	}
 
+	/**
+	 * add(int position)
+	 * <p>
+	 *     Need to be called when a new place is added.
+	 * </p>
+	 *
+	 * @param position Position of the new place
+	 */
 	public void add(int position) {
 		placeViewArrayList.add(new PlaceView(PlaceView.COMPACT));
 		this.notifyItemInserted(position);
 	}
 
+	/**
+	 * remove(int position)
+	 * <p>
+	 *     Need to be called when a place is deleted or removed.
+	 * </p>
+	 *
+	 * @param position Position of the deleted place
+	 */
 	public void remove(int position) {
 		this.notifyItemRemoved(position);
 	}
 
+	/**
+	 * move(int initialPosition, int finalPosition)
+	 * <p>
+	 *     Need to be called when a place is moved from initialPosition to finalPosition.
+	 * </p>
+	 *
+	 * @param initialPosition   Initial position of the moved place
+	 * @param finalPosition     Final position of the moved place
+	 */
 	public void move(int initialPosition, int finalPosition) {
 
 		if (initialPosition != finalPosition) {
@@ -77,6 +121,14 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		}
 	}
 
+	/**
+	 * generatePlaceViewArray()
+	 * <p>
+	 *     Generate a PlaceViewArray based on PlaceFragment place array size.
+	 * </p>
+	 *
+	 * @return Will return the generated placeView ArrayList
+	 */
 	public ArrayList<PlaceView> generatePlaceViewArray() {
 		ArrayList<PlaceView> placeViewArray = new ArrayList<>();
 
@@ -87,11 +139,20 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		return placeViewArray;
 	}
 
-
+	/**
+	 * setListeners(Place currentPlace, PlaceViewHolder holder)
+	 * <p>
+	 *     Will initialize all listeners in the PlaceViewHolder
+	 * </p>
+	 *
+	 * @param currentPlace  The place
+	 * @param holder        The place viewHolder where all listeners will be initialized
+	 */
 	private void setListeners(Place currentPlace, PlaceViewHolder holder) {
 		int placeViewType = holder.getItemViewType();
 		PlaceView placeView = placeViewArrayList.get(holder.getAbsoluteAdapterPosition());
 
+		//  Set listener for the whole place card item
 		holder.cardView.setOnClickListener(v -> {
 			if (placeViewType == PlaceView.COMPACT) {
 				placeView.viewType = PlaceView.EXTENDED;
@@ -101,6 +162,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
+		//  Set listener for the hourly weather forecast tab
 		holder.hourlyForecast.setOnClickListener(v -> {
 			switch (placeViewType) {
 				case PlaceView.EXTENDED:
@@ -122,6 +184,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
+		//  Set listener for the daily weather forecast tab
 		holder.dailyForecast.setOnClickListener(v -> {
 			switch (placeViewType) {
 				case PlaceView.EXTENDED:
@@ -143,22 +206,46 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
+		//  Set listener for the weather alerts tab
 		holder.weatherAlertLayout.setOnClickListener(v -> {
 			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, currentPlace, formattingService);
 			weatherAlertDialog.build();
 		});
 
+		//  Set listener for the weather alert icon
 		holder.weatherAlertIcon.setOnClickListener(v -> {
 			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, currentPlace, formattingService);
 			weatherAlertDialog.build();
 		});
 	}
 
+	/**
+	 * getCountryName(String countryCode)
+	 * <p>
+	 * Will find country name related to a country code
+	 * </p>
+	 *
+	 * @param countryCode String Country code of a place
+	 * @return Will return the corresponding country name
+	 * @apiNote Country code must be present in string file resources
+	 */
 	private String getCountryName(String countryCode) {
 		int index = this.countryCodes.indexOf(countryCode);
 		return this.countryNames.get(index);
 	}
 
+
+	/**
+	 * onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	 * <p>
+	 * Will inflate created viewHolder
+	 * </p>
+	 *
+	 * @param parent   ViewHolder parent
+	 * @param viewType ViewHolder view type
+	 * @return Will return the inflated placeViewHolder
+	 * @see RecyclerView.Adapter<>
+	 */
 	@NonNull
 	@Override
 	public PlaceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -167,6 +254,17 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		return new PlaceViewHolder(context, view);
 	}
 
+
+	/**
+	 * onBindViewHolder(@NonNull PlaceViewHolder holder, final int position)
+	 * <p>
+	 * Will fill PlaceViewHolder with data
+	 * </p>
+	 *
+	 * @param holder   PlaceViewHolder which will be filled with place data
+	 * @param position Place position in placeViewArrayList
+	 * @see RecyclerView.Adapter<>
+	 */
 	@Override
 	public void onBindViewHolder(@NonNull PlaceViewHolder holder, final int position) {
 
@@ -203,6 +301,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 				break;
 			}
+			//  Extended view
 			case PlaceView.EXTENDED: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
@@ -231,6 +330,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				break;
 			}
 
+			//  Hourly extended view
 			case PlaceView.EXTENDED_HOURLY: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
@@ -258,6 +358,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				break;
 			}
 
+			//  Daily extended view
 			case PlaceView.EXTENDED_DAILY: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
@@ -285,6 +386,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				}
 				break;
 			}
+			//  Fully extended view
 			case PlaceView.EXTENDED_FULLY: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
@@ -534,23 +636,23 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 
 		//  Precipitations
+		//  If There is no rain or snow, so there is nothing to show about precipitations
 		if (currentWeather.rain > 0 || currentWeather.snow > 0) {
 			holder.precipitationLayout.setVisibility(View.VISIBLE);
 
 			holder.rainTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.rain, true));
 			holder.snowTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.snow, true));
 
-
-			if (currentWeather.rain > 0) {
+			//  If There is no rain, so there is nothing to show about rain
+			if (currentWeather.rain > 0)
 				holder.precipitationLayout.findViewById(R.id.rain_precipitations).setVisibility(View.VISIBLE);
-			} else {
+			else
 				holder.precipitationLayout.findViewById(R.id.rain_precipitations).setVisibility(View.GONE);
-			}
-			if (currentWeather.snow > 0) {
+			//  If There is no snow, so there is nothing to show about snow
+			if (currentWeather.snow > 0)
 				holder.precipitationLayout.findViewById(R.id.snow_precipitations).setVisibility(View.VISIBLE);
-			} else {
+			else
 				holder.precipitationLayout.findViewById(R.id.snow_precipitations).setVisibility(View.GONE);
-			}
 		} else {
 			holder.precipitationLayout.setVisibility(View.GONE);
 		}
@@ -561,11 +663,41 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		holder.lastUpdateAvailableTextView.setText(String.format("%s %s", formattingService.getFormattedFullTimeHour(new Date(currentWeather.dt), currentPlace.getTimeZone()), currentPlace.getTimeZoneStringForm()));
 	}
 
+
+	/**
+	 * getItemViewType(int position)
+	 * <p>
+	 * Will return view type of the corresponding item to position
+	 * </p>
+	 *
+	 * @param position Item position
+	 * @return Will return the ViewType corresponding to the item at the given position
+	 */
 	@Override
 	public int getItemViewType(int position) {
 		return placeViewArrayList.get(position).viewType;
 	}
 
+	/**
+	 * getItemCount()
+	 * <p>
+	 * Call PlacesFragment methods to know item count in array
+	 * </p>
+	 *
+	 * @return Will return the number of displayed places
+	 */
+	@Override
+	public int getItemCount() {
+		return this.placesFragment.getPlaceArrayListSize();
+	}
+
+	/**
+	 * PlaceView
+	 * <p>
+	 * Describes the state of a place card which can be:
+	 * Compact, Extended, Extended with Hourly or Daily tabs extended or Fully Extended where all tabs are extended
+	 * </p>
+	 */
 	public static class PlaceView {
 		public static final byte COMPACT = 0;
 		public static final byte EXTENDED = 1;
@@ -574,14 +706,17 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		public static final byte EXTENDED_FULLY = 4;
 		public byte viewType;
 
+		/**
+		 * PlaceView(byte viewType)
+		 * <p>
+		 *     Constructor of PlaceView Object
+		 * </p>
+		 *
+		 * @param viewType Start viewType
+		 */
 		public PlaceView(byte viewType) {
 			this.viewType = viewType;
 		}
-	}
-
-	@Override
-	public int getItemCount() {
-		return this.placesFragment.getPlaceArrayListSize();
 	}
 
 	public static class PlaceViewHolder extends RecyclerView.ViewHolder implements fr.qgdev.openweather.adapter.PlaceViewHolder {
@@ -649,6 +784,17 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 		public ImageView dailyForecastExpandIcon;
 
+
+		/**
+		 * PlaceViewHolder(@NonNull Context context, @NonNull View itemView)
+		 * <p>
+		 * Place ViewHolder constructor
+		 * </p>
+		 *
+		 * @param context  Application context in order to access to resources
+		 * @param itemView The inflated view of place
+		 * @apiNote context and itemView shouldn't be null !
+		 */
 		public PlaceViewHolder(@NonNull Context context, @NonNull View itemView) {
 			super(itemView);
 
@@ -726,15 +872,34 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 		}
 
-		// dp --> px
-		private int dpToPx(Context context, float dip) {
+		/**
+		 * dpToPx(@NonNull Context context, float dip)
+		 * <p>
+		 * Just a DP to PX converter method
+		 * </p>
+		 *
+		 * @param context Application context in order to access to resources
+		 * @param dip     DP value that you want to convert
+		 * @return The DP converted value into PX
+		 */
+		private int dpToPx(@NonNull Context context, float dip) {
 			return (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP,
 					dip,
 					context.getResources().getDisplayMetrics());
 		}
 
-		private void setDrawableCompoundTextView(Context context, @NonNull TextView textView, @DrawableRes int id) {
+		/**
+		 * setDrawableCompoundTextView(Context context, @NonNull TextView textView, @DrawableRes int id)
+		 * <p>
+		 * A method to set a drawable to a compound drawable of a textView
+		 * </p>
+		 *
+		 * @param context  Application context in order to access to resources
+		 * @param textView The textView where the compound drawable will be set
+		 * @param id       The id of the drawable that will be set as a compound drawable
+		 */
+		private void setDrawableCompoundTextView(@NonNull Context context, @NonNull TextView textView, @DrawableRes int id) {
 			int compoundDrawableSideSize = dpToPx(context, 20);
 			Drawable drawable = context.getDrawable(id);
 			drawable.setBounds(0, 0, compoundDrawableSideSize, compoundDrawableSideSize);
