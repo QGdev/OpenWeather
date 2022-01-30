@@ -719,7 +719,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		}
 	}
 
-	public static class PlaceViewHolder extends RecyclerView.ViewHolder implements fr.qgdev.openweather.adapter.PlaceViewHolder {
+	public static class PlaceViewHolder extends RecyclerView.ViewHolder {
 
 		public MaterialCardView cardView;
 		public LinearLayout adapterPlaceLayout;
