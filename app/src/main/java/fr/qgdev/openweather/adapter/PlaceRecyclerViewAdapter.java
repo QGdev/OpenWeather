@@ -719,6 +719,17 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		}
 	}
 
+
+	/**
+	 * PlaceViewHolder
+	 * <p>
+	 * Used to contain the card of a place
+	 * </p>
+	 *
+	 * @author Quentin GOMES DOS REIS
+	 * @version 1
+	 * @see RecyclerView.ViewHolder
+	 */
 	public static class PlaceViewHolder extends RecyclerView.ViewHolder {
 
 		public MaterialCardView cardView;
