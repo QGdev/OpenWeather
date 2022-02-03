@@ -61,13 +61,12 @@ public class AttributionItemAdapter extends BaseAdapter {
 	}
 
 	/**
-	 * getItem()
+	 * getItem(int position)
 	 * <p>
-	 *     UNIMPLEMENTED
+	 * UNIMPLEMENTED
 	 * </p>
 	 *
 	 * @param position Position of the item
-	 *
 	 * @return Always return null;
 	 */
 	@Override
@@ -92,7 +91,7 @@ public class AttributionItemAdapter extends BaseAdapter {
 
 
 	/**
-	 * getView
+	 * getView(int position, View view, ViewGroup parent)
 	 * <p>
 	 *     Just build a view base on information of item at the position
 	 * </p>
