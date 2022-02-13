@@ -6,7 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
-import android.util.TypedValue;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,21 +23,60 @@ import fr.qgdev.openweather.FormattingService;
 import fr.qgdev.openweather.weather.DailyWeatherForecast;
 import fr.qgdev.openweather.weather.HourlyWeatherForecast;
 
+/**
+ * HourlyForecastGraphView
+ * <p>
+ * Used to generate graphics for hourly forecasts
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see ForecastView
+ */
 public class HourlyForecastGraphView extends ForecastView {
 
 	private ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList;
 	private boolean[] isDayTime;
 
-	public HourlyForecastGraphView(Context context) {
+
+	/**
+	 * HourlyForecastGraphView Constructor
+	 * <p>
+	 * Just build HourlyForecastGraphView object only with context
+	 * </p>
+	 *
+	 * @param context Current context, only used to construct super class
+	 */
+	public HourlyForecastGraphView(@NonNull Context context) {
 		super(context);
 	}
 
-	public HourlyForecastGraphView(Context context, @Nullable AttributeSet attrs) {
+
+	/**
+	 * HourlyForecastGraphView Constructor
+	 * <p>
+	 * Just build HourlyForecastGraphView object only with Context and AttributeSet
+	 * </p>
+	 *
+	 * @param context Current context, only used to construct super class
+	 * @param attrs   AttributeSet for the GraphView
+	 */
+	public HourlyForecastGraphView(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 	}
 
-	//  Generate an array of booleans to know of if it is the day or not, each item in the array corresponds to one hour of the hourlyWeatherForecastArrayList
-	private boolean[] generateIsDayTimeArray(ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList) {
+
+	/**
+	 * generateIsDayTimeArray(@NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, @NonNull ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList)
+	 * <p>
+	 * Used to generate dayTime array which describe if it is day time for each hours of hourlyWeatherForecastArrayList
+	 * </p>
+	 *
+	 * @param hourlyWeatherForecastArrayList ArrayList of HourlyWeatherForecasts
+	 * @param dailyWeatherForecastArrayList  ArrayList of DailyWeatherForecasts
+	 * @return The generated array
+	 */
+	private boolean[] generateIsDayTimeArray(@NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, @NonNull ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList) {
 
 		HourlyWeatherForecast hourlyWeatherForecast;
 		DailyWeatherForecast dailyWeatherForecast;
@@ -86,7 +125,20 @@ public class HourlyForecastGraphView extends ForecastView {
 		return isDayTime;
 	}
 
-	private float[] hourlyWeatherForecastArrayToSelectedAttributeFloatArray(ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, String selectedAttribute) throws NoSuchFieldException, IllegalAccessException {
+
+	/**
+	 * hourlyWeatherForecastArrayToSelectedAttributeFloatArray(@NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, @NonNull String selectedAttribute) throws NoSuchFieldException, IllegalAccessException
+	 * <p>
+	 * Used to get an array of selected attribute of an ArrayList of HourlyWeatherForecast objects
+	 * </p>
+	 *
+	 * @param hourlyWeatherForecastArrayList The HourlyWeatherForecast arrayList
+	 * @param selectedAttribute              The name of the wanted attribute
+	 * @return The created array filled with all attributes
+	 * @throws NoSuchFieldException   When the wanted attribute doesn't exist
+	 * @throws IllegalAccessException When the wanted attributed is not a float
+	 */
+	private float[] hourlyWeatherForecastArrayToSelectedAttributeFloatArray(@NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, @NonNull String selectedAttribute) throws NoSuchFieldException, IllegalAccessException {
 		float[] returnedAttributeArray = new float[hourlyWeatherForecastArrayList.size()];
 		Field classField = HourlyWeatherForecast.class.getDeclaredField(selectedAttribute);
 
@@ -97,10 +149,21 @@ public class HourlyForecastGraphView extends ForecastView {
 		return returnedAttributeArray;
 	}
 
-	public void initialisation(@NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, @NonNull ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, @NonNull FormattingService unitsFormattingService, @NonNull TimeZone timeZone) {
+
+	/**
+	 * initialization(@NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, @NonNull ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, @NonNull FormattingService unitsFormattingService, @NonNull TimeZone timeZone)
+	 * <p>
+	 * Used to initialize attributes used to draw a view
+	 * </p>
+	 *
+	 * @param hourlyWeatherForecastArrayList ArrayList of HourlyWeatherForecast
+	 * @param dailyWeatherForecastArrayList  ArrayList of DailyWeatherForecasts
+	 * @param timeZone                       TimeZone of the place
+	 * @param unitsFormattingService         FormattingService of the application to format dates
+	 */
+	public void initialization(@NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, @NonNull ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, @NonNull FormattingService unitsFormattingService, @NonNull TimeZone timeZone) {
 
 		this.COLUMN_WIDTH = dpToPx(90);
-
 		float[] firstCurve, secondCurve;
 
 		this.width = hourlyWeatherForecastArrayList.size() * COLUMN_WIDTH;
@@ -146,28 +209,70 @@ public class HourlyForecastGraphView extends ForecastView {
 		}
 	}
 
+	/**
+	 * setMinimumHeight(@Px int minHeight)
+	 * <p>
+	 * Used to set minimum Height of the view
+	 * </p>
+	 *
+	 * @param minHeight Minimum Height in pixel
+	 * @see View
+	 */
 	@Override
 	public void setMinimumHeight(@Px int minHeight) {
 		super.setMinimumHeight(minHeight);
 	}
 
 
+	/**
+	 * setMinimumWidth(@Px int minWidth)
+	 * <p>
+	 * Used to set minimum Width of the view
+	 * </p>
+	 *
+	 * @param minWidth Minimum Height in pixel
+	 * @see View
+	 */
 	@Override
-	public void setMinimumWidth(@Px int minHeight) {
-		super.setMinimumWidth(minHeight);
+	public void setMinimumWidth(@Px int minWidth) {
+		super.setMinimumWidth(minWidth);
 	}
 
 
+	/**
+	 * onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+	 * <p>
+	 * Used to set Measured Dimensions<br>
+	 * IT IS A DUMB METHOD, DOESN'T TAKE CARE OF PARAMETERS<br>
+	 * JUST TAKE CURRENT WIDTH AND CURRENT HEIGHT OF THE VIEW
+	 * </p>
+	 *
+	 * @param widthMeasureSpec  Minimum Width in pixel
+	 * @param heightMeasureSpec Minimum Height in pixel
+	 * @apiNote DUMB METHOD, PARAMETERS ARE IGNORED !
+	 * @see View
+	 */
+	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		setMeasuredDimension(this.width, this.height);
 	}
 
-	// Draw the main structure, day and hours divs and date
-	private void drawStructureAndDate(Canvas canvas, float columnWidthDp, ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, TimeZone timeZone) {
+
+	/**
+	 * drawStructureAndDate(@NonNull Canvas canvas, @NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, @NonNull TimeZone timeZone)
+	 * <p>
+	 * Used to draw principal elements of the view such as date, day moments and separators
+	 * </p>
+	 *
+	 * @param canvas                         Elements will be drawn on it
+	 * @param hourlyWeatherForecastArrayList Where the name of the day will be drawn on y axis
+	 * @param timeZone                       The timeZone of the place
+	 */
+	private void drawStructureAndDate(@NonNull Canvas canvas, @NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList, @NonNull TimeZone timeZone) {
 
 		byte previousItemDay = 0, currentItemDay;
 		int x_div = 0;
-		float dateFirstLineY, dateSecondLineY, hourLineY, halfColumnWidthDp;
+		int dateFirstLineY, dateSecondLineY, hourLineY, halfColumnWidth;
 		Calendar calendar;
 		Date date;
 
@@ -178,7 +283,7 @@ public class HourlyForecastGraphView extends ForecastView {
 		dateFirstLineY = dpToPx(15);
 		dateSecondLineY = dpToPx(35);
 		hourLineY = dpToPx(60);
-		halfColumnWidthDp = COLUMN_WIDTH / 2F;
+		halfColumnWidth = COLUMN_WIDTH / 2;
 
 		for (int index = 0; index < hourlyWeatherForecastArrayList.size(); index++) {
 
@@ -199,56 +304,130 @@ public class HourlyForecastGraphView extends ForecastView {
 				canvas.drawLine(x_div, 120, x_div, canvas.getHeight(), this.structurePaint);
 			}
 			//  Draw hour
-			canvas.drawText(formattingService.getFormattedHour(date, timeZone), x_div + halfColumnWidthDp, hourLineY, this.structurePaint);
+			canvas.drawText(formattingService.getFormattedHour(date, timeZone), x_div + halfColumnWidth, hourLineY, this.structurePaint);
 
-			x_div += columnWidthDp;
+			x_div += COLUMN_WIDTH;
 		}
 	}
 
 
-	//  Draw temperatures
-	private void drawTemperatures(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
+	/**
+	 * drawTemperatures(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
+	 * <p>
+	 * Used to draw temperatures and feel like temperatures
+	 * </p>
+	 *
+	 * @param canvas                       Elements will be drawn on it
+	 * @param currentHourlyWeatherForecast Where data will be taken
+	 * @param y                            Where temperatures will be drawn on the y axis
+	 * @param middleOfColumnX              Where temperatures will be drawn on the x axis
+	 */
+	private void drawTemperatures(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
 		//Temperatures
 		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.temperature, false), middleOfColumnX, y, this.primaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.temperatureFeelsLike, false), middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
 	}
 
 
-	//  Draw pressure
-	private void drawPressure(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
+	/**
+	 * drawPressure(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
+	 * <p>
+	 * Used to draw pressure
+	 * </p>
+	 *
+	 * @param canvas                       Elements will be drawn on it
+	 * @param currentHourlyWeatherForecast Where data will be taken
+	 * @param y                            Where pressure will be drawn on the y axis
+	 * @param middleOfColumnX              Where pressure will be drawn on the x axis
+	 */
+	private void drawPressure(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
 		canvas.drawText(formattingService.getFormattedPressure(currentHourlyWeatherForecast.pressure, false), middleOfColumnX, y, this.primaryPaint);
 	}
 
-	//  Draw dewPoint
-	private void drawDewPoint(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
+
+	/**
+	 * drawDewPoint(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
+	 * <p>
+	 * Used to draw dewPoint
+	 * </p>
+	 *
+	 * @param canvas                       Elements will be drawn on it
+	 * @param currentHourlyWeatherForecast Where data will be taken
+	 * @param y                            Where dewPoint will be drawn on the y axis
+	 * @param middleOfColumnX              Where dewPoint will be drawn on the x axis
+	 */
+	private void drawDewPoint(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
 		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.dewPoint, false), middleOfColumnX, y, this.primaryPaint);
 	}
 
-	//  Draw temperatures
-	private void drawVisibility(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
+
+	/**
+	 * drawVisibility(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
+	 * <p>
+	 * Used to draw visibility distance
+	 * </p>
+	 *
+	 * @param canvas                       Elements will be drawn on it
+	 * @param currentHourlyWeatherForecast Where data will be taken
+	 * @param y                            Where visibility distance will be drawn on the y axis
+	 * @param middleOfColumnX              Where visibility distance will be drawn on the x axis
+	 */
+	private void drawVisibility(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
 		canvas.drawText(formattingService.getFloatFormattedDistance(currentHourlyWeatherForecast.visibility, true), middleOfColumnX, y, this.primaryPaint);
 	}
 
-	//  Draw wind and gust speeds
-	private void drawWindSpeed(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
+
+	/**
+	 * drawWindSpeed(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
+	 * <p>
+	 * Used to draw wind speed
+	 * </p>
+	 *
+	 * @param canvas                       Elements will be drawn on it
+	 * @param currentHourlyWeatherForecast Where data will be taken
+	 * @param y                            Where wind speed will be drawn on the y axis
+	 * @param middleOfColumnX              Where wind speed will be drawn on the x axis
+	 */
+	private void drawWindSpeed(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
 		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.windSpeed, true), middleOfColumnX, y, this.primaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.windGustSpeed, true), middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
 	}
 
-	//  Draw wind direction
-	private void drawWindDirection(Canvas canvas, short windDirection, float top, float left, float width) {
-		float middle = width / 2F;
+
+	/**
+	 * drawWindDirection(@NonNull Canvas canvas, short windDirection, @Px int top, @Px int left, @Px int width)
+	 * <p>
+	 * Used to draw direction in cardinal point and in degrees
+	 * </p>
+	 *
+	 * @param canvas        Elements will be drawn on it
+	 * @param windDirection Where data will be taken
+	 * @param top           Where elements will be drawn on the y axis
+	 * @param left          Where elements will be drawn on the x axis
+	 * @param width         Width of each contained elements
+	 */
+	private void drawWindDirection(@NonNull Canvas canvas, short windDirection, @Px int top, @Px int left, @Px int width) {
+		int middle = width / 2;
 		drawWindDirectionIcon(canvas, windDirection, left + dpToPx(5), top, width - dpToPx(10));
 
 		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(windDirection), left + middle, top + width + dpToPx(5), this.primaryPaint);
 		canvas.drawText(formattingService.getFormattedDirectionInDegrees(windDirection), left + middle, top + width + dpToPx(25), this.primaryPaint);
-
 	}
 
 
-	//  Generate a bitmap of GraphPath for one array
-	//
-	private Bitmap generateBitmap1CurvesGraphPath(float[] curveData, int width, int height, @NonNull Paint curvePaint) {
+	/**
+	 * generateBitmap1CurvesGraphPath(float[] curveData, @Px int width, @Px int height, @NonNull Paint curvePaint)
+	 * <p>
+	 * Used to generate bitmap containing graph of one set of data
+	 * </p>
+	 *
+	 * @param curveData  Array of numerical values that will be used to draw the curve
+	 * @param width      Width of the wanted graph
+	 * @param height     Height of the wanted graph
+	 * @param curvePaint Paint that will be used to draw curve
+	 * @return A Bitmap with the generated curve, with the wanted height and width and in the ARGB_4444 format
+	 */
+	private Bitmap generateBitmap1CurvesGraphPath(float[] curveData, @Px int width, @Px int height, @NonNull Paint curvePaint) {
 
 		//  Initializing graph path
 		Path curvePath = new Path();
@@ -325,43 +504,44 @@ public class HourlyForecastGraphView extends ForecastView {
 		return returnedBitmap;
 	}
 
-	//  Draw dewPoint
-	private void drawPrecipitations(Canvas canvas, HourlyWeatherForecast currentHourlyWeatherForecast, int y, float middleOfColumnX) {
+
+	/**
+	 * drawPrecipitations((@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
+	 * <p>
+	 * Used to draw precipitations (rain, snow, pop)
+	 * </p>
+	 *
+	 * @param canvas                       Elements will be drawn on it
+	 * @param currentHourlyWeatherForecast Where data will be taken
+	 * @param y                            Where precipitations will be drawn on the y axis
+	 * @param middleOfColumnX              Where precipitations will be drawn on the x axis
+	 */
+	private void drawPrecipitations(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
 		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.rain, true), middleOfColumnX, y, this.tertiaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.snow, true), middleOfColumnX, y + dpToPx(25), this.primaryPaint);
 
-		canvas.drawText(String.format("%d %%", (int) (currentHourlyWeatherForecast.pop * 100)), middleOfColumnX, y + dpToPx(50), this.secondaryPaint);
+		canvas.drawText(String.format("%d %%", BigDecimal.valueOf(currentHourlyWeatherForecast.pop * 100).intValue()), middleOfColumnX, y + dpToPx(50), this.secondaryPaint);
 
 	}
 
-	//  Pixel to Complex Units conversion
-	//----------------------------------------------------------------------------------------------
 
-	// dp --> px
-	private int dpToPx(float dip) {
-		return (int) TypedValue.applyDimension(
-				TypedValue.COMPLEX_UNIT_DIP,
-				dip,
-				getResources().getDisplayMetrics());
-	}
-
-	// sp --> px
-	private int spToPx(float sp) {
-		return (int) TypedValue.applyDimension(
-				TypedValue.COMPLEX_UNIT_SP,
-				sp,
-				getResources().getDisplayMetrics());
-	}
-
-
+	/**
+	 * onDraw(@NonNull Canvas canvas)
+	 * <p>
+	 * Called to generate view
+	 * </p>
+	 *
+	 * @param canvas The canvas that will be displayed on screen
+	 * @see android.view.View
+	 */
 	@Override
-	protected void onDraw(Canvas canvas) {
+	protected void onDraw(@NonNull Canvas canvas) {
 		super.onDraw(canvas);
 
 		HourlyWeatherForecast currentHourlyWeatherForecast;
-		float halfWidthX = COLUMN_WIDTH / 2F, drawableX = halfWidthX - dpToPx(25);
+		int halfWidthX = COLUMN_WIDTH / 2, drawableX = halfWidthX - dpToPx(25);
 
-		drawStructureAndDate(canvas, COLUMN_WIDTH, hourlyWeatherForecastArrayList, timeZone);
+		drawStructureAndDate(canvas, hourlyWeatherForecastArrayList, timeZone);
 
 		for (int index = 0; index < hourlyWeatherForecastArrayList.size(); index++) {
 			currentHourlyWeatherForecast = hourlyWeatherForecastArrayList.get(index);

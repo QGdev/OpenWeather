@@ -21,9 +21,20 @@ import java.util.TimeZone;
 import fr.qgdev.openweather.FormattingService;
 import fr.qgdev.openweather.R;
 
+
+/**
+ * ForecastView
+ * <p>
+ * Used to generate graphics for forecasts
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see View
+ */
 public abstract class ForecastView extends View {
 
-	protected static FormattingService formattingService;
+	protected FormattingService formattingService;
 	protected int COLUMN_WIDTH;
 	protected Context context;
 	protected int width, height;
@@ -43,29 +54,80 @@ public abstract class ForecastView extends View {
 			moonLightIconPaint,
 			moonShadowIconPaint;
 
-	public ForecastView(Context context) {
+
+	/**
+	 * ForecastView Constructor
+	 * <p>
+	 * Just build ForecastView object only with context
+	 * </p>
+	 *
+	 * @param context Current context, only used to construct super class
+	 */
+	public ForecastView(@NonNull Context context) {
 		super(context);
-		init(context);
+		initComponents(context);
 	}
 
-	public ForecastView(Context context, @Nullable AttributeSet attrs) {
+
+	/**
+	 * ForecastView Constructor
+	 * <p>
+	 * Just build ForecastView object only with Context and AttributeSet
+	 * </p>
+	 *
+	 * @param context Current context, only used to construct super class
+	 * @param attrs   AttributeSet for the GraphView
+	 */
+	public ForecastView(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
-		init(context);
+		initComponents(context);
 	}
 
 
+	/**
+	 * setMinimumHeight(@Px int minHeight)
+	 * <p>
+	 * Used to set minimum Height of the view
+	 * </p>
+	 *
+	 * @param minHeight Minimum Height in pixel
+	 * @see View
+	 */
 	@Override
 	public void setMinimumHeight(@Px int minHeight) {
 		super.setMinimumHeight(minHeight);
 	}
 
 
+	/**
+	 * setMinimumWidth(@Px int minWidth)
+	 * <p>
+	 * Used to set minimum Width of the view
+	 * </p>
+	 *
+	 * @param minWidth Minimum Height in pixel
+	 * @see View
+	 */
 	@Override
-	public void setMinimumWidth(@Px int minHeight) {
-		super.setMinimumWidth(minHeight);
+	public void setMinimumWidth(@Px int minWidth) {
+		super.setMinimumWidth(minWidth);
 	}
 
 
+	/**
+	 * onMeasure(int widthMeasureSpec, int heightMeasureSpec)
+	 * <p>
+	 * Used to set Measured Dimensions<br>
+	 * IT IS A DUMB METHOD, DOESN'T TAKE CARE OF PARAMETERS<br>
+	 * JUST TAKE CURRENT WIDTH AND CURRENT HEIGHT OF THE VIEW
+	 * </p>
+	 *
+	 * @param widthMeasureSpec  Minimum Width in pixel
+	 * @param heightMeasureSpec Minimum Height in pixel
+	 * @apiNote DUMB METHOD, PARAMETERS ARE IGNORED !
+	 * @see View
+	 */
+	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		setMeasuredDimension(this.width, this.height);
 	}
@@ -74,10 +136,22 @@ public abstract class ForecastView extends View {
 	//  Graph generation functions
 	//______________________________________________________________________________________________
 
-	//  Generate a bitmap of GraphPath for two arrays
-	//
-	////    firstCurveData and secondCurveData must have the same number of elements !
-	protected Bitmap generateBitmap2CurvesGraphPath(float[] firstCurveData, float[] secondCurveData, int width, int height, @NonNull Paint firstCurvePaint, @NonNull Paint secondCurvePaint) {
+	/**
+	 * generateBitmap2CurvesGraphPath(float[] firstCurveData, float[] secondCurveData, int width, int height, @NonNull Paint firstCurvePaint, @NonNull Paint secondCurvePaint)
+	 * <p>
+	 * Used to generate bitmap containing graph of two set of data
+	 * </p>
+	 *
+	 * @param firstCurveData   Array of numerical values that will be used to draw the first curve
+	 * @param secondCurveData  Array of numerical values that will be used to draw the second curve
+	 * @param width            Width of the wanted graph
+	 * @param height           Height of the wanted graph
+	 * @param firstCurvePaint  Paint that will be used to draw first curve
+	 * @param secondCurvePaint Paint that will be used to draw second curve
+	 * @return A Bitmap with two generated curves, with the wanted height and width and in the ARGB_4444 format
+	 * @apiNote firstCurveData & secondCurveData must have the same number of elements
+	 */
+	protected Bitmap generateBitmap2CurvesGraphPath(float[] firstCurveData, float[] secondCurveData, @Px int width, @Px int height, @NonNull Paint firstCurvePaint, @NonNull Paint secondCurvePaint) {
 
 		//  Initializing graph paths
 		Path firstCurvePath = new Path();
@@ -173,10 +247,25 @@ public abstract class ForecastView extends View {
 		return returnedBitmap;
 	}
 
-	//  Generate precipitations graph
-	//
-	////    rainData, snowData and popData must have the same number of elements !
-	protected Bitmap generateBitmapPrecipitationsGraphPath(float[] rainData, float[] snowData, float[] popData, int width, int height, @NonNull Paint rainCurvePaint, @NonNull Paint snowCurvePaint, @NonNull Paint popCurvePaint) {
+
+	/**
+	 * generateBitmapPrecipitationsGraphPath(float[] rainData, float[] snowData, float[] popData, int width, int height, @NonNull Paint rainCurvePaint, @NonNull Paint snowCurvePaint, @NonNull Paint popCurvePaint)
+	 * <p>
+	 * Used to generate bitmap containing graph of three set of data, rain, sno and pop
+	 * </p>
+	 *
+	 * @param rainData       Array of numerical values that will be used to draw the first curve
+	 * @param snowData       Array of numerical values that will be used to draw the second curve
+	 * @param popData        Array of float values between 0 and 1 that will be used to draw the bar graph
+	 * @param width          Width of the wanted graph
+	 * @param height         Height of the wanted graph
+	 * @param rainCurvePaint Paint that will be used to draw first curve
+	 * @param snowCurvePaint Paint that will be used to draw second curve
+	 * @param popCurvePaint  Paint that will be used to draw third curve which is a bar graph
+	 * @return A Bitmap with three generated curves, with the wanted height and width and in the ARGB_4444 format
+	 * @apiNote rainData, snowData & popData must have the same number of elements
+	 */
+	protected Bitmap generateBitmapPrecipitationsGraphPath(float[] rainData, float[] snowData, float[] popData, @Px int width, @Px int height, @NonNull Paint rainCurvePaint, @NonNull Paint snowCurvePaint, @NonNull Paint popCurvePaint) {
 
 		//  Initializing graph paths
 		Path rainCurvePath = new Path(),
@@ -285,8 +374,22 @@ public abstract class ForecastView extends View {
 	}
 
 
-	//  Draw temperatures max and min temps and
-	protected void drawTextWithDrawable(@NonNull Canvas canvas, @NonNull Drawable drawable, @NonNull String text, @Px float top, @Px float left, @Px float spaceBetween, @NonNull Paint paint) {
+	/**
+	 * drawTextWithDrawable(@NonNull Canvas canvas, @NonNull Drawable drawable, @NonNull String text, @Px float top, @Px float left, @Px float spaceBetween, @NonNull Paint paint)
+	 * <p>
+	 * Used to draw text with drawable labels
+	 * </p>
+	 *
+	 * @param canvas       Elements will be drawn on it
+	 * @param drawable     Drawable that will be drawn next to the text
+	 * @param text         That text will be drawn
+	 * @param top          Where element will be drawn on the y axis
+	 * @param left         Where element will be drawn on the x axis
+	 * @param spaceBetween Space between text and drawable in pixels
+	 * @param paint        The paint that will be used on drawable and text
+	 * @apiNote canvas, drawable, text & paint shouldn't be null
+	 */
+	protected void drawTextWithDrawable(@NonNull Canvas canvas, @NonNull Drawable drawable, @NonNull String text, @Px int top, @Px int left, @Px int spaceBetween, @NonNull Paint paint) {
 		int deltaDrawableText = 5;
 		float height = paint.getTextSize() + deltaDrawableText * 2,
 				textWidth = paint.measureText(text),
@@ -301,12 +404,26 @@ public abstract class ForecastView extends View {
 				BigDecimal.valueOf(left + height).intValue(),
 				BigDecimal.valueOf(bottom).intValue());
 		drawable.draw(canvas);
-
 		canvas.drawText(text, textX, textY, paint);
 	}
 
 
-	protected void drawWeatherConditionIcons(Canvas canvas, int weatherCode, float top, float left, float width, float height, boolean isDayTime) {
+	/**
+	 * drawWeatherConditionIcons(@NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height, boolean isDayTime)
+	 * <p>
+	 * Used to draw drawable corresponding to weatherCode
+	 * </p>
+	 *
+	 * @param canvas      Elements will be drawn on it
+	 * @param weatherCode Weather code of the weather
+	 * @param top         Where element will be drawn on the y axis
+	 * @param left        Where element will be drawn on the x axis
+	 * @param width       The width of the element
+	 * @param height      The height of the element
+	 * @param isDayTime   Describes if it is day time or not
+	 * @apiNote canvas shouldn't be null
+	 */
+	protected void drawWeatherConditionIcons(@NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height, boolean isDayTime) {
 		//  WEATHER CONDITION DRAWING
 		int weatherIconId;
 
@@ -449,20 +566,48 @@ public abstract class ForecastView extends View {
 		}
 
 		Drawable drawable = getResources().getDrawable(weatherIconId, null);
-		drawable.setBounds(BigDecimal.valueOf(left).intValue(), BigDecimal.valueOf(top).intValue(), BigDecimal.valueOf(left + width).intValue(), BigDecimal.valueOf(top + height).intValue());
+		drawable.setBounds(left, top, left + width, top + height);
 		drawable.draw(canvas);
 	}
 
-	protected void drawWeatherConditionIcons(Canvas canvas, int weatherCode, float top, float left, float width, float height) {
+
+	/**
+	 * drawWeatherConditionIcons(@NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height)
+	 * <p>
+	 * Used to draw drawable corresponding to weatherCode<br>
+	 * Exactly the same as rawWeatherConditionIcons(@NonNullCanvas, int, @Px int, @Px int, @Px int, @Px int, boolean)<br>
+	 * But the boolean parameter is set to true so it will only draw dayTime icons
+	 * </p>
+	 *
+	 * @param canvas      Elements will be drawn on it
+	 * @param weatherCode Weather code of the weather
+	 * @param top         Where element will be drawn on the y axis
+	 * @param left        Where element will be drawn on the x axis
+	 * @param width       The width of the element
+	 * @param height      The height of the element
+	 */
+	protected void drawWeatherConditionIcons(@NonNull Canvas canvas, @Px int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height) {
 		this.drawWeatherConditionIcons(canvas, weatherCode, top, left, width, height, true);
 	}
 
-	//  Draw UV index icon
-	protected void drawUvIndex(Canvas canvas, int uvIndex, float x, float y, float sideLength) {
-		float middle = sideLength / 2F,
-				circleRadius = middle / 2F - 3;
 
-		Bitmap sunBitmap = Bitmap.createBitmap((int) sideLength, (int) sideLength, Bitmap.Config.ARGB_4444);
+	/**
+	 * drawUvIndex(@NonNull Canvas canvas, @Px int uvIndex, @Px int x, @Px int y, @Px int sideLength)
+	 * <p>
+	 * Used to draw UV Index icon
+	 * </p>
+	 *
+	 * @param canvas     Moon phase will be drawn on it
+	 * @param uvIndex    Uv Index
+	 * @param x          Center of the drawn UV index icon on the x axis
+	 * @param y          Center of the drawn UV index icon on the y axis
+	 * @param sideLength Length side of the drawn UV index icon
+	 */
+	protected void drawUvIndex(@NonNull Canvas canvas, @Px int uvIndex, @Px int x, @Px int y, @Px int sideLength) {
+		int middle = sideLength / 2,
+				circleRadius = middle / 2 - 3;
+
+		Bitmap sunBitmap = Bitmap.createBitmap(sideLength, sideLength, Bitmap.Config.ARGB_4444);
 		Canvas sunCanvas = new Canvas(sunBitmap);
 
 		//  if the uv index is null, there is no sunrays
@@ -505,8 +650,21 @@ public abstract class ForecastView extends View {
 		canvas.drawBitmap(sunBitmap, x, y, null);
 	}
 
-	protected void drawWindDirectionIcon(Canvas canvas, float windDirection, float x, float y, float sideLength) {
-		Bitmap compassBitmap = Bitmap.createBitmap((int) sideLength, (int) sideLength, Bitmap.Config.ARGB_4444);
+
+	/**
+	 * drawWindDirectionIcon(@NonNull Canvas canvas, float windDirection, @Px int x, @Px int y, @Px int sideLength)
+	 * <p>
+	 * Used to draw wind direction icon
+	 * </p>
+	 *
+	 * @param canvas        Moon phase will be drawn on it
+	 * @param windDirection Wind direction in degrees
+	 * @param x             Center of the drawn wind direction icon on the x axis
+	 * @param y             Center of the drawn wind direction icon on the y axis
+	 * @param sideLength    Length side of the drawn wind direction icon
+	 */
+	protected void drawWindDirectionIcon(@NonNull Canvas canvas, float windDirection, @Px int x, @Px int y, @Px int sideLength) {
+		Bitmap compassBitmap = Bitmap.createBitmap(sideLength, sideLength, Bitmap.Config.ARGB_4444);
 		Canvas compassCanvas = new Canvas(compassBitmap);
 
 		//  Do calculation for each points in clockwise order
@@ -535,7 +693,15 @@ public abstract class ForecastView extends View {
 		canvas.drawBitmap(compassBitmap, x, y, null);
 	}
 
-	protected void init(Context context) {
+	/**
+	 * initComponents(@NonNull Context context)
+	 * <p>
+	 * Used to initialize attributes used to draw a graph
+	 * </p>
+	 *
+	 * @param context Current context, only used to construct super class and initialize attributes
+	 */
+	protected void initComponents(@NonNull Context context) {
 		this.context = context;
 
 		this.datePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -619,7 +785,18 @@ public abstract class ForecastView extends View {
 		this.sunIconPaint.setTextAlign(Paint.Align.CENTER);
 	}
 
-	protected void onDraw(Canvas canvas) {
+
+	/**
+	 * onaw(@NonNull Canvas canvas)
+	 * <p>
+	 * Called to generate view
+	 * </p>
+	 *
+	 * @param canvas The canvas that will be displayed on screen
+	 * @see android.view.View
+	 */
+	@Override
+	protected void onDraw(@NonNull Canvas canvas) {
 		super.onDraw(canvas);
 	}
 
@@ -627,16 +804,33 @@ public abstract class ForecastView extends View {
 	//  Pixel to Complex Units conversion
 	//----------------------------------------------------------------------------------------------
 
-	// sp --> px
-	private int spToPx(float sp) {
+	/**
+	 * spToPx(float sp)
+	 * <p>
+	 * Just a SP to PX converter method
+	 * </p>
+	 *
+	 * @param sp SP value that you want to convert
+	 * @return The SP converted value into PX
+	 */
+	protected int spToPx(float sp) {
 		return (int) TypedValue.applyDimension(
 				TypedValue.COMPLEX_UNIT_SP,
 				sp,
 				getResources().getDisplayMetrics());
 	}
 
-	// dp --> px
-	private int dpToPx(float dip) {
+
+	/**
+	 * dpToPx(float dip)
+	 * <p>
+	 * Just a DP to PX converter method
+	 * </p>
+	 *
+	 * @param dip   DP value that you want to convert
+	 * @return The DP converted value into PX
+	 */
+	protected int dpToPx(float dip) {
 		return (int) TypedValue.applyDimension(
 				TypedValue.COMPLEX_UNIT_DIP,
 				dip,
