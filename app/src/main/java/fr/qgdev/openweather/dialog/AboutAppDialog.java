@@ -7,6 +7,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,25 +16,40 @@ import fr.qgdev.openweather.BuildConfig;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.adapter.AttributionItemAdapter;
 
+
+/**
+ * AboutAppDialog
+ * <p>
+ * About us dialog box where all application information are presented<br>
+ * Check string arrays in resource file to fill the dialog with data
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Dialog
+ */
 public class AboutAppDialog extends Dialog {
 
-	private final TextView versionTextView;
-	private final LinearLayout attributionLinearLayout;
-	private final List<String> attributionTitleList;
-	private final List <String> attributionContentList;
-	private final Button exitButton;
-
-	public AboutAppDialog(Context context) {
+	/**
+	 * AboutAppDialog Constructor
+	 * <p>
+	 * Just the constructor of About app dialog class
+	 * </p>
+	 *
+	 * @param context Context of the application in order to get resources
+	 * @apiNote None of the parameters can be null
+	 */
+	public AboutAppDialog(@NonNull Context context) {
 		super(context);
 		setContentView(R.layout.dialog_about_us);
 
-		this.versionTextView = findViewById(R.id.application_version);
-		this.attributionLinearLayout = findViewById(R.id.attribution_section);
-		this.exitButton = findViewById(R.id.exit_button);
+		TextView versionTextView = findViewById(R.id.application_version);
+		LinearLayout attributionLinearLayout = findViewById(R.id.attribution_section);
+		Button exitButton = findViewById(R.id.exit_button);
 
 		//  Get string arrays stored in XML resources files
-		this.attributionTitleList = Arrays.asList(context.getResources().getStringArray(R.array.attribution_title));
-		this.attributionContentList = Arrays.asList(context.getResources().getStringArray(R.array.attribution_content));
+		List<String> attributionTitleList = Arrays.asList(context.getResources().getStringArray(R.array.attribution_title));
+		List<String> attributionContentList = Arrays.asList(context.getResources().getStringArray(R.array.attribution_content));
 
 		//  Initialize variables containing application characteristics
 		String versionName = BuildConfig.VERSION_NAME;
@@ -40,25 +57,17 @@ public class AboutAppDialog extends Dialog {
 		int versionCode = BuildConfig.VERSION_CODE;
 
 		//  Show application characteristics
-		this.versionTextView.setText(String.format("%s - %d", versionName, versionCode));
-		this.versionTextView.setOnLongClickListener(v -> {
+		versionTextView.setText(String.format("%s - %d", versionName, versionCode));
+		versionTextView.setOnLongClickListener(v -> {
 			Toast.makeText(context, versionType, Toast.LENGTH_LONG).show();
 			return false;
 		});
 
 		//  Fill attribution section
-		AttributionItemAdapter attributionItemAdapter = new AttributionItemAdapter(context, this.attributionTitleList, this.attributionContentList);
-		for(int index = 0; index < this.attributionTitleList.size(); index++)
-		{
-			this.attributionLinearLayout.addView(attributionItemAdapter.getView(index, null, null), index);
+		AttributionItemAdapter attributionItemAdapter = new AttributionItemAdapter(context, attributionTitleList, attributionContentList);
+		for (int index = 0; index < attributionTitleList.size(); index++) {
+			attributionLinearLayout.addView(attributionItemAdapter.getView(index, null, null), index);
 		}
-
-
-		this.exitButton.setOnClickListener(v -> dismiss());
+		exitButton.setOnClickListener(v -> dismiss());
 	}
-
-	public void build() {
-		show();
-	}
-
 }

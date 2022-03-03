@@ -55,7 +55,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 final AboutAppDialog aboutAppDialog = new AboutAppDialog(getContext());
-                aboutAppDialog.build();
+                aboutAppDialog.show();
             }
         });
 
