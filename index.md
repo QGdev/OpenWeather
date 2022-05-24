@@ -1,6 +1,6 @@
 ---
-page.title:[OpenWeather Android App Project]
-page.description:[Android weather application based on OpenWeatherMaps APIs]
+title:[OpenWeather Android App Project]
+description:[Android weather application based on OpenWeatherMaps APIs]
 ---
 
 ## Description
