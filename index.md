@@ -1,6 +1,7 @@
-## OpenWeather Android App Project
-
-Android weather application based on OpenWeatherMaps APIs.
+---
+page.title:[OpenWeather Android App Project]
+page.description:[Android weather application based on OpenWeatherMaps APIs]
+---
 
 ## Description
 OpenWeather is a weather application that clearly and simply displays the weather for a multitude of cities.
