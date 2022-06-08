@@ -2,7 +2,8 @@
 Android weather application based on OpenWeatherMaps APIs.
 
 ## Description
-OpenWeather is a weather application that clearly and simply displays the weather for a multitude of cities.
+OpenWeather is an open-source weather application that clearly and simply displays the weather for a multitude of cities.
+The app is under the GPLv3 licence, please respect the terms of this licence.
 
 The application is committed to not collecting any user data, only city data is sent to OpenWeatherMaps.
 
@@ -14,6 +15,14 @@ Only the necessary data are used by the application, these data are:
 * Registered cities, only used to know for which city the application need to search and display data.
 
 OpenWeatherMaps privacy policy: [openweather.co.uk/privacy-policy](https://openweather.co.uk/privacy-policy)
+
+## 📲 Disponibility on apps markets
+#### Google Play Store
+For now it is only available on the PlayStore as a closed alpha, there is the possibility to add people on request.
+But I will release it on pulic soon on the PlayStore.
+
+#### F-Droid
+For now it is not available on F-Droid but I am thinking to put my app on it.
 
 ## ⚠️ Disclamer
 This application is powered by the OpenWeatherMaps APIs but has no connection or affiliation with this company.
