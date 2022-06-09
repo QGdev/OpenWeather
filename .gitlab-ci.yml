@@ -8,6 +8,12 @@
 
 image: openjdk:11-jdk
 
+# Enable cache to speed up the CI process
+cache:
+  key: ${CI_PROJECT_ID}
+  paths:
+  - .gradle/
+
 variables:
 
   # ANDROID_COMPILE_SDK is the version of Android you're compiling with.
