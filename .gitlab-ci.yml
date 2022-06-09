@@ -25,6 +25,7 @@ variables:
 
 before_script:
   - export GRADLE_USER_HOME=$(pwd)/.gradle
+  - export JAVA_HOME="/usr/bin/java"
   - chmod +x ./gradlew
     # use yes to accept all licenses
   - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses || true
