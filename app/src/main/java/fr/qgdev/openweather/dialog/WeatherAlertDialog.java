@@ -10,21 +10,40 @@ import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.adapter.WeatherAlertAdapter;
 
+/**
+ * WeatherAlertDialog
+ * <p>
+ * Weather Alert dialog box where all weather alerts informations are presented<br>
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Dialog
+ */
 public class WeatherAlertDialog extends Dialog {
 
-	private final WeatherAlertAdapter weatherAlertAdapter;
-	private final Button exitButton;
-	private final LinearLayout alertListLinearLayout;
-
+	/**
+	 * WeatherAlertDialog Constructor
+	 * <p>
+	 * Just the constructor of WeatherAlertDialog class
+	 * </p>
+	 *
+	 * @param context           Context of the application in order to get resources
+	 * @param place             Just to get Weather alerts information
+	 * @param formattingService In order to get well formatted values
+	 * @apiNote None of the parameters can be null
+	 */
 	public WeatherAlertDialog(Context context, Place place, FormattingService formattingService) {
 		super(context);
 		setContentView(R.layout.dialog_weather_alert);
 
-		this.alertListLinearLayout = findViewById(R.id.alertList);
-		this.exitButton = findViewById(R.id.exit_button);
-		this.exitButton.setOnClickListener(v -> dismiss());
+		//	Set exit button behavior
+		Button exitButton = findViewById(R.id.exit_button);
+		exitButton.setOnClickListener(v -> dismiss());
 
-		this.weatherAlertAdapter = new WeatherAlertAdapter(context, place, formattingService);
+		//	Fill weather alerts section
+		LinearLayout alertListLinearLayout = findViewById(R.id.alertList);
+		WeatherAlertAdapter weatherAlertAdapter = new WeatherAlertAdapter(context, place, formattingService);
 		for (int i = 0; i < place.getMWeatherAlertCount(); i++) {
 			alertListLinearLayout.addView(weatherAlertAdapter.getView(i, null, null), i);
 		}
