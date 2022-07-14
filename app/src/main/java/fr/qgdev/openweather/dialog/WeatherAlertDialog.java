@@ -49,6 +49,12 @@ public class WeatherAlertDialog extends Dialog {
 		}
 	}
 
+	/**
+	 * build()
+	 * <p>
+	 * Just the function to build the whole SnackBar but in this case, the dialog, will be built and shown
+	 * </p>
+	 */
 	public void build() {
 		show();
 	}
