@@ -26,8 +26,19 @@ import fr.qgdev.openweather.dataplaces.DataPlaces;
 import fr.qgdev.openweather.dataplaces.PlaceAlreadyExistException;
 import fr.qgdev.openweather.fragment.places.PlacesFragment;
 
+/**
+ * AppPlaceDialog
+ * <p>
+ * The dialog used to add places<br>
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Dialog
+ */
 public class AddPlaceDialog extends Dialog {
 
+	//	Dialog elements
 	private final ConstraintLayout dialogWindow;
 	private final TextInputLayout cityTextInputLayout, countryTextInputLayout;
 	private final TextInputEditText cityEditText;
@@ -35,12 +46,28 @@ public class AddPlaceDialog extends Dialog {
 	private final ProgressBar addButtonProgressSpinner;
 	private final Button exitButton, addButton;
 
+	//	Callbacks
 	private final WeatherService.CallbackGetCoordinates getCoordinatesCallback;
 	private final WeatherService.CallbackGetData getDataCallback;
 
+	//	List of countries
+	//	Used in order to sort country names
 	private final List<String> countryNames;
 	private final List<String> countryCodes;
 
+	/**
+	 * AddPlaceDialog Constructor
+	 * <p>
+	 * Just the constructor of AddPlaceDialog class
+	 * </p>
+	 *
+	 * @param context                   Context of the application in order to get resources
+	 * @param addPlaceFABView           Basically just a parent view
+	 * @param apiKey                    In order to get well formatted values
+	 * @param weatherService            Just to get Weather alerts information
+	 * @param placeFragmentInteractions In order to get well formatted values
+	 * @apiNote None of the parameters can be null
+	 */
 	public AddPlaceDialog(Context context, View addPlaceFABView, String apiKey, WeatherService weatherService, PlacesFragment.Interactions placeFragmentInteractions) {
 		super(context);
 		setContentView(R.layout.dialog_add_place);
@@ -91,26 +118,20 @@ public class AddPlaceDialog extends Dialog {
 
 			@Override
 			public void onTreatmentError() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_cannot_save_place_treatment), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
+				showSnackbar(dialogWindow, context.getString(R.string.error_cannot_save_place_treatment));
 				enableDialogWindowControls();
 
 			}
 
 			@Override
 			public void onNoResponseError() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_server_unreachable), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-						.show();
+				showSnackbar(dialogWindow, context.getString(R.string.error_server_unreachable));
 				enableDialogWindowControls();
 			}
 
 			@Override
 			public void onTooManyRequestsError() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_too_many_request_in_a_day), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
+				showSnackbar(dialogWindow, context.getString(R.string.error_too_many_request_in_a_day));
 				enableDialogWindowControls();
 			}
 
@@ -122,27 +143,21 @@ public class AddPlaceDialog extends Dialog {
 
 			@Override
 			public void onWrongOrUnknownApiKeyError() {
-				Snackbar.make(addPlaceFABView, context.getString(R.string.error_wrong_api_key), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
+				showSnackbar(addPlaceFABView, context.getString(R.string.error_wrong_api_key));
 				enableDialogWindowControls();
 
 			}
 
 			@Override
 			public void onUnknownError() {
-				Snackbar.make(addPlaceFABView, context.getString(R.string.error_unknow_error), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
+				showSnackbar(addPlaceFABView, context.getString(R.string.error_unknow_error));
 				enableDialogWindowControls();
 
 			}
 
 			@Override
 			public void onDeviceNotConnected() {
-				Snackbar.make(dialogWindow, context.getString(R.string.error_device_not_connected), Snackbar.LENGTH_SHORT)
-						.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-						.show();
+				showSnackbar(dialogWindow, context.getString(R.string.error_device_not_connected));
 				enableDialogWindowControls();
 
 			}
@@ -205,11 +220,8 @@ public class AddPlaceDialog extends Dialog {
 					cityTextInputLayout.setError(context.getString(R.string.error_place_already_added));
 				} catch (Exception e) {
 					e.printStackTrace();
-					Snackbar.make(dialogWindow, context.getString(R.string.error_cannot_save_place), Snackbar.LENGTH_SHORT)
-							.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-							.show();
+					showSnackbar(dialogWindow, context.getString(R.string.error_cannot_save_place));
 				}
-
 				enableDialogWindowControls();
 			}
 		};
@@ -251,7 +263,14 @@ public class AddPlaceDialog extends Dialog {
 		exitButton.setOnClickListener(v -> dismiss());
 	}
 
-
+	/**
+	 * getCityField()
+	 * <p>
+	 * Will just provide the value registered in the city EditText element of the dialog
+	 * </p>
+	 *
+	 * @return The content of the city EditText element
+	 */
 	public String getCityField() {
 		Editable city = cityEditText.getText();
 		if (city == null || city.length() == 0) {
@@ -260,15 +279,14 @@ public class AddPlaceDialog extends Dialog {
 		return city.toString();
 	}
 
-	public String getCountryCode() {
-		int indexOf = countryNames.indexOf(getCountryField());
-
-		if (indexOf == -1) {
-			return null;
-		}
-		return countryCodes.get(indexOf);
-	}
-
+	/**
+	 * getCountryField()
+	 * <p>
+	 * Will just provide the value registered in the country EditText element of the dialog
+	 * </p>
+	 *
+	 * @return The content of the country EditText element
+	 */
 	public String getCountryField() {
 		Editable country = countryEditText.getText();
 		if (country.length() == 0) {
@@ -277,6 +295,32 @@ public class AddPlaceDialog extends Dialog {
 		return country.toString();
 	}
 
+	/**
+	 * getCountryCode()
+	 * <p>
+	 * Will just take the content of the country EditText element and match it with the stored
+	 * list in memory in order to get the corresponding country code
+	 * </p>
+	 *
+	 * @return If there is a match, it will return the country code in two letters format ("XX") but null if not
+	 * @apiNote Will return null if there is no match
+	 */
+	public String getCountryCode() {
+		int indexOf = countryNames.indexOf(getCountryField());
+		if (indexOf == -1) return null;
+		return countryCodes.get(indexOf);
+	}
+
+	/**
+	 * showSnackbar(...)
+	 * <p>
+	 * Will just compose and show a snackbar with predefined parameters, just need to provide a parent view and the content
+	 * Acts like a "shortcut" function
+	 * </p>
+	 *
+	 * @param view    The parent view, where the snackbar will be shown
+	 * @param message The content of the snackbar, what will be shown
+	 */
 	private void showSnackbar(View view, String message) {
 		Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
 				.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
@@ -284,18 +328,37 @@ public class AddPlaceDialog extends Dialog {
 				.show();
 	}
 
+	/**
+	 * disableDialogWindowControls()
+	 * <p>
+	 * Just used like a "shortcut" function, will disable ADD and EXIT button of the dialog
+	 * </p>
+	 */
 	public void disableDialogWindowControls() {
 		addButton.setEnabled(false);
 		exitButton.setEnabled(false);
 		addButtonProgressSpinner.setVisibility(View.VISIBLE);
 	}
 
+	/**
+	 * enableDialogWindowControls()
+	 * <p>
+	 * Just used like a "shortcut" function, will enable ADD and EXIT button of the dialog
+	 * </p>
+	 */
 	public void enableDialogWindowControls() {
 		addButton.setEnabled(true);
 		exitButton.setEnabled(true);
 		addButtonProgressSpinner.setVisibility(View.GONE);
 	}
 
+	/**
+	 * build()
+	 * <p>
+	 * Just the function to build the whole SnackBar but in this case, the dialog, will be built and shown
+	 * </p>
+	 *
+	 */
 	public void build() {
 		show();
 	}
