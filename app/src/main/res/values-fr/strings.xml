@@ -143,5 +143,7 @@
 	<string name="air_quality_5">Très Mauvais</string>
 	<string name="air_quality_4">Mauvais</string>
 	<string name="air_quality_3">Mauvais (sensible)</string>
-    <string name="error_place_move">Une erreur est survenue lors du déplacement</string>
+	<string name="error_place_move">Une erreur est survenue lors du déplacement</string>
+	<string name="about_application_section_title">À propos de l\'application</string>
+	<string name="about_application_section_content">Cette application et son code source ont été placés sous la licence GPL-3.\nCela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
 </resources>

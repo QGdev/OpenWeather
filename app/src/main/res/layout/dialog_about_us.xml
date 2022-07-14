@@ -2,11 +2,13 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:orientation="vertical"
 	android:minWidth="@dimen/dialog_max_width"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
 	android:layout_margin="20dp"
+	tools:ignore="HardcodedText"
 	style="@style/MaterialTheme">
 
 	<TextView
@@ -107,7 +109,22 @@
 				android:text="@string/about_your_data_section_content"
 				android:textSize="20sp"
 				android:linksClickable="true"
-				android:autoLink="web"/>
+				android:autoLink="web" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_margin="5dp"
+				android:text="@string/about_application_section_title"
+				android:textSize="24sp" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingStart="10dp"
+				android:paddingBottom="5dp"
+				android:text="@string/about_application_section_content"
+				android:textSize="20sp" />
 
 			<TextView
 				android:layout_width="wrap_content"
