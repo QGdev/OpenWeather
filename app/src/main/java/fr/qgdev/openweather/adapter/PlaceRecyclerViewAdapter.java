@@ -49,7 +49,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	private final PlacesFragment placesFragment;
 	private final List<String> countryNames;
 	private final List<String> countryCodes;
-	private static ArrayList<PlaceView> placeViewArrayList;
+	private final ArrayList<PlaceView> placeViewArrayList;
 	private final FormattingService formattingService;
 
 	/**
@@ -65,7 +65,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		this.context = context;
 		this.placesFragment = placesFragment;
 
-		placeViewArrayList = generatePlaceViewArray();
+		this.placeViewArrayList = generatePlaceViewArray();
 
 		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
 		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
@@ -82,7 +82,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 * @param position Position of the new place
 	 */
 	public void add(int position) {
-		placeViewArrayList.add(new PlaceView(PlaceView.COMPACT));
+		this.placeViewArrayList.add(new PlaceView(PlaceView.COMPACT));
 		this.notifyItemInserted(position);
 	}
 
@@ -110,14 +110,15 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	public void move(int initialPosition, int finalPosition) {
 
 		if (initialPosition != finalPosition) {
-			if (finalPosition == placeViewArrayList.size() - 1)
-				placeViewArrayList.add(placeViewArrayList.get(initialPosition));
+			if (finalPosition == this.placeViewArrayList.size() - 1)
+				this.placeViewArrayList.add(this.placeViewArrayList.get(initialPosition));
 			else if (initialPosition < finalPosition)
-				placeViewArrayList.add(finalPosition + 1, placeViewArrayList.get(initialPosition));
-			else placeViewArrayList.add(finalPosition, placeViewArrayList.get(initialPosition));
+				this.placeViewArrayList.add(finalPosition + 1, this.placeViewArrayList.get(initialPosition));
+			else
+				this.placeViewArrayList.add(finalPosition, this.placeViewArrayList.get(initialPosition));
 
-			if (initialPosition < finalPosition) placeViewArrayList.remove(initialPosition);
-			else placeViewArrayList.remove(initialPosition + 1);
+			if (initialPosition < finalPosition) this.placeViewArrayList.remove(initialPosition);
+			else this.placeViewArrayList.remove(initialPosition + 1);
 		}
 	}
 

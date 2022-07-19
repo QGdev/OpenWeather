@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
@@ -40,6 +42,9 @@ import fr.qgdev.openweather.dataplaces.DataPlaces;
 import fr.qgdev.openweather.dialog.AddPlaceDialog;
 
 public class PlacesFragment extends Fragment {
+
+	private static final String TAG = PlacesFragment.class.getSimpleName();
+	private final Logger logger = Logger.getLogger(TAG);
 
 	private Context mContext;
 	private String API_KEY;
@@ -93,7 +98,8 @@ public class PlacesFragment extends Fragment {
 	@SuppressLint("WrongThread")
 	@UiThread
 	public View onCreateView(@NonNull LayoutInflater inflater,
-							 ViewGroup container, Bundle savedInstanceState) {
+							 ViewGroup container,
+							 Bundle savedInstanceState) {
 
 		View root = inflater.inflate(R.layout.fragment_places, container, false);
 
@@ -102,13 +108,20 @@ public class PlacesFragment extends Fragment {
 		FloatingActionButton addPlacesFab = root.findViewById(R.id.add_places);
 
 		//  Initialize places data storage
-		dataPlaces = new DataPlaces(mContext);
+		try {
+			dataPlaces = new DataPlaces(mContext);
+		} catch (Exception e) {
+			showSnackbar(container, mContext.getString(R.string.error_storage_security));
+			logger.log(Level.SEVERE, e.getMessage());
+		}
+
+
 		placeArrayList = new ArrayList<>();
 
 		try {
 			placeArrayList.addAll(dataPlaces.getAllPlacesStored());
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, e.getMessage());
 			placeArrayList.clear();
 		}
 
@@ -139,7 +152,7 @@ public class PlacesFragment extends Fragment {
 					}
 
 				} catch (ArrayIndexOutOfBoundsException e) {
-					e.printStackTrace();
+					logger.log(Level.WARNING, e.getMessage());
 					showSnackbar(container, mContext.getString(R.string.error_place_deletion));
 				}
 			}
@@ -167,7 +180,7 @@ public class PlacesFragment extends Fragment {
 					dataPlaces.movePlace(initialPosition, finalPosition);
 					placeRecyclerViewAdapter.move(initialPosition, finalPosition);
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.log(Level.WARNING, e.getMessage());
 					showSnackbar(container, mContext.getString(R.string.error_place_move));
 				}
 			}
@@ -344,7 +357,7 @@ public class PlacesFragment extends Fragment {
 							showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
 						}
 					} catch (Exception e) {
-						e.printStackTrace();
+						logger.log(Level.WARNING, e.getMessage());
 						showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
 					}
 				}
@@ -417,7 +430,7 @@ public class PlacesFragment extends Fragment {
 				swipeRefreshLayout.setVisibility(View.GONE);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, e.getMessage());
 		}
 
 		return root;

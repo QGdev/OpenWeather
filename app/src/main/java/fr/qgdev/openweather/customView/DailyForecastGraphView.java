@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.qgdev.openweather.FormattingService;
 import fr.qgdev.openweather.R;
@@ -34,6 +36,9 @@ import fr.qgdev.openweather.weather.DailyWeatherForecast;
  * @see ForecastView
  */
 public class DailyForecastGraphView extends ForecastView {
+
+	private static final String TAG = DailyForecastGraphView.class.getSimpleName();
+	private final Logger logger = Logger.getLogger(TAG);
 
 	private final int COLUMN_WIDTH = dpToPx(280);
 	private final int HALF_COLUMN_WIDTH = COLUMN_WIDTH / 2;
@@ -219,7 +224,7 @@ public class DailyForecastGraphView extends ForecastView {
 					dailyWeatherForecastArrayToSelectedAttributeFloatArray(dailyWeatherForecastArrayList, "pop"),
 					this.width, dpToPx(50), tertiaryGraphPaint, primaryGraphPaint, popBarGraphPaint);
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, e.getMessage());
 		}
 	}
 

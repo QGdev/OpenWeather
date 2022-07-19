@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.qgdev.openweather.FormattingService;
 import fr.qgdev.openweather.weather.DailyWeatherForecast;
@@ -34,6 +36,9 @@ import fr.qgdev.openweather.weather.HourlyWeatherForecast;
  * @see ForecastView
  */
 public class HourlyForecastGraphView extends ForecastView {
+
+	private static final String TAG = HourlyForecastGraphView.class.getSimpleName();
+	private final Logger logger = Logger.getLogger(TAG);
 
 	private ArrayList<HourlyWeatherForecast> hourlyWeatherForecastArrayList;
 	private boolean[] isDayTime;
@@ -205,7 +210,7 @@ public class HourlyForecastGraphView extends ForecastView {
 					this.width, dpToPx(40), tertiaryGraphPaint, primaryGraphPaint, popBarGraphPaint);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.WARNING, e.getMessage());
 		}
 	}
 

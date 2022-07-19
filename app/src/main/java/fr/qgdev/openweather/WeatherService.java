@@ -20,6 +20,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.qgdev.openweather.dataplaces.DataPlaces;
 import fr.qgdev.openweather.weather.AirQuality;
@@ -32,8 +34,8 @@ import fr.qgdev.openweather.weather.WeatherAlert;
 public class WeatherService {
 
     private static final String TAG = WeatherService.class.getSimpleName();
+    private final Logger logger = Logger.getLogger(TAG);
 
-    private static final String WEATHER_SERVICE_TAG = "WEATHER_SERVICE";
     private static String apiKey, language;
 
     private final DataPlaces dataPlaces;
@@ -72,8 +74,8 @@ public class WeatherService {
                                     callback.onPlaceFound(place, dataPlaces);
                                 } catch (JSONException e) {
                                     Log.w(TAG, "Place information treatment failed due to a JSONException");
-                                    e.printStackTrace();
                                     callback.onTreatmentError();
+                                    logger.log(Level.WARNING, e.getMessage());
                                 } finally {
                                     callback.onTheEndOfTheRequest();
                                 }
@@ -102,7 +104,7 @@ public class WeatherService {
                                         default:    //  Unknown error
                                             callback.onUnknownError();
                                             Log.w(TAG, "Place information request failed - UNKNOWN ERROR");
-                                            error.printStackTrace();
+                                            logger.log(Level.WARNING, error.getMessage());
                                             break;
                                     }
                                 }
@@ -226,7 +228,7 @@ public class WeatherService {
 
                                 } catch (JSONException e) {
                                     Log.w(TAG, "Weather information treatment failed due to a JSONException");
-                                    e.printStackTrace();
+                                    logger.log(Level.WARNING, e.getMessage());
                                     callback.onTreatmentError(CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
                                     callback.onTheEndOfTheRequest(null, null, CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
                                 }
@@ -255,7 +257,7 @@ public class WeatherService {
                                         default:    //  Unknown error
                                             callback.onUnknownError(CallbackGetData.RequestStatus.WEATHER_REQUEST_FAIL);
                                             Log.w(TAG, "Weather information request failed - UNKNOWN ERROR");
-                                            error.printStackTrace();
+                                            logger.log(Level.WARNING, error.getMessage());
                                             break;
                                     }
                                 }
@@ -297,7 +299,7 @@ public class WeatherService {
                                     callback.onTheEndOfTheRequest(place, dataPlaces, CallbackGetData.RequestStatus.COMPLETE);
                                 } catch (JSONException e) {
                                     Log.w(TAG, "Air quality information treatment failed due to a JSONException");
-                                    e.printStackTrace();
+                                    logger.log(Level.WARNING, e.getMessage());
                                     callback.onTreatmentError(CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
                                     callback.onTheEndOfTheRequest(place, dataPlaces, CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
                                 }
@@ -326,7 +328,7 @@ public class WeatherService {
                                         default:    //  Unknown error
                                             callback.onUnknownError(CallbackGetData.RequestStatus.AIR_QUALITY_REQUEST_FAIL);
                                             Log.w(TAG, "Air quality information request failed - UNKNOWN ERROR");
-                                            error.printStackTrace();
+                                            logger.log(Level.WARNING, error.getMessage());
                                             break;
                                     }
                                 }
@@ -360,7 +362,7 @@ public class WeatherService {
     }
 
     public void cancel() {
-        queue.cancelAll(WEATHER_SERVICE_TAG);
+        queue.cancelAll(TAG);
     }
 
     public interface CallbackGetData {
@@ -385,7 +387,6 @@ public class WeatherService {
             WEATHER_REQUEST_FAIL,
             AIR_QUALITY_REQUEST_FAIL,
             COMPLETE
-
         }
     }
 

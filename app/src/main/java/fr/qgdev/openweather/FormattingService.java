@@ -2,7 +2,8 @@ package fr.qgdev.openweather;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -294,7 +295,7 @@ public class FormattingService {
 				temperatureFormatSpecifierInt = "%d%s°F";
 				temperatureFormatSpecifierFloat = "%.1f%s°F";
 
-				this.temperatureConversion = temperature -> toFahrenheit(temperature);
+				this.temperatureConversion = this::toFahrenheit;
 				break;
 			}
 			default:    //  Default case is using Celsius unit
@@ -302,7 +303,7 @@ public class FormattingService {
 				temperatureFormatSpecifierInt = "%d%s°C";
 				temperatureFormatSpecifierFloat = "%.1f%s°C";
 
-				this.temperatureConversion = temperature -> toCelsius(temperature);
+				this.temperatureConversion = this::toCelsius;
 				break;
 			}
 		}
@@ -371,23 +372,23 @@ public class FormattingService {
 		switch (userPref.getString("pressure_unit", "")) {
 			case "mbar": {
 				pressureFormatSpecifier = "%.0f%smBar";
-				this.pressureConversion = pressure -> toMbar(pressure);
+				this.pressureConversion = this::toMbar;
 				break;
 			}
 			case "psi": {
 				pressureFormatSpecifier = "%.2f%spsi";
-				this.pressureConversion = pressure -> toPsi(pressure);
+				this.pressureConversion = this::toPsi;
 				break;
 			}
 			case "inhg": {
 				pressureFormatSpecifier = "%.2f%sinHg";
-				this.pressureConversion = pressure -> toInhg(pressure);
+				this.pressureConversion = this::toInhg;
 				break;
 			}
 			default:    //  Default case is using pascal unit
 			{
 				pressureFormatSpecifier = "%.0f%shPa";
-				this.pressureConversion = pressure -> toHpa(pressure);
+				this.pressureConversion = this::toHpa;
 				break;
 			}
 		}
@@ -397,12 +398,12 @@ public class FormattingService {
 		//  Direction
 		switch (userPref.getString("direction_unit", "")) {
 			case "angular": {
-				this.directionConversion = direction -> toDegrees(direction);
+				this.directionConversion = this::toDegrees;
 				break;
 			}
 			default:    //  Default case is using cardinal
 			{
-				this.directionConversion = direction -> toCardinal(direction);
+				this.directionConversion = this::toCardinal;
 				break;
 			}
 		}

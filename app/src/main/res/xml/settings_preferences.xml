@@ -1,10 +1,12 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/title_settings_api">
+    <androidx.preference.PreferenceCategory app:title="@string/title_settings_api">
 
-        <EditTextPreference
+        <androidx.preference.EditTextPreference
             app:key="api_key"
             app:title="@string/title_settings_api_key"
+            android:inputType="textVisiblePassword"
             app:useSimpleSummaryProvider="true" />
 
         <!--
@@ -15,10 +17,10 @@
             app:summaryOn="@string/summary_enable_settings_aqi_state"
             app:summaryOff="@string/summary_disable_settings_aqi_state" />
         !-->
-    </PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/title_settings_time">
-        <ListPreference
+    <androidx.preference.PreferenceCategory app:title="@string/title_settings_time">
+        <androidx.preference.ListPreference
             app:defaultValue="@string/default_hourformat"
             app:entries="@array/time_format"
             app:entryValues="@array/time_format_values"
@@ -26,11 +28,11 @@
             app:title="@string/title_settings_hour_format"
             app:useSimpleSummaryProvider="true" />
 
-    </PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/title_settings_units">
+    <androidx.preference.PreferenceCategory app:title="@string/title_settings_units">
 
-        <ListPreference
+        <androidx.preference.ListPreference
             app:entries="@array/temperature_units"
             app:entryValues="@array/temperature_units_values"
             app:key="temperature_unit"
@@ -38,7 +40,7 @@
             app:defaultValue="celsius"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
             app:entries="@array/measure_units"
             app:entryValues="@array/measure_units_values"
             app:key="measure_unit"
@@ -46,7 +48,7 @@
             app:defaultValue="metric"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
             app:entries="@array/pressure_units"
             app:entryValues="@array/pressure_units_values"
             app:key="pressure_unit"
@@ -54,7 +56,7 @@
             app:defaultValue="hpa"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <androidx.preference.ListPreference
             app:defaultValue="cardinal"
             app:entries="@array/wind_direction_units"
             app:entryValues="@array/wind_direction_units_values"
@@ -62,6 +64,6 @@
             app:title="@string/title_settings_units_direction"
             app:useSimpleSummaryProvider="true" />
 
-    </PreferenceCategory>
+    </androidx.preference.PreferenceCategory>
 
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>

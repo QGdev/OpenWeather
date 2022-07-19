@@ -8,9 +8,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.dialog.AboutAppDialog;
@@ -18,23 +19,8 @@ import fr.qgdev.openweather.dialog.AboutAppDialog;
 
 public class SettingsFragment extends Fragment {
 
-    private FragmentManager fragmentManager;
-    private Button aboutUsButton;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-    }
+    private static final String TAG = SettingsFragment.class.getSimpleName();
+    private final Logger logger = Logger.getLogger(TAG);
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -42,21 +28,21 @@ public class SettingsFragment extends Fragment {
 
         super.onCreate(savedInstanceState);
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
-        aboutUsButton = root.findViewById(R.id.about_us);
+        Button aboutUsButton = root.findViewById(R.id.about_us);
 
-        fragmentManager = getChildFragmentManager();
-
-        fragmentManager
-                .beginTransaction()
+        getChildFragmentManager().beginTransaction()
                 .replace(R.id.settings_container, new CustomPreferenceFragment())
                 .commit();
 
-        this.aboutUsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final AboutAppDialog aboutAppDialog = new AboutAppDialog(getContext());
-                aboutAppDialog.show();
+        aboutUsButton.setOnClickListener(v -> {
+            Context context = getContext();
+            if (context == null) {
+                logger.log(Level.SEVERE, "Context is null");
+                return;
             }
+
+            final AboutAppDialog aboutAppDialog = new AboutAppDialog(context);
+            aboutAppDialog.show();
         });
 
         return root;

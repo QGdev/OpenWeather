@@ -18,6 +18,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
@@ -37,6 +39,9 @@ import fr.qgdev.openweather.fragment.places.PlacesFragment;
  * @see Dialog
  */
 public class AddPlaceDialog extends Dialog {
+
+	private static final String TAG = AddPlaceDialog.class.getSimpleName();
+	private final Logger logger = Logger.getLogger(TAG);
 
 	//	Dialog elements
 	private final ConstraintLayout dialogWindow;
@@ -216,10 +221,10 @@ public class AddPlaceDialog extends Dialog {
 						throw new Exception("Commit Error");
 					}
 				} catch (PlaceAlreadyExistException e) {
-					e.printStackTrace();
+					logger.log(Level.WARNING, e.getMessage());
 					cityTextInputLayout.setError(context.getString(R.string.error_place_already_added));
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.log(Level.WARNING, e.getMessage());
 					showSnackbar(dialogWindow, context.getString(R.string.error_cannot_save_place));
 				}
 				enableDialogWindowControls();

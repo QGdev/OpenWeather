@@ -1,20 +1,25 @@
 package fr.qgdev.openweather.dataplaces;
 
-import static android.content.Context.MODE_PRIVATE;
-
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.security.keystore.KeyGenParameterSpec;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKeys;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.qgdev.openweather.Place;
 
@@ -34,6 +39,9 @@ import fr.qgdev.openweather.Place;
  */
 public class DataPlaces implements SharedPreferences {
 
+	private static final String TAG = DataPlaces.class.getSimpleName();
+	private final Logger logger = Logger.getLogger(TAG);
+
 	private final SharedPreferences sharedPreferences;
 	private final String PREFERENCE_FILE_NAME = "places";
 	private final String PREFERENCE_LIST_NAME = "places_list";
@@ -45,11 +53,18 @@ public class DataPlaces implements SharedPreferences {
 	 * Just the constructor of DataPlaces class
 	 * </p>
 	 *
-	 * @param context           Context of the application to initialize SharedPreferences
+	 * @param context Context of the application to initialize SharedPreferences
 	 * @apiNote None of the parameters can be null
 	 */
-	public DataPlaces(@NonNull Context context) {
-		this.sharedPreferences = context.getSharedPreferences(PREFERENCE_FILE_NAME, MODE_PRIVATE);
+	public DataPlaces(@NonNull Context context) throws GeneralSecurityException, IOException {
+		KeyGenParameterSpec keyGenParameterSpec = MasterKeys.AES256_GCM_SPEC;
+		String mainKeyAlias = MasterKeys.getOrCreate(keyGenParameterSpec);
+		this.sharedPreferences = EncryptedSharedPreferences.create(PREFERENCE_FILE_NAME,
+				mainKeyAlias,
+				context.getApplicationContext(),
+				EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+				EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM);
+
 	}
 
 
@@ -266,7 +281,7 @@ public class DataPlaces implements SharedPreferences {
 					returnedData.add(i, placeListJSONArray.getString(i));
 				}
 			} catch (JSONException e) {
-				e.printStackTrace();
+				logger.log(Level.WARNING, e.getMessage());
 			}
 		}
 		return returnedData;
