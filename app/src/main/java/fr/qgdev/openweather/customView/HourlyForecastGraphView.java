@@ -172,7 +172,7 @@ public class HourlyForecastGraphView extends ForecastView {
 		float[] firstCurve, secondCurve;
 
 		this.width = hourlyWeatherForecastArrayList.size() * COLUMN_WIDTH;
-		this.height = dpToPx(850);
+		this.height = dpToPx(820);
 
 		this.hourlyWeatherForecastArrayList = hourlyWeatherForecastArrayList;
 
@@ -413,7 +413,7 @@ public class HourlyForecastGraphView extends ForecastView {
 	 */
 	private void drawWindDirection(@NonNull Canvas canvas, short windDirection, @Px int top, @Px int left, @Px int width) {
 		int middle = width / 2;
-		drawWindDirectionIcon(canvas, windDirection, left + dpToPx(5), top, width - dpToPx(10));
+		drawWindDirectionIcon(canvas, windDirection, left + dpToPx(5), top, width - dpToPx(15));
 
 		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(windDirection), left + middle, top + width + dpToPx(5), this.primaryPaint);
 		canvas.drawText(formattingService.getFormattedDirectionInDegrees(windDirection), left + middle, top + width + dpToPx(25), this.primaryPaint);
@@ -441,9 +441,9 @@ public class HourlyForecastGraphView extends ForecastView {
 		float minValue = curveData[0],
 				maxValue = curveData[0];
 
-		for (int index = 0; index < curveData.length; index++) {
-			if (curveData[index] > maxValue) maxValue = curveData[index];
-			if (curveData[index] < minValue) minValue = curveData[index];
+		for (float curveDatum : curveData) {
+			if (curveDatum > maxValue) maxValue = curveDatum;
+			if (curveDatum < minValue) minValue = curveDatum;
 		}
 
 		//  Find the value to adjust all values so that the minimum is 0
@@ -453,7 +453,7 @@ public class HourlyForecastGraphView extends ForecastView {
 
 		//  Doing Bezier curve calculations for each curve
 		float connectionPointsX, point1_X, point1_Y, point2_Y, point2_X;
-		float columnWidth = width / curveData.length,
+		float columnWidth = width / (float) curveData.length,
 				halfColumnWidth = columnWidth / 2F,
 				//  To avoid curve trimming
 				top = 4,
@@ -555,27 +555,27 @@ public class HourlyForecastGraphView extends ForecastView {
 
 			drawTemperatures(canvas, currentHourlyWeatherForecast, dpToPx(140), halfWidthX);
 			canvas.drawText(String.format("%d%%", currentHourlyWeatherForecast.humidity), halfWidthX, dpToPx(245), this.tertiaryPaint);
-			drawPressure(canvas, currentHourlyWeatherForecast, dpToPx(315), halfWidthX);
+			drawPressure(canvas, currentHourlyWeatherForecast, dpToPx(310), halfWidthX);
 
-			drawUvIndex(canvas, currentHourlyWeatherForecast.uvIndex, drawableX, dpToPx(370), dpToPx(50));
+			drawUvIndex(canvas, currentHourlyWeatherForecast.uvIndex, drawableX, dpToPx(360), dpToPx(50));
 
-			drawDewPoint(canvas, currentHourlyWeatherForecast, dpToPx(445), halfWidthX);
-			canvas.drawText(String.format("%d%%", currentHourlyWeatherForecast.cloudiness), halfWidthX, dpToPx(475), this.primaryPaint);
-			drawVisibility(canvas, currentHourlyWeatherForecast, dpToPx(505), halfWidthX);
+			drawDewPoint(canvas, currentHourlyWeatherForecast, dpToPx(435), halfWidthX);
+			canvas.drawText(String.format("%d%%", currentHourlyWeatherForecast.cloudiness), halfWidthX, dpToPx(465), this.primaryPaint);
+			drawVisibility(canvas, currentHourlyWeatherForecast, dpToPx(495), halfWidthX);
 
-			drawWindSpeed(canvas, currentHourlyWeatherForecast, dpToPx(540), halfWidthX);
-			drawWindDirection(canvas, currentHourlyWeatherForecast.windDirection, dpToPx(625), drawableX, dpToPx(50));
+			drawWindSpeed(canvas, currentHourlyWeatherForecast, dpToPx(530), halfWidthX);
+			drawWindDirection(canvas, currentHourlyWeatherForecast.windDirection, dpToPx(620), drawableX, dpToPx(50));
 
-			drawPrecipitations(canvas, currentHourlyWeatherForecast, dpToPx(725), halfWidthX);
+			drawPrecipitations(canvas, currentHourlyWeatherForecast, dpToPx(720), halfWidthX);
 
 			halfWidthX += COLUMN_WIDTH;
 			drawableX += COLUMN_WIDTH;
 		}
 
 		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(175), null);
-		canvas.drawBitmap(this.humidityGraph, 0, dpToPx(260), null);
-		canvas.drawBitmap(this.pressureGraph, 0, dpToPx(330), null);
-		canvas.drawBitmap(this.windSpeedsGraph, 0, dpToPx(575), null);
-		canvas.drawBitmap(this.precipitationsGraph, 0, dpToPx(785), null);
+		canvas.drawBitmap(this.humidityGraph, 0, dpToPx(255), null);
+		canvas.drawBitmap(this.pressureGraph, 0, dpToPx(320), null);
+		canvas.drawBitmap(this.windSpeedsGraph, 0, dpToPx(565), null);
+		canvas.drawBitmap(this.precipitationsGraph, 0, dpToPx(780), null);
 	}
 }

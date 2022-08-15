@@ -198,7 +198,7 @@ public class DailyForecastGraphView extends ForecastView {
 	public void initialization(@NonNull ArrayList<DailyWeatherForecast> dailyWeatherForecastArrayList, @NonNull TimeZone timeZone, @NonNull FormattingService unitsFormattingService) {
 
 		this.width = dailyWeatherForecastArrayList.size() * COLUMN_WIDTH;
-		this.height = dpToPx(750);
+		this.height = dpToPx(710);
 
 		this.dailyWeatherForecastArrayList = dailyWeatherForecastArrayList;
 		this.timeZone = timeZone;
@@ -572,7 +572,7 @@ public class DailyForecastGraphView extends ForecastView {
 		int firstColumn = left + dpToPx(20),
 				secondColumn = firstColumn + HALF_COLUMN_WIDTH,
 				textY = top + dpToPx(30),
-				textY2 = textY + dpToPx(50),
+				textY2 = textY + dpToPx(40),
 				textY3 = textY2 + dpToPx(20);
 
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.windsock_material), formattingService.getFloatFormattedSpeed(dailyWeatherForecast.windSpeed, true), textY, firstColumn, dpToPx(5), this.primaryPaint);
@@ -581,7 +581,7 @@ public class DailyForecastGraphView extends ForecastView {
 		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(dailyWeatherForecast.windDirection), left + QUARTER_COLUMN_WIDTH, textY2, this.primaryPaint);
 		canvas.drawText(formattingService.getFormattedDirectionInDegrees(dailyWeatherForecast.windDirection), left + QUARTER_COLUMN_WIDTH, textY3, this.primaryPaint);
 
-		drawWindDirectionIcon(canvas, dailyWeatherForecast.windDirection, left + HALF_COLUMN_WIDTH + QUARTER_COLUMN_WIDTH - dpToPx(20), textY + dpToPx(30), dpToPx(40));
+		drawWindDirectionIcon(canvas, dailyWeatherForecast.windDirection, left + HALF_COLUMN_WIDTH + QUARTER_COLUMN_WIDTH - dpToPx(20), textY + dpToPx(30), dpToPx(35));
 	}
 
 
@@ -632,9 +632,9 @@ public class DailyForecastGraphView extends ForecastView {
 			drawTemperatures(canvas, dailyWeatherForecast, dpToPx(210), leftOfColumn);
 
 			drawEnvironmentalVariables(canvas, dailyWeatherForecast, dpToPx(250), leftOfColumn, this.primaryPaint);
-			drawWindVariables(canvas, dailyWeatherForecast, dpToPx(500), leftOfColumn);
+			drawWindVariables(canvas, dailyWeatherForecast, dpToPx(485), leftOfColumn);
 
-			drawPrecipitationsVariables(canvas, dailyWeatherForecast, dpToPx(685), leftOfColumn);
+			drawPrecipitationsVariables(canvas, dailyWeatherForecast, dpToPx(650), leftOfColumn);
 
 			leftOfColumn += COLUMN_WIDTH;
 			sixthOfColumnWidth += COLUMN_WIDTH;
@@ -643,7 +643,7 @@ public class DailyForecastGraphView extends ForecastView {
 		}
 
 		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(140), null);
-		canvas.drawBitmap(this.windSpeedsGraph, 0, dpToPx(475), null);
-		canvas.drawBitmap(this.precipitationsGraph, 0, dpToPx(625), null);
+		canvas.drawBitmap(this.windSpeedsGraph, 0, dpToPx(460), null);
+		canvas.drawBitmap(this.precipitationsGraph, 0, dpToPx(590), null);
 	}
 }

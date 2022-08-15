@@ -176,7 +176,7 @@ public abstract class ForecastView extends View {
 
 		//  Doing Bezier curve calculations for each curves
 		float connectionPointsX, point1_X, point1_Y, point2_Y, point1_Y_2, point2_X, point2_Y_2;
-		float columnWidth = width / firstCurveData.length,
+		float columnWidth = width / (float) firstCurveData.length,
 				halfColumnWidth = columnWidth / 2F,
 				//  To avoid curve trimming
 				top = 4,
@@ -291,7 +291,7 @@ public abstract class ForecastView extends View {
 
 		//  Doing Bezier curve calculations for each curves
 		float connectionPointsX, point1_X, point1_Y, point2_Y, point1_Y_2, point2_X, point2_Y_2;
-		float columnWidth = width / rainData.length,
+		float columnWidth = width / (float) rainData.length,
 				halfColumnWidth = columnWidth / 2F,
 				halfPopBarWidth = columnWidth / 6F,
 				//  To avoid curve trimming
@@ -604,6 +604,7 @@ public abstract class ForecastView extends View {
 	 * @param sideLength Length side of the drawn UV index icon
 	 */
 	protected void drawUvIndex(@NonNull Canvas canvas, @Px int uvIndex, @Px int x, @Px int y, @Px int sideLength) {
+		//uvIndex = 13;		//	ONLY FOR LAYOUT TEST PURPOSES
 		int middle = sideLength / 2,
 				circleRadius = middle / 2 - 3;
 

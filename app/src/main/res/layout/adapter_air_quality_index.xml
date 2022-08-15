@@ -147,6 +147,7 @@
                         android:layout_marginEnd="10dp"
                         android:gravity="center"
                         android:text="CO"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
 
                     <TextView
@@ -154,6 +155,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="201.941"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -167,6 +169,7 @@
                         android:layout_marginEnd="10dp"
                         android:gravity="center"
                         android:text="NO"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
 
                     <TextView
@@ -174,6 +177,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0.019"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -187,6 +191,7 @@
                         android:layout_marginEnd="10dp"
                         android:gravity="center"
                         android:text="NO₂"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
 
                     <TextView
@@ -194,6 +199,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0.771"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -207,6 +213,7 @@
                         android:layout_marginEnd="10dp"
                         android:gravity="center"
                         android:text="O₃"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
 
                     <TextView
@@ -214,6 +221,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="68.665"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -227,6 +235,7 @@
                         android:layout_marginEnd="10dp"
                         android:gravity="center"
                         android:text="SO₂"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
 
                     <TextView
@@ -234,6 +243,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0.641"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -247,6 +257,7 @@
                         android:layout_marginEnd="10dp"
                         android:gravity="center"
                         android:text="NH₃"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
 
                     <TextView
@@ -254,6 +265,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0.5"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -267,6 +279,7 @@
                         android:layout_marginEnd="10dp"
                         android:gravity="center"
                         android:text="PM₂.₅"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
 
                     <TextView
@@ -274,6 +287,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0.54"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
                 </LinearLayout>
 
@@ -287,6 +301,7 @@
                         android:layout_marginEnd="10dp"
                         android:gravity="center"
                         android:text="PM₁₀"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
 
                     <TextView
@@ -294,6 +309,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0.124"
+                        android:textColor="@color/colorSecondaryText"
                         android:textSize="18sp" />
                 </LinearLayout>
 
