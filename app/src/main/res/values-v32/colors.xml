@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@android:color/system_accent1_300</color>
+    <color name="colorPrimaryDark">@android:color/system_accent1_800</color>
+    <color name="colorSecondary">@android:color/system_accent2_300</color>
+    <color name="colorAccent">@android:color/system_accent1_200</color>
+
+    <color name="colorRedError">#E01C15</color>
+
+    <color name="colorUvLow">#089718</color>
+    <color name="colorUvModerate">#FFDC01</color>
+    <color name="colorUvHigh">#FF9400</color>
+    <color name="colorUvVeryHigh">#FF0007</color>
+    <color name="colorUvExtreme">#FF007C</color>
+
+    <color name="colorMoonLight">#FDBF00</color>
+    <color name="colorMoonShadow">#416675</color>
+
+</resources>

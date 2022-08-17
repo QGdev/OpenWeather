@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingDefaultResource">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingDefaultResource">
 
-    <color name="colorPrimaryDark">@color/colorBlack</color>
+    <color name="colorFirstText">#FFFFFF</color>
+    <color name="colorSecondaryText">#E1E1E1</color>
+    <color name="colorTertiaryText">#E0E0E2</color>
 
-    <color name="colorFirstText">@color/colorWhite</color>
-    <color name="colorSecondaryText">@color/colorWhiteGrey</color>
-    <color name="colorTertiaryText">@color/colorWhiteGrey1</color>
+    <color name="colorIcons">#E1E1E1</color>
 
-    <color name="colorIcons">@color/colorWhiteGrey</color>
+    <!-- Only used for custom views like Forecasts to make custom drawings!-->
+    <color name="colorPrimaryPaint">#FFFFFF</color>
+    <color name="colorSecondaryPaint">@color/colorAccent</color>
+    <color name="colorTertiaryPaint">#5DA3EA</color>
+    <color name="colorPrimaryGraphPaint">#FFFFFF</color>
+    <color name="colorSecondaryGraphPaint">@color/colorAccent</color>
+    <color name="colorTertiaryGraphPaint">#5DA3EA</color>
 
-    <color name="colorBackground">@color/colorBlack</color>
-    <color name="colorBackgroundTiles">@color/colorBlackGrey</color>
+    <color name="colorBackground">@android:color/background_dark</color>
+    <color name="colorBackgroundTiles">#222725</color>
 
 </resources>

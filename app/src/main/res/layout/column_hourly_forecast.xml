@@ -37,15 +37,15 @@
         android:layout_marginTop="5dp"
         android:src="@drawable/temperature_feels_like_material"
         android:tooltipText="@string/icon_legend_feel_like_temperature"
-        app:tint="@color/colorAccent" />
+        app:tint="@color/colorSecondaryGraphPaint" />
 
     <ImageView
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginTop="60dp"
-        app:tint="@color/colorIcons"
         android:src="@drawable/humidity_material"
-        android:tooltipText="@string/icon_legend_humidity" />
+        android:tooltipText="@string/icon_legend_humidity"
+        app:tint="@color/colorTertiaryGraphPaint" />
 
     <ImageView
         android:layout_width="20dp"
@@ -101,7 +101,7 @@
         android:layout_marginTop="5dp"
         android:src="@drawable/wind_material"
         android:tooltipText="@string/icon_legend_wind_gust_speed"
-        app:tint="@color/colorAccent" />
+        app:tint="@color/colorSecondaryGraphPaint" />
 
     <ImageView
         android:layout_width="20dp"
@@ -117,7 +117,7 @@
         android:layout_marginTop="55dp"
         android:src="@drawable/rain_material"
         android:tooltipText="@string/icon_legend_rain"
-        app:tint="@color/colorLightBlue" />
+        app:tint="@color/colorTertiaryGraphPaint" />
 
     <ImageView
         android:layout_width="20dp"
@@ -133,6 +133,6 @@
         android:layout_marginTop="5dp"
         android:src="@drawable/umbrella_material"
         android:tooltipText="@string/icon_legend_pop"
-        app:tint="@color/colorAccent" />
+        app:tint="@color/colorSecondaryGraphPaint" />
 
 </LinearLayout>

@@ -717,55 +717,55 @@ public abstract class ForecastView extends View {
 		this.iconsPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.sunIconPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-		this.datePaint.setColor(getResources().getColor(R.color.colorFirstText, null));
+		this.datePaint.setColor(getResources().getColor(R.color.colorPrimaryPaint, null));
 		this.datePaint.setAlpha(255);
 		this.datePaint.setTextSize(spToPx(19));
 		this.datePaint.setStrokeWidth(0.65F);
 		this.datePaint.setTextAlign(Paint.Align.LEFT);
 
-		this.structurePaint.setColor(getResources().getColor(R.color.colorFirstText, null));
+		this.structurePaint.setColor(getResources().getColor(R.color.colorPrimaryPaint, null));
 		this.structurePaint.setAlpha(255);
 		this.structurePaint.setTextSize(spToPx(16));
 		this.structurePaint.setStrokeWidth(0.55F);
 		this.structurePaint.setTextAlign(Paint.Align.CENTER);
 
-		this.primaryPaint.setColor(getResources().getColor(R.color.colorFirstText, null));
+		this.primaryPaint.setColor(getResources().getColor(R.color.colorPrimaryPaint, null));
 		this.primaryPaint.setStrokeWidth(2);
 		this.primaryPaint.setAlpha(255);
 		this.primaryPaint.setTextSize(spToPx(16));
 		this.primaryPaint.setTextAlign(Paint.Align.CENTER);
 
-		this.secondaryPaint.setColor(getResources().getColor(R.color.colorAccent, null));
+		this.secondaryPaint.setColor(getResources().getColor(R.color.colorSecondaryPaint, null));
 		this.secondaryPaint.setStrokeWidth(2);
 		this.secondaryPaint.setAlpha(255);
 		this.secondaryPaint.setTextSize(spToPx(16));
 		this.secondaryPaint.setTextAlign(Paint.Align.CENTER);
 
-		this.tertiaryPaint.setColor(getResources().getColor(R.color.colorLightBlue, null));
+		this.tertiaryPaint.setColor(getResources().getColor(R.color.colorTertiaryPaint, null));
 		this.tertiaryPaint.setStrokeWidth(2);
 		this.tertiaryPaint.setAlpha(255);
 		this.tertiaryPaint.setTextSize(spToPx(16));
 		this.tertiaryPaint.setTextAlign(Paint.Align.CENTER);
 
-		this.primaryGraphPaint.setColor(getResources().getColor(R.color.colorFirstText, null));
+		this.primaryGraphPaint.setColor(getResources().getColor(R.color.colorPrimaryGraphPaint, null));
 		this.primaryGraphPaint.setStrokeWidth(5);
 		this.primaryGraphPaint.setAlpha(155);
 		this.primaryGraphPaint.setPathEffect(null);
 		this.primaryGraphPaint.setStyle(Paint.Style.STROKE);
 
-		this.secondaryGraphPaint.setColor(getResources().getColor(R.color.colorAccent, null));
+		this.secondaryGraphPaint.setColor(getResources().getColor(R.color.colorSecondaryGraphPaint, null));
 		this.secondaryGraphPaint.setStrokeWidth(5);
 		this.secondaryGraphPaint.setAlpha(155);
 		this.secondaryGraphPaint.setPathEffect(new DashPathEffect(new float[]{10, 5}, 0));
 		this.secondaryGraphPaint.setStyle(Paint.Style.STROKE);
 
-		this.tertiaryGraphPaint.setColor(getResources().getColor(R.color.colorLightBlue, null));
+		this.tertiaryGraphPaint.setColor(getResources().getColor(R.color.colorTertiaryGraphPaint, null));
 		this.tertiaryGraphPaint.setStrokeWidth(5);
 		this.tertiaryGraphPaint.setAlpha(155);
 		this.tertiaryGraphPaint.setPathEffect(null);
 		this.tertiaryGraphPaint.setStyle(Paint.Style.STROKE);
 
-		this.popBarGraphPaint.setColor(getResources().getColor(R.color.colorAccent, null));
+		this.popBarGraphPaint.setColor(getResources().getColor(R.color.colorSecondaryGraphPaint, null));
 		this.popBarGraphPaint.setStrokeWidth(5);
 		this.popBarGraphPaint.setAlpha(155);
 		this.popBarGraphPaint.setPathEffect(null);
@@ -778,7 +778,7 @@ public abstract class ForecastView extends View {
 		this.iconsPaint.setStyle(Paint.Style.STROKE);
 
 		this.sunIconPaint.setColor(getResources().getColor(R.color.colorUvExtreme, null));
-		this.sunIconPaint.setStrokeWidth(3);
+		this.sunIconPaint.setStrokeWidth(2.5F);
 		this.sunIconPaint.setAlpha(255);
 		this.sunIconPaint.setTextSize(spToPx(15));
 		this.sunIconPaint.setPathEffect(null);
