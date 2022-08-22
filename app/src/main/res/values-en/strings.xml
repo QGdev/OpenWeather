@@ -45,7 +45,7 @@
 	<string name="title_dialog_add_place_textinput_city">City</string>
 	<string name="title_dialog_add_place_spinner_country">Country</string>
 	<string name="dialog_add_place_add_button_text">Add</string>
-	<string name="error_no_api_key_registered">No API key found</string>
+	<string name="error_no_api_key_registered_short">No API key found</string>
 	<string name="error_server_unreachable">Cannot reach OMW servers, verify your connection and try again</string>
 	<string name="error_place_not_found">Place not found</string>
 	<string name="error_wrong_api_key">OpenWeatherMaps didn\'t recognize your API key</string>
@@ -146,5 +146,7 @@
 	<string name="error_place_move">An error occurred while moving place</string>
 	<string name="about_application_section_title">About this app</string>
 	<string name="about_application_section_content">This application and its source code have been placed under the GPL-3.0 license.\nThis does not include the OpenWeatherMap API or data, or even the FreePik graphics resources, which are licensed separately.</string>
-    <string name="error_storage_security">An error occurred while initializing the storage</string>
+	<string name="error_storage_security">An error occurred while initializing the storage</string>
+	<string name="error_no_api_key_registered">API key isn\'t registered, please go into settings and register one</string>
+	<string name="error_api_key_incorrectly_formed">The registered API key must have 32 alphanumerical characters</string>
 </resources>

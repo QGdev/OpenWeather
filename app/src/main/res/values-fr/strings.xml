@@ -42,7 +42,7 @@
 	<string name="title_dialog_add_place_textinput_city">Ville</string>
 	<string name="title_dialog_add_place_spinner_country">Pays</string>
 	<string name="dialog_add_place_add_button_text">Ajouter</string>
-	<string name="error_no_api_key_registered">Aucune clé API trouvée</string>
+	<string name="error_no_api_key_registered_short">Aucune clé API trouvée</string>
 	<string name="error_too_many_request_in_a_day">Impossible d\'obtenir des données météorologiques, trop de demandes aujourd\'hui</string>
 	<string name="error_wrong_api_key">OpenWeatherMaps n\'a pas reconnu votre clé API</string>
 	<string name="error_server_unreachable">Impossible d\'atteindre les serveurs OMW , vérifiez votre connexion et réessayez</string>
@@ -137,14 +137,16 @@
 	<string name="summary_enable_settings_aqi_state">La qualité de l\'air sera recherchée et affichée</string>
 	<string name="summary_disable_settings_aqi_state">La qualité de l\'air sera ignorée</string>
 	<string name="title_air_quality">Qualité de l\'air</string>
-	<string name="air_quality_1">Bon</string>
-	<string name="air_quality_concentrations_title">Composition (en µg/m³) :</string>
-	<string name="air_quality_2">Modérée</string>
-	<string name="air_quality_5">Très Mauvais</string>
-	<string name="air_quality_4">Mauvais</string>
-	<string name="air_quality_3">Mauvais (sensible)</string>
-	<string name="error_place_move">Une erreur est survenue lors du déplacement</string>
-	<string name="about_application_section_title">À propos de l\'application</string>
-	<string name="about_application_section_content">Cette application et son code source ont été placés sous la licence GPL-3.\nCela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
+    <string name="air_quality_1">Bon</string>
+    <string name="air_quality_concentrations_title">Composition (en µg/m³) :</string>
+    <string name="air_quality_2">Modérée</string>
+    <string name="air_quality_5">Très Mauvais</string>
+    <string name="air_quality_4">Mauvais</string>
+    <string name="air_quality_3">Mauvais (sensible)</string>
+    <string name="error_place_move">Une erreur est survenue lors du déplacement</string>
+    <string name="about_application_section_title">À propos de l\'application</string>
+    <string name="about_application_section_content">Cette application et son code source ont été placés sous la licence GPL-3.\nCela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
     <string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
+    <string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
+    <string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
 </resources>

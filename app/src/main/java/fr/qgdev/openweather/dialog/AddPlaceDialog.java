@@ -252,7 +252,7 @@ public class AddPlaceDialog extends Dialog {
 					//  No API key is registered
 					else if (apiKey == null || apiKey.length() != 32) {
 						dismiss();
-						Snackbar.make(dialogWindow, context.getString(R.string.error_no_api_key_registered), Snackbar.LENGTH_SHORT)
+						Snackbar.make(dialogWindow, context.getString(R.string.error_no_api_key_registered_short), Snackbar.LENGTH_SHORT)
 								.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
 								.show();
 						enableDialogWindowControls();

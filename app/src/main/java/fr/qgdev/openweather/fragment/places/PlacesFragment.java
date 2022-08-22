@@ -49,7 +49,7 @@ public class PlacesFragment extends Fragment {
 	private Context mContext;
 	private String API_KEY;
 
-	private TextView noPlacesRegisteredTextView;
+	private TextView informationTextView;
 	private SwipeRefreshLayout swipeRefreshLayout;
 	private RecyclerView placeRecyclerView;
 	private PlaceRecyclerViewAdapter placeRecyclerViewAdapter;
@@ -103,8 +103,8 @@ public class PlacesFragment extends Fragment {
 
 		View root = inflater.inflate(R.layout.fragment_places, container, false);
 
-		noPlacesRegisteredTextView = root.findViewById(R.id.no_places_registered);
-		swipeRefreshLayout = root.findViewById(R.id.swiperefresh);
+		informationTextView = root.findViewById(R.id.information_textview);
+		swipeRefreshLayout = root.findViewById(R.id.swipe_refresh);
 		FloatingActionButton addPlacesFab = root.findViewById(R.id.add_places);
 
 		//  Initialize places data storage
@@ -147,7 +147,8 @@ public class PlacesFragment extends Fragment {
 					placeRecyclerViewAdapter.remove(position);
 
 					if (placeArrayList.isEmpty()) {
-						noPlacesRegisteredTextView.setVisibility(View.VISIBLE);
+						informationTextView.setText(R.string.error_no_places_registered);
+						informationTextView.setVisibility(View.VISIBLE);
 						swipeRefreshLayout.setVisibility(View.GONE);
 					}
 
@@ -160,7 +161,7 @@ public class PlacesFragment extends Fragment {
 			@Override
 			public void onAddingPlace(Place place) {
 				if (placeArrayList.isEmpty()) {
-					noPlacesRegisteredTextView.setVisibility(View.GONE);
+					informationTextView.setVisibility(View.GONE);
 					swipeRefreshLayout.setVisibility(View.VISIBLE);
 				}
 
@@ -298,9 +299,26 @@ public class PlacesFragment extends Fragment {
 		SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(mContext);
 		API_KEY = apiKeyPref.getString("api_key", null);
 
-		if (API_KEY != null) {
-			//  Initialize Weather Services and callbacks
-			weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), dataPlaces);
+		//	API key verification
+		if (API_KEY != null && !Objects.equals(API_KEY, "")) {
+			//	Must have 32 alphanumerical characters
+			if (API_KEY.length() != 32) {
+				//  Hide the Floating Action Button to add Places
+				//	And show error to user
+				informationTextView.setText(R.string.error_api_key_incorrectly_formed);
+				informationTextView.setVisibility(View.VISIBLE);
+				addPlacesFab.setVisibility(View.GONE);
+			} else {
+				//  Initialize Weather Services and callbacks
+				weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), dataPlaces);
+				//  Show the Floating Action Button to add Places
+				addPlacesFab.setVisibility(View.VISIBLE);
+			}
+		} else {
+			//  Hide the Floating Action Button to add Places
+			informationTextView.setText(R.string.error_no_api_key_registered);
+			informationTextView.setVisibility(View.VISIBLE);
+			addPlacesFab.setVisibility(View.GONE);
 		}
 
 		//  acquire data of the places callback
@@ -348,8 +366,8 @@ public class PlacesFragment extends Fragment {
 						if (dataPlaces.updatePlace(place)) {
 							interactions.onPlaceUpdate(dataPlaces, dataPlaces.getPlacePositionInRegister(place), place);
 
-							if (noPlacesRegisteredTextView.getVisibility() == View.VISIBLE) {
-								noPlacesRegisteredTextView.setVisibility(View.GONE);
+							if (informationTextView.getVisibility() == View.VISIBLE) {
+								informationTextView.setVisibility(View.GONE);
 								swipeRefreshLayout.setVisibility(View.VISIBLE);
 							}
 
@@ -375,17 +393,6 @@ public class PlacesFragment extends Fragment {
 		//
 		//  Initialize buttons and actions behavior
 
-
-		//  No API key registered
-		if (API_KEY == null || API_KEY.length() != 32) {
-			//  Hide the Floating Action Button to add Places
-			addPlacesFab.setVisibility(View.GONE);
-		} else {
-			//  Show the Floating Action Button to add Places
-			addPlacesFab.setVisibility(View.VISIBLE);
-		}
-
-
 		//  A simple click to add a place
 		addPlacesFab.setOnClickListener(
 				placeFabView -> {
@@ -409,7 +416,7 @@ public class PlacesFragment extends Fragment {
 						}
 					} else {
 						swipeRefreshLayout.setRefreshing(false);
-						showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered));
+						showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered_short));
 					}
 				}
 		);
@@ -417,17 +424,17 @@ public class PlacesFragment extends Fragment {
 
 		//	Initialisation the UI part and refreshing data of each places
 		try {
-			if (!placeArrayList.isEmpty()) {
-				noPlacesRegisteredTextView.setVisibility(View.GONE);
+			if (placeArrayList.isEmpty()) {
+				informationTextView.setText(R.string.error_no_places_registered);
+				informationTextView.setVisibility(View.VISIBLE);
+				swipeRefreshLayout.setVisibility(View.GONE);
+			} else {
+				informationTextView.setVisibility(View.GONE);
 				swipeRefreshLayout.setVisibility(View.VISIBLE);
 
 				for (Place place : placeArrayList) {
 					weatherService.getWeatherDataOWM(place, dataPlaces, getDataPlaceListCallback);
 				}
-
-			} else {
-				noPlacesRegisteredTextView.setVisibility(View.VISIBLE);
-				swipeRefreshLayout.setVisibility(View.GONE);
 			}
 		} catch (Exception e) {
 			logger.log(Level.WARNING, e.getMessage());
