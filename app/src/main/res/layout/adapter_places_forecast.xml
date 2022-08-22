@@ -84,6 +84,7 @@
             <include layout="@layout/column_hourly_forecast" />
 
             <HorizontalScrollView
+                android:id="@+id/hourly_forecast_scroll_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hapticFeedbackEnabled="true"
@@ -146,6 +147,7 @@
             android:visibility="gone">
 
             <HorizontalScrollView
+                android:id="@+id/daily_forecast_scroll_view"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:nestedScrollingEnabled="true"

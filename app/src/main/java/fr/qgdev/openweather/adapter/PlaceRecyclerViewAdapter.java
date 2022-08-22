@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -661,6 +662,10 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		holder.hourlyForecastGraphView.initialization(currentPlace.getHourlyWeatherForecastArrayList(), currentPlace.getDailyWeatherForecastArrayList(), formattingService, currentPlace.getTimeZone());
 		holder.dailyForecastGraphView.initialization(currentPlace.getDailyWeatherForecastArrayList(), currentPlace.getTimeZone(), formattingService);
 
+		holder.hourlyForecastScrollview.scrollTo(0, 0);
+		holder.dailyForecastScrollview.scrollTo(0, 0);
+
+
 		holder.lastUpdateAvailableTextView.setText(String.format("%s %s", formattingService.getFormattedFullTimeHour(new Date(currentWeather.dt), currentPlace.getTimeZone()), currentPlace.getTimeZoneStringForm()));
 	}
 
@@ -782,14 +787,14 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		public LinearLayout forecastInformationsLayout;
 
 		public LinearLayout hourlyForecastLayout;
-		//public LinearLayout hourlyForecastScrollview;
+		public HorizontalScrollView hourlyForecastScrollview;
 		public LinearLayout hourlyForecast;
 		public ImageView hourlyForecastExpandIcon;
 
 		public HourlyForecastGraphView hourlyForecastGraphView;
 
 		public LinearLayout dailyForecastLayout;
-		//public LinearLayout dailyForecastScrollview;
+		public HorizontalScrollView dailyForecastScrollview;
 		public LinearLayout dailyForecast;
 
 		public DailyForecastGraphView dailyForecastGraphView;
@@ -853,11 +858,13 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			this.forecastInformationsLayout = itemView.findViewById(R.id.forecast);
 
 			this.hourlyForecastLayout = itemView.findViewById(R.id.hourly_forecast);
+			this.hourlyForecastScrollview = itemView.findViewById(R.id.hourly_forecast_scroll_view);
 			this.hourlyForecast = itemView.findViewById(R.id.hourly_forecast_layout);
 			this.hourlyForecastExpandIcon = itemView.findViewById(R.id.hourly_forecast_expand_icon);
 			this.hourlyForecastGraphView = itemView.findViewById(R.id.hourly_graphview);
 
 			this.dailyForecastLayout = itemView.findViewById(R.id.daily_forecast);
+			this.dailyForecastScrollview = itemView.findViewById(R.id.daily_forecast_scroll_view);
 			this.dailyForecast = itemView.findViewById(R.id.daily_forecast_layout);
 			this.dailyForecastExpandIcon = itemView.findViewById(R.id.daily_forecast_expand_icon);
 			this.dailyForecastGraphView = itemView.findViewById(R.id.daily_forecast_graphView);
