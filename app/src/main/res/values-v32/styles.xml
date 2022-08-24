@@ -1,69 +1,38 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="MaterialTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="MaterialTheme" parent="Theme.Material3.DynamicColors.DayNight">
         <!-- Customize your theme here. -->
-
+        <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
 
-        <item name="android:dialogTheme">@style/MaterialThemeDialog</item>
-        <item name="floatingActionButtonStyle">@style/MaterialThemeFloatingActionButton</item>
+        <item name="android:dialogTheme">@style/MaterialTheme.Dialog</item>
+        <item name="floatingActionButtonStyle">
+            @style/Widget.Material3.FloatingActionButton.Primary
+        </item>
         <item name="extendedFloatingActionButtonStyle">
-            @style/MaterialThemeExtendedFloatingActionButton
+            @style/Widget.Material3.ExtendedFloatingActionButton.Primary
         </item>
-        <item name="snackbarStyle">@style/MaterialThemeSnackBar</item>
-
-        <item name="shapeAppearanceSmallComponent">
-            @style/ShapeAppearance.MaterialTheme.SmallComponent
+        <item name="snackbarStyle">@style/MaterialTheme.SnackBar</item>
+        <item name="bottomNavigationStyle">@style/Widget.Material3.BottomNavigationView</item>
+        <item name="materialCardViewStyle">@style/Widget.Material3.CardView.Elevated</item>
+        <item name="android:editTextStyle">@style/Widget.Material3.TextInputEditText.OutlinedBox
         </item>
-        <item name="shapeAppearanceMediumComponent">
-            @style/ShapeAppearance.MaterialTheme.MediumComponent
-        </item>
-        <item name="shapeAppearanceLargeComponent">
-            @style/ShapeAppearance.MaterialTheme.LargeComponent
-        </item>
-
-
     </style>
 
-    <style name="MaterialThemeSnackBar" parent="MaterialTheme.SnackBar">
+    <style name="MaterialTheme.SnackBar" parent="ThemeOverlay.Material3.Snackbar">
         <item name="android:layout_margin">20dp</item>
+        <item name="android:layout_marginBottom">40dp</item>
     </style>
 
-
-    <style name="MaterialThemeFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
-        <item name="backgroundTint">@color/colorPrimary</item>
+    <style name="MaterialTheme.Dialog" parent="ThemeOverlay.Material3.Dialog">
+        <item name="shapeAppearance">@style/ShapeAppearance.MaterialTheme.SmallComponent</item>
     </style>
 
-    <style name="MaterialThemeExtendedFloatingActionButton" parent="Widget.MaterialComponents.ExtendedFloatingActionButton">
-        <item name="backgroundTint">@color/colorPrimary</item>
-    </style>
-
-    <style name="MaterialThemeDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="ShapeAppearance.MaterialTheme.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+    <style name="ShapeAppearance.MaterialTheme.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">15dp</item>
+        <item name="cornerSize">20dp</item>
     </style>
-
-    <style name="ShapeAppearance.MaterialTheme.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">15dp</item>
-    </style>
-
-    <style name="ShapeAppearance.MaterialTheme.LargeComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">40dp</item>
-    </style>
-
-    <style name="MaterialTheme.SnackBar" parent="Widget.MaterialComponents.Snackbar">
-        <item name="maxLines">6</item>
-        <item name="android:ellipsize">none</item>
-    </style>
-
 
 </resources>

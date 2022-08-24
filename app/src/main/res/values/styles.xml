@@ -13,6 +13,8 @@
 			@style/MaterialThemeExtendedFloatingActionButton
 		</item>
 		<item name="snackbarStyle">@style/MaterialThemeSnackBar</item>
+		<item name="bottomNavigationStyle">@style/Widget.MaterialComponents.BottomNavigationView
+		</item>
 
 		<item name="shapeAppearanceSmallComponent">
 			@style/ShapeAppearance.MaterialTheme.SmallComponent
@@ -23,14 +25,11 @@
 		<item name="shapeAppearanceLargeComponent">
 			@style/ShapeAppearance.MaterialTheme.LargeComponent
 		</item>
-
-
 	</style>
 
 	<style name="MaterialThemeSnackBar" parent="MaterialTheme.SnackBar">
 		<item name="android:layout_margin">20dp</item>
 	</style>
-
 
 	<style name="MaterialThemeFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
 		<item name="backgroundTint">@color/colorPrimary</item>

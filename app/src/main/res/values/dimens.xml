@@ -8,7 +8,7 @@
 
 
 	<dimen name="dialog_max_width">250dp</dimen>
-	<dimen name="floating_action_button_margin">40dp</dimen>
+	<dimen name="floating_action_button_margin">16dp</dimen>
 	<dimen name="recycler_view_bottom_padding">70dp</dimen>
 
 </resources>
