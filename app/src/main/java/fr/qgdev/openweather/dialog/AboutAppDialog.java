@@ -2,7 +2,10 @@ package fr.qgdev.openweather.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +49,7 @@ public class AboutAppDialog extends Dialog {
 		TextView versionTextView = findViewById(R.id.application_version);
 		LinearLayout attributionLinearLayout = findViewById(R.id.attribution_section);
 		Button exitButton = findViewById(R.id.exit_button);
+		ImageView devLogoImageView = findViewById(R.id.dev_logo);
 
 		//  Get string arrays stored in XML resources files
 		List<String> attributionTitleList = Arrays.asList(context.getResources().getStringArray(R.array.attribution_title));
@@ -58,16 +62,25 @@ public class AboutAppDialog extends Dialog {
 
 		//  Show application characteristics
 		versionTextView.setText(String.format("%s - %d", versionName, versionCode));
-		versionTextView.setOnLongClickListener(v -> {
-			Toast.makeText(context, versionType, Toast.LENGTH_LONG).show();
-			return false;
-		});
 
 		//  Fill attribution section
 		AttributionItemAdapter attributionItemAdapter = new AttributionItemAdapter(context, attributionTitleList, attributionContentList);
 		for (int index = 0; index < attributionTitleList.size(); index++) {
 			attributionLinearLayout.addView(attributionItemAdapter.getView(index, null, null), index);
 		}
+
+		//	Set listeners
+		versionTextView.setOnLongClickListener(v -> {
+			Toast.makeText(context, versionType, Toast.LENGTH_LONG).show();
+			return false;
+		});
+
+		devLogoImageView.setOnClickListener((v -> {
+			Uri uri = Uri.parse("https://github.com/QGdev");
+			Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+			context.startActivity(intent);
+		}));
+
 		exitButton.setOnClickListener(v -> dismiss());
 	}
 }
