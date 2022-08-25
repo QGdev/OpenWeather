@@ -29,7 +29,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -299,28 +298,6 @@ public class PlacesFragment extends Fragment {
 		SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(mContext);
 		API_KEY = apiKeyPref.getString("api_key", null);
 
-		//	API key verification
-		if (API_KEY != null && !Objects.equals(API_KEY, "")) {
-			//	Must have 32 alphanumerical characters
-			if (API_KEY.length() != 32) {
-				//  Hide the Floating Action Button to add Places
-				//	And show error to user
-				informationTextView.setText(R.string.error_api_key_incorrectly_formed);
-				informationTextView.setVisibility(View.VISIBLE);
-				addPlacesFab.setVisibility(View.GONE);
-			} else {
-				//  Initialize Weather Services and callbacks
-				weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), dataPlaces);
-				//  Show the Floating Action Button to add Places
-				addPlacesFab.setVisibility(View.VISIBLE);
-			}
-		} else {
-			//  Hide the Floating Action Button to add Places
-			informationTextView.setText(R.string.error_no_api_key_registered);
-			informationTextView.setVisibility(View.VISIBLE);
-			addPlacesFab.setVisibility(View.GONE);
-		}
-
 		//  acquire data of the places callback
 		getDataPlaceListCallback = new WeatherService.CallbackGetData() {
 
@@ -405,13 +382,14 @@ public class PlacesFragment extends Fragment {
 		swipeRefreshLayout.setOnRefreshListener(
 				() -> {
 					swipeRefreshLayout.setRefreshing(true);
-					if (API_KEY != null && !Objects.equals(API_KEY, "")) {
+					if (API_KEY != null && API_KEY.length() == 32) {
 						try {
 							for (Place place : placeArrayList) {
 								weatherService.getWeatherDataOWM(place, dataPlaces, getDataPlaceListCallback);
 							}
 
 						} catch (Exception e) {
+							logger.log(Level.WARNING, e.getMessage());
 							showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
 						}
 					} else {
@@ -421,23 +399,45 @@ public class PlacesFragment extends Fragment {
 				}
 		);
 
+		//	API key verification
+		if (API_KEY != null && API_KEY.length() == 32) {
+			weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), dataPlaces);
+		} else {
+			addPlacesFab.setVisibility(View.GONE);
+		}
 
-		//	Initialisation the UI part and refreshing data of each places
-		try {
-			if (placeArrayList.isEmpty()) {
+		//	initialisation the UI part and refreshing data of each places
+		if (placeArrayList.isEmpty()) {
+			if (API_KEY == null || API_KEY.equals("")) {    //	An API key must be set
+				informationTextView.setText(R.string.error_no_api_key_registered);
+			} else if (API_KEY.length() != 32) {    //	Must have 32 alphanumerical characters
+				informationTextView.setText(R.string.error_api_key_incorrectly_formed);
+			} else {    //	No place as been registered
 				informationTextView.setText(R.string.error_no_places_registered);
-				informationTextView.setVisibility(View.VISIBLE);
-				swipeRefreshLayout.setVisibility(View.GONE);
-			} else {
-				informationTextView.setVisibility(View.GONE);
-				swipeRefreshLayout.setVisibility(View.VISIBLE);
+			}
 
-				for (Place place : placeArrayList) {
-					weatherService.getWeatherDataOWM(place, dataPlaces, getDataPlaceListCallback);
+			informationTextView.setVisibility(View.VISIBLE);
+			swipeRefreshLayout.setVisibility(View.GONE);
+		} else {    //  No errors or warnings, hide information TextView and refresh data
+			informationTextView.setVisibility(View.GONE);
+			swipeRefreshLayout.setVisibility(View.VISIBLE);
+
+			if (API_KEY == null)
+				showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered));
+			if (API_KEY.length() != 32)
+				showSnackbar(container, mContext.getString(R.string.error_api_key_incorrectly_formed));
+
+			if (API_KEY != null && API_KEY.length() == 32) {
+				try {
+					for (Place place : placeArrayList) {
+						weatherService.getWeatherDataOWM(place, dataPlaces, getDataPlaceListCallback);
+					}
+				} catch (Exception e) {
+					logger.log(Level.WARNING, e.getMessage());
 				}
 			}
-		} catch (Exception e) {
-			logger.log(Level.WARNING, e.getMessage());
+
+
 		}
 
 		return root;
