@@ -422,9 +422,9 @@ public class PlacesFragment extends Fragment {
 			informationTextView.setVisibility(View.GONE);
 			swipeRefreshLayout.setVisibility(View.VISIBLE);
 
-			if (API_KEY == null)
+			if (API_KEY == null || API_KEY.equals(""))    //	No API key is registered
 				showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered));
-			if (API_KEY.length() != 32)
+			if (API_KEY.length() != 32)    //	API key is registered but malformed
 				showSnackbar(container, mContext.getString(R.string.error_api_key_incorrectly_formed));
 
 			if (API_KEY != null && API_KEY.length() == 32) {
@@ -436,10 +436,7 @@ public class PlacesFragment extends Fragment {
 					logger.log(Level.WARNING, e.getMessage());
 				}
 			}
-
-
 		}
-
 		return root;
 	}
 

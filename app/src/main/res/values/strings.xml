@@ -174,7 +174,7 @@
     <string name="air_quality_3">Unhealthy (sensitives)</string>
     <string name="air_quality_4">Unhealthy</string>
     <string name="air_quality_5">Very unhealthy</string>
-    <string name="about_application_section_content">This application and its source code have been placed under the GPL-3.0 license.\nThis does not include the OpenWeatherMap API or data, or even the FreePik graphics resources, which are licensed separately.</string>
+    <string name="about_application_section_content">This application and its source code have been placed under the GPL-3.0 license.\nThe source code of the application is available on: github.com/QGdev/OpenWeather.\nThis does not include the OpenWeatherMap API or data, or even the FreePik graphics resources, which are licensed separately.</string>
     <string name="about_application_section_title">About this app</string>
     <string name="error_storage_security">An error occurred while initializing the storage</string>
     <string name="error_no_api_key_registered">API key isn\'t registered, please go into settings and register one</string>

@@ -145,7 +145,7 @@
     <string name="air_quality_3">Mauvais (sensible)</string>
     <string name="error_place_move">Une erreur est survenue lors du déplacement</string>
     <string name="about_application_section_title">À propos de l\'application</string>
-    <string name="about_application_section_content">Cette application et son code source ont été placés sous la licence GPL-3.\nCela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
+    <string name="about_application_section_content">Cette application et son code source ont été placés sous la licence GPL-3.\nLe code source de mon applicetion est disponible ici: github.com/QGdev/OpenWeather.\nCela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
     <string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
     <string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
     <string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
