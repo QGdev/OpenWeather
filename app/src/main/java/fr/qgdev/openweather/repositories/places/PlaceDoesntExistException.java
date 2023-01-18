@@ -1,4 +1,4 @@
-package fr.qgdev.openweather.dataplaces;
+package fr.qgdev.openweather.repositories.places;
 
 /**
  * PlaceDoesntExistException
