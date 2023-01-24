@@ -5,10 +5,10 @@ import android.content.Context;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import fr.qgdev.openweather.FormattingService;
-import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.adapter.WeatherAlertAdapter;
+import fr.qgdev.openweather.repositories.FormattingService;
+import fr.qgdev.openweather.repositories.places.Place;
 
 /**
  * WeatherAlertDialog

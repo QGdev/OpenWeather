@@ -18,20 +18,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import fr.qgdev.openweather.FormattingService;
-import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.customView.DailyForecastGraphView;
-import fr.qgdev.openweather.customView.HourlyForecastGraphView;
+import fr.qgdev.openweather.customview.DailyForecastGraphView;
+import fr.qgdev.openweather.customview.HourlyForecastGraphView;
 import fr.qgdev.openweather.dialog.WeatherAlertDialog;
-import fr.qgdev.openweather.fragment.places.PlacesFragment;
-import fr.qgdev.openweather.weather.AirQuality;
-import fr.qgdev.openweather.weather.CurrentWeather;
+import fr.qgdev.openweather.fragment.places.PlacesViewModel;
+import fr.qgdev.openweather.metrics.AirQuality;
+import fr.qgdev.openweather.metrics.CurrentWeather;
+import fr.qgdev.openweather.repositories.FormattingService;
+import fr.qgdev.openweather.repositories.places.Place;
 
 /**
  * PlaceRecyclerViewAdapter
@@ -45,34 +44,30 @@ import fr.qgdev.openweather.weather.CurrentWeather;
  * @see android.widget.BaseAdapter
  */
 public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecyclerViewAdapter.PlaceViewHolder> {
-
+	
 	private final Context context;
-	private final PlacesFragment placesFragment;
+	private final FormattingService formattingService;
+	private final PlacesViewModel placesViewModel;
 	private final List<String> countryNames;
 	private final List<String> countryCodes;
-	private final ArrayList<PlaceView> placeViewArrayList;
-	private final FormattingService formattingService;
-
+	
 	/**
 	 * PlaceRecyclerViewAdapter Constructor
 	 * <p>
-	 *     Just build an PlaceRecyclerViewAdapter Object
+	 * Just build an PlaceRecyclerViewAdapter Object
 	 * </p>
 	 *
-	 * @param context               Current context, only used for LayoutInflater
-	 * @param placesFragment        Reference of the parent PlacesFragment
+	 * @param context         Current context, only used for LayoutInflater
+	 * @param placesViewModel Reference of the parent PlacesFragment
 	 */
-	public PlaceRecyclerViewAdapter(Context context, PlacesFragment placesFragment) {
+	public PlaceRecyclerViewAdapter(Context context, PlacesViewModel placesViewModel, FormattingService formattingService) {
 		this.context = context;
-		this.placesFragment = placesFragment;
-
-		this.placeViewArrayList = generatePlaceViewArray();
-
+		this.placesViewModel = placesViewModel;
+		this.formattingService = formattingService;
 		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
 		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
-
-		formattingService = new FormattingService(context);
 	}
+
 
 	/**
 	 * add(int position)
@@ -83,7 +78,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 * @param position Position of the new place
 	 */
 	public void add(int position) {
-		this.placeViewArrayList.add(new PlaceView(PlaceView.COMPACT));
 		this.notifyItemInserted(position);
 	}
 
@@ -96,49 +90,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 * @param position Position of the deleted place
 	 */
 	public void remove(int position) {
-		this.notifyItemRemoved(position);
-	}
-
-	/**
-	 * move(int initialPosition, int finalPosition)
-	 * <p>
-	 *     Need to be called when a place is moved from initialPosition to finalPosition.
-	 * </p>
-	 *
-	 * @param initialPosition   Initial position of the moved place
-	 * @param finalPosition     Final position of the moved place
-	 */
-	public void move(int initialPosition, int finalPosition) {
-
-		if (initialPosition != finalPosition) {
-			if (finalPosition == this.placeViewArrayList.size() - 1)
-				this.placeViewArrayList.add(this.placeViewArrayList.get(initialPosition));
-			else if (initialPosition < finalPosition)
-				this.placeViewArrayList.add(finalPosition + 1, this.placeViewArrayList.get(initialPosition));
-			else
-				this.placeViewArrayList.add(finalPosition, this.placeViewArrayList.get(initialPosition));
-
-			if (initialPosition < finalPosition) this.placeViewArrayList.remove(initialPosition);
-			else this.placeViewArrayList.remove(initialPosition + 1);
-		}
-	}
-
-	/**
-	 * generatePlaceViewArray()
-	 * <p>
-	 *     Generate a PlaceViewArray based on PlaceFragment place array size.
-	 * </p>
-	 *
-	 * @return Will return the generated placeView ArrayList
-	 */
-	public ArrayList<PlaceView> generatePlaceViewArray() {
-		ArrayList<PlaceView> placeViewArray = new ArrayList<>();
-
-		for (int index = 0; index < placesFragment.getPlaceArrayListSize(); index++) {
-			placeViewArray.add(new PlaceView(PlaceView.COMPACT));
-		}
-
-		return placeViewArray;
+		notifyItemRemoved(position);
 	}
 
 	/**
@@ -152,35 +104,35 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 */
 	private void setListeners(Place currentPlace, PlaceViewHolder holder) {
 		int placeViewType = holder.getItemViewType();
-		PlaceView placeView = placeViewArrayList.get(holder.getAbsoluteAdapterPosition());
-
+		Integer placeID = currentPlace.getProperties().getPlaceId();
+		
 		//  Set listener for the whole place card item
 		holder.cardView.setOnClickListener(v -> {
-			if (placeViewType == PlaceView.COMPACT) {
-				placeView.viewType = PlaceView.EXTENDED;
+			if (ViewType.fromInt(placeViewType) == ViewType.COMPACT) {
+				placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED);
 			} else {
-				placeView.viewType = PlaceView.COMPACT;
+				placesViewModel.setPlaceViewType(placeID, ViewType.COMPACT);
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
 		});
 
 		//  Set listener for the hourly weather forecast tab
 		holder.hourlyForecast.setOnClickListener(v -> {
-			switch (placeViewType) {
-				case PlaceView.EXTENDED:
-					placeView.viewType = PlaceView.EXTENDED_HOURLY;
+			switch (ViewType.fromInt(placeViewType)) {
+				case EXTENDED:
+					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_HOURLY);
 					break;
-				case PlaceView.EXTENDED_HOURLY:
-					placeView.viewType = PlaceView.EXTENDED;
+				case EXTENDED_HOURLY:
+					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED);
 					break;
-				case PlaceView.EXTENDED_DAILY:
-					placeView.viewType = PlaceView.EXTENDED_FULLY;
+				case EXTENDED_DAILY:
+					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_FULLY);
 					break;
-				case PlaceView.EXTENDED_FULLY:
-					placeView.viewType = PlaceView.EXTENDED_DAILY;
+				case EXTENDED_FULLY:
+					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_DAILY);
 					break;
 				default:
-					placeView.viewType = PlaceView.COMPACT;
+					placesViewModel.setPlaceViewType(placeID, ViewType.COMPACT);
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
@@ -188,21 +140,21 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 		//  Set listener for the daily weather forecast tab
 		holder.dailyForecast.setOnClickListener(v -> {
-			switch (placeViewType) {
-				case PlaceView.EXTENDED:
-					placeView.viewType = PlaceView.EXTENDED_DAILY;
+			switch (ViewType.fromInt(placeViewType)) {
+				case EXTENDED:
+					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_DAILY);
 					break;
-				case PlaceView.EXTENDED_DAILY:
-					placeView.viewType = PlaceView.EXTENDED;
+				case EXTENDED_DAILY:
+					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED);
 					break;
-				case PlaceView.EXTENDED_HOURLY:
-					placeView.viewType = PlaceView.EXTENDED_FULLY;
+				case EXTENDED_HOURLY:
+					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_FULLY);
 					break;
-				case PlaceView.EXTENDED_FULLY:
-					placeView.viewType = PlaceView.EXTENDED_HOURLY;
+				case EXTENDED_FULLY:
+					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_HOURLY);
 					break;
 				default:
-					placeView.viewType = PlaceView.COMPACT;
+					placesViewModel.setPlaceViewType(placeID, ViewType.COMPACT);
 					break;
 			}
 			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
@@ -210,13 +162,17 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 
 		//  Set listener for the weather alerts tab
 		holder.weatherAlertLayout.setOnClickListener(v -> {
-			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, currentPlace, formattingService);
+			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context,
+					  currentPlace,
+					  formattingService);
 			weatherAlertDialog.build();
 		});
 
 		//  Set listener for the weather alert icon
 		holder.weatherAlertIcon.setOnClickListener(v -> {
-			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context, currentPlace, formattingService);
+			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context,
+					  currentPlace,
+					  formattingService);
 			weatherAlertDialog.build();
 		});
 	}
@@ -269,51 +225,22 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 */
 	@Override
 	public void onBindViewHolder(@NonNull PlaceViewHolder holder, final int position) {
-
-		Place currentPlace = placesFragment.getPlace(position);
-
-		switch (placeViewArrayList.get(position).viewType) {
-			case PlaceView.COMPACT:
-			default: {
-				//  Compact view
-				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
-					holder.pressureTextView.setVisibility(View.GONE);
-				else holder.windGustSpeedTextView.setVisibility(View.GONE);
-
-				holder.visibilityTextView.setVisibility(View.GONE);
-				holder.sunriseTextView.setVisibility(View.GONE);
-				holder.sunsetTextView.setVisibility(View.GONE);
-				holder.cloudinessTextView.setVisibility(View.GONE);
-
-				holder.detailedInformationsLayout.setVisibility(View.GONE);
-				holder.weatherAlertIcon.setVisibility(View.GONE);
-
-				holder.forecastInformationsLayout.setVisibility(View.GONE);
-				holder.hourlyForecastExpandIcon.setRotation(0);
-				holder.hourlyForecastLayout.setVisibility(View.GONE);
-				holder.dailyForecastExpandIcon.setRotation(0);
-				holder.dailyForecastLayout.setVisibility(View.GONE);
-				holder.lastUpdateAvailableLayout.setVisibility(View.GONE);
-
-				if (currentPlace.getMWeatherAlertCount() > 0) {
-					holder.weatherAlertIcon.setVisibility(View.VISIBLE);
-				} else {
-					holder.weatherAlertIcon.setVisibility(View.GONE);
-				}
-
-				break;
-			}
+		
+		Place currentPlace = placesViewModel.getPlaces().get(position);
+		
+		switch (placesViewModel.getPlaceViewType(currentPlace.getProperties().getPlaceId())) {
+			
 			//  Extended view
-			case PlaceView.EXTENDED: {
+			case EXTENDED: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
 				else holder.windGustSpeedTextView.setVisibility(View.VISIBLE);
-
+				
 				holder.visibilityTextView.setVisibility(View.VISIBLE);
 				holder.sunriseTextView.setVisibility(View.VISIBLE);
 				holder.sunsetTextView.setVisibility(View.VISIBLE);
 				holder.cloudinessTextView.setVisibility(View.VISIBLE);
-
+				
 				holder.detailedInformationsLayout.setVisibility(View.VISIBLE);
 				holder.weatherAlertIcon.setVisibility(View.GONE);
 
@@ -322,7 +249,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				holder.hourlyForecastLayout.setVisibility(View.GONE);
 				holder.dailyForecastExpandIcon.setRotation(0);
 				holder.dailyForecastLayout.setVisibility(View.GONE);
-
+				
 				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
 				if (currentPlace.getMWeatherAlertCount() > 0) {
 					holder.weatherAlertLayout.setVisibility(View.VISIBLE);
@@ -331,18 +258,18 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				}
 				break;
 			}
-
+			
 			//  Hourly extended view
-			case PlaceView.EXTENDED_HOURLY: {
+			case EXTENDED_HOURLY: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
 				else holder.windGustSpeedTextView.setVisibility(View.VISIBLE);
-
+				
 				holder.visibilityTextView.setVisibility(View.VISIBLE);
 				holder.sunriseTextView.setVisibility(View.VISIBLE);
 				holder.sunsetTextView.setVisibility(View.VISIBLE);
 				holder.cloudinessTextView.setVisibility(View.VISIBLE);
-
+				
 				holder.detailedInformationsLayout.setVisibility(View.VISIBLE);
 				holder.weatherAlertIcon.setVisibility(View.GONE);
 
@@ -351,7 +278,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				holder.hourlyForecastLayout.setVisibility(View.VISIBLE);
 				holder.dailyForecastExpandIcon.setRotation(0);
 				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
-
+				
 				if (currentPlace.getMWeatherAlertCount() > 0) {
 					holder.weatherAlertLayout.setVisibility(View.VISIBLE);
 				} else {
@@ -359,18 +286,18 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				}
 				break;
 			}
-
+			
 			//  Daily extended view
-			case PlaceView.EXTENDED_DAILY: {
+			case EXTENDED_DAILY: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
 				else holder.windGustSpeedTextView.setVisibility(View.VISIBLE);
-
+				
 				holder.visibilityTextView.setVisibility(View.VISIBLE);
 				holder.sunriseTextView.setVisibility(View.VISIBLE);
 				holder.sunsetTextView.setVisibility(View.VISIBLE);
 				holder.cloudinessTextView.setVisibility(View.VISIBLE);
-
+				
 				holder.detailedInformationsLayout.setVisibility(View.VISIBLE);
 				holder.weatherAlertIcon.setVisibility(View.GONE);
 
@@ -380,7 +307,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				holder.dailyForecastExpandIcon.setRotation(180);
 				holder.dailyForecastLayout.setVisibility(View.VISIBLE);
 				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
-
+				
 				if (currentPlace.getMWeatherAlertCount() > 0) {
 					holder.weatherAlertLayout.setVisibility(View.VISIBLE);
 				} else {
@@ -389,26 +316,26 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				break;
 			}
 			//  Fully extended view
-			case PlaceView.EXTENDED_FULLY: {
+			case EXTENDED_FULLY: {
 				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
 					holder.pressureTextView.setVisibility(View.VISIBLE);
 				else holder.windGustSpeedTextView.setVisibility(View.VISIBLE);
-
+				
 				holder.visibilityTextView.setVisibility(View.VISIBLE);
 				holder.sunriseTextView.setVisibility(View.VISIBLE);
 				holder.sunsetTextView.setVisibility(View.VISIBLE);
 				holder.cloudinessTextView.setVisibility(View.VISIBLE);
-
+				
 				holder.detailedInformationsLayout.setVisibility(View.VISIBLE);
 				holder.weatherAlertIcon.setVisibility(View.GONE);
-
+				
 				holder.forecastInformationsLayout.setVisibility(View.VISIBLE);
 				holder.hourlyForecastExpandIcon.setRotation(180);
 				holder.hourlyForecastLayout.setVisibility(View.VISIBLE);
 				holder.dailyForecastExpandIcon.setRotation(180);
 				holder.dailyForecastLayout.setVisibility(View.VISIBLE);
 				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
-
+				
 				if (currentPlace.getMWeatherAlertCount() > 0) {
 					holder.weatherAlertLayout.setVisibility(View.VISIBLE);
 				} else {
@@ -416,25 +343,55 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				}
 				break;
 			}
+			case COMPACT:
+			default: {
+				//  Compact view
+				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
+					holder.pressureTextView.setVisibility(View.GONE);
+				else holder.windGustSpeedTextView.setVisibility(View.GONE);
+				
+				holder.visibilityTextView.setVisibility(View.GONE);
+				holder.sunriseTextView.setVisibility(View.GONE);
+				holder.sunsetTextView.setVisibility(View.GONE);
+				holder.cloudinessTextView.setVisibility(View.GONE);
+				
+				holder.detailedInformationsLayout.setVisibility(View.GONE);
+				holder.weatherAlertIcon.setVisibility(View.GONE);
+				
+				holder.forecastInformationsLayout.setVisibility(View.GONE);
+				holder.hourlyForecastExpandIcon.setRotation(0);
+				holder.hourlyForecastLayout.setVisibility(View.GONE);
+				holder.dailyForecastExpandIcon.setRotation(0);
+				holder.dailyForecastLayout.setVisibility(View.GONE);
+				holder.lastUpdateAvailableLayout.setVisibility(View.GONE);
+				
+				if (currentPlace.getMWeatherAlertCount() > 0) {
+					holder.weatherAlertIcon.setVisibility(View.VISIBLE);
+				} else {
+					holder.weatherAlertIcon.setVisibility(View.GONE);
+				}
+				
+				break;
+			}
 		}
-
+		
 		setListeners(currentPlace, holder);
-
-		holder.cityNameTextView.setText(currentPlace.getCity());
-		holder.countryNameTextVIew.setText(this.getCountryName(currentPlace.getCountryCode()));
-
+		
+		holder.cityNameTextView.setText(currentPlace.getGeolocation().getCity());
+		holder.countryNameTextVIew.setText(this.getCountryName(currentPlace.getGeolocation().getCountryCode()));
+		
 		CurrentWeather currentWeather = currentPlace.getCurrentWeather();
 		AirQuality airQuality = currentPlace.getAirQuality();
-
-		holder.temperatureTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.temperature, true));
-		holder.temperatureFeelsLikeTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.temperatureFeelsLike, true));
-
-		holder.weatherDescription.setText(currentWeather.weatherDescription);
-
+		
+		holder.temperatureTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.getTemperature(), true));
+		holder.temperatureFeelsLikeTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.getTemperatureFeelsLike(), true));
+		
+		holder.weatherDescription.setText(currentWeather.getWeatherDescription());
+		
 		final int weatherIconId;
-
-		switch (currentWeather.weatherCode) {
-
+		
+		switch (currentWeather.getWeatherCode()) {
+			
 			//  Thunderstorm Group
 			case 210:
 			case 211:
@@ -442,7 +399,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 221:
 				weatherIconId = context.getResources().getIdentifier("thunderstorm_flat", "drawable", context.getPackageName());
 				break;
-
+			
 			case 200:
 			case 201:
 			case 202:
@@ -458,7 +415,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 500:
 			case 501:
 			case 520:
-				if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
+				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
 					weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
 				}
 				//  Night
@@ -494,7 +451,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 601:
 			case 620:
 			case 621:
-				if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
+				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
 					weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
 				}
 				//  Night
@@ -527,7 +484,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 762:
 			case 771:
 			case 781:
-				if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
+				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
 					weatherIconId = context.getResources().getIdentifier("fog_flat", "drawable", context.getPackageName());
 				}
 				//  Night
@@ -539,7 +496,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			//  Sky
 			case 800:
 				//  Day
-				if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
+				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
 					weatherIconId = context.getResources().getIdentifier("sun_flat", "drawable", context.getPackageName());
 				}
 				//  Night
@@ -551,7 +508,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 801:
 			case 802:
 			case 803:
-				if (currentWeather.dt >= currentWeather.sunrise && currentWeather.dt < currentWeather.sunset) {
+				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
 					weatherIconId = context.getResources().getIdentifier("clouds_and_sun_flat", "drawable", context.getPackageName());
 				}
 				//  Night
@@ -563,113 +520,113 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 804:
 				weatherIconId = context.getResources().getIdentifier("cloudy_flat", "drawable", context.getPackageName());
 				break;
-
+			
 			//  Default
 			default:
 				weatherIconId = context.getResources().getIdentifier("storm_flat", "drawable", context.getPackageName());
 				break;
 		}
-
+		
 		holder.weatherIcon.setImageDrawable(context.getDrawable(weatherIconId));
-
+		
 		//  Wind
 		////    Wind Direction
-		holder.windDirectionTextView.setText(formattingService.getFormattedDirection(currentWeather.windDirection, currentWeather.isWindDirectionReadable));
-
+		holder.windDirectionTextView.setText(formattingService.getFormattedDirection(currentWeather.getWindDirection(), currentWeather.isWindDirectionReadable()));
+		
 		////  Wind speed and Wind gust Speed
-		holder.windSpeedTextView.setText(formattingService.getIntFormattedSpeed(currentWeather.windSpeed, true));
-		holder.windGustSpeedTextView.setText(formattingService.getIntFormattedSpeed(currentWeather.windGustSpeed, true));
-
+		holder.windSpeedTextView.setText(formattingService.getIntFormattedSpeed(currentWeather.getWindSpeed(), true));
+		holder.windGustSpeedTextView.setText(formattingService.getIntFormattedSpeed(currentWeather.getWindGustSpeed(), true));
+		
 		//  Humidity
-		holder.humidityTextView.setText(String.format("%d %%", currentWeather.humidity));
-
+		holder.humidityTextView.setText(String.format("%d %%", currentWeather.getHumidity()));
+		
 		//  Pressure
-		holder.pressureTextView.setText(formattingService.getFormattedPressure(currentWeather.pressure, true));
-
+		holder.pressureTextView.setText(formattingService.getFormattedPressure(currentWeather.getPressure(), true));
+		
 		//  Visibility
-		holder.visibilityTextView.setText(formattingService.getIntFormattedDistance(currentWeather.visibility, true));
-
+		holder.visibilityTextView.setText(formattingService.getIntFormattedDistance(currentWeather.getVisibility(), true));
+		
 		//  Sunrise and sunset
-		holder.sunriseTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.sunrise), currentPlace.getTimeZone()));
-		holder.sunsetTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.sunset), currentPlace.getTimeZone()));
-
-		holder.cloudinessTextView.setText(String.format("%d%%", currentWeather.cloudiness));
-
+		holder.sunriseTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.getSunrise()), currentPlace.getProperties().getTimeZone()));
+		holder.sunsetTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.getSunset()), currentPlace.getProperties().getTimeZone()));
+		
+		holder.cloudinessTextView.setText(String.format("%d%%", currentWeather.getCloudiness()));
+		
 		//	Air quality
-		holder.airQualityIndex.setText(String.valueOf(airQuality.aqi));
-
-		switch (airQuality.aqi) {
-
+		holder.airQualityIndex.setText(String.valueOf(airQuality.getAqi()));
+		
+		switch (airQuality.getAqi()) {
+			
 			case 5:
 				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvExtreme)));
 				holder.airQualityMessage.setText(context.getText(R.string.air_quality_5));
 				break;
-
+			
 			case 4:
 				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvVeryHigh)));
 				holder.airQualityMessage.setText(context.getText(R.string.air_quality_4));
 				break;
-
+			
 			case 3:
 				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvHigh)));
 				holder.airQualityMessage.setText(context.getText(R.string.air_quality_3));
 				break;
-
+			
 			case 2:
 				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvModerate)));
 				holder.airQualityMessage.setText(context.getText(R.string.air_quality_2));
 				break;
-
+			
 			case 1:
 			default:
 				holder.airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvLow)));
 				holder.airQualityMessage.setText(context.getText(R.string.air_quality_1));
 				break;
 		}
-
-		holder.airQualityCO.setText(String.format("%.3f", airQuality.co));
-		holder.airQualityNO.setText(String.format("%.3f", airQuality.no));
-		holder.airQualityNO2.setText(String.format("%.3f", airQuality.no2));
-		holder.airQualityO3.setText(String.format("%.3f", airQuality.o3));
-		holder.airQualitySO2.setText(String.format("%.3f", airQuality.so2));
-		holder.airQualityNH3.setText(String.format("%.3f", airQuality.nh3));
-		holder.airQualityPM25.setText(String.format("%.3f", airQuality.pm2_5));
-		holder.airQualityPM10.setText(String.format("%.3f", airQuality.pm10));
-
-
+		
+		holder.airQualityCO.setText(String.format("%.3f", airQuality.getCo()));
+		holder.airQualityNO.setText(String.format("%.3f", airQuality.getNo()));
+		holder.airQualityNO2.setText(String.format("%.3f", airQuality.getNo2()));
+		holder.airQualityO3.setText(String.format("%.3f", airQuality.getO3()));
+		holder.airQualitySO2.setText(String.format("%.3f", airQuality.getSo2()));
+		holder.airQualityNH3.setText(String.format("%.3f", airQuality.getNh3()));
+		holder.airQualityPM25.setText(String.format("%.3f", airQuality.getPm2_5()));
+		holder.airQualityPM10.setText(String.format("%.3f", airQuality.getPm10()));
+		
+		
 		//  Precipitations
 		//  If There is no rain or snow, so there is nothing to show about precipitations
-		if (currentWeather.rain > 0 || currentWeather.snow > 0) {
+		if (currentWeather.getRain() > 0 || currentWeather.getSnow() > 0) {
 			holder.precipitationLayout.setVisibility(View.VISIBLE);
-
-			holder.rainTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.rain, true));
-			holder.snowTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.snow, true));
-
+			
+			holder.rainTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.getRain(), true));
+			holder.snowTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.getSnow(), true));
+			
 			//  If There is no rain, so there is nothing to show about rain
-			if (currentWeather.rain > 0)
+			if (currentWeather.getRain() > 0)
 				holder.precipitationLayout.findViewById(R.id.rain_precipitations).setVisibility(View.VISIBLE);
 			else
 				holder.precipitationLayout.findViewById(R.id.rain_precipitations).setVisibility(View.GONE);
 			//  If There is no snow, so there is nothing to show about snow
-			if (currentWeather.snow > 0)
+			if (currentWeather.getSnow() > 0)
 				holder.precipitationLayout.findViewById(R.id.snow_precipitations).setVisibility(View.VISIBLE);
 			else
 				holder.precipitationLayout.findViewById(R.id.snow_precipitations).setVisibility(View.GONE);
 		} else {
 			holder.precipitationLayout.setVisibility(View.GONE);
 		}
-
-		holder.hourlyForecastGraphView.initialization(currentPlace.getHourlyWeatherForecastArrayList(), currentPlace.getDailyWeatherForecastArrayList(), formattingService, currentPlace.getTimeZone());
-		holder.dailyForecastGraphView.initialization(currentPlace.getDailyWeatherForecastArrayList(), currentPlace.getTimeZone(), formattingService);
-
+		
+		holder.hourlyForecastGraphView.initialization(currentPlace.getHourlyWeatherForecastList(), currentPlace.getDailyWeatherForecastList(), formattingService, currentPlace.getProperties().getTimeZone());
+		holder.dailyForecastGraphView.initialization(currentPlace.getDailyWeatherForecastList(), currentPlace.getProperties().getTimeZone(), formattingService);
+		
 		holder.hourlyForecastScrollview.scrollTo(0, 0);
 		holder.dailyForecastScrollview.scrollTo(0, 0);
-
-
-		holder.lastUpdateAvailableTextView.setText(String.format("%s %s", formattingService.getFormattedFullTimeHour(new Date(currentWeather.dt), currentPlace.getTimeZone()), currentPlace.getTimeZoneStringForm()));
+		
+		
+		holder.lastUpdateAvailableTextView.setText(String.format("%s %s", formattingService.getFormattedFullTimeHour(new Date(currentWeather.getDt()), currentPlace.getProperties().getTimeZone()), currentPlace.getProperties().getTimeZoneStringForm()));
 	}
-
-
+	
+	
 	/**
 	 * getItemViewType(int position)
 	 * <p>
@@ -681,7 +638,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 */
 	@Override
 	public int getItemViewType(int position) {
-		return placeViewArrayList.get(position).viewType;
+		return placesViewModel.getPlaceViewTypeFromPosition(position).toInt();
 	}
 
 	/**
@@ -694,38 +651,51 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 */
 	@Override
 	public int getItemCount() {
-		return this.placesFragment.getPlaceArrayListSize();
+		return placesViewModel.getPlaces().size();
 	}
-
+	
 	/**
-	 * PlaceView
+	 * ViewType
 	 * <p>
 	 * Describes the state of a place card which can be:
 	 * Compact, Extended, Extended with Hourly or Daily tabs extended or Fully Extended where all tabs are extended
 	 * </p>
 	 */
-	public static class PlaceView {
-		public static final byte COMPACT = 0;
-		public static final byte EXTENDED = 1;
-		public static final byte EXTENDED_HOURLY = 2;
-		public static final byte EXTENDED_DAILY = 3;
-		public static final byte EXTENDED_FULLY = 4;
-		public byte viewType;
-
-		/**
-		 * PlaceView(byte viewType)
-		 * <p>
-		 *     Constructor of PlaceView Object
-		 * </p>
-		 *
-		 * @param viewType Start viewType
-		 */
-		public PlaceView(byte viewType) {
-			this.viewType = viewType;
+	public enum ViewType {
+		COMPACT(0),
+		EXTENDED(1),
+		EXTENDED_HOURLY(2),
+		EXTENDED_DAILY(3),
+		EXTENDED_FULLY(4);
+		
+		private final int viewTypeID;
+		
+		ViewType(int id) {
+			viewTypeID = id;
+		}
+		
+		public static ViewType fromInt(int id) {
+			switch (id) {
+				default:
+				case 0:
+					return COMPACT;
+				case 1:
+					return EXTENDED;
+				case 2:
+					return EXTENDED_HOURLY;
+				case 3:
+					return EXTENDED_DAILY;
+				case 4:
+					return EXTENDED_FULLY;
+			}
+		}
+		
+		public int toInt() {
+			return this.viewTypeID;
 		}
 	}
-
-
+	
+	
 	/**
 	 * PlaceViewHolder
 	 * <p>
@@ -737,71 +707,71 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 * @see RecyclerView.ViewHolder
 	 */
 	public static class PlaceViewHolder extends RecyclerView.ViewHolder {
-
-		public MaterialCardView cardView;
-		public LinearLayout adapterPlaceLayout;
-		public TextView cityNameTextView;
-		public TextView countryNameTextVIew;
-
-		public TextView temperatureTextView;
-		public TextView temperatureFeelsLikeTextView;
-
-		public TextView weatherDescription;
-		public ImageView weatherIcon;
-
-		public LinearLayout weatherAlertLayout;
-		public ImageView weatherAlertIcon;
-
-		public TextView windDirectionTextView;
-		public TextView windSpeedTextView;
-		public TextView windGustSpeedTextView;
-
-		public TextView humidityTextView;
-		public TextView pressureTextView;
-		public TextView visibilityTextView;
-
-		public TextView sunriseTextView;
-		public TextView sunsetTextView;
-		public TextView cloudinessTextView;
-
-		public ImageView airQualityCircle;
-		public TextView airQualityIndex;
-		public TextView airQualityMessage;
-		public TextView airQualityCO;
-		public TextView airQualityNO;
-		public TextView airQualityNO2;
-		public TextView airQualityO3;
-		public TextView airQualitySO2;
-		public TextView airQualityNH3;
-		public TextView airQualityPM25;
-		public TextView airQualityPM10;
-
-		public LinearLayout precipitationLayout;
-		public TextView rainTextView;
-		public TextView snowTextView;
-
-		public LinearLayout lastUpdateAvailableLayout;
-		public TextView lastUpdateAvailableTextView;
-
-		public LinearLayout detailedInformationsLayout;
-		public LinearLayout forecastInformationsLayout;
-
-		public LinearLayout hourlyForecastLayout;
-		public HorizontalScrollView hourlyForecastScrollview;
-		public LinearLayout hourlyForecast;
-		public ImageView hourlyForecastExpandIcon;
-
-		public HourlyForecastGraphView hourlyForecastGraphView;
-
-		public LinearLayout dailyForecastLayout;
-		public HorizontalScrollView dailyForecastScrollview;
-		public LinearLayout dailyForecast;
-
-		public DailyForecastGraphView dailyForecastGraphView;
-
-		public ImageView dailyForecastExpandIcon;
-
-
+		
+		public final MaterialCardView cardView;
+		public final LinearLayout adapterPlaceLayout;
+		public final TextView cityNameTextView;
+		public final TextView countryNameTextVIew;
+		
+		public final TextView temperatureTextView;
+		public final TextView temperatureFeelsLikeTextView;
+		
+		public final TextView weatherDescription;
+		public final ImageView weatherIcon;
+		
+		public final LinearLayout weatherAlertLayout;
+		public final ImageView weatherAlertIcon;
+		
+		public final TextView windDirectionTextView;
+		public final TextView windSpeedTextView;
+		public final TextView windGustSpeedTextView;
+		
+		public final TextView humidityTextView;
+		public final TextView pressureTextView;
+		public final TextView visibilityTextView;
+		
+		public final TextView sunriseTextView;
+		public final TextView sunsetTextView;
+		public final TextView cloudinessTextView;
+		
+		public final ImageView airQualityCircle;
+		public final TextView airQualityIndex;
+		public final TextView airQualityMessage;
+		public final TextView airQualityCO;
+		public final TextView airQualityNO;
+		public final TextView airQualityNO2;
+		public final TextView airQualityO3;
+		public final TextView airQualitySO2;
+		public final TextView airQualityNH3;
+		public final TextView airQualityPM25;
+		public final TextView airQualityPM10;
+		
+		public final LinearLayout precipitationLayout;
+		public final TextView rainTextView;
+		public final TextView snowTextView;
+		
+		public final LinearLayout lastUpdateAvailableLayout;
+		public final TextView lastUpdateAvailableTextView;
+		
+		public final LinearLayout detailedInformationsLayout;
+		public final LinearLayout forecastInformationsLayout;
+		
+		public final LinearLayout hourlyForecastLayout;
+		public final HorizontalScrollView hourlyForecastScrollview;
+		public final LinearLayout hourlyForecast;
+		public final ImageView hourlyForecastExpandIcon;
+		
+		public final HourlyForecastGraphView hourlyForecastGraphView;
+		
+		public final LinearLayout dailyForecastLayout;
+		public final HorizontalScrollView dailyForecastScrollview;
+		public final LinearLayout dailyForecast;
+		
+		public final DailyForecastGraphView dailyForecastGraphView;
+		
+		public final ImageView dailyForecastExpandIcon;
+		
+		
 		/**
 		 * PlaceViewHolder(@NonNull Context context, @NonNull View itemView)
 		 * <p>
@@ -921,6 +891,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		private void setDrawableCompoundTextView(@NonNull Context context, @NonNull TextView textView, @DrawableRes int id) {
 			int compoundDrawableSideSize = dpToPx(context, 20);
 			Drawable drawable = context.getDrawable(id);
+			assert drawable != null;
 			drawable.setBounds(0, 0, compoundDrawableSideSize, compoundDrawableSideSize);
 			textView.setCompoundDrawables(drawable, null, null, null);
 		}

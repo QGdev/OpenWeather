@@ -1,4 +1,4 @@
-package fr.qgdev.openweather.customView;
+package fr.qgdev.openweather.customview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -18,8 +18,8 @@ import androidx.annotation.Px;
 import java.math.BigDecimal;
 import java.util.TimeZone;
 
-import fr.qgdev.openweather.FormattingService;
 import fr.qgdev.openweather.R;
+import fr.qgdev.openweather.repositories.FormattingService;
 
 
 /**

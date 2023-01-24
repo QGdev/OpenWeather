@@ -18,15 +18,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.WeatherService;
-import fr.qgdev.openweather.dataplaces.DataPlaces;
-import fr.qgdev.openweather.dataplaces.PlaceAlreadyExistException;
-import fr.qgdev.openweather.fragment.places.PlacesFragment;
+import fr.qgdev.openweather.repositories.AppRepository;
+import fr.qgdev.openweather.repositories.places.Place;
+import fr.qgdev.openweather.repositories.weather.FetchDataCallback;
+import fr.qgdev.openweather.repositories.weather.RequestStatus;
 
 /**
  * AppPlaceDialog
@@ -51,10 +49,6 @@ public class AddPlaceDialog extends Dialog {
 	private final ProgressBar addButtonProgressSpinner;
 	private final Button exitButton, addButton;
 
-	//	Callbacks
-	private final WeatherService.CallbackGetCoordinates getCoordinatesCallback;
-	private final WeatherService.CallbackGetData getDataCallback;
-
 	//	List of countries
 	//	Used in order to sort country names
 	private final List<String> countryNames;
@@ -67,37 +61,37 @@ public class AddPlaceDialog extends Dialog {
 	 * </p>
 	 *
 	 * @param context                   Context of the application in order to get resources
-	 * @param addPlaceFABView           Basically just a parent view
-	 * @param apiKey                    In order to get well formatted values
-	 * @param weatherService            Just to get Weather alerts information
-	 * @param placeFragmentInteractions In order to get well formatted values
+	 * //@param addPlaceFABView           Basically just a parent view
+	 
+	 * //@param placeFragmentInteractions In order to get well formatted values
 	 * @apiNote None of the parameters can be null
 	 */
-	public AddPlaceDialog(Context context, View addPlaceFABView, String apiKey, WeatherService weatherService, PlacesFragment.Interactions placeFragmentInteractions) {
+	public AddPlaceDialog(Context context, AppRepository appRepository) {
 		super(context);
 		setContentView(R.layout.dialog_add_place);
-
-		this.dialogWindow = findViewById(R.id.dialog_window);
-		this.cityTextInputLayout = findViewById(R.id.cityTextInputLayout);
-		this.countryTextInputLayout = findViewById(R.id.countryTextInputLayout);
-		this.cityEditText = findViewById(R.id.city);
-		this.countryEditText = findViewById(R.id.country);
-		this.exitButton = findViewById(R.id.exit_button);
-		this.addButton = findViewById(R.id.add_button);
-
-		this.addButtonProgressSpinner = findViewById(R.id.add_button_progress_spinner);
+		
+		dialogWindow = findViewById(R.id.dialog_window);
+		cityTextInputLayout = findViewById(R.id.cityTextInputLayout);
+		countryTextInputLayout = findViewById(R.id.countryTextInputLayout);
+		cityEditText = findViewById(R.id.city);
+		countryEditText = findViewById(R.id.country);
+		exitButton = findViewById(R.id.exit_button);
+		addButton = findViewById(R.id.add_button);
+		
+		addButtonProgressSpinner = findViewById(R.id.add_button_progress_spinner);
 		addButtonProgressSpinner.setVisibility(View.GONE);
-
-		this.countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
+		
+		countryNames = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
 		List<String> countryNamesSorted = Arrays.asList(context.getResources().getStringArray(R.array.countries_names));
 		Collections.sort(countryNamesSorted);
-		this.countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
-
+		countryCodes = Arrays.asList(context.getResources().getStringArray(R.array.countries_codes));
+		
 		ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.dialog_country_list_item, countryNamesSorted);
 		countryEditText.setThreshold(1);
 		countryEditText.performValidation();
 		countryEditText.setAdapter(adapter);
-
+		
+		
 		//  Observe country field to show an error if the registered country name doesn't exist
 		countryEditText.setOnFocusChangeListener((v, hasFocus) -> {
 			//  The country name doesn't exist, the field is not focused and the field isn't empty
@@ -107,127 +101,48 @@ public class AddPlaceDialog extends Dialog {
 				countryTextInputLayout.setErrorEnabled(false);
 			}
 		});
-
+		
+		
 		//  Observe city field to turn off any errors
 		cityEditText.setOnFocusChangeListener((v, hasFocus) -> cityTextInputLayout.setErrorEnabled(false));
-
-
-		//  WeatherService Callbacks
-		//________________________________________________________________
-		//  This callback will fill place with data
-		getCoordinatesCallback = new WeatherService.CallbackGetCoordinates() {
+		
+		FetchDataCallback fetchDataCallback = new FetchDataCallback() {
 			@Override
-			public void onPlaceFound(Place place, DataPlaces dataPlaces) {
-				weatherService.getWeatherDataOWM(place, dataPlaces, getDataCallback);
+			public void onSuccess(Place place) {
+				dismiss();
 			}
-
+			
 			@Override
-			public void onTreatmentError() {
-				showSnackbar(dialogWindow, context.getString(R.string.error_cannot_save_place_treatment));
+			public void onPartialSuccess(Place place, RequestStatus requestStatus) {
+				dismiss();
+			}
+			
+			@Override
+			public void onError(RequestStatus requestStatus) {
 				enableDialogWindowControls();
-
-			}
-
-			@Override
-			public void onNoResponseError() {
-				showSnackbar(dialogWindow, context.getString(R.string.error_server_unreachable));
-				enableDialogWindowControls();
-			}
-
-			@Override
-			public void onTooManyRequestsError() {
-				showSnackbar(dialogWindow, context.getString(R.string.error_too_many_request_in_a_day));
-				enableDialogWindowControls();
-			}
-
-			@Override
-			public void onPlaceNotFoundError() {
-				cityTextInputLayout.setError(context.getString(R.string.error_place_not_found));
-				enableDialogWindowControls();
-			}
-
-			@Override
-			public void onWrongOrUnknownApiKeyError() {
-				showSnackbar(addPlaceFABView, context.getString(R.string.error_wrong_api_key));
-				enableDialogWindowControls();
-
-			}
-
-			@Override
-			public void onUnknownError() {
-				showSnackbar(addPlaceFABView, context.getString(R.string.error_unknow_error));
-				enableDialogWindowControls();
-
-			}
-
-			@Override
-			public void onDeviceNotConnected() {
-				showSnackbar(dialogWindow, context.getString(R.string.error_device_not_connected));
-				enableDialogWindowControls();
-
-			}
-
-			@Override
-			public void onTheEndOfTheRequest() {
-			}
-		};
-
-		//________________________________________________________________
-		//  This callback will fill place with data
-		this.getDataCallback = new WeatherService.CallbackGetData() {
-
-			@Override
-			public void onTreatmentError(RequestStatus requestStatus) {
-				showSnackbar(dialogWindow, context.getString(R.string.error_cannot_refresh_place_list_network));
-			}
-
-			@Override
-			public void onNoResponseError(RequestStatus requestStatus) {
-				showSnackbar(dialogWindow, context.getString(R.string.error_server_unreachable));
-			}
-
-			@Override
-			public void onTooManyRequestsError(RequestStatus requestStatus) {
-				showSnackbar(dialogWindow, context.getString(R.string.error_too_many_request_in_a_day));
-			}
-
-			@Override
-			public void onPlaceNotFoundError(RequestStatus requestStatus) {
-				showSnackbar(dialogWindow, context.getString(R.string.error_place_not_found));
-			}
-
-			@Override
-			public void onWrongOrUnknownApiKeyError(RequestStatus requestStatus) {
-				showSnackbar(dialogWindow, context.getString(R.string.error_wrong_api_key));
-			}
-
-			@Override
-			public void onUnknownError(RequestStatus requestStatus) {
-				showSnackbar(dialogWindow, context.getString(R.string.error_unknow_error));
-			}
-
-			@Override
-			public void onDeviceNotConnected(RequestStatus requestStatus) {
-				showSnackbar(dialogWindow, context.getString(R.string.error_device_not_connected));
-			}
-
-			@Override
-			public void onTheEndOfTheRequest(Place place, DataPlaces dataPlaces, RequestStatus requestStatus) {
-				try {
-					if (dataPlaces.addPlace(place)) {
-						placeFragmentInteractions.onAddingPlace(place);
-						dismiss();
-					} else {
-						throw new Exception("Commit Error");
-					}
-				} catch (PlaceAlreadyExistException e) {
-					logger.log(Level.WARNING, e.getMessage());
-					cityTextInputLayout.setError(context.getString(R.string.error_place_already_added));
-				} catch (Exception e) {
-					logger.log(Level.WARNING, e.getMessage());
-					showSnackbar(dialogWindow, context.getString(R.string.error_cannot_save_place));
+				switch (requestStatus) {
+					case NO_ANSWER:
+						showSnackbar(dialogWindow, context.getString(R.string.error_server_unreachable));
+						break;
+					case NOT_CONNECTED:
+						showSnackbar(dialogWindow, context.getString(R.string.error_device_not_connected));
+						break;
+					case TOO_MANY_REQUESTS:
+						showSnackbar(dialogWindow, context.getString(R.string.error_too_many_request_in_a_day));
+						break;
+					case AUTH_FAILED:
+						showSnackbar(dialogWindow, context.getString(R.string.error_wrong_api_key));
+						break;
+					case NOT_FOUND:
+						showSnackbar(dialogWindow, context.getString(R.string.error_place_not_found));
+						break;
+					case ALREADY_PRESENT:
+						showSnackbar(dialogWindow, context.getString(R.string.error_place_already_added));
+						break;
+					default:
+						showSnackbar(dialogWindow, context.getString(R.string.error_unknow_error));
+						break;
 				}
-				enableDialogWindowControls();
 			}
 		};
 
@@ -249,19 +164,9 @@ public class AddPlaceDialog extends Dialog {
 						enableDialogWindowControls();
 					}
 
-					//  No API key is registered
-					else if (apiKey == null || apiKey.length() != 32) {
-						dismiss();
-						Snackbar.make(dialogWindow, context.getString(R.string.error_no_api_key_registered_short), Snackbar.LENGTH_SHORT)
-								.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).setMaxInlineActionWidth(3)
-								.show();
-						enableDialogWindowControls();
-
-					}
-
 					//  API key and place settings is correctly registered
 					else {
-						weatherService.getCoordinatesOWM(new Place(getCityField(), getCountryCode()), getCoordinatesCallback);
+						appRepository.findPlaceAndAdd(getCityField(), getCountryCode(), fetchDataCallback);
 					}
 				});
 

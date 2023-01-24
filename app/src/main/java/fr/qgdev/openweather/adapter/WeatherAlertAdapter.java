@@ -11,13 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import fr.qgdev.openweather.FormattingService;
-import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.weather.WeatherAlert;
+import fr.qgdev.openweather.metrics.WeatherAlert;
+import fr.qgdev.openweather.repositories.FormattingService;
+import fr.qgdev.openweather.repositories.places.Place;
 
 
 /**
@@ -53,7 +54,7 @@ public class WeatherAlertAdapter extends BaseAdapter {
         this.context = context;
         this.place = place;
         this.inflater = LayoutInflater.from(context);
-        this.weatherAlertsList = place.getWeatherAlertsArrayList();
+        this.weatherAlertsList = place.getWeatherAlertsList();
         this.formattingService = formattingService;
     }
 
@@ -118,23 +119,23 @@ public class WeatherAlertAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup parent) {
         view = inflater.inflate(R.layout.adapter_weather_alert, null);
         WeatherAlert currentWeatherAlert = getItem(position);
-        TimeZone timeZone = place.getTimeZone();
+        TimeZone timeZone = place.getProperties().getTimeZone();
 
         TextView eventTextView = view.findViewById(R.id.event);
         TextView senderTextView = view.findViewById(R.id.sender);
         TextView startDateTextView = view.findViewById(R.id.start_date);
         TextView endDateTextView = view.findViewById(R.id.end_date);
         TextView descriptionTextView = view.findViewById(R.id.description);
-
+    
         descriptionTextView.setLinksClickable(true);
         descriptionTextView.setLinkTextColor(this.context.getColor(R.color.colorAccent));
-
+    
         eventTextView.setText(currentWeatherAlert.getEvent());
         senderTextView.setText(currentWeatherAlert.getSender());
-        startDateTextView.setText(formattingService.getFormattedFullTimeHour(currentWeatherAlert.getStart_dtDate(), timeZone));
-        endDateTextView.setText(formattingService.getFormattedFullTimeHour(currentWeatherAlert.getEnd_dtDate(), timeZone));
+        startDateTextView.setText(formattingService.getFormattedFullTimeHour(new Date(currentWeatherAlert.getStart_dt()), timeZone));
+        endDateTextView.setText(formattingService.getFormattedFullTimeHour(new Date(currentWeatherAlert.getEnd_dt()), timeZone));
         descriptionTextView.setText(currentWeatherAlert.getDescription());
-
+    
         return view;
     }
 }
