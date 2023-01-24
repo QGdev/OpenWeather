@@ -10,7 +10,6 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.qgdev.openweather.R;
@@ -36,10 +35,7 @@ public class SettingsFragment extends Fragment {
 
         aboutUsButton.setOnClickListener(v -> {
             Context context = getContext();
-            if (context == null) {
-                logger.log(Level.SEVERE, "Context is null");
-                return;
-            }
+            if (context == null) return;
 
             final AboutAppDialog aboutAppDialog = new AboutAppDialog(context);
             aboutAppDialog.show();
