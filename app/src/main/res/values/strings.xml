@@ -72,12 +72,13 @@
 	<string name="error_place_not_found">Place not found</string>
 	<string name="error_wrong_api_key">OpenWeatherMaps didn\'t recognize your API key</string>
 	<string name="error_too_many_request_in_a_day">Cannot get weather data, too many requests today</string>
-	<string name="error_unknow_error">Unknow error happened</string>
+	<string name="error_unknow_error">Unknown error happened</string>
 	<string name="error_device_not_connected">Cannot connect to internet, please verify your connection and try again</string>
 
-	<string name="url_owm_weatherdata" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
-	<string name="url_owm_airqualitydata" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/air_pollution?lat=%f&lon=%f&appid=%s]]></string>
-	<string name="url_owm_coordinates" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s]]></string>
+	<string name="url_owm_weather_data" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
+	<string name="url_owm_airquality_data" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/air_pollution?lat=%f&lon=%f&appid=%s]]></string>
+	<string name="url_owm_properties_name" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s&lang=%s]]></string>
+	<string name="url_owm_properties_coordinates" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
 
 	<string name="place_added_succcessfully">was successfully added</string>
 

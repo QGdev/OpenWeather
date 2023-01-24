@@ -4,7 +4,7 @@
     <androidx.preference.PreferenceCategory app:title="@string/title_settings_api">
 
         <androidx.preference.EditTextPreference
-            app:key="api_key"
+            app:key="conf_api_key"
             app:title="@string/title_settings_api_key"
             android:inputType="textVisiblePassword"
             app:useSimpleSummaryProvider="true" />
@@ -24,7 +24,7 @@
             app:defaultValue="@string/default_hourformat"
             app:entries="@array/time_format"
             app:entryValues="@array/time_format_values"
-            app:key="time_format"
+            app:key="conf_time_format"
             app:title="@string/title_settings_hour_format"
             app:useSimpleSummaryProvider="true" />
 
@@ -35,7 +35,7 @@
         <androidx.preference.ListPreference
             app:entries="@array/temperature_units"
             app:entryValues="@array/temperature_units_values"
-            app:key="temperature_unit"
+            app:key="conf_temperature_unit"
             app:title="@string/title_settings_units_temperature"
             app:defaultValue="celsius"
             app:useSimpleSummaryProvider="true" />
@@ -43,7 +43,7 @@
         <androidx.preference.ListPreference
             app:entries="@array/measure_units"
             app:entryValues="@array/measure_units_values"
-            app:key="measure_unit"
+            app:key="conf_measure_unit"
             app:title="@string/title_settings_units_measure"
             app:defaultValue="metric"
             app:useSimpleSummaryProvider="true" />
@@ -51,7 +51,7 @@
         <androidx.preference.ListPreference
             app:entries="@array/pressure_units"
             app:entryValues="@array/pressure_units_values"
-            app:key="pressure_unit"
+            app:key="conf_pressure_unit"
             app:title="@string/title_settings_units_pressure"
             app:defaultValue="hpa"
             app:useSimpleSummaryProvider="true" />
@@ -60,7 +60,7 @@
             app:defaultValue="cardinal"
             app:entries="@array/wind_direction_units"
             app:entryValues="@array/wind_direction_units_values"
-            app:key="direction_unit"
+            app:key="conf_direction_unit"
             app:title="@string/title_settings_units_direction"
             app:useSimpleSummaryProvider="true" />
 
