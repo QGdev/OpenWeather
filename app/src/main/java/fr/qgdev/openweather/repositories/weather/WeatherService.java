@@ -20,36 +20,22 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.repositories.AppRepository;
 import fr.qgdev.openweather.repositories.places.Coordinates;
 import fr.qgdev.openweather.repositories.places.Place;
-import fr.qgdev.openweather.repositories.settings.SecuredPreferenceDataStore;
+import fr.qgdev.openweather.repositories.settings.SettingsManager;
 
 public class WeatherService {
     
     private static final String TAG = WeatherService.class.getSimpleName();
-    private static String apiKey, language;
+    private final SettingsManager settingsManager;
     private final Logger logger = Logger.getLogger(TAG);
     private final Context context;
     private final RequestQueue queue;
     
-    public WeatherService(final Context context, @NonNull String language, @NonNull final AppRepository appRepository) {
+    public WeatherService(Context context, @NonNull SettingsManager settingsManager) {
         this.context = context;
-        
         this.queue = Volley.newRequestQueue(context);
-        
-        SecuredPreferenceDataStore securedPreferenceDataStore = appRepository.getSecuredPreferenceDataStore();
-        
-        WeatherService.apiKey = securedPreferenceDataStore.getString("conf_api_key", null);
-        WeatherService.language = language;
-        
-        securedPreferenceDataStore.getSharedPreferencesChangeLiveData().observeForever(change -> {
-            if (change == null) return;
-            
-            if (change.getKey() == "config_api_key" && change.getValue() instanceof String) {
-                WeatherService.apiKey = (String) change.getValue();
-            }
-        });
+        this.settingsManager = settingsManager;
     }
     
     
@@ -60,8 +46,8 @@ public class WeatherService {
         String url = String.format(context.getString(R.string.url_owm_properties_name),
                 city,
                 countryCode,
-                apiKey,
-                language);
+                settingsManager.getApiKey(),
+                settingsManager.getDefaultLocale().getLanguage());
         
         searchAndBuildPlace(placeID, url, callback);
     }
@@ -73,8 +59,8 @@ public class WeatherService {
         String url = String.format(context.getString(R.string.url_owm_properties_coordinates),
                 coordinates.getLatitude(),
                 coordinates.getLongitude(),
-                apiKey,
-                language);
+                settingsManager.getApiKey(),
+                settingsManager.getDefaultLocale().getLanguage());
         
         searchAndBuildPlace(placeID, url, callback);
     }
@@ -136,8 +122,8 @@ public class WeatherService {
         String url = String.format(context.getString(R.string.url_owm_weather_data),
                 place.getGeolocation().getCoordinates().getLatitude(),
                 place.getGeolocation().getCoordinates().getLongitude(),
-                apiKey,
-                language);
+                settingsManager.getApiKey(),
+                settingsManager.getDefaultLocale().getLanguage());
         
         //  Before launching request, we must have to verify that if the device is connected to a network
         //  The device is connected to an INTERNET capable network
@@ -196,7 +182,7 @@ public class WeatherService {
         String url = String.format(context.getString(R.string.url_owm_airquality_data),
                 place.getGeolocation().getCoordinates().getLatitude(),
                 place.getGeolocation().getCoordinates().getLongitude(),
-                apiKey);
+                settingsManager.getApiKey());
         
         //  Before launching request, we must have to verify that if the device is connected to a network
         //  The device is connected to an INTERNET capable network
@@ -262,10 +248,12 @@ public class WeatherService {
     }
     
     public boolean isApiKeyValid() {
+        String apiKey = settingsManager.getApiKey();
         return apiKey != null && apiKey.length() == 32 && Pattern.compile("[a-zA-Z0-9]").matcher(apiKey).find();
     }
     
     public boolean isApiKeyRegistered() {
+        String apiKey = settingsManager.getApiKey();
         return apiKey != null && !apiKey.equals("");
     }
     
