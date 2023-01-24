@@ -1,9 +1,8 @@
 package fr.qgdev.openweather.fragment.places;
 
-import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -18,7 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,59 +25,86 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.qgdev.openweather.Place;
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.WeatherService;
 import fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter;
-import fr.qgdev.openweather.dataplaces.DataPlaces;
 import fr.qgdev.openweather.dialog.AddPlaceDialog;
+import fr.qgdev.openweather.repositories.AppRepository;
+import fr.qgdev.openweather.repositories.places.Place;
+import fr.qgdev.openweather.repositories.weather.FetchCallback;
+import fr.qgdev.openweather.repositories.weather.RequestStatus;
 
 public class PlacesFragment extends Fragment {
-
+	
 	private static final String TAG = PlacesFragment.class.getSimpleName();
 	private final Logger logger = Logger.getLogger(TAG);
-
+	
 	private Context mContext;
-	private String API_KEY;
-
+	
+	private AppRepository appRepository;
+	private PlacesViewModel placesViewModel;
+	
 	private TextView informationTextView;
 	private SwipeRefreshLayout swipeRefreshLayout;
 	private RecyclerView placeRecyclerView;
 	private PlaceRecyclerViewAdapter placeRecyclerViewAdapter;
-	private static DataPlaces dataPlaces;
-	private PlacesFragment.Interactions interactions;
-	private static ArrayList<Place> placeArrayList;
-
-	private WeatherService weatherService;
-	private WeatherService.CallbackGetData getDataPlaceListCallback;
-
+	
+	private FetchCallback fetchUpdateCallback;
+	
 	private static AtomicInteger refreshCounter;
-
-	private void showSnackbar(View view, String message) {
+	
+	public void showSnackbar(View view, String message) {
 		Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
-				.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-				.setMaxInlineActionWidth(3)
-				.show();
+				  .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+				  .setMaxInlineActionWidth(3)
+				  .show();
 	}
-
+	
+	public void showSnackbar(String message) {
+		if (this.getView() == null) return;
+		showSnackbar(this.getView(), message);
+	}
+	
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+	
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		if (weatherService != null) weatherService.cancel();
 		mContext = null;
 	}
-
-
+	
+	/**
+	 * Called when the fragment is visible to the user and actively running.
+	 * This is generally
+	 * tied to {@link Activity#onResume() Activity.onResume} of the containing
+	 * Activity's lifecycle.
+	 */
+	@Override
+	public void onResume() {
+		super.onResume();
+		appRepository.getFormattingService().update();
+		placeRecyclerViewAdapter.notifyDataSetChanged();
+		logger.log(Level.INFO, "onResume");
+	}
+	
+	
 	@Override
 	public void onAttach(@NonNull Context context) {
 		super.onAttach(context);
 		mContext = context;
+		appRepository = new AppRepository(mContext.getApplicationContext());
+		placesViewModel = PlacesViewModelFactory.getInstance().create();
+		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, placesViewModel, appRepository.getFormattingService());
+		appRepository.getPlacesLiveData().observeForever(places -> {
+			if (places == null) return;
+			placesViewModel.setPlaces(places);
+		});
 	}
 
 	@Override
@@ -87,123 +112,132 @@ public class PlacesFragment extends Fragment {
 		super.onDestroyView();
 		placeRecyclerView.destroyDrawingCache();
 	}
+	
 
-	@Override
-	public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-		super.onViewStateRestored(savedInstanceState);
-	}
-
-
-	@SuppressLint("WrongThread")
 	@UiThread
 	public View onCreateView(@NonNull LayoutInflater inflater,
 							 ViewGroup container,
 							 Bundle savedInstanceState) {
-
+		
 		View root = inflater.inflate(R.layout.fragment_places, container, false);
-
+		
 		informationTextView = root.findViewById(R.id.information_textview);
 		swipeRefreshLayout = root.findViewById(R.id.swipe_refresh);
 		FloatingActionButton addPlacesFab = root.findViewById(R.id.add_places);
-
-		//  Initialize places data storage
-		try {
-			dataPlaces = new DataPlaces(mContext);
-		} catch (Exception e) {
-			showSnackbar(container, mContext.getString(R.string.error_storage_security));
-			logger.log(Level.SEVERE, e.getMessage());
-		}
-
-
-		placeArrayList = new ArrayList<>();
-
-		try {
-			placeArrayList.addAll(dataPlaces.getAllPlacesStored());
-		} catch (Exception e) {
-			logger.log(Level.WARNING, e.getMessage());
-			placeArrayList.clear();
-		}
-
-
-		//  Initialize the list and the ArrayList where all places registered
+		
 		placeRecyclerView = root.findViewById(R.id.place_list);
 		refreshCounter = new AtomicInteger();
 		refreshCounter.set(0);
 
-
-		//	Initialize Fragment Interactions
-		this.interactions = new Interactions() {
-			@Override
-			public void onPlaceDeletion(DataPlaces dataPlaces, int position) {
-				try {
-					if (dataPlaces.deletePlace(position)) {
-						placeArrayList.remove(position);
-						showSnackbar(container, mContext.getString(R.string.place_deletion_successful));
-					} else {
-						showSnackbar(container, mContext.getString(R.string.error_place_deletion));
-					}
-
-					placeRecyclerViewAdapter.remove(position);
-
-					if (placeArrayList.isEmpty()) {
+		/*
+		if (placesViewModel.getPlaces().isEmpty()) {
 						informationTextView.setText(R.string.error_no_places_registered);
 						informationTextView.setVisibility(View.VISIBLE);
-						swipeRefreshLayout.setVisibility(View.GONE);
+						swipeRefreshLayout.setVisibility(View.INVISIBLE);
 					}
-
-				} catch (ArrayIndexOutOfBoundsException e) {
-					logger.log(Level.WARNING, e.getMessage());
-					showSnackbar(container, mContext.getString(R.string.error_place_deletion));
-				}
-			}
-
+		 */
+		
+		
+		//	Initialize Fragment FragmentCallbacks
+		AppRepository.RepositoryCallback repositoryCallback = new AppRepository.RepositoryCallback() {
 			@Override
-			public void onAddingPlace(Place place) {
-				if (placeArrayList.isEmpty()) {
-					informationTextView.setVisibility(View.GONE);
-					swipeRefreshLayout.setVisibility(View.VISIBLE);
-				}
-
-				placeArrayList.add(place);
-				placeRecyclerViewAdapter.add(placeArrayList.size() - 1);
+			public void onPlaceDeletion(int position) {
+				AppRepository.RepositoryAction<Integer> action;
+				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.DELETION,
+						  position);
+				placesViewModel.addRepositoryPlaceAction(action);
 			}
-
+			
 			@Override
-			public void onPlaceUpdate(DataPlaces dataPlaces, int position, Place place) {
-				placeArrayList.set(position, place);
-				placeRecyclerViewAdapter.notifyItemChanged(position);
+			public void onPlaceInsertion(int position) {
+				AppRepository.RepositoryAction<Integer> action;
+				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.INSERTION,
+						  position);
+				placesViewModel.addRepositoryPlaceAction(action);
 			}
-
+			
 			@Override
-			public void onMovedPlace(DataPlaces dataPlaces, int initialPosition, int finalPosition) {
-				try {
-					dataPlaces.movePlace(initialPosition, finalPosition);
-					placeRecyclerViewAdapter.move(initialPosition, finalPosition);
-				} catch (Exception e) {
-					logger.log(Level.WARNING, e.getMessage());
-					showSnackbar(container, mContext.getString(R.string.error_place_move));
-				}
+			public void onPlaceUpdate(int position) {
+				AppRepository.RepositoryAction<Integer> action;
+				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.UPDATE,
+						  position);
+				placesViewModel.addRepositoryPlaceAction(action);
+			}
+			
+			@Override
+			public void onMovedPlace(int initialPosition, int finalPosition) {
+				Integer[] data = new Integer[2];
+				data[0] = initialPosition;
+				data[1] = finalPosition;
+				
+				AppRepository.RepositoryAction<Integer[]> action;
+				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.UPDATE,
+						  data);
+				placesViewModel.addRepositoryPlaceAction(action);
 			}
 		};
-
-
+		
+		appRepository.attachCallbacks(repositoryCallback);
+		
 		//  Initialisation of the RecyclerView
 		//________________________________________________________________
 		//
+		
+		
 		LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
 		layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
-		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, this);
 		placeRecyclerView.setLayoutManager(layoutManager);
 		placeRecyclerView.setAdapter(placeRecyclerViewAdapter);
-
+		
+		
+		placesViewModel.getPlacesLiveData().observe(getViewLifecycleOwner(), places -> {
+			if (places == null) return;
+			
+			while (!placesViewModel.isRepositoryPlaceActionEmpty()) {
+				AppRepository.RepositoryAction action = placesViewModel.pollRepositoryPlaceAction();
+				
+				switch (action.getType()) {
+					case INSERTION:
+						placeRecyclerViewAdapter.notifyItemInserted((Integer) action.getData());
+						swipeRefreshLayout.setVisibility(View.VISIBLE);
+						informationTextView.setVisibility(View.GONE);
+						break;
+					case DELETION:
+						placeRecyclerViewAdapter.notifyItemRemoved((Integer) action.getData());
+						if (places.isEmpty()) {
+							informationTextView.setText(R.string.error_no_places_registered);
+							informationTextView.setVisibility(View.VISIBLE);
+							swipeRefreshLayout.setVisibility(View.GONE);
+						}
+						break;
+					case UPDATE:
+						placeRecyclerViewAdapter.notifyItemChanged((Integer) action.getData());
+						break;
+					case MOVED:
+						Integer[] data = (Integer[]) action.getData();
+						placeRecyclerViewAdapter.notifyItemMoved(data[0], data[1]);
+						break;
+				}
+			}
+			
+			if (places.size() > 0) {
+				informationTextView.setVisibility(View.GONE);
+				swipeRefreshLayout.setVisibility(View.VISIBLE);
+				placeRecyclerViewAdapter.notifyDataSetChanged();
+			} else {
+				informationTextView.setVisibility(View.VISIBLE);
+				swipeRefreshLayout.setVisibility(View.INVISIBLE);
+			}
+		});
+		
+		
 		//	Used to manage drag & drop reorganisation of place cards and swipe to delete
 		//
 		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
-
+			
 			int _initialPosition;
 			boolean itemAsBeenMoved = false;
-
+			
 			@Override
 			public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
 				//	If the holder is an other view type than COMPACT or if there is no items in the recyclerView, swipe and drag&drop are disabled
@@ -226,8 +260,8 @@ public class PlacesFragment extends Fragment {
 				}
 				int initialPosition = viewHolder.getAbsoluteAdapterPosition();
 				int finalPosition = target.getAbsoluteAdapterPosition();
-
-				Collections.swap(placeArrayList, initialPosition, finalPosition);
+				
+				appRepository.movePlace(initialPosition, finalPosition);
 				placeRecyclerViewAdapter.notifyItemMoved(initialPosition, finalPosition);
 
 				return false;
@@ -237,27 +271,27 @@ public class PlacesFragment extends Fragment {
 			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 				if (direction == ItemTouchHelper.START || direction == ItemTouchHelper.END) {
 					int index = viewHolder.getLayoutPosition();
-					Place place = placeArrayList.get(index);
+					Place place = placesViewModel.getPlaces().get(index);
 					new AlertDialog.Builder(mContext)
-							.setTitle(mContext.getString(R.string.dialog_confirmation_title_delete_place))
-							.setMessage(String.format(mContext.getString(R.string.dialog_confirmation_message_delete_place), place.getCity(), place.getCountryCode()))
-							.setPositiveButton(mContext.getString(R.string.dialog_confirmation_choice_yes), (dialog, which) -> interactions.onPlaceDeletion(dataPlaces, index))
+							  .setTitle(mContext.getString(R.string.dialog_confirmation_title_delete_place))
+							  .setMessage(String.format(mContext.getString(R.string.dialog_confirmation_message_delete_place), place.getGeolocation().getCity(), place.getGeolocation().getCountryCode()))
+							  .setPositiveButton(mContext.getString(R.string.dialog_confirmation_choice_yes), (dialog, which) -> appRepository.delete(place))
 							.setNegativeButton(mContext.getString(R.string.dialog_confirmation_choice_no), (dialogInterface, i) -> placeRecyclerViewAdapter.notifyItemChanged(index))
 							.setCancelable(false)
 							.show();
 				}
 			}
-
+			
 			@Override
-			public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+			public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
 				super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-
+				
 				if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
 					Paint paintSwipeDelete = new Paint();
 					Rect backgroundRect;
 					int halfScreenWidth = recyclerView.getMeasuredWidth();
 					paintSwipeDelete.setColor(getResources().getColor(R.color.colorRedError, null));
-
+					
 					Drawable binDrawable = getResources().getDrawable(R.drawable.ic_trash_can, null);
 					//  Set Color and Dimensions of the drawable and print it on canvas
 					binDrawable.setTint(paintSwipeDelete.getColor());
@@ -286,78 +320,52 @@ public class PlacesFragment extends Fragment {
 			public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
 				super.clearView(recyclerView, viewHolder);
 				if (itemAsBeenMoved)
-					interactions.onMovedPlace(dataPlaces, _initialPosition, viewHolder.getAbsoluteAdapterPosition());
-				itemAsBeenMoved = false;
+					//interactions.onMovedPlace(_initialPosition, viewHolder.getAbsoluteAdapterPosition());
+					itemAsBeenMoved = false;
 				viewHolder.itemView.setAlpha(1);
 			}
 		});
 		itemTouchHelper.attachToRecyclerView(placeRecyclerView);
-
-
+		
+		
 		//  Get API key
-		SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-		API_KEY = apiKeyPref.getString("api_key", null);
-
+		//SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+		//API_KEY = apiKeyPref.getString("api_key", null);
+		
 		//  acquire data of the places callback
-		getDataPlaceListCallback = new WeatherService.CallbackGetData() {
-
+		fetchUpdateCallback = new FetchCallback() {
+			
 			@Override
-			public void onTreatmentError(RequestStatus requestStatus) {
-				showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list_network));
-			}
-
-			@Override
-			public void onNoResponseError(RequestStatus requestStatus) {
-				showSnackbar(container, mContext.getString(R.string.error_server_unreachable));
-			}
-
-			@Override
-			public void onTooManyRequestsError(RequestStatus requestStatus) {
-				showSnackbar(container, mContext.getString(R.string.error_too_many_request_in_a_day));
-			}
-
-			@Override
-			public void onPlaceNotFoundError(RequestStatus requestStatus) {
-				showSnackbar(container, mContext.getString(R.string.error_place_not_found));
-			}
-
-			@Override
-			public void onWrongOrUnknownApiKeyError(RequestStatus requestStatus) {
-				showSnackbar(container, mContext.getString(R.string.error_wrong_api_key));
-			}
-
-			@Override
-			public void onUnknownError(RequestStatus requestStatus) {
-				showSnackbar(container, mContext.getString(R.string.error_unknow_error));
-			}
-
-			@Override
-			public void onDeviceNotConnected(RequestStatus requestStatus) {
-				showSnackbar(container, mContext.getString(R.string.error_device_not_connected));
-			}
-
-			@Override
-			public void onTheEndOfTheRequest(Place place, DataPlaces dataPlaces, RequestStatus requestStatus) {
-				if (requestStatus != RequestStatus.WEATHER_REQUEST_FAIL) {
-					try {
-						if (dataPlaces.updatePlace(place)) {
-							interactions.onPlaceUpdate(dataPlaces, dataPlaces.getPlacePositionInRegister(place), place);
-
-							if (informationTextView.getVisibility() == View.VISIBLE) {
-								informationTextView.setVisibility(View.GONE);
-								swipeRefreshLayout.setVisibility(View.VISIBLE);
-							}
-
-						} else {
-							showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
-						}
-					} catch (Exception e) {
-						logger.log(Level.WARNING, e.getMessage());
-						showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
-					}
+			public void onSuccess() {
+				if (placesViewModel.getPlaces().size() == refreshCounter.incrementAndGet()) {
+					swipeRefreshLayout.setRefreshing(false);
+					refreshCounter.set(0);
 				}
-
-				if (placeArrayList.size() == refreshCounter.incrementAndGet()) {
+			}
+			
+			@Override
+			public void onError(RequestStatus requestStatus) {
+				switch (requestStatus) {
+					case NO_ANSWER:
+						showSnackbar(container, mContext.getString(R.string.error_server_unreachable));
+						break;
+					case NOT_CONNECTED:
+						showSnackbar(container, mContext.getString(R.string.error_device_not_connected));
+						break;
+					case TOO_MANY_REQUESTS:
+						showSnackbar(container, mContext.getString(R.string.error_too_many_request_in_a_day));
+						break;
+					case AUTH_FAILED:
+						showSnackbar(container, mContext.getString(R.string.error_wrong_api_key));
+						break;
+					case NOT_FOUND:
+						showSnackbar(container, mContext.getString(R.string.error_place_not_found));
+						break;
+					default:
+						showSnackbar(container, mContext.getString(R.string.error_unknow_error));
+						break;
+				}
+				if (placesViewModel.getPlaces().size() == refreshCounter.incrementAndGet()) {
 					swipeRefreshLayout.setRefreshing(false);
 					refreshCounter.set(0);
 				}
@@ -373,64 +381,58 @@ public class PlacesFragment extends Fragment {
 		//  A simple click to add a place
 		addPlacesFab.setOnClickListener(
 				placeFabView -> {
-					final AddPlaceDialog addPlaceDialog = new AddPlaceDialog(mContext, placeFabView, this.API_KEY, this.weatherService, this.interactions);
+					final AddPlaceDialog addPlaceDialog = new AddPlaceDialog(mContext, appRepository);
 					addPlaceDialog.build();
 				});
 
 
 		//  Swipe to refresh listener
 		swipeRefreshLayout.setOnRefreshListener(
-				() -> {
-					swipeRefreshLayout.setRefreshing(true);
-					if (API_KEY != null && API_KEY.length() == 32) {
-						try {
-							for (Place place : placeArrayList) {
-								weatherService.getWeatherDataOWM(place, dataPlaces, getDataPlaceListCallback);
-							}
-
-						} catch (Exception e) {
-							logger.log(Level.WARNING, e.getMessage());
-							showSnackbar(container, mContext.getString(R.string.error_cannot_refresh_place_list));
-						}
-					} else {
-						swipeRefreshLayout.setRefreshing(false);
-						showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered_short));
-					}
-				}
+				  () -> {
+					  swipeRefreshLayout.setRefreshing(true);
+					  if (appRepository.isAPIKeyValid()) {
+						  appRepository.updateAllPlaces(fetchUpdateCallback);
+					  } else {
+						  swipeRefreshLayout.setRefreshing(false);
+						  showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered_short));
+					  }
+				  }
 		);
-
+		
 		//	API key verification
-		if (API_KEY != null && API_KEY.length() == 32) {
-			weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), dataPlaces);
-		} else {
-			addPlacesFab.setVisibility(View.GONE);
-		}
-
+		//if (API_KEY != null && API_KEY.length() == 32) {
+		//	weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), app);
+		//} else {
+		//	addPlacesFab.setVisibility(View.GONE);
+		//}
+		
 		//	initialisation the UI part and refreshing data of each places
-		if (placeArrayList.isEmpty()) {
-			if (API_KEY == null || API_KEY.equals("")) {    //	An API key must be set
+		if (placesViewModel.getPlaces().size() == 0) {
+			if (!appRepository.isAPIKeyRegistered()) {    //	An API key must be set
 				informationTextView.setText(R.string.error_no_api_key_registered);
-			} else if (API_KEY.length() != 32) {    //	Must have 32 alphanumerical characters
+			} else if (!appRepository.isAPIKeyValid()) {    //	Must have 32 alphanumerical characters
 				informationTextView.setText(R.string.error_api_key_incorrectly_formed);
 			} else {    //	No place as been registered
 				informationTextView.setText(R.string.error_no_places_registered);
 			}
-
+			
 			informationTextView.setVisibility(View.VISIBLE);
 			swipeRefreshLayout.setVisibility(View.GONE);
 		} else {    //  No errors or warnings, hide information TextView and refresh data
 			informationTextView.setVisibility(View.GONE);
 			swipeRefreshLayout.setVisibility(View.VISIBLE);
-
-			if (API_KEY == null || API_KEY.equals(""))    //	No API key is registered
+			
+			if (!appRepository.isAPIKeyRegistered()) {   //	No API key is registered
 				showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered));
-			if (API_KEY.length() != 32)    //	API key is registered but malformed
-				showSnackbar(container, mContext.getString(R.string.error_api_key_incorrectly_formed));
-
-			if (API_KEY != null && API_KEY.length() == 32) {
+			} else {
+				if (!appRepository.isAPIKeyValid())    //	API key is registered but malformed
+					showSnackbar(container, mContext.getString(R.string.error_api_key_incorrectly_formed));
+			}
+			if (appRepository.isAPIKeyValid()) {
 				try {
-					for (Place place : placeArrayList) {
-						weatherService.getWeatherDataOWM(place, dataPlaces, getDataPlaceListCallback);
+					if (!placesViewModel.hasDataAlreadyBeenUpdated()) {
+						appRepository.updateAllPlaces(fetchUpdateCallback);
+						placesViewModel.dataHasBeenUpdated();
 					}
 				} catch (Exception e) {
 					logger.log(Level.WARNING, e.getMessage());
@@ -438,23 +440,5 @@ public class PlacesFragment extends Fragment {
 			}
 		}
 		return root;
-	}
-
-	public Place getPlace(int index) {
-		return placeArrayList.get(index);
-	}
-
-	public int getPlaceArrayListSize() {
-		return placeArrayList.size();
-	}
-
-	public interface Interactions {
-		void onPlaceDeletion(DataPlaces dataPlaces, int position);
-
-		void onAddingPlace(Place place);
-
-		void onPlaceUpdate(DataPlaces dataPlaces, int position, Place place);
-
-		void onMovedPlace(DataPlaces dataPlaces, int initialPosition, int finalPosition);
 	}
 }
