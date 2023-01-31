@@ -13,7 +13,7 @@ public class SettingsManager {
 	}
 	
 	public TemperatureSettings getTemperatureSetting() {
-		switch (securedPreferenceDataStore.getString("conf_temperature_unit", null)) {
+		switch (securedPreferenceDataStore.getString("conf_temperature_unit", "")) {
 			case "fahrenheit":
 				return TemperatureSettings.FAHRENHEIT;
 			case "kelvin":
@@ -25,7 +25,7 @@ public class SettingsManager {
 	}
 	
 	public MeasureSettings getMeasureSetting() {
-		switch (securedPreferenceDataStore.getString("conf_measure_unit", null)) {
+		switch (securedPreferenceDataStore.getString("conf_measure_unit", "")) {
 			case "imperial":
 				return MeasureSettings.IMPERIAL;
 			default:
@@ -35,7 +35,7 @@ public class SettingsManager {
 	}
 	
 	public PressureSettings getPressureSetting() {
-		switch (securedPreferenceDataStore.getString("conf_pressure_unit", null)) {
+		switch (securedPreferenceDataStore.getString("conf_pressure_unit", "")) {
 			case "mbar":
 				return PressureSettings.BAROMETRIC;
 			case "psi":
@@ -49,7 +49,7 @@ public class SettingsManager {
 	}
 	
 	public WindDirectionSettings getWindDirectionSetting() {
-		switch (securedPreferenceDataStore.getString("conf_direction_unit", null)) {
+		switch (securedPreferenceDataStore.getString("conf_direction_unit", "")) {
 			case "angular":
 				return WindDirectionSettings.ANGULAR;
 			default:
@@ -59,7 +59,7 @@ public class SettingsManager {
 	}
 	
 	public TimeSettings getTimeSetting() {
-		switch (securedPreferenceDataStore.getString("conf_time_format", null)) {
+		switch (securedPreferenceDataStore.getString("conf_time_format", "")) {
 			case "12":
 				return TimeSettings.TWELVE_HOURS;
 			default:
