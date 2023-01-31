@@ -90,7 +90,7 @@
                 android:hapticFeedbackEnabled="true"
                 android:nestedScrollingEnabled="true">
 
-                <fr.qgdev.openweather.customView.HourlyForecastGraphView
+                <fr.qgdev.openweather.customview.HourlyForecastGraphView
                     android:id="@+id/hourly_graphview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -153,7 +153,7 @@
                 android:nestedScrollingEnabled="true"
                 android:hapticFeedbackEnabled="true">
 
-                <fr.qgdev.openweather.customView.DailyForecastGraphView
+                <fr.qgdev.openweather.customview.DailyForecastGraphView
                     android:id="@+id/daily_forecast_graphView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
