@@ -26,7 +26,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.qgdev.openweather.R;
@@ -37,6 +36,9 @@ import fr.qgdev.openweather.repositories.places.Place;
 import fr.qgdev.openweather.repositories.weather.FetchCallback;
 import fr.qgdev.openweather.repositories.weather.RequestStatus;
 
+/**
+ * The type Places fragment.
+ */
 public class PlacesFragment extends Fragment {
 	
 	private static final String TAG = PlacesFragment.class.getSimpleName();
@@ -56,16 +58,17 @@ public class PlacesFragment extends Fragment {
 	
 	private static AtomicInteger refreshCounter;
 	
+	/**
+	 * Show snackbar.
+	 *
+	 * @param view    the view
+	 * @param message the message
+	 */
 	public void showSnackbar(View view, String message) {
 		Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
 				  .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
 				  .setMaxInlineActionWidth(3)
 				  .show();
-	}
-	
-	public void showSnackbar(String message) {
-		if (this.getView() == null) return;
-		showSnackbar(this.getView(), message);
 	}
 	
 	@Override
@@ -77,6 +80,7 @@ public class PlacesFragment extends Fragment {
 	public void onDetach() {
 		super.onDetach();
 		mContext = null;
+		if (appRepository != null) appRepository.detachCallbacks();
 	}
 	
 	/**
@@ -90,7 +94,6 @@ public class PlacesFragment extends Fragment {
 		super.onResume();
 		appRepository.getFormattingService().update();
 		placeRecyclerViewAdapter.notifyDataSetChanged();
-		logger.log(Level.INFO, "onResume");
 	}
 	
 	
@@ -101,23 +104,26 @@ public class PlacesFragment extends Fragment {
 		appRepository = new AppRepository(mContext.getApplicationContext());
 		placesViewModel = PlacesViewModelFactory.getInstance().create();
 		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, placesViewModel, appRepository.getFormattingService());
+		
+		//
 		appRepository.getPlacesLiveData().observeForever(places -> {
 			if (places == null) return;
 			placesViewModel.setPlaces(places);
 		});
 	}
-
+	
+	
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
 		placeRecyclerView.destroyDrawingCache();
 	}
 	
-
+	
 	@UiThread
 	public View onCreateView(@NonNull LayoutInflater inflater,
-							 ViewGroup container,
-							 Bundle savedInstanceState) {
+									 ViewGroup container,
+									 Bundle savedInstanceState) {
 		
 		View root = inflater.inflate(R.layout.fragment_places, container, false);
 		
@@ -128,14 +134,6 @@ public class PlacesFragment extends Fragment {
 		placeRecyclerView = root.findViewById(R.id.place_list);
 		refreshCounter = new AtomicInteger();
 		refreshCounter.set(0);
-
-		/*
-		if (placesViewModel.getPlaces().isEmpty()) {
-						informationTextView.setText(R.string.error_no_places_registered);
-						informationTextView.setVisibility(View.VISIBLE);
-						swipeRefreshLayout.setVisibility(View.INVISIBLE);
-					}
-		 */
 		
 		
 		//	Initialize Fragment FragmentCallbacks
@@ -183,7 +181,6 @@ public class PlacesFragment extends Fragment {
 		//________________________________________________________________
 		//
 		
-		
 		LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
 		layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 		placeRecyclerView.setLayoutManager(layoutManager);
@@ -192,6 +189,14 @@ public class PlacesFragment extends Fragment {
 		
 		placesViewModel.getPlacesLiveData().observe(getViewLifecycleOwner(), places -> {
 			if (places == null) return;
+			if (places.isEmpty()) setNoPlacesViewState();
+			else {
+				if (!placesViewModel.hasDataAlreadyBeenUpdated() && appRepository.isAPIKeyValid()) {
+					appRepository.updateAllPlaces(fetchUpdateCallback);
+					placesViewModel.dataHasBeenUpdated();
+				}
+				setExistingPlacesViewState(container);
+			}
 			
 			while (!placesViewModel.isRepositoryPlaceActionEmpty()) {
 				AppRepository.RepositoryAction action = placesViewModel.pollRepositoryPlaceAction();
@@ -205,9 +210,7 @@ public class PlacesFragment extends Fragment {
 					case DELETION:
 						placeRecyclerViewAdapter.notifyItemRemoved((Integer) action.getData());
 						if (places.isEmpty()) {
-							informationTextView.setText(R.string.error_no_places_registered);
-							informationTextView.setVisibility(View.VISIBLE);
-							swipeRefreshLayout.setVisibility(View.GONE);
+							setNoPlacesViewState();
 						}
 						break;
 					case UPDATE:
@@ -218,15 +221,6 @@ public class PlacesFragment extends Fragment {
 						placeRecyclerViewAdapter.notifyItemMoved(data[0], data[1]);
 						break;
 				}
-			}
-			
-			if (places.size() > 0) {
-				informationTextView.setVisibility(View.GONE);
-				swipeRefreshLayout.setVisibility(View.VISIBLE);
-				placeRecyclerViewAdapter.notifyDataSetChanged();
-			} else {
-				informationTextView.setVisibility(View.VISIBLE);
-				swipeRefreshLayout.setVisibility(View.INVISIBLE);
 			}
 		});
 		
@@ -251,7 +245,7 @@ public class PlacesFragment extends Fragment {
 				//	When it is in COMPACT view type, swipe and drag&drop are enabled
 				return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.START | ItemTouchHelper.END);
 			}
-
+			
 			@Override
 			public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
 				if (!itemAsBeenMoved) {
@@ -263,10 +257,10 @@ public class PlacesFragment extends Fragment {
 				
 				appRepository.movePlace(initialPosition, finalPosition);
 				placeRecyclerViewAdapter.notifyItemMoved(initialPosition, finalPosition);
-
+				
 				return false;
 			}
-
+			
 			@Override
 			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 				if (direction == ItemTouchHelper.START || direction == ItemTouchHelper.END) {
@@ -276,9 +270,9 @@ public class PlacesFragment extends Fragment {
 							  .setTitle(mContext.getString(R.string.dialog_confirmation_title_delete_place))
 							  .setMessage(String.format(mContext.getString(R.string.dialog_confirmation_message_delete_place), place.getGeolocation().getCity(), place.getGeolocation().getCountryCode()))
 							  .setPositiveButton(mContext.getString(R.string.dialog_confirmation_choice_yes), (dialog, which) -> appRepository.delete(place))
-							.setNegativeButton(mContext.getString(R.string.dialog_confirmation_choice_no), (dialogInterface, i) -> placeRecyclerViewAdapter.notifyItemChanged(index))
-							.setCancelable(false)
-							.show();
+							  .setNegativeButton(mContext.getString(R.string.dialog_confirmation_choice_no), (dialogInterface, i) -> placeRecyclerViewAdapter.notifyItemChanged(index))
+							  .setCancelable(false)
+							  .show();
 				}
 			}
 			
@@ -295,26 +289,26 @@ public class PlacesFragment extends Fragment {
 					Drawable binDrawable = getResources().getDrawable(R.drawable.ic_trash_can, null);
 					//  Set Color and Dimensions of the drawable and print it on canvas
 					binDrawable.setTint(paintSwipeDelete.getColor());
-
+					
 					if (Math.abs(dX) > 0.1) {
 						if (dX > 0) {
 							backgroundRect = new Rect(viewHolder.itemView.getLeft(), viewHolder.itemView.getTop(), viewHolder.itemView.getLeft() + (int) dX, viewHolder.itemView.getBottom());
 						} else {
 							backgroundRect = new Rect(viewHolder.itemView.getRight(), viewHolder.itemView.getTop(), viewHolder.itemView.getRight() + (int) dX, viewHolder.itemView.getBottom());
 						}
-
+						
 						binDrawable.setBounds(backgroundRect.centerX() - 40, backgroundRect.centerY() - 40,
-								backgroundRect.centerX() + 40, backgroundRect.centerY() + 40);
-
+								  backgroundRect.centerX() + 40, backgroundRect.centerY() + 40);
+						
 						binDrawable.setAlpha((int) (Math.abs(dX) * 0.75F));
 						viewHolder.itemView.setAlpha((halfScreenWidth - Math.abs(dX)) / halfScreenWidth);
-
+						
 						binDrawable.draw(c);
 					}
 				}
 			}
-
-
+			
+			
 			//	This handles the ending of the drag & drop feature
 			@Override
 			public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
@@ -327,10 +321,6 @@ public class PlacesFragment extends Fragment {
 		});
 		itemTouchHelper.attachToRecyclerView(placeRecyclerView);
 		
-		
-		//  Get API key
-		//SharedPreferences apiKeyPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-		//API_KEY = apiKeyPref.getString("api_key", null);
 		
 		//  acquire data of the places callback
 		fetchUpdateCallback = new FetchCallback() {
@@ -371,21 +361,21 @@ public class PlacesFragment extends Fragment {
 				}
 			}
 		};
-
-
+		
+		
 		//  Button and action Listeners
 		//________________________________________________________________
 		//
 		//  Initialize buttons and actions behavior
-
+		
 		//  A simple click to add a place
 		addPlacesFab.setOnClickListener(
-				placeFabView -> {
-					final AddPlaceDialog addPlaceDialog = new AddPlaceDialog(mContext, appRepository);
-					addPlaceDialog.build();
-				});
-
-
+				  placeFabView -> {
+					  final AddPlaceDialog addPlaceDialog = new AddPlaceDialog(mContext, appRepository);
+					  addPlaceDialog.build();
+				  });
+		
+		
 		//  Swipe to refresh listener
 		swipeRefreshLayout.setOnRefreshListener(
 				  () -> {
@@ -399,46 +389,31 @@ public class PlacesFragment extends Fragment {
 				  }
 		);
 		
-		//	API key verification
-		//if (API_KEY != null && API_KEY.length() == 32) {
-		//	weatherService = new WeatherService(mContext, API_KEY, mContext.getResources().getConfiguration().getLocales().get(0).getLanguage(), app);
-		//} else {
-		//	addPlacesFab.setVisibility(View.GONE);
-		//}
-		
-		//	initialisation the UI part and refreshing data of each places
-		if (placesViewModel.getPlaces().size() == 0) {
-			if (!appRepository.isAPIKeyRegistered()) {    //	An API key must be set
-				informationTextView.setText(R.string.error_no_api_key_registered);
-			} else if (!appRepository.isAPIKeyValid()) {    //	Must have 32 alphanumerical characters
-				informationTextView.setText(R.string.error_api_key_incorrectly_formed);
-			} else {    //	No place as been registered
-				informationTextView.setText(R.string.error_no_places_registered);
-			}
-			
-			informationTextView.setVisibility(View.VISIBLE);
-			swipeRefreshLayout.setVisibility(View.GONE);
-		} else {    //  No errors or warnings, hide information TextView and refresh data
-			informationTextView.setVisibility(View.GONE);
-			swipeRefreshLayout.setVisibility(View.VISIBLE);
-			
-			if (!appRepository.isAPIKeyRegistered()) {   //	No API key is registered
-				showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered));
-			} else {
-				if (!appRepository.isAPIKeyValid())    //	API key is registered but malformed
-					showSnackbar(container, mContext.getString(R.string.error_api_key_incorrectly_formed));
-			}
-			if (appRepository.isAPIKeyValid()) {
-				try {
-					if (!placesViewModel.hasDataAlreadyBeenUpdated()) {
-						appRepository.updateAllPlaces(fetchUpdateCallback);
-						placesViewModel.dataHasBeenUpdated();
-					}
-				} catch (Exception e) {
-					logger.log(Level.WARNING, e.getMessage());
-				}
-			}
-		}
 		return root;
+	}
+	
+	
+	private void setNoPlacesViewState() {
+		if (!appRepository.isAPIKeyRegistered()) {    //	An API key must be set
+			informationTextView.setText(R.string.error_no_api_key_registered);
+		} else if (!appRepository.isAPIKeyValid()) {    //	Must have 32 alphanumerical characters
+			informationTextView.setText(R.string.error_api_key_incorrectly_formed);
+		} else {    //	No place as been registered
+			informationTextView.setText(R.string.error_no_places_registered);
+		}
+		
+		informationTextView.setVisibility(View.VISIBLE);
+		swipeRefreshLayout.setVisibility(View.GONE);
+	}
+	
+	private void setExistingPlacesViewState(View container) {
+		if (!appRepository.isAPIKeyRegistered()) {   //	No API key is registered
+			showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered));
+		} else {
+			if (!appRepository.isAPIKeyValid())    //	API key is registered but malformed
+				showSnackbar(container, mContext.getString(R.string.error_api_key_incorrectly_formed));
+		}
+		informationTextView.setVisibility(View.GONE);
+		swipeRefreshLayout.setVisibility(View.VISIBLE);
 	}
 }
