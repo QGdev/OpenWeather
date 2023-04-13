@@ -14,8 +14,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.repositories.settings.SecuredPreferenceDataStore;
 
+/**
+ * CustomPreferenceFragment
+ * <p>
+ * Custom Preference Fragment to add a bottom padding to the recycler view
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see PreferenceFragmentCompat
+ */
 public class CustomPreferenceFragment extends PreferenceFragmentCompat {
 	
+	/**
+	 * onCreateView()
+	 * <p>
+	 * Override the default onCreateView method to add a bottom padding to the recycler view
+	 */
 	@NonNull
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -27,7 +42,12 @@ public class CustomPreferenceFragment extends PreferenceFragmentCompat {
 		
 		return root;
 	}
-
+	
+	/**
+	 * onCreatePreferences()
+	 * <p>
+	 * Override the default onCreatePreferences method to add a custom data store
+	 */
 	@Override
 	public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 		PreferenceManager preferenceManager = getPreferenceManager();

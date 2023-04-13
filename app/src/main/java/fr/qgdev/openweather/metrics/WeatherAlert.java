@@ -13,9 +13,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
 
+/**
+ * The type Weather alert.
+ */
 @Entity(tableName = "weather_alerts",
 		  primaryKeys = {"placeId", "start_dt", "event",})
-
 public class WeatherAlert {
 	@NonNull
 	private final String sender;
@@ -28,7 +30,9 @@ public class WeatherAlert {
 	private final List<String> tags;
 	private int placeId;
 	
-	
+	/**
+	 * Instantiates a new Weather alert.
+	 */
 	public WeatherAlert(@NonNull String sender, @NonNull String event, long start_dt, long end_dt, @NonNull String description, List<String> tags) {
 		this.sender = sender;
 		this.event = event;
@@ -38,6 +42,12 @@ public class WeatherAlert {
 		this.tags = Collections.unmodifiableList(tags);
 	}
 	
+	/**
+	 * Instantiates a new Weather alert with JSON from OpenWeatherMap.
+	 *
+	 * @param weatherAlert the weather alert JSON from OpenWeatherMap
+	 * @throws JSONException
+	 */
 	@Ignore
 	public WeatherAlert(JSONObject weatherAlert) throws JSONException {
 		this.sender = weatherAlert.getString("sender_name");
@@ -45,7 +55,7 @@ public class WeatherAlert {
 		this.start_dt = weatherAlert.getLong("start") * 1000;
 		this.end_dt = weatherAlert.getLong("end") * 1000;
 		this.description = weatherAlert.getString("description");
-		this.tags = new ArrayList<String>();
+		this.tags = new ArrayList<>();
 		
 		JSONArray tags = weatherAlert.getJSONArray("tags");
 		
@@ -54,47 +64,97 @@ public class WeatherAlert {
 		}
 	}
 	
-	
 	//  Getter
+	
+	/**
+	 * Gets place id.
+	 *
+	 * @return the place id
+	 */
 	public int getPlaceId() {
 		return placeId;
 	}
 	
-	public String getSender() {
-		return sender;
-	}
-	
-	public String getEvent() {
-		return event;
-	}
-	
-	public long getStart_dt() {
-		return start_dt;
-	}
-	
-	public long getEnd_dt() {
-		return end_dt;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-	
-	//  Setter
+	/**
+	 * Sets place id.
+	 *
+	 * @param placeId the place id
+	 */
 	public void setPlaceId(int placeId) {
 		this.placeId = placeId;
 	}
 	
+	/**
+	 * Gets sender.
+	 *
+	 * @return the sender
+	 */
+	public String getSender() {
+		return sender;
+	}
+	
+	/**
+	 * Gets event.
+	 *
+	 * @return the event
+	 */
+	public String getEvent() {
+		return event;
+	}
+	
+	/**
+	 * Gets start dt.
+	 *
+	 * @return the start dt
+	 */
+	public long getStart_dt() {
+		return start_dt;
+	}
+	
+	/**
+	 * Gets end dt.
+	 *
+	 * @return the end dt
+	 */
+	public long getEnd_dt() {
+		return end_dt;
+	}
+	
+	//  Setter
+	
+	/**
+	 * Gets description.
+	 *
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+	
+	/**
+	 * Gets tags.
+	 *
+	 * @return the tags
+	 */
 	public List<String> getTags() {
 		return Collections.unmodifiableList(tags);
 	}
 	
+	/**
+	 * Clone weather alert.
+	 *
+	 * @return the weather alert
+	 */
 	@NonNull
 	public WeatherAlert clone() {
 		return new WeatherAlert(this.sender, this.event, this.start_dt, this.end_dt, this.description, this.tags);
 	}
 	
-	
+	/**
+	 * To string method for debugging.
+	 *
+	 * @return the string
+	 */
 	@NonNull
 	@Override
 	public String toString() {
