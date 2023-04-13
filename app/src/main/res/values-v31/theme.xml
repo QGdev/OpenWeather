@@ -11,5 +11,4 @@
         <item name="android:windowSplashScreenBrandingImage">@drawable/ic_logo_small</item>
 
     </style>
-
 </resources>
