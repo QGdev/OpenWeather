@@ -234,8 +234,8 @@ public abstract class PlaceDatabase extends RoomDatabase {
             
             //  Nothing to be done in this case
             if (crtOrder == newOrder) return;
-            
-            if (crtOrder < newOrder) propertiesDAO().updatePlaceOrdersMvBgn(crtOrder, newOrder);
+    
+            if (crtOrder < newOrder) propertiesDAO().updatePlaceOrdersMvEnd(crtOrder, newOrder);
             else propertiesDAO().updatePlaceOrdersMvBgn(crtOrder, newOrder);
             
             propertiesDAO().updateOrderFromPlaceID(placeID, newOrder);
