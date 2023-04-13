@@ -20,6 +20,10 @@ import fr.qgdev.openweather.repositories.weather.FetchDataCallback;
 import fr.qgdev.openweather.repositories.weather.RequestStatus;
 import fr.qgdev.openweather.repositories.weather.WeatherService;
 
+
+/**
+ * The type App repository.
+ */
 public class AppRepository {
     
     private final SettingsManager settingsManager;
@@ -33,6 +37,11 @@ public class AppRepository {
     private final MutableLiveData<List<Place>> mutableLiveDataPlaces;
     private RepositoryCallback repositoryCallback;
     
+    /**
+     * Instantiates a new App repository.
+     *
+     * @param context the context
+     */
     public AppRepository(Context context) {
         settingsManager = new SettingsManager(context);
         weatherService = new WeatherService(context, settingsManager);
@@ -46,22 +55,47 @@ public class AppRepository {
         new Thread(() -> mutableLiveDataPlaces.postValue(getPlaces())).start();
     }
     
+    /**
+     * Gets settings manager.
+     *
+     * @return the settings manager
+     */
     public SettingsManager getSettingsManager() {
         return this.settingsManager;
     }
     
+    /**
+     * Gets formatting service.
+     *
+     * @return the formatting service
+     */
     public FormattingService getFormattingService() {
         return formattingService;
     }
     
+    /**
+     * Gets places live data.
+     *
+     * @return the places live data
+     */
     public LiveData<List<Place>> getPlacesLiveData() {
         return mutableLiveDataPlaces;
     }
     
+    /**
+     * Gets places.
+     *
+     * @return the places
+     */
     public List<Place> getPlaces() {
         return placeDatabase.getAllPlaces();
     }
     
+    /**
+     * Insert.
+     *
+     * @param place the place
+     */
     public synchronized void insert(Place place) {
         placeDatabase.insertPlace(place, p -> {
             repositoryCallback.onPlaceInsertion(p.getProperties().getOrder());
@@ -73,6 +107,11 @@ public class AppRepository {
         });
     }
     
+    /**
+     * Delete.
+     *
+     * @param place the place
+     */
     public synchronized void delete(Place place) {
         placeDatabase.deletePlace(place, position -> {
             repositoryCallback.onPlaceDeletion(position);
@@ -84,6 +123,11 @@ public class AppRepository {
         });
     }
     
+    /**
+     * Update.
+     *
+     * @param place the place
+     */
     public synchronized void update(Place place) {
         placeDatabase.updatePlace(place, (Place p) -> {
             repositoryCallback.onPlaceUpdate(p.getProperties().getOrder());
@@ -95,6 +139,12 @@ public class AppRepository {
         });
     }
     
+    /**
+     * Move place.
+     *
+     * @param crtOrder the crt order
+     * @param newOrder the new order
+     */
     public void movePlace(int crtOrder, int newOrder) {
         placeDatabase.movePlace(crtOrder, newOrder);
     }
@@ -114,6 +164,13 @@ public class AppRepository {
         return placeID;
     }
     
+    /**
+     * Find place and add.
+     *
+     * @param cityName      the city name
+     * @param countryCode   the country code
+     * @param fetchCallback the fetch callback
+     */
     public void findPlaceAndAdd(String cityName, String countryCode, FetchDataCallback fetchCallback) {
         
         FetchDataCallback fetchCallbackInternal = new FetchDataCallback() {
@@ -125,7 +182,7 @@ public class AppRepository {
                 LiveData<List<Geolocation>> result = placeDatabase.geolocationDAO()
                         .getSimilarPlace(placeGeo.getCity(), placeGeo.getCountryCode());
                 
-                result.observeForever(new Observer<List<Geolocation>>() {
+                result.observeForever(new Observer<>() {
                     @Override
                     public void onChanged(List<Geolocation> geolocations) {
                         
@@ -136,6 +193,7 @@ public class AppRepository {
                             fetchCallback.onError(RequestStatus.ALREADY_PRESENT);
                             return;
                         }
+                        result.removeObserver(this);
                         PlaceDatabase.databaseWriteExecutor.execute(() -> insert(place));
                         fetchCallback.onSuccess(place);
                     }
@@ -168,6 +226,11 @@ public class AppRepository {
         new Thread(runnable).start();
     }
     
+    /**
+     * Update all places.
+     *
+     * @param callback the callback
+     */
     public void updateAllPlaces(FetchCallback callback) {
         
         FetchDataCallback fetchDataCallback = new FetchDataCallback() {
@@ -189,7 +252,7 @@ public class AppRepository {
             }
         };
         
-        Observer<List<Place>> observerUpdater = new Observer<List<Place>>() {
+        Observer<List<Place>> observerUpdater = new Observer<>() {
             @Override
             public void onChanged(List<Place> places) {
                 if (places == null) return;
@@ -205,60 +268,148 @@ public class AppRepository {
         placeDatabase.getAllPlacesLiveData().observeForever(observerUpdater);
     }
     
+    /**
+     * Count places live data.
+     *
+     * @return the live data
+     */
     public LiveData<Integer> countPlaces() {
         return mPlaceDao.getPlacesCountLiveData();
     }
     
+    /**
+     * Is api key valid boolean.
+     *
+     * @return the boolean
+     */
     public boolean isApiKeyValid() {
         return weatherService.isApiKeyValid();
     }
     
+    /**
+     * Is api key registered boolean.
+     *
+     * @return the boolean
+     */
     public boolean isAPIKeyRegistered() {
         return weatherService.isApiKeyRegistered();
     }
     
+    /**
+     * Is api key valid boolean.
+     *
+     * @return the boolean
+     */
     public boolean isAPIKeyValid() {
         return weatherService.isApiKeyValid();
     }
     
+    /**
+     * Attach callbacks.
+     *
+     * @param repositoryCallback the repository callback
+     */
     public void attachCallbacks(@NonNull RepositoryCallback repositoryCallback) {
         this.repositoryCallback = repositoryCallback;
     }
     
+    /**
+     * Detach callbacks.
+     */
     public void detachCallbacks() {
         repositoryCallback = null;
     }
     
+    /**
+     * The enum Repository action type.
+     */
     public enum RepositoryActionType {
+        /**
+         * Deletion repository action type.
+         */
         DELETION,
+        /**
+         * Insertion repository action type.
+         */
         INSERTION,
+        /**
+         * Update repository action type.
+         */
         UPDATE,
+        /**
+         * Moved repository action type.
+         */
         MOVED
     }
     
+    /**
+     * The interface Repository callback.
+     */
     public interface RepositoryCallback {
+        /**
+         * On place deletion.
+         *
+         * @param position the position
+         */
         void onPlaceDeletion(int position);
         
+        /**
+         * On place insertion.
+         *
+         * @param position the position
+         */
         void onPlaceInsertion(int position);
         
+        /**
+         * On place update.
+         *
+         * @param position the position
+         */
         void onPlaceUpdate(int position);
         
+        /**
+         * On moved place.
+         *
+         * @param initialPosition the initial position
+         * @param finalPosition   the final position
+         */
         void onMovedPlace(int initialPosition, int finalPosition);
     }
     
+    /**
+     * The type Repository action.
+     *
+     * @param <T> the type parameter
+     */
     public static class RepositoryAction<T> {
         private final RepositoryActionType type;
         private final T data;
         
+        /**
+         * Instantiates a new Repository action.
+         *
+         * @param type the type
+         * @param data the data
+         */
         public RepositoryAction(RepositoryActionType type, T data) {
             this.type = type;
             this.data = data;
         }
         
+        /**
+         * Gets type.
+         *
+         * @return the type
+         */
         public RepositoryActionType getType() {
             return type;
         }
         
+        /**
+         * Gets data.
+         *
+         * @return the data
+         */
         public T getData() {
             return data;
         }
