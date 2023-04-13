@@ -189,8 +189,10 @@ public class PlacesFragment extends Fragment {
 		
 		placesViewModel.getPlacesLiveData().observe(getViewLifecycleOwner(), places -> {
 			if (places == null) return;
-			if (places.isEmpty()) setNoPlacesViewState();
-			else {
+			if (places.isEmpty()) {
+				setNoPlacesViewState();
+				return;
+			} else {
 				if (!placesViewModel.hasDataAlreadyBeenUpdated() && appRepository.isAPIKeyValid()) {
 					appRepository.updateAllPlaces(fetchUpdateCallback);
 					placesViewModel.dataHasBeenUpdated();
@@ -204,8 +206,11 @@ public class PlacesFragment extends Fragment {
 				switch (action.getType()) {
 					case INSERTION:
 						placeRecyclerViewAdapter.notifyItemInserted((Integer) action.getData());
-						swipeRefreshLayout.setVisibility(View.VISIBLE);
-						informationTextView.setVisibility(View.GONE);
+						//	Touch visibilities only for the first item
+						if (places.size() == 1) {
+							swipeRefreshLayout.setVisibility(View.VISIBLE);
+							informationTextView.setVisibility(View.GONE);
+						}
 						break;
 					case DELETION:
 						placeRecyclerViewAdapter.notifyItemRemoved((Integer) action.getData());
@@ -234,6 +239,7 @@ public class PlacesFragment extends Fragment {
 			
 			@Override
 			public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+				logger.warning("GET_MOVEMENT_FLAGS");
 				//	If the holder is an other view type than COMPACT or if there is no items in the recyclerView, swipe and drag&drop are disabled
 				if (recyclerView.getChildCount() == 0 || viewHolder.getItemViewType() != 0) {
 					return makeMovementFlags(0, 0);

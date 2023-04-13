@@ -9,7 +9,16 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-
+/**
+ * MainActivity
+ * <p>
+ * Main Activity
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see AppCompatActivity
+ */
 public class MainActivity extends AppCompatActivity {
 
 	@Override
@@ -21,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 		
 		//  NavigationBar for Live data, Forecasts or settings
 		NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+		if (navHostFragment == null) throw new NullPointerException("NavHostFragment is null");
 		NavController navController = navHostFragment.getNavController();
 		NavigationUI.setupWithNavController(navView, navController);
 	}

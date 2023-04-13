@@ -662,6 +662,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 * </p>
 	 */
 	public enum ViewType {
+		UNDEFINED(-1),   //	Useful when place is removed
 		COMPACT(0),
 		EXTENDED(1),
 		EXTENDED_HOURLY(2),

@@ -32,7 +32,7 @@ public class PlacesViewModel extends ViewModel {
 	public PlacesViewModel() {
 		dataHasAlreadyBeenUpdated = false;
 		places = new MutableLiveData<>(null);
-		placesViewType = new HashMap<Integer, PlaceRecyclerViewAdapter.ViewType>();
+		placesViewType = new HashMap<>();
 		repositoryActions = new ConcurrentLinkedQueue<>();
 	}
 	
@@ -75,7 +75,7 @@ public class PlacesViewModel extends ViewModel {
 	 *
 	 * @param placeList the place list
 	 */
-	public void setPlaces(List<Place> placeList) {
+	public synchronized void setPlaces(List<Place> placeList) {
 		
 		//		Nothing to check
 		if (placeList == null) return;
@@ -111,7 +111,7 @@ public class PlacesViewModel extends ViewModel {
 	 * @return the place view type
 	 */
 	public PlaceRecyclerViewAdapter.ViewType getPlaceViewType(Integer placeID) {
-		return placesViewType.getOrDefault(placeID, null);
+		return placesViewType.getOrDefault(placeID, PlaceRecyclerViewAdapter.ViewType.UNDEFINED);
 	}
 	
 	/**
@@ -123,7 +123,7 @@ public class PlacesViewModel extends ViewModel {
 	public PlaceRecyclerViewAdapter.ViewType getPlaceViewTypeFromPosition(Integer position) {
 		if (places.getValue() == null) return null;
 		int placeID = places.getValue().get(position).getProperties().getPlaceId();
-		return placesViewType.getOrDefault(placeID, null);
+		return placesViewType.getOrDefault(placeID, PlaceRecyclerViewAdapter.ViewType.UNDEFINED);
 	}
 	
 	/**
