@@ -10,8 +10,6 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import java.util.logging.Logger;
-
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.dialog.AboutAppDialog;
 
@@ -27,10 +25,6 @@ import fr.qgdev.openweather.dialog.AboutAppDialog;
  * @see Fragment
  */
 public class SettingsFragment extends Fragment {
-    
-    private static final String TAG = SettingsFragment.class.getSimpleName();
-    private final Logger logger = Logger.getLogger(TAG);
-    
     
     /**
      * onCreateView()
