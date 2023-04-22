@@ -112,20 +112,19 @@ public class Place {
 		//	Retrieve timezone data and define properties
 		//________________________________________________________________
 		//
-		int timeOffset = 0;
-		if (placeJSON.has("timezone")) {
-			timeOffset = placeJSON.getInt("timezone");
-		} else throw new JSONException("Cannot find timezone data in PlaceObjectJSON");
-		
+		int timeOffset;
+		if (!placeJSON.has("timezone"))
+			throw new JSONException("Cannot find timezone data in PlaceObjectJSON");
+		timeOffset = placeJSON.getInt("timezone");
 		this.properties = new Properties(new Date().getTime(), timeOffset, placeOrder, placeID);
 		
 		//	Retrieve coordinates and see if there is city and country info
 		//________________________________________________________________
 		//
 		JSONObject coordinatesJSON;
-		if (placeJSON.has("coord")) {
-			coordinatesJSON = placeJSON.getJSONObject("coord");
-		} else throw new JSONException("Cannot find geolocation data in PlaceObjectJSON");
+		if (!placeJSON.has("coord"))
+			throw new JSONException("Cannot find geolocation data in PlaceObjectJSON");
+		coordinatesJSON = placeJSON.getJSONObject("coord");
 		
 		//	Or geographical properties of it
 		if (placeJSON.has("sys") && placeJSON.getJSONObject("sys").has("country") && placeJSON.has("name")) {
@@ -148,8 +147,8 @@ public class Place {
 	public void updateWithOWMWeatherData(JSONObject placeJSON) throws JSONException {
 		
 		//	Smart way to update weather data, will not affect object state if error occurs
-		long tmpLastUpdateAttemptTime = new Date().getTime(),
-				  tmpLastAvailableDataTime;
+		long tmpLastUpdateAttemptTime = new Date().getTime();
+		long tmpLastAvailableDataTime;
 		
 		CurrentWeather tmpCurrentWeather;
 		List<MinutelyWeatherForecast> tmpMinutelyWeatherForecasts = new ArrayList<>();
@@ -166,14 +165,14 @@ public class Place {
 		//  Current Weather data set
 		//________________________________________________________________
 		//	Current weather also contains lastAvailableDataTime value
-		if (placeJSON.has("current")) {
-			JSONObject crtWeatherJSON = placeJSON.optJSONObject("current");
-			tmpLastAvailableDataTime = crtWeatherJSON.getLong("dt");
-			tmpCurrentWeather = new CurrentWeather(placeJSON.optJSONObject("current"));
-			tmpCurrentWeather.setPlaceId(properties.getPlaceId());
-		} else {
+		if (!placeJSON.has("current"))
 			throw new JSONException("Cannot find current weather data in PlaceObjectJSON");
-		}
+		
+		JSONObject crtWeatherJSON = placeJSON.optJSONObject("current");
+		tmpLastAvailableDataTime = crtWeatherJSON.getLong("dt");
+		tmpCurrentWeather = new CurrentWeather(crtWeatherJSON);
+		tmpCurrentWeather.setPlaceId(properties.getPlaceId());
+		
 		
 		//  Minutely Weather Forecast
 		//________________________________________________________________
@@ -195,17 +194,16 @@ public class Place {
 		//________________________________________________________________
 		//
 		
-		if (placeJSON.has("hourly")) {
-			JSONArray hourlyWeatherJSON = placeJSON.getJSONArray("hourly");
-			HourlyWeatherForecast hourlyWeatherForecast;
-			
-			for (int i = 0; i < hourlyWeatherJSON.length(); i++) {
-				hourlyWeatherForecast = new HourlyWeatherForecast(hourlyWeatherJSON.getJSONObject(i));
-				hourlyWeatherForecast.setPlaceId(properties.getPlaceId());
-				tmpHourlyWeatherForecasts.add(i, hourlyWeatherForecast);
-			}
-		} else {
+		if (!placeJSON.has("hourly"))
 			throw new JSONException("Cannot find hourly weather forecast data in PlaceObjectJSON");
+		
+		JSONArray hourlyWeatherJSON = placeJSON.getJSONArray("hourly");
+		HourlyWeatherForecast hourlyWeatherForecast;
+		
+		for (int i = 0; i < hourlyWeatherJSON.length(); i++) {
+			hourlyWeatherForecast = new HourlyWeatherForecast(hourlyWeatherJSON.getJSONObject(i));
+			hourlyWeatherForecast.setPlaceId(properties.getPlaceId());
+			tmpHourlyWeatherForecasts.add(i, hourlyWeatherForecast);
 		}
 		
 		
@@ -213,17 +211,16 @@ public class Place {
 		//________________________________________________________________
 		//
 		
-		if (placeJSON.has("daily")) {
-			JSONArray dailyWeatherJSON = placeJSON.getJSONArray("daily");
-			DailyWeatherForecast dailyWeatherForecast;
-			
-			for (int i = 0; i < dailyWeatherJSON.length(); i++) {
-				dailyWeatherForecast = new DailyWeatherForecast(dailyWeatherJSON.getJSONObject(i));
-				dailyWeatherForecast.setPlaceId(properties.getPlaceId());
-				tmpDailyWeatherForecasts.add(i, dailyWeatherForecast);
-			}
-		} else {
+		if (!placeJSON.has("daily"))
 			throw new JSONException("Cannot find daily weather forecast data in PlaceObjectJSON");
+		
+		JSONArray dailyWeatherJSON = placeJSON.getJSONArray("daily");
+		DailyWeatherForecast dailyWeatherForecast;
+		
+		for (int i = 0; i < dailyWeatherJSON.length(); i++) {
+			dailyWeatherForecast = new DailyWeatherForecast(dailyWeatherJSON.getJSONObject(i));
+			dailyWeatherForecast.setPlaceId(properties.getPlaceId());
+			tmpDailyWeatherForecasts.add(i, dailyWeatherForecast);
 		}
 		
 		
@@ -259,11 +256,11 @@ public class Place {
 	}
 	
 	
-	public void updateWithOWMAirQualityData(JSONObject AQ_JSONObject) throws JSONException {
+	public void updateWithOWMAirQualityData(JSONObject aqJsonObject) throws JSONException {
 		
 		//	Smart way to update weather data, will not affect object state if error occurs
-		long tmpLastUpdateAttemptTime = new Date().getTime(),
-				  tmpLastAvailableDataTime;
+		long tmpLastUpdateAttemptTime = new Date().getTime();
+		long tmpLastAvailableDataTime;
 		
 		AirQuality tmpAirQuality;
 		
@@ -273,19 +270,19 @@ public class Place {
 		//  Properties data set
 		//________________________________________________________________
 		//
-		if (AQ_JSONObject.has("list") && AQ_JSONObject.getJSONArray("list").length() == 1) {
-			JSONObject subObject = AQ_JSONObject.getJSONArray("list").getJSONObject(0);
+		if (aqJsonObject.has("list") && aqJsonObject.getJSONArray("list").length() == 1) {
+			JSONObject subObject = aqJsonObject.getJSONArray("list").getJSONObject(0);
 			
 			//	Extract temporal information
 			if (subObject.has("dt")) {
-				tmpLastAvailableDataTime = AQ_JSONObject.getJSONArray("list")
+				tmpLastAvailableDataTime = aqJsonObject.getJSONArray("list")
 						  .getJSONObject(0)
 						  .getLong("dt");
 			} else throw new JSONException("Cannot find update data in Air Quality JSON Object");
 			
 			//	Extract Air Quality data
 			if (subObject.has("main") && subObject.has("components")) {
-				tmpAirQuality = new AirQuality(AQ_JSONObject);
+				tmpAirQuality = new AirQuality(aqJsonObject);
 				tmpAirQuality.setPlaceId(properties.getPlaceId());
 			} else throw new JSONException("Cannot find air quality data in Air Quality JSON Object");
 		} else throw new JSONException("Cannot find data in in Air Quality JSON Object");
