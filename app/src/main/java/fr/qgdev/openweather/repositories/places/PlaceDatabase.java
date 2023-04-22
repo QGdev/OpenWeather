@@ -2,6 +2,7 @@ package fr.qgdev.openweather.repositories.places;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.room.Dao;
@@ -9,11 +10,14 @@ import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 import fr.qgdev.openweather.metrics.AirQuality;
 import fr.qgdev.openweather.metrics.CurrentWeather;
@@ -32,7 +36,7 @@ import fr.qgdev.openweather.repositories.places.dao.PropertiesDAO;
 import fr.qgdev.openweather.repositories.places.dao.WeatherAlertDAO;
 import fr.qgdev.openweather.utils.ParameterizedRunnable;
 
-@Database(version = 1,
+@Database(version = 2,
         entities = {Geolocation.class,
                 Properties.class,
                 AirQuality.class,
@@ -49,18 +53,29 @@ public abstract class PlaceDatabase extends RoomDatabase {
     private static final int NUMBER_OF_THREADS = 4;
     public static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-    private static volatile PlaceDatabase INSTANCE;
+    private static final AtomicReference<PlaceDatabase> instance = new AtomicReference<>(null);
+    
+    
+    /**
+     * Piece of code used to migrate from version 1 to version 2
+     * - Renaming start_dt and end_dt to startDt and endDt in weather_alerts table
+     */
+    private static final Migration migration1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE weather_alerts RENAME COLUMN start_dt TO startDt");
+            database.execSQL("ALTER TABLE weather_alerts RENAME COLUMN end_dt TO endDt");
+        }
+    };
     
     public static PlaceDatabase getDatabase(final Context context) {
-        if (INSTANCE == null) {
-            synchronized (PlaceDatabase.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            PlaceDatabase.class, "appDB").build();
-                }
-            }
-        }
-        return INSTANCE;
+        instance.compareAndSet(null,
+                Room.databaseBuilder(context.getApplicationContext(),
+                                PlaceDatabase.class, "appDB")
+                        .addMigrations(migration1_2)
+                        .build());
+        
+        return instance.get();
     }
     
     public abstract PlaceDAO placeDAO();
