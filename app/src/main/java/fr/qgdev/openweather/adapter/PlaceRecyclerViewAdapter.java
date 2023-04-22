@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -397,7 +398,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 211:
 			case 212:
 			case 221:
-				weatherIconId = context.getResources().getIdentifier("thunderstorm_flat", "drawable", context.getPackageName());
+				weatherIconId = R.drawable.thunderstorm_flat;
 				break;
 			
 			case 200:
@@ -406,7 +407,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 230:
 			case 231:
 			case 232:
-				weatherIconId = context.getResources().getIdentifier("storm_flat", "drawable", context.getPackageName());
+				weatherIconId = R.drawable.storm_flat;
 				break;
 
 			//  Drizzle and Rain (Light)
@@ -416,11 +417,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 501:
 			case 520:
 				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
-					weatherIconId = context.getResources().getIdentifier("rain_and_sun_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.rain_and_sun_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = context.getResources().getIdentifier("rainy_night_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.rainy_night_flat;
 				}
 				break;
 
@@ -433,7 +434,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 511:
 			case 521:
 			case 531:
-				weatherIconId = context.getResources().getIdentifier("rain_flat", "drawable", context.getPackageName());
+				weatherIconId = R.drawable.rain_flat;
 				break;
 
 			//Drizzle and Rain (Heavy)
@@ -443,7 +444,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 503:
 			case 504:
 			case 522:
-				weatherIconId = context.getResources().getIdentifier("heavy_rain_flat", "drawable", context.getPackageName());
+				weatherIconId = R.drawable.heavy_rain_flat;
 				break;
 
 			//  Snow
@@ -452,17 +453,17 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 620:
 			case 621:
 				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
-					weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.snow_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = context.getResources().getIdentifier("snow_and_night_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.snow_and_night_flat;
 				}
 				break;
 
 			case 602:
 			case 622:
-				weatherIconId = context.getResources().getIdentifier("snow_flat", "drawable", context.getPackageName());
+				weatherIconId = R.drawable.snow_flat;
 				break;
 
 			case 611:
@@ -470,7 +471,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 613:
 			case 615:
 			case 616:
-				weatherIconId = context.getResources().getIdentifier("sleet_flat", "drawable", context.getPackageName());
+				weatherIconId = R.drawable.sleet_flat;
 				break;
 
 			//  Atmosphere
@@ -485,11 +486,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 771:
 			case 781:
 				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
-					weatherIconId = context.getResources().getIdentifier("fog_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.fog_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = context.getResources().getIdentifier("fog_and_night_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.fog_and_night_flat;
 				}
 				break;
 
@@ -497,11 +498,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 800:
 				//  Day
 				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
-					weatherIconId = context.getResources().getIdentifier("sun_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.sun_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = context.getResources().getIdentifier("moon_phase_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.moon_phase_flat;
 				}
 				break;
 
@@ -509,25 +510,25 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 802:
 			case 803:
 				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
-					weatherIconId = context.getResources().getIdentifier("clouds_and_sun_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.clouds_and_sun_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = context.getResources().getIdentifier("cloudy_night_flat", "drawable", context.getPackageName());
+					weatherIconId = R.drawable.cloudy_night_flat;
 				}
 				break;
 
 			case 804:
-				weatherIconId = context.getResources().getIdentifier("cloudy_flat", "drawable", context.getPackageName());
+				weatherIconId = R.drawable.cloudy_flat;
 				break;
 			
 			//  Default
 			default:
-				weatherIconId = context.getResources().getIdentifier("storm_flat", "drawable", context.getPackageName());
+				weatherIconId = R.drawable.storm_flat;
 				break;
 		}
 		
-		holder.weatherIcon.setImageDrawable(context.getDrawable(weatherIconId));
+		holder.weatherIcon.setImageDrawable(AppCompatResources.getDrawable(context, weatherIconId));
 		
 		//  Wind
 		////    Wind Direction
@@ -891,7 +892,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		 */
 		private void setDrawableCompoundTextView(@NonNull Context context, @NonNull TextView textView, @DrawableRes int id) {
 			int compoundDrawableSideSize = dpToPx(context, 20);
-			Drawable drawable = context.getDrawable(id);
+			Drawable drawable = AppCompatResources.getDrawable(context, id);
 			assert drawable != null;
 			drawable.setBounds(0, 0, compoundDrawableSideSize, compoundDrawableSideSize);
 			textView.setCompoundDrawables(drawable, null, null, null);
