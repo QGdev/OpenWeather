@@ -14,8 +14,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -72,11 +72,6 @@ public class PlacesFragment extends Fragment {
 	}
 	
 	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	}
-	
-	@Override
 	public void onDetach() {
 		super.onDetach();
 		mContext = null;
@@ -114,12 +109,6 @@ public class PlacesFragment extends Fragment {
 	
 	
 	@Override
-	public void onDestroyView() {
-		super.onDestroyView();
-		placeRecyclerView.destroyDrawingCache();
-	}
-	
-	
 	@UiThread
 	public View onCreateView(@NonNull LayoutInflater inflater,
 									 ViewGroup container,
@@ -169,7 +158,7 @@ public class PlacesFragment extends Fragment {
 				data[1] = finalPosition;
 				
 				AppRepository.RepositoryAction<Integer[]> action;
-				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.UPDATE,
+				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.MOVED,
 						  data);
 				placesViewModel.addRepositoryPlaceAction(action);
 			}
@@ -201,7 +190,7 @@ public class PlacesFragment extends Fragment {
 			}
 			
 			while (!placesViewModel.isRepositoryPlaceActionEmpty()) {
-				AppRepository.RepositoryAction action = placesViewModel.pollRepositoryPlaceAction();
+				AppRepository.RepositoryAction<?> action = placesViewModel.pollRepositoryPlaceAction();
 				
 				switch (action.getType()) {
 					case INSERTION:
@@ -234,7 +223,7 @@ public class PlacesFragment extends Fragment {
 		//
 		ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
 			
-			int _initialPosition;
+			int initialPosition;
 			boolean itemAsBeenMoved = false;
 			
 			@Override
@@ -255,7 +244,7 @@ public class PlacesFragment extends Fragment {
 			@Override
 			public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
 				if (!itemAsBeenMoved) {
-					_initialPosition = viewHolder.getAbsoluteAdapterPosition();
+					initialPosition = viewHolder.getAbsoluteAdapterPosition();
 					itemAsBeenMoved = true;
 				}
 				int initialPosition = viewHolder.getAbsoluteAdapterPosition();
@@ -292,7 +281,7 @@ public class PlacesFragment extends Fragment {
 					int halfScreenWidth = recyclerView.getMeasuredWidth();
 					paintSwipeDelete.setColor(getResources().getColor(R.color.colorRedError, null));
 					
-					Drawable binDrawable = getResources().getDrawable(R.drawable.ic_trash_can, null);
+					Drawable binDrawable = AppCompatResources.getDrawable(mContext, R.drawable.ic_trash_can);
 					//  Set Color and Dimensions of the drawable and print it on canvas
 					binDrawable.setTint(paintSwipeDelete.getColor());
 					
@@ -319,9 +308,10 @@ public class PlacesFragment extends Fragment {
 			@Override
 			public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
 				super.clearView(recyclerView, viewHolder);
-				if (itemAsBeenMoved)
-					//interactions.onMovedPlace(_initialPosition, viewHolder.getAbsoluteAdapterPosition());
+				if (itemAsBeenMoved) {
+					repositoryCallback.onMovedPlace(initialPosition, viewHolder.getAbsoluteAdapterPosition());
 					itemAsBeenMoved = false;
+				}
 				viewHolder.itemView.setAlpha(1);
 			}
 		});
