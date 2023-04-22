@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -18,6 +19,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.qgdev.openweather.R;
@@ -37,23 +39,25 @@ import fr.qgdev.openweather.repositories.weather.RequestStatus;
  * @see Dialog
  */
 public class AddPlaceDialog extends Dialog {
-
+	
 	private static final String TAG = AddPlaceDialog.class.getSimpleName();
 	private final Logger logger = Logger.getLogger(TAG);
-
+	
 	//	Dialog elements
 	private final ConstraintLayout dialogWindow;
-	private final TextInputLayout cityTextInputLayout, countryTextInputLayout;
+	private final TextInputLayout cityTextInputLayout;
+	private final TextInputLayout countryTextInputLayout;
 	private final TextInputEditText cityEditText;
 	private final AutoCompleteTextView countryEditText;
 	private final ProgressBar addButtonProgressSpinner;
-	private final Button exitButton, addButton;
-
+	private final Button exitButton;
+	private final Button addButton;
+	
 	//	List of countries
 	//	Used in order to sort country names
 	private final List<String> countryNames;
 	private final List<String> countryCodes;
-
+	
 	/**
 	 * AddPlaceDialog Constructor
 	 * <p>
@@ -120,6 +124,7 @@ public class AddPlaceDialog extends Dialog {
 			@Override
 			public void onError(RequestStatus requestStatus) {
 				enableDialogWindowControls();
+				logger.log(Level.WARNING, "Error while adding place: {0}", requestStatus);
 				switch (requestStatus) {
 					case NO_ANSWER:
 						showSnackbar(dialogWindow, context.getString(R.string.error_server_unreachable));
@@ -232,10 +237,10 @@ public class AddPlaceDialog extends Dialog {
 	 * @param message The content of the snackbar, what will be shown
 	 */
 	private void showSnackbar(View view, String message) {
-		Snackbar.make(view, message, Snackbar.LENGTH_SHORT)
-				.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-				.setMaxInlineActionWidth(3)
-				.show();
+		Snackbar.make(view, message, BaseTransientBottomBar.LENGTH_SHORT)
+				  .setAnimationMode(BaseTransientBottomBar.ANIMATION_MODE_SLIDE)
+				  .setMaxInlineActionWidth(3)
+				  .show();
 	}
 
 	/**
