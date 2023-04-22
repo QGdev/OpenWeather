@@ -132,8 +132,8 @@ public class WeatherAlertAdapter extends BaseAdapter {
     
         eventTextView.setText(currentWeatherAlert.getEvent());
         senderTextView.setText(currentWeatherAlert.getSender());
-        startDateTextView.setText(formattingService.getFormattedFullTimeHour(new Date(currentWeatherAlert.getStart_dt()), timeZone));
-        endDateTextView.setText(formattingService.getFormattedFullTimeHour(new Date(currentWeatherAlert.getEnd_dt()), timeZone));
+        startDateTextView.setText(formattingService.getFormattedFullTimeHour(new Date(currentWeatherAlert.getStartDt()), timeZone));
+        endDateTextView.setText(formattingService.getFormattedFullTimeHour(new Date(currentWeatherAlert.getEndDt()), timeZone));
         descriptionTextView.setText(currentWeatherAlert.getDescription());
     
         return view;

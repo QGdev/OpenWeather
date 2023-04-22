@@ -17,14 +17,14 @@ import java.util.StringJoiner;
  * The type Weather alert.
  */
 @Entity(tableName = "weather_alerts",
-		  primaryKeys = {"placeId", "start_dt", "event",})
+		  primaryKeys = {"placeId", "startDt", "event",})
 public class WeatherAlert {
 	@NonNull
 	private final String sender;
 	@NonNull
 	private final String event;
-	private final long start_dt;
-	private final long end_dt;
+	private final long startDt;
+	private final long endDt;
 	@NonNull
 	private final String description;
 	private final List<String> tags;
@@ -33,11 +33,11 @@ public class WeatherAlert {
 	/**
 	 * Instantiates a new Weather alert.
 	 */
-	public WeatherAlert(@NonNull String sender, @NonNull String event, long start_dt, long end_dt, @NonNull String description, List<String> tags) {
+	public WeatherAlert(@NonNull String sender, @NonNull String event, long startDt, long endDt, @NonNull String description, List<String> tags) {
 		this.sender = sender;
 		this.event = event;
-		this.start_dt = start_dt;
-		this.end_dt = end_dt;
+		this.startDt = startDt;
+		this.endDt = endDt;
 		this.description = description;
 		this.tags = Collections.unmodifiableList(tags);
 	}
@@ -52,15 +52,15 @@ public class WeatherAlert {
 	public WeatherAlert(JSONObject weatherAlert) throws JSONException {
 		this.sender = weatherAlert.getString("sender_name");
 		this.event = weatherAlert.getString("event");
-		this.start_dt = weatherAlert.getLong("start") * 1000;
-		this.end_dt = weatherAlert.getLong("end") * 1000;
+		this.startDt = weatherAlert.getLong("start") * 1000;
+		this.endDt = weatherAlert.getLong("end") * 1000;
 		this.description = weatherAlert.getString("description");
 		this.tags = new ArrayList<>();
 		
-		JSONArray tags = weatherAlert.getJSONArray("tags");
+		JSONArray tagsJSON = weatherAlert.getJSONArray("tags");
 		
-		for (int idx = 0; idx < tags.length(); idx++) {
-			this.tags.add(tags.getString(idx));
+		for (int idx = 0; idx < tagsJSON.length(); idx++) {
+			tags.add(tagsJSON.getString(idx));
 		}
 	}
 	
@@ -107,8 +107,8 @@ public class WeatherAlert {
 	 *
 	 * @return the start dt
 	 */
-	public long getStart_dt() {
-		return start_dt;
+	public long getStartDt() {
+		return startDt;
 	}
 	
 	/**
@@ -116,8 +116,8 @@ public class WeatherAlert {
 	 *
 	 * @return the end dt
 	 */
-	public long getEnd_dt() {
-		return end_dt;
+	public long getEndDt() {
+		return endDt;
 	}
 	
 	//  Setter
@@ -147,7 +147,7 @@ public class WeatherAlert {
 	 */
 	@NonNull
 	public WeatherAlert clone() {
-		return new WeatherAlert(this.sender, this.event, this.start_dt, this.end_dt, this.description, this.tags);
+		return new WeatherAlert(this.sender, this.event, this.startDt, this.endDt, this.description, this.tags);
 	}
 	
 	/**
@@ -162,8 +162,8 @@ public class WeatherAlert {
 				  .add("placeId=" + placeId)
 				  .add("sender='" + sender + "'")
 				  .add("event='" + event + "'")
-				  .add("start_dt=" + start_dt)
-				  .add("end_dt=" + end_dt)
+				  .add("start_dt=" + startDt)
+				  .add("end_dt=" + endDt)
 				  .add("description='" + description + "'")
 				  .add("tags=" + tags)
 				  .toString();

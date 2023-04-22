@@ -14,7 +14,7 @@ import fr.qgdev.openweather.metrics.WeatherAlert;
 @Dao
 public interface WeatherAlertDAO {
 	
-	@Query("SELECT * FROM weather_alerts WHERE placeId = :id ORDER BY start_dt ASC")
+	@Query("SELECT * FROM weather_alerts WHERE placeId = :id ORDER BY startDt ASC")
 	List<WeatherAlert> getFromPlaceID(int id);
 	
 	@Query("DELETE FROM weather_alerts WHERE placeId = :id")
