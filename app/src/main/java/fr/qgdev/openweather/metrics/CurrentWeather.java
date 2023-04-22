@@ -306,11 +306,6 @@ public class CurrentWeather {
 		this.snow = snow;
 	}
 	
-	public void fillWithOWMData(JSONObject currentWeather) throws JSONException {
-	
-	}
-	
-	
 	@NonNull
 	public CurrentWeather clone() {
 		CurrentWeather returnedCurrentWeather = new CurrentWeather();
