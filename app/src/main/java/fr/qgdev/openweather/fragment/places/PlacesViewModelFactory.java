@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -12,10 +12,7 @@ import java.util.logging.Logger;
  */
 public class PlacesViewModelFactory implements ViewModelProvider.Factory {
     
-    private static final String TAG = PlacesViewModelFactory.class.getSimpleName();
-    private static final Logger logger = Logger.getLogger(TAG);
-    
-    private static volatile PlacesViewModelFactory factory;
+    private static final AtomicReference<PlacesViewModelFactory> factory = new AtomicReference<>(null);
     
     private PlacesViewModelFactory() {
     }
@@ -26,14 +23,8 @@ public class PlacesViewModelFactory implements ViewModelProvider.Factory {
      * @return the instance
      */
     public static PlacesViewModelFactory getInstance() {
-        if (factory == null) {
-            synchronized (PlacesViewModelFactory.class) {
-                if (factory == null) {
-                    factory = new PlacesViewModelFactory();
-                }
-            }
-        }
-        return factory;
+        factory.compareAndSet(null, new PlacesViewModelFactory());
+        return factory.get();
     }
     
     /**

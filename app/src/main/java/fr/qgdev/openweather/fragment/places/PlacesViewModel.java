@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,7 @@ public class PlacesViewModel extends ViewModel {
 	
 	private final MutableLiveData<List<Place>> places;
 	private final HashMap<Integer, PlaceRecyclerViewAdapter.ViewType> placesViewType;
-	private final Queue<AppRepository.RepositoryAction> repositoryActions;
+	private final ConcurrentLinkedQueue<AppRepository.RepositoryAction<?>> repositoryActions;
 	private boolean dataHasAlreadyBeenUpdated;
 	
 	
@@ -66,7 +65,7 @@ public class PlacesViewModel extends ViewModel {
 	 *
 	 * @return the places
 	 */
-	public List<Place> getPlaces() {
+	public synchronized List<Place> getPlaces() {
 		return places.getValue();
 	}
 	
@@ -145,7 +144,7 @@ public class PlacesViewModel extends ViewModel {
 	 *
 	 * @param action the action
 	 */
-	public synchronized void addRepositoryPlaceAction(@NonNull AppRepository.RepositoryAction action) {
+	public void addRepositoryPlaceAction(@NonNull AppRepository.RepositoryAction<?> action) {
 		repositoryActions.add(action);
 	}
 	
@@ -154,7 +153,7 @@ public class PlacesViewModel extends ViewModel {
 	 *
 	 * @return the app repository . repository action
 	 */
-	public synchronized AppRepository.RepositoryAction pollRepositoryPlaceAction() {
+	public synchronized AppRepository.RepositoryAction<?> pollRepositoryPlaceAction() {
 		return repositoryActions.poll();
 	}
 	
