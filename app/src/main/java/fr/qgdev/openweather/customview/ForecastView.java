@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import java.math.BigDecimal;
 import java.util.TimeZone;
@@ -33,28 +34,28 @@ import fr.qgdev.openweather.repositories.FormattingService;
  * @see View
  */
 public abstract class ForecastView extends View {
-
+	
 	protected FormattingService formattingService;
-	protected int COLUMN_WIDTH;
 	protected Context context;
-	protected int width, height;
+	protected int width;
+	protected int height;
 	protected Bitmap temperaturesGraph, humidityGraph, pressureGraph, windSpeedsGraph, precipitationsGraph;
 	protected TimeZone timeZone;
 	protected Paint datePaint,
-			structurePaint,
-			primaryPaint,
-			secondaryPaint,
-			primaryGraphPaint,
-			secondaryGraphPaint,
-			tertiaryPaint,
-			tertiaryGraphPaint,
-			popBarGraphPaint,
-			iconsPaint,
-			sunIconPaint,
-			moonLightIconPaint,
-			moonShadowIconPaint;
-
-
+			  structurePaint,
+			  primaryPaint,
+			  secondaryPaint,
+			  primaryGraphPaint,
+			  secondaryGraphPaint,
+			  tertiaryPaint,
+			  tertiaryGraphPaint,
+			  popBarGraphPaint,
+			  iconsPaint,
+			  sunIconPaint,
+			  moonLightIconPaint,
+			  moonShadowIconPaint;
+	
+	
 	/**
 	 * ForecastView Constructor
 	 * <p>
@@ -63,12 +64,12 @@ public abstract class ForecastView extends View {
 	 *
 	 * @param context Current context, only used to construct super class
 	 */
-	public ForecastView(@NonNull Context context) {
+	protected ForecastView(@NonNull Context context) {
 		super(context);
 		initComponents(context);
 	}
-
-
+	
+	
 	/**
 	 * ForecastView Constructor
 	 * <p>
@@ -78,39 +79,9 @@ public abstract class ForecastView extends View {
 	 * @param context Current context, only used to construct super class
 	 * @param attrs   AttributeSet for the GraphView
 	 */
-	public ForecastView(@NonNull Context context, @Nullable AttributeSet attrs) {
+	protected ForecastView(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		initComponents(context);
-	}
-
-
-	/**
-	 * setMinimumHeight(@Px int minHeight)
-	 * <p>
-	 * Used to set minimum Height of the view
-	 * </p>
-	 *
-	 * @param minHeight Minimum Height in pixel
-	 * @see View
-	 */
-	@Override
-	public void setMinimumHeight(@Px int minHeight) {
-		super.setMinimumHeight(minHeight);
-	}
-
-
-	/**
-	 * setMinimumWidth(@Px int minWidth)
-	 * <p>
-	 * Used to set minimum Width of the view
-	 * </p>
-	 *
-	 * @param minWidth Minimum Height in pixel
-	 * @see View
-	 */
-	@Override
-	public void setMinimumWidth(@Px int minWidth) {
-		super.setMinimumWidth(minWidth);
 	}
 
 
@@ -148,7 +119,7 @@ public abstract class ForecastView extends View {
 	 * @param height           Height of the wanted graph
 	 * @param firstCurvePaint  Paint that will be used to draw first curve
 	 * @param secondCurvePaint Paint that will be used to draw second curve
-	 * @return A Bitmap with two generated curves, with the wanted height and width and in the ARGB_4444 format
+	 * @return A Bitmap with two generated curves, with the wanted height and width and in the ARGB_8888 format
 	 * @apiNote firstCurveData & secondCurveData must have the same number of elements
 	 */
 	protected Bitmap generateBitmap2CurvesGraphPath(float[] firstCurveData, float[] secondCurveData, @Px int width, @Px int height, @NonNull Paint firstCurvePaint, @NonNull Paint secondCurvePaint) {
@@ -164,63 +135,69 @@ public abstract class ForecastView extends View {
 		for (int index = 0; index < firstCurveData.length; index++) {
 			if (firstCurveData[index] > maxValue) maxValue = firstCurveData[index];
 			if (firstCurveData[index] < minValue) minValue = firstCurveData[index];
-
+			
 			if (secondCurveData[index] > maxValue) maxValue = secondCurveData[index];
 			if (secondCurveData[index] < minValue) minValue = secondCurveData[index];
 		}
-
+		
 		//  Find the value to adjust all values so that the minimum is 0
-		float addValueMinTo0 = minValue * (-1);
+		float addValueMinTo0 = minValue * (-1F);
 		//  Find scale factor of Y axis
 		float scaleFactorY = 1 / (maxValue + addValueMinTo0);
-
+		
 		//  Doing Bezier curve calculations for each curves
-		float connectionPointsX, point1_X, point1_Y, point2_Y, point1_Y_2, point2_X, point2_Y_2;
-		float columnWidth = width / (float) firstCurveData.length,
-				halfColumnWidth = columnWidth / 2F,
-				//  To avoid curve trimming
-				top = 4,
-				bottom = height - 4,
-				drawHeight = bottom - top;
-
+		float connectionPointsX;
+		float point1X;
+		float point1Y;
+		float point2Y;
+		float point1Y2;
+		float point2X;
+		float point2Y2;
+		float columnWidth = width / (float) firstCurveData.length;
+		float halfColumnWidth = columnWidth / 2F;
+		//  To avoid curve trimming
+		float top = 4F;
+		float bottom = height - 4F;
+		float drawHeight = bottom - top;
+		
 		//  Clear each paths
 		firstCurvePath.reset();
 		secondCurvePath.reset();
-
+		
 		//  If min and max values are the same, the resulting curves are flat curves
 		if (minValue != maxValue) {
 			//  Position calculation for the first point
-			point1_X = halfColumnWidth;
-			point1_Y = bottom - drawHeight * (firstCurveData[0] + addValueMinTo0) * scaleFactorY;
-			point1_Y_2 = bottom - drawHeight * (secondCurveData[0] + addValueMinTo0) * scaleFactorY;
-
-			firstCurvePath.moveTo(0, point1_Y);
-			secondCurvePath.moveTo(0, point1_Y_2);
-
+			point1X = halfColumnWidth;
+			point1Y = bottom - drawHeight * (firstCurveData[0] + addValueMinTo0) * scaleFactorY;
+			point1Y2 = bottom - drawHeight * (secondCurveData[0] + addValueMinTo0) * scaleFactorY;
+			
+			firstCurvePath.moveTo(0, point1Y);
+			secondCurvePath.moveTo(0, point1Y2);
+			
 			for (int index = 1; index < firstCurveData.length; index++) {
-
+				
 				//  Position calculations
-				point2_X = index * columnWidth + halfColumnWidth;
-				point2_Y = bottom - drawHeight * (firstCurveData[index] + addValueMinTo0) * scaleFactorY;
-				point2_Y_2 = bottom - drawHeight * (secondCurveData[index] + addValueMinTo0) * scaleFactorY;
-
+				point2X = index * columnWidth + halfColumnWidth;
+				point2Y = bottom - drawHeight * (firstCurveData[index] + addValueMinTo0) * scaleFactorY;
+				point2Y2 = bottom - drawHeight * (secondCurveData[index] + addValueMinTo0) * scaleFactorY;
+				
 				//  Middle connection point
-				connectionPointsX = (point1_X + point2_X) / 2F;
-
+				connectionPointsX = (point1X + point2X) / 2F;
+				
 				//  Extending each curves
-				firstCurvePath.cubicTo(connectionPointsX, point1_Y, connectionPointsX, point2_Y, point2_X, point2_Y);
-				secondCurvePath.cubicTo(connectionPointsX, point1_Y_2, connectionPointsX, point2_Y_2, point2_X, point2_Y_2);
-
+				firstCurvePath.cubicTo(connectionPointsX, point1Y, connectionPointsX, point2Y, point2X, point2Y);
+				secondCurvePath.cubicTo(connectionPointsX, point1Y2, connectionPointsX, point2Y2, point2X, point2Y2);
+				
 				//  Moving to new points to old points
-				point1_X = point2_X;
-				point1_Y = point2_Y;
-				point1_Y_2 = point2_Y_2;
+				point1X = point2X;
+				point1Y = point2Y;
+				point1Y2 = point2Y2;
 			}
-
-			firstCurvePath.lineTo(width, point1_Y);
-			secondCurvePath.lineTo(width, point1_Y_2);
-			firstCurvePath.moveTo(width, point1_Y);
-			secondCurvePath.moveTo(width, point1_Y_2);
+			
+			firstCurvePath.lineTo(width, point1Y);
+			secondCurvePath.lineTo(width, point1Y2);
+			firstCurvePath.moveTo(width, point1Y);
+			secondCurvePath.moveTo(width, point1Y2);
 		} else {
 			firstCurvePath.moveTo(0, drawHeight);
 			secondCurvePath.moveTo(0, drawHeight);
@@ -238,7 +215,7 @@ public abstract class ForecastView extends View {
 		secondCurvePath.close();
 
 		//  Generating returned Bitmap
-		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444);
+		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(returnedBitmap);
 		canvas.drawPath(firstCurvePath, firstCurvePaint);
 		canvas.drawPath(secondCurvePath, secondCurvePaint);
@@ -262,7 +239,7 @@ public abstract class ForecastView extends View {
 	 * @param rainCurvePaint Paint that will be used to draw first curve
 	 * @param snowCurvePaint Paint that will be used to draw second curve
 	 * @param popCurvePaint  Paint that will be used to draw third curve which is a bar graph
-	 * @return A Bitmap with three generated curves, with the wanted height and width and in the ARGB_4444 format
+	 * @return A Bitmap with three generated curves, with the wanted height and width and in the ARGB_8888 format
 	 * @apiNote rainData, snowData & popData must have the same number of elements
 	 */
 	protected Bitmap generateBitmapPrecipitationsGraphPath(float[] rainData, float[] snowData, float[] popData, @Px int width, @Px int height, @NonNull Paint rainCurvePaint, @NonNull Paint snowCurvePaint, @NonNull Paint popCurvePaint) {
@@ -279,71 +256,77 @@ public abstract class ForecastView extends View {
 		for (int index = 0; index < rainData.length; index++) {
 			if (rainData[index] > maxValue) maxValue = rainData[index];
 			if (rainData[index] < minValue) minValue = rainData[index];
-
+			
 			if (snowData[index] > maxValue) maxValue = snowData[index];
 			if (snowData[index] < minValue) minValue = snowData[index];
 		}
-
+		
 		//  Find the value to adjust all values so that the minimum is 0
 		float addValueMinTo0 = minValue * (-1);
 		//  Find scale factor of Y axis
 		float scaleFactorY = 1 / (maxValue + addValueMinTo0);
-
+		
 		//  Doing Bezier curve calculations for each curves
-		float connectionPointsX, point1_X, point1_Y, point2_Y, point1_Y_2, point2_X, point2_Y_2;
-		float columnWidth = width / (float) rainData.length,
-				halfColumnWidth = columnWidth / 2F,
-				halfPopBarWidth = columnWidth / 6F,
-				//  To avoid curve trimming
-				top = 4,
-				bottom = height - 4,
-				drawHeight = bottom - top;
-
+		float connectionPointsX;
+		float point1X;
+		float point1Y;
+		float point2Y;
+		float point1Y2;
+		float point2X;
+		float point2Y2;
+		float columnWidth = width / (float) rainData.length;
+		float halfColumnWidth = columnWidth / 2F;
+		float halfPopBarWidth = columnWidth / 6F;
+		//  To avoid curve trimming
+		float top = 4;
+		float bottom = height - 4;
+		float drawHeight = bottom - top;
+		
 		//  Clear each paths
 		rainCurvePath.reset();
 		snowCurvePath.reset();
-
+		
 		//  If min and max values are the same, the resulting curves are flat curves
 		if (minValue != maxValue) {
 			//  Position calculation for the first point
-			point1_X = halfColumnWidth;
-			point1_Y = bottom - drawHeight * (rainData[0] + addValueMinTo0) * scaleFactorY;
-			point1_Y_2 = bottom - drawHeight * (snowData[0] + addValueMinTo0) * scaleFactorY;
-
-			rainCurvePath.moveTo(0, point1_Y);
-			snowCurvePath.moveTo(0, point1_Y_2);
+			point1X = halfColumnWidth;
+			point1Y = bottom - drawHeight * (rainData[0] + addValueMinTo0) * scaleFactorY;
+			point1Y2 = bottom - drawHeight * (snowData[0] + addValueMinTo0) * scaleFactorY;
+			
+			rainCurvePath.moveTo(0, point1Y);
+			snowCurvePath.moveTo(0, point1Y2);
 			popCurvePath.moveTo(0, bottom);
-
-			popCurvePath.addRect(point1_X - halfPopBarWidth, bottom - drawHeight * popData[0], point1_X + halfPopBarWidth, bottom, Path.Direction.CW);
-
-
+			
+			popCurvePath.addRect(point1X - halfPopBarWidth, bottom - drawHeight * popData[0], point1X + halfPopBarWidth, bottom, Path.Direction.CW);
+			
+			
 			for (int index = 1; index < rainData.length; index++) {
-
+				
 				//  Position calculations
-				point2_X = index * columnWidth + halfColumnWidth;
-				point2_Y = bottom - drawHeight * (rainData[index] + addValueMinTo0) * scaleFactorY;
-				point2_Y_2 = bottom - drawHeight * (snowData[index] + addValueMinTo0) * scaleFactorY;
-
+				point2X = index * columnWidth + halfColumnWidth;
+				point2Y = bottom - drawHeight * (rainData[index] + addValueMinTo0) * scaleFactorY;
+				point2Y2 = bottom - drawHeight * (snowData[index] + addValueMinTo0) * scaleFactorY;
+				
 				//  Middle connection point
-				connectionPointsX = (point1_X + point2_X) / 2F;
-
+				connectionPointsX = (point1X + point2X) / 2F;
+				
 				//  Extending each curves
-				rainCurvePath.cubicTo(connectionPointsX, point1_Y, connectionPointsX, point2_Y, point2_X, point2_Y);
-				snowCurvePath.cubicTo(connectionPointsX, point1_Y_2, connectionPointsX, point2_Y_2, point2_X, point2_Y_2);
-
+				rainCurvePath.cubicTo(connectionPointsX, point1Y, connectionPointsX, point2Y, point2X, point2Y);
+				snowCurvePath.cubicTo(connectionPointsX, point1Y2, connectionPointsX, point2Y2, point2X, point2Y2);
+				
 				//  Add pop bar
-				popCurvePath.addRect(point2_X - halfPopBarWidth, bottom - drawHeight * popData[index], point2_X + halfPopBarWidth, bottom, Path.Direction.CW);
-
+				popCurvePath.addRect(point2X - halfPopBarWidth, bottom - drawHeight * popData[index], point2X + halfPopBarWidth, bottom, Path.Direction.CW);
+				
 				//  Moving to new points to old points
-				point1_X = point2_X;
-				point1_Y = point2_Y;
-				point1_Y_2 = point2_Y_2;
+				point1X = point2X;
+				point1Y = point2Y;
+				point1Y2 = point2Y2;
 			}
-
-			rainCurvePath.lineTo(width, point1_Y);
-			snowCurvePath.lineTo(width, point1_Y_2);
-			rainCurvePath.moveTo(width, point1_Y);
-			snowCurvePath.moveTo(width, point1_Y_2);
+			
+			rainCurvePath.lineTo(width, point1Y);
+			snowCurvePath.lineTo(width, point1Y2);
+			rainCurvePath.moveTo(width, point1Y);
+			snowCurvePath.moveTo(width, point1Y2);
 		} else {
 			rainCurvePath.moveTo(0, drawHeight);
 			snowCurvePath.moveTo(0, drawHeight);
@@ -364,7 +347,7 @@ public abstract class ForecastView extends View {
 		popCurvePath.close();
 
 		//  Generating returned Bitmap
-		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444);
+		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(returnedBitmap);
 		canvas.drawPath(popCurvePath, popCurvePaint);
 		canvas.drawPath(rainCurvePath, rainCurvePaint);
@@ -391,18 +374,18 @@ public abstract class ForecastView extends View {
 	 */
 	protected void drawTextWithDrawable(@NonNull Canvas canvas, @NonNull Drawable drawable, @NonNull String text, @Px int top, @Px int left, @Px int spaceBetween, @NonNull Paint paint) {
 		int deltaDrawableText = 5;
-		float height = paint.getTextSize() + deltaDrawableText * 2,
-				textWidth = paint.measureText(text),
-				bottom = top + height,
-				textX = left + height + spaceBetween + textWidth / 2F,
-				textY = bottom - deltaDrawableText;
-
+		float sideLength = paint.getTextSize() + deltaDrawableText * 2;
+		float textWidth = paint.measureText(text);
+		float bottom = top + sideLength;
+		float textX = left + sideLength + spaceBetween + textWidth / 2F;
+		float textY = bottom - deltaDrawableText;
+		
 		//  Set Color and Dimensions of the drawable and print it on canvas
 		drawable.setTint(paint.getColor());
 		drawable.setBounds(BigDecimal.valueOf(left).intValue(),
-				BigDecimal.valueOf(top).intValue(),
-				BigDecimal.valueOf(left + height).intValue(),
-				BigDecimal.valueOf(bottom).intValue());
+				  BigDecimal.valueOf(top).intValue(),
+				  BigDecimal.valueOf(left + sideLength).intValue(),
+				  BigDecimal.valueOf(bottom).intValue());
 		drawable.draw(canvas);
 		canvas.drawText(text, textX, textY, paint);
 	}
@@ -434,7 +417,7 @@ public abstract class ForecastView extends View {
 			case 211:
 			case 212:
 			case 221:
-				weatherIconId = this.context.getResources().getIdentifier("thunderstorm_flat", "drawable", this.context.getPackageName());
+				weatherIconId = R.drawable.thunderstorm_flat;
 				break;
 
 			case 200:
@@ -443,7 +426,7 @@ public abstract class ForecastView extends View {
 			case 230:
 			case 231:
 			case 232:
-				weatherIconId = this.context.getResources().getIdentifier("storm_flat", "drawable", this.context.getPackageName());
+				weatherIconId = R.drawable.storm_flat;
 				break;
 
 			//  Drizzle and Rain (Light)
@@ -453,11 +436,11 @@ public abstract class ForecastView extends View {
 			case 501:
 			case 520:
 				if (isDayTime) {
-					weatherIconId = this.context.getResources().getIdentifier("rain_and_sun_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.rain_and_sun_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = this.context.getResources().getIdentifier("rainy_night_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.rainy_night_flat;
 				}
 				break;
 
@@ -470,7 +453,7 @@ public abstract class ForecastView extends View {
 			case 511:
 			case 521:
 			case 531:
-				weatherIconId = this.context.getResources().getIdentifier("rain_flat", "drawable", this.context.getPackageName());
+				weatherIconId = R.drawable.rain_flat;
 				break;
 
 			//Drizzle and Rain (Heavy)
@@ -480,7 +463,7 @@ public abstract class ForecastView extends View {
 			case 503:
 			case 504:
 			case 522:
-				weatherIconId = this.context.getResources().getIdentifier("heavy_rain_flat", "drawable", this.context.getPackageName());
+				weatherIconId = R.drawable.heavy_rain_flat;
 				break;
 
 			//  Snow
@@ -489,17 +472,17 @@ public abstract class ForecastView extends View {
 			case 620:
 			case 621:
 				if (isDayTime) {
-					weatherIconId = this.context.getResources().getIdentifier("snow_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.snow_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = this.context.getResources().getIdentifier("snow_and_night_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.snow_and_night_flat;
 				}
 				break;
-
+			
 			case 602:
 			case 622:
-				weatherIconId = this.context.getResources().getIdentifier("snow_flat", "drawable", this.context.getPackageName());
+				weatherIconId = R.drawable.snow_flat;
 				break;
 
 			case 611:
@@ -507,7 +490,7 @@ public abstract class ForecastView extends View {
 			case 613:
 			case 615:
 			case 616:
-				weatherIconId = this.context.getResources().getIdentifier("sleet_flat", "drawable", this.context.getPackageName());
+				weatherIconId = R.drawable.sleet_flat;
 				break;
 
 			//  Atmosphere
@@ -522,11 +505,11 @@ public abstract class ForecastView extends View {
 			case 771:
 			case 781:
 				if (isDayTime) {
-					weatherIconId = this.context.getResources().getIdentifier("fog_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.fog_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = this.context.getResources().getIdentifier("fog_and_night_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.fog_and_night_flat;
 				}
 				break;
 
@@ -534,11 +517,11 @@ public abstract class ForecastView extends View {
 			case 800:
 				//  Day
 				if (isDayTime) {
-					weatherIconId = this.context.getResources().getIdentifier("sun_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.sun_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = this.context.getResources().getIdentifier("moon_phase_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.moon_phase_flat;
 				}
 				break;
 
@@ -546,26 +529,26 @@ public abstract class ForecastView extends View {
 			case 802:
 			case 803:
 				if (isDayTime) {
-					weatherIconId = this.context.getResources().getIdentifier("clouds_and_sun_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.clouds_and_sun_flat;
 				}
 				//  Night
 				else {
-					weatherIconId = this.context.getResources().getIdentifier("cloudy_night_flat", "drawable", this.context.getPackageName());
+					weatherIconId = R.drawable.cloudy_night_flat;
 				}
 				break;
-
+			
 			case 804:
-				weatherIconId = this.context.getResources().getIdentifier("cloudy_flat", "drawable", this.context.getPackageName());
+				weatherIconId = R.drawable.cloudy_flat;
 				break;
-
+			
 			//  Default
 			default:
-				weatherIconId = this.context.getResources().getIdentifier("storm_flat", "drawable", this.context.getPackageName());
+				weatherIconId = R.drawable.storm_flat;
 				break;
-
+			
 		}
-
-		Drawable drawable = getResources().getDrawable(weatherIconId, null);
+		
+		Drawable drawable = AppCompatResources.getDrawable(context, weatherIconId);
 		drawable.setBounds(left, top, left + width, top + height);
 		drawable.draw(canvas);
 	}
@@ -605,21 +588,24 @@ public abstract class ForecastView extends View {
 	 */
 	protected void drawUvIndex(@NonNull Canvas canvas, @Px int uvIndex, @Px int x, @Px int y, @Px int sideLength) {
 		//uvIndex = 13;		//	ONLY FOR LAYOUT TEST PURPOSES
-		int middle = sideLength / 2,
-				circleRadius = middle / 2 - 3;
-
-		Bitmap sunBitmap = Bitmap.createBitmap(sideLength, sideLength, Bitmap.Config.ARGB_4444);
+		int middle = sideLength / 2;
+		int circleRadius = middle / 2 - 3;
+		
+		Bitmap sunBitmap = Bitmap.createBitmap(sideLength, sideLength, Bitmap.Config.ARGB_8888);
 		Canvas sunCanvas = new Canvas(sunBitmap);
-
+		
 		//  if the uv index is null, there is no sunrays
 		if (uvIndex != 0) {
-			float maxAngle = 6.28218F, deltaAngle = 0.392636F,
-					startRadius = circleRadius + 8, stopRadius = middle - 1;
-			float cosAngle, sinAngle;
-
+			float maxAngle = 6.28218F;
+			float deltaAngle = 0.392636F;
+			float startRadius = circleRadius + 8;
+			float stopRadius = middle - 1;
+			float cosAngle;
+			float sinAngle;
+			
 			if (uvIndex < 11) {
 				stopRadius = startRadius + uvIndex * (stopRadius - startRadius) / 11F;
-
+				
 				//  Change color depending on the UV index
 				if (uvIndex < 3)
 					this.sunIconPaint.setColor(getResources().getColor(R.color.colorUvLow, null));
@@ -665,32 +651,30 @@ public abstract class ForecastView extends View {
 	 * @param sideLength    Length side of the drawn wind direction icon
 	 */
 	protected void drawWindDirectionIcon(@NonNull Canvas canvas, float windDirection, @Px int x, @Px int y, @Px int sideLength) {
-		Bitmap compassBitmap = Bitmap.createBitmap(sideLength, sideLength, Bitmap.Config.ARGB_4444);
+		Bitmap compassBitmap = Bitmap.createBitmap(sideLength, sideLength, Bitmap.Config.ARGB_8888);
 		Canvas compassCanvas = new Canvas(compassBitmap);
-
+		
 		//  Do calculation for each points in clockwise order
-		float point1_x, point1_y, point2_x, point2_y, point3_x, point3_y, point4_x, point4_y, middle;
-
-		point1_x = sideLength * 0.5F;
-		point1_y = sideLength * 0.15F;
-		point2_x = sideLength * 0.85F;
-		point2_y = sideLength * 0.85F;
-		point3_x = sideLength * 0.5F;
-		point3_y = sideLength * 0.60F;
-		point4_x = sideLength * 0.15F;
-		point4_y = sideLength * 0.85F;
-
+		float point1x = sideLength * 0.5F;
+		float point1y = sideLength * 0.15F;
+		float point2X = sideLength * 0.85F;
+		float point2Y = sideLength * 0.85F;
+		float point3X = sideLength * 0.5F;
+		float point3Y = sideLength * 0.60F;
+		float point4X = sideLength * 0.15F;
+		float point4Y = sideLength * 0.85F;
+		
 		//  Rotate canvas with windDirection
-		middle = sideLength / 2F;
+		float middle = sideLength / 2F;
 		compassCanvas.rotate(windDirection, middle, middle);
-
+		
 		//  Draw each lines of wind direction arrow
-		compassCanvas.drawLine(point1_x, point1_y, point3_x, point3_y, this.iconsPaint);
-		compassCanvas.drawLine(point3_x, point3_y, point4_x, point4_y, this.iconsPaint);
-		compassCanvas.drawLine(point4_x, point4_y, point1_x, point1_y, this.iconsPaint);
-		compassCanvas.drawLine(point3_x, point3_y, point2_x, point2_y, this.iconsPaint);
-		compassCanvas.drawLine(point2_x, point2_y, point1_x, point1_y, this.iconsPaint);
-
+		compassCanvas.drawLine(point1x, point1y, point3X, point3Y, this.iconsPaint);
+		compassCanvas.drawLine(point3X, point3Y, point4X, point4Y, this.iconsPaint);
+		compassCanvas.drawLine(point4X, point4Y, point1x, point1y, this.iconsPaint);
+		compassCanvas.drawLine(point3X, point3Y, point2X, point2Y, this.iconsPaint);
+		compassCanvas.drawLine(point2X, point2Y, point1x, point1y, this.iconsPaint);
+		
 		canvas.drawBitmap(compassBitmap, x, y, null);
 	}
 
@@ -704,25 +688,25 @@ public abstract class ForecastView extends View {
 	 */
 	protected void initComponents(@NonNull Context context) {
 		this.context = context;
-
-		this.datePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.structurePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.primaryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.secondaryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.primaryGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.secondaryGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.tertiaryPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.tertiaryGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.popBarGraphPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.iconsPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		this.sunIconPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
+		
+		this.datePaint = new Paint();
+		this.structurePaint = new Paint();
+		this.primaryPaint = new Paint();
+		this.secondaryPaint = new Paint();
+		this.primaryGraphPaint = new Paint();
+		this.secondaryGraphPaint = new Paint();
+		this.tertiaryPaint = new Paint();
+		this.tertiaryGraphPaint = new Paint();
+		this.popBarGraphPaint = new Paint();
+		this.iconsPaint = new Paint();
+		this.sunIconPaint = new Paint();
+		
 		this.datePaint.setColor(getResources().getColor(R.color.colorPrimaryPaint, null));
 		this.datePaint.setAlpha(255);
 		this.datePaint.setTextSize(spToPx(19));
 		this.datePaint.setStrokeWidth(0.65F);
 		this.datePaint.setTextAlign(Paint.Align.LEFT);
-
+		
 		this.structurePaint.setColor(getResources().getColor(R.color.colorPrimaryPaint, null));
 		this.structurePaint.setAlpha(255);
 		this.structurePaint.setTextSize(spToPx(16));
@@ -784,21 +768,6 @@ public abstract class ForecastView extends View {
 		this.sunIconPaint.setPathEffect(null);
 		this.sunIconPaint.setStyle(Paint.Style.STROKE);
 		this.sunIconPaint.setTextAlign(Paint.Align.CENTER);
-	}
-
-
-	/**
-	 * onaw(@NonNull Canvas canvas)
-	 * <p>
-	 * Called to generate view
-	 * </p>
-	 *
-	 * @param canvas The canvas that will be displayed on screen
-	 * @see android.view.View
-	 */
-	@Override
-	protected void onDraw(@NonNull Canvas canvas) {
-		super.onDraw(canvas);
 	}
 
 

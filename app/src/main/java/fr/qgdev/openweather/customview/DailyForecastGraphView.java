@@ -35,18 +35,16 @@ import fr.qgdev.openweather.utils.ParameterizedCallable;
  * @see ForecastView
  */
 public class DailyForecastGraphView extends ForecastView {
-
+	
 	private static final String TAG = DailyForecastGraphView.class.getSimpleName();
 	private final Logger logger = Logger.getLogger(TAG);
-
-	private final int COLUMN_WIDTH = dpToPx(280);
-	private final int HALF_COLUMN_WIDTH = COLUMN_WIDTH / 2;
-	private final int QUARTER_COLUMN_WIDTH = COLUMN_WIDTH / 4;
-	private final int SIXTH_COLUMN_WIDTH = COLUMN_WIDTH / 6;
+	
+	private final int columnWidth = dpToPx(280);
+	private final int halfColumnWidth = columnWidth / 2;
+	private final int quarterColumnWidth = columnWidth / 4;
+	private final int sixthColumnWidth = columnWidth / 6;
 	private List<DailyWeatherForecast> dailyWeatherForecastList;
-	private FormattingService formattingService;
-
-
+	
 	/**
 	 * DailyForecastGraphView Constructor
 	 * <p>
@@ -117,8 +115,7 @@ public class DailyForecastGraphView extends ForecastView {
 	 * @param unitsFormattingService   FormattingService of the application to format dates
 	 */
 	public void initialization(@NonNull List<DailyWeatherForecast> dailyWeatherForecastList, @NonNull TimeZone timeZone, @NonNull FormattingService unitsFormattingService) {
-		
-		this.width = dailyWeatherForecastList.size() * COLUMN_WIDTH;
+		this.width = dailyWeatherForecastList.size() * columnWidth;
 		this.height = dpToPx(710);
 		
 		this.dailyWeatherForecastList = dailyWeatherForecastList;
@@ -147,36 +144,6 @@ public class DailyForecastGraphView extends ForecastView {
 		} catch (Exception e) {
 			logger.log(Level.WARNING, e.getMessage());
 		}
-	}
-
-
-	/**
-	 * setMinimumHeight(@Px int minHeight)
-	 * <p>
-	 * Used to set minimum Height of the view
-	 * </p>
-	 *
-	 * @param minHeight Minimum Height in pixel
-	 * @see View
-	 */
-	@Override
-	public void setMinimumHeight(@Px int minHeight) {
-		super.setMinimumHeight(minHeight);
-	}
-
-
-	/**
-	 * setMinimumWidth(@Px int minWidth)
-	 * <p>
-	 * Used to set minimum Width of the view
-	 * </p>
-	 *
-	 * @param minWidth Minimum Height in pixel
-	 * @see View
-	 */
-	@Override
-	public void setMinimumWidth(@Px int minWidth) {
-		super.setMinimumWidth(minWidth);
 	}
 
 
@@ -282,9 +249,8 @@ public class DailyForecastGraphView extends ForecastView {
 	 * @param dailyWeatherForecastList The dailyForecast arrayList
 	 */
 	private void drawStructureAndDate(@NonNull Canvas canvas, @Px int dateFirstLineY, @Px int dateSecondLineY, @Px int dayPeriodStartLineY, @Px int dayPeriodStopLineY, @NonNull List<DailyWeatherForecast> dailyWeatherForecastList, @NonNull TimeZone timeZone) {
-		
-		float xDiv = 0,
-				  xDivDayPeriod = QUARTER_COLUMN_WIDTH / 2F;
+		float xDiv = 0;
+		float xDivDayPeriod = quarterColumnWidth / 2F;
 		Date date;
 		
 		//  For each day
@@ -293,26 +259,26 @@ public class DailyForecastGraphView extends ForecastView {
 			date = new Date(dailyWeatherForecastList.get(index).getDt());
 			
 			//  Draw date
-			canvas.drawText(formattingService.getFormattedShortDayName(date, timeZone), xDiv + 10, dateFirstLineY, this.datePaint);
-			canvas.drawText(formattingService.getFormattedDayMonth(date, timeZone), xDiv + 10, dateSecondLineY, this.datePaint);
+			canvas.drawText(formattingService.getFormattedShortDayName(date, timeZone), xDiv + 10F, dateFirstLineY, this.datePaint);
+			canvas.drawText(formattingService.getFormattedDayMonth(date, timeZone), xDiv + 10F, dateSecondLineY, this.datePaint);
 			
 			//  Draw day separator
 			canvas.drawLine(xDiv, 0, xDiv, canvas.getHeight(), this.structurePaint);
 			
 			//  Draw separator between each day moments
 			for (int i = 1; i < 4; i++)
-				canvas.drawLine(xDiv + QUARTER_COLUMN_WIDTH * i, dayPeriodStartLineY, xDiv + QUARTER_COLUMN_WIDTH * i, dayPeriodStopLineY, this.structurePaint);
-
+				canvas.drawLine(xDiv + quarterColumnWidth * i, dayPeriodStartLineY, xDiv + quarterColumnWidth * i, dayPeriodStopLineY, this.structurePaint);
+			
 			canvas.drawText(context.getString(R.string.title_daily_forecast_morning), xDiv + xDivDayPeriod, dayPeriodStartLineY, this.structurePaint);
-			xDivDayPeriod += QUARTER_COLUMN_WIDTH;
+			xDivDayPeriod += quarterColumnWidth;
 			canvas.drawText(context.getString(R.string.title_daily_forecast_noon), xDiv + xDivDayPeriod, dayPeriodStartLineY, this.structurePaint);
-			xDivDayPeriod += QUARTER_COLUMN_WIDTH;
+			xDivDayPeriod += quarterColumnWidth;
 			canvas.drawText(context.getString(R.string.title_daily_forecast_evening), xDiv + xDivDayPeriod, dayPeriodStartLineY, this.structurePaint);
-			xDivDayPeriod += QUARTER_COLUMN_WIDTH;
+			xDivDayPeriod += quarterColumnWidth;
 			canvas.drawText(context.getString(R.string.title_daily_forecast_night), xDiv + xDivDayPeriod, dayPeriodStartLineY, this.structurePaint);
-
-			xDiv += COLUMN_WIDTH;
-			xDivDayPeriod = QUARTER_COLUMN_WIDTH / 2F;
+			
+			xDiv += columnWidth;
+			xDivDayPeriod = quarterColumnWidth / 2F;
 		}
 	}
 
@@ -359,22 +325,22 @@ public class DailyForecastGraphView extends ForecastView {
 	 * @param left                 Where temperatures will be drawn on the x axis
 	 */
 	private void drawTemperatures(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left) {
-		float textX = left + QUARTER_COLUMN_WIDTH / 2F,
-				  textY1 = top,
-				  textY2 = top + dpToPx(25);
+		float textX = left + quarterColumnWidth / 2F;
+		float textY1 = top;
+		float textY2 = top + dpToPx(25);
 		//  Temperatures
 		////    Morning
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMorning(), false), textX, textY1, this.primaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMorningFeelsLike(), false), textX, textY2, this.secondaryPaint);
-		textX += QUARTER_COLUMN_WIDTH;
+		textX += quarterColumnWidth;
 		////    Noon
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureDay(), false), textX, textY1, this.primaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureDayFeelsLike(), false), textX, textY2, this.secondaryPaint);
-		textX += QUARTER_COLUMN_WIDTH;
+		textX += quarterColumnWidth;
 		////    Evening
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureEvening(), false), textX, textY1, this.primaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureEveningFeelsLike(), false), textX, textY2, this.secondaryPaint);
-		textX += QUARTER_COLUMN_WIDTH;
+		textX += quarterColumnWidth;
 		////    Night
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureNight(), false), textX, textY1, this.primaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureNightFeelsLike(), false), textX, textY2, this.secondaryPaint);
@@ -394,28 +360,28 @@ public class DailyForecastGraphView extends ForecastView {
 	 * @param sideLength Length side of the drawn moon phase
 	 */
 	private void drawMoonPhase(@NonNull Canvas canvas, float moonPhase, @Px int x, @Px int y, @Px int sideLength) {
-		int middle = sideLength / 2,
-				circleRadius = middle / 2 - 3;
-
-		Bitmap moonBitmap = Bitmap.createBitmap(sideLength, sideLength, Bitmap.Config.ARGB_4444);
+		int middle = sideLength / 2;
+		int circleRadius = middle / 2 - 3;
+		
+		Bitmap moonBitmap = Bitmap.createBitmap(sideLength, sideLength, Bitmap.Config.ARGB_8888);
 		Canvas moonCanvas = new Canvas(moonBitmap);
-
+		
 		//  Draw a full visible moon
 		moonCanvas.drawCircle(middle, middle, circleRadius, this.moonLightIconPaint);
 		moonCanvas.drawCircle(middle, middle, circleRadius + 1, this.moonShadowIconPaint);
-
+		
 		//  No need to draw shadows part
 		if (moonPhase != 0.5F) {
 			int dX, startX, stopX;
-			float left = middle - circleRadius,
-					right = middle + circleRadius,
-					top2 = left,
-					bottom2 = right;
-
+			float left = middle - circleRadius;
+			float right = middle + circleRadius;
+			float top2 = left;
+			float bottom2 = right;
+			
 			//  Delimitation between light and shadow parts
 			dX = circleRadius * 2;
 			dX *= (moonPhase * 2) % 1;
-
+			
 			//  First half of the moon cycle
 			if (moonPhase < 0.5F) {
 				startX = dX;
@@ -453,14 +419,14 @@ public class DailyForecastGraphView extends ForecastView {
 	 * @param paint                Paint used to draw text elements
 	 */
 	private void drawEnvironmentalVariables(@NonNull Canvas canvas, @NonNull DailyWeatherForecast dailyWeatherForecast, @Px int top, @Px int left, @NonNull Paint paint) {
-		int firstColumn = left + dpToPx(20),
-				  secondColumn = firstColumn + HALF_COLUMN_WIDTH,
-				  textY1 = top,
-				  textY2 = textY1 + dpToPx(35),
-				  textY3 = textY2 + dpToPx(35),
-				  textY4 = textY3 + dpToPx(35),
-				  textY5 = textY4 + dpToPx(35),
-				  textY6 = textY5 + dpToPx(35);
+		int firstColumn = left + dpToPx(20);
+		int secondColumn = firstColumn + halfColumnWidth;
+		int textY1 = top;
+		int textY2 = textY1 + dpToPx(35);
+		int textY3 = textY2 + dpToPx(35);
+		int textY4 = textY3 + dpToPx(35);
+		int textY5 = textY4 + dpToPx(35);
+		int textY6 = textY5 + dpToPx(35);
 		
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.barometer_material), formattingService.getFormattedPressure(dailyWeatherForecast.getPressure(), true), textY1, firstColumn, dpToPx(5), paint);
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.cloudy_material), String.format("%d %%", dailyWeatherForecast.getCloudiness()), textY1, secondColumn, dpToPx(5), paint);
@@ -487,19 +453,19 @@ public class DailyForecastGraphView extends ForecastView {
 	 * @param left                 Where elements will be drawn on the x axis
 	 */
 	private void drawWindVariables(@NonNull Canvas canvas, @NonNull DailyWeatherForecast dailyWeatherForecast, @Px int top, @Px int left) {
-		int firstColumn = left + dpToPx(20),
-				  secondColumn = firstColumn + HALF_COLUMN_WIDTH,
-				  textY = top + dpToPx(30),
-				  textY2 = textY + dpToPx(40),
-				  textY3 = textY2 + dpToPx(20);
+		int firstColumn = left + dpToPx(20);
+		int secondColumn = firstColumn + halfColumnWidth;
+		int textY = top + dpToPx(30);
+		int textY2 = textY + dpToPx(40);
+		int textY3 = textY2 + dpToPx(20);
 		
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.windsock_material), formattingService.getFloatFormattedSpeed(dailyWeatherForecast.getWindSpeed(), true), textY, firstColumn, dpToPx(5), this.primaryPaint);
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.wind_material), formattingService.getFloatFormattedSpeed(dailyWeatherForecast.getWindGustSpeed(), true), textY, secondColumn, dpToPx(5), this.secondaryPaint);
 		
-		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(dailyWeatherForecast.getWindDirection()), left + QUARTER_COLUMN_WIDTH, textY2, this.primaryPaint);
-		canvas.drawText(formattingService.getFormattedDirectionInDegrees(dailyWeatherForecast.getWindDirection()), left + QUARTER_COLUMN_WIDTH, textY3, this.primaryPaint);
+		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(dailyWeatherForecast.getWindDirection()), left + quarterColumnWidth, textY2, this.primaryPaint);
+		canvas.drawText(formattingService.getFormattedDirectionInDegrees(dailyWeatherForecast.getWindDirection()), left + quarterColumnWidth, textY3, this.primaryPaint);
 		
-		drawWindDirectionIcon(canvas, dailyWeatherForecast.getWindDirection(), left + HALF_COLUMN_WIDTH + QUARTER_COLUMN_WIDTH - dpToPx(20), textY + dpToPx(30), dpToPx(35));
+		drawWindDirectionIcon(canvas, dailyWeatherForecast.getWindDirection(), left + halfColumnWidth + quarterColumnWidth - dpToPx(20), textY + dpToPx(30), dpToPx(35));
 	}
 
 
@@ -515,10 +481,10 @@ public class DailyForecastGraphView extends ForecastView {
 	 * @param left                 Where elements will be drawn on the x axis
 	 */
 	private void drawPrecipitationsVariables(@NonNull Canvas canvas, @NonNull DailyWeatherForecast dailyWeatherForecast, @Px int top, @Px int left) {
-		int firstColumn = left + dpToPx(20),
-				  secondColumn = firstColumn + HALF_COLUMN_WIDTH,
-				  textY = top,
-				  textY2 = textY + dpToPx(35);
+		int firstColumn = left + dpToPx(20);
+		int secondColumn = firstColumn + halfColumnWidth;
+		int textY = top;
+		int textY2 = textY + dpToPx(35);
 		
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.rain_material), formattingService.getFloatFormattedShortDistance(dailyWeatherForecast.getRain(), true), textY, firstColumn, dpToPx(5), this.tertiaryPaint);
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.snow_material), formattingService.getFloatFormattedShortDistance(dailyWeatherForecast.getSnow(), true), textY, secondColumn, dpToPx(5), this.primaryPaint);
@@ -539,7 +505,7 @@ public class DailyForecastGraphView extends ForecastView {
 	protected void onDraw(@NonNull Canvas canvas) {
 		super.onDraw(canvas);
 		
-		int leftOfColumn = 0, halfOfColumnWidth = HALF_COLUMN_WIDTH, quarterOfColumnWidth = QUARTER_COLUMN_WIDTH, sixthOfColumnWidth = SIXTH_COLUMN_WIDTH;
+		int leftOfColumn = 0, halfOfColumnWidth = halfColumnWidth, quarterOfColumnWidth = quarterColumnWidth, sixthOfColumnWidth = sixthColumnWidth;
 		
 		drawStructureAndDate(canvas, dpToPx(15), dpToPx(35), dpToPx(125), dpToPx(230), dailyWeatherForecastList, timeZone);
 		
@@ -553,11 +519,11 @@ public class DailyForecastGraphView extends ForecastView {
 			drawWindVariables(canvas, dailyWeatherForecast, dpToPx(485), leftOfColumn);
 			
 			drawPrecipitationsVariables(canvas, dailyWeatherForecast, dpToPx(650), leftOfColumn);
-
-			leftOfColumn += COLUMN_WIDTH;
-			sixthOfColumnWidth += COLUMN_WIDTH;
-			quarterOfColumnWidth += COLUMN_WIDTH;
-			halfOfColumnWidth += COLUMN_WIDTH;
+			
+			leftOfColumn += columnWidth;
+			sixthOfColumnWidth += columnWidth;
+			quarterOfColumnWidth += columnWidth;
+			halfOfColumnWidth += columnWidth;
 		}
 
 		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(140), null);

@@ -37,9 +37,10 @@ import fr.qgdev.openweather.utils.ParameterizedCallable;
  * @see ForecastView
  */
 public class HourlyForecastGraphView extends ForecastView {
-	
 	private static final String TAG = HourlyForecastGraphView.class.getSimpleName();
 	private final Logger logger = Logger.getLogger(TAG);
+	
+	private int columnWidth;
 	
 	private List<HourlyWeatherForecast> hourlyWeatherForecastList;
 	private boolean[] isDayTime;
@@ -165,11 +166,10 @@ public class HourlyForecastGraphView extends ForecastView {
 	 * @param unitsFormattingService    FormattingService of the application to format dates
 	 */
 	public void initialization(@NonNull List<HourlyWeatherForecast> hourlyWeatherForecastList, @NonNull List<DailyWeatherForecast> dailyWeatherForecastList, @NonNull FormattingService unitsFormattingService, @NonNull TimeZone timeZone) {
-		
-		this.COLUMN_WIDTH = dpToPx(90);
+		this.columnWidth = dpToPx(90);
 		float[] firstCurve, secondCurve;
 		
-		this.width = hourlyWeatherForecastList.size() * COLUMN_WIDTH;
+		this.width = hourlyWeatherForecastList.size() * columnWidth;
 		this.height = dpToPx(820);
 		
 		this.hourlyWeatherForecastList = hourlyWeatherForecastList;
@@ -213,36 +213,6 @@ public class HourlyForecastGraphView extends ForecastView {
 	}
 
 	/**
-	 * setMinimumHeight(@Px int minHeight)
-	 * <p>
-	 * Used to set minimum Height of the view
-	 * </p>
-	 *
-	 * @param minHeight Minimum Height in pixel
-	 * @see View
-	 */
-	@Override
-	public void setMinimumHeight(@Px int minHeight) {
-		super.setMinimumHeight(minHeight);
-	}
-
-
-	/**
-	 * setMinimumWidth(@Px int minWidth)
-	 * <p>
-	 * Used to set minimum Width of the view
-	 * </p>
-	 *
-	 * @param minWidth Minimum Height in pixel
-	 * @see View
-	 */
-	@Override
-	public void setMinimumWidth(@Px int minWidth) {
-		super.setMinimumWidth(minWidth);
-	}
-
-
-	/**
 	 * onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	 * <p>
 	 * Used to set Measured Dimensions<br>
@@ -272,9 +242,9 @@ public class HourlyForecastGraphView extends ForecastView {
 	 * @param timeZone                  The timeZone of the place
 	 */
 	private void drawStructureAndDate(@NonNull Canvas canvas, @NonNull List<HourlyWeatherForecast> hourlyWeatherForecastList, @NonNull TimeZone timeZone) {
-		
-		byte previousItemDay = 0, currentItemDay;
-		int x_div = 0;
+		byte previousItemDay = 0;
+		byte currentItemDay;
+		int xDiv = 0;
 		int dateFirstLineY, dateSecondLineY, hourLineY, halfColumnWidth;
 		Calendar calendar;
 		Date date;
@@ -286,7 +256,7 @@ public class HourlyForecastGraphView extends ForecastView {
 		dateFirstLineY = dpToPx(15);
 		dateSecondLineY = dpToPx(35);
 		hourLineY = dpToPx(60);
-		halfColumnWidth = COLUMN_WIDTH / 2;
+		halfColumnWidth = columnWidth / 2;
 		
 		for (int index = 0; index < hourlyWeatherForecastList.size(); index++) {
 			
@@ -298,18 +268,18 @@ public class HourlyForecastGraphView extends ForecastView {
 			//  New day detected, draw day div and date
 			if (previousItemDay != currentItemDay) {
 				previousItemDay = currentItemDay;
-				canvas.drawLine(x_div, 0, x_div, canvas.getHeight(), this.datePaint);
-				canvas.drawText(formattingService.getFormattedShortDayName(date, timeZone), x_div + 10, dateFirstLineY, this.datePaint);
-				canvas.drawText(formattingService.getFormattedDayMonth(date, timeZone), x_div + 10, dateSecondLineY, this.datePaint);
+				canvas.drawLine(xDiv, 0, xDiv, canvas.getHeight(), this.datePaint);
+				canvas.drawText(formattingService.getFormattedShortDayName(date, timeZone), xDiv + 10F, dateFirstLineY, this.datePaint);
+				canvas.drawText(formattingService.getFormattedDayMonth(date, timeZone), xDiv + 10F, dateSecondLineY, this.datePaint);
 			}
 			//  Draw hour div
 			else {
-				canvas.drawLine(x_div, 120, x_div, canvas.getHeight(), this.structurePaint);
+				canvas.drawLine(xDiv, 120, xDiv, canvas.getHeight(), this.structurePaint);
 			}
 			//  Draw hour
-			canvas.drawText(formattingService.getFormattedHour(date, timeZone), x_div + halfColumnWidth, hourLineY, this.structurePaint);
-
-			x_div += COLUMN_WIDTH;
+			canvas.drawText(formattingService.getFormattedHour(date, timeZone), xDiv + halfColumnWidth, hourLineY, this.structurePaint);
+			
+			xDiv += columnWidth;
 		}
 	}
 
@@ -416,8 +386,8 @@ public class HourlyForecastGraphView extends ForecastView {
 		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(windDirection), left + middle, top + width + dpToPx(5), this.primaryPaint);
 		canvas.drawText(formattingService.getFormattedDirectionInDegrees(windDirection), left + middle, top + width + dpToPx(25), this.primaryPaint);
 	}
-
-
+	
+	
 	/**
 	 * generateBitmap1CurvesGraphPath(float[] curveData, @Px int width, @Px int height, @NonNull Paint curvePaint)
 	 * <p>
@@ -428,10 +398,9 @@ public class HourlyForecastGraphView extends ForecastView {
 	 * @param width      Width of the wanted graph
 	 * @param height     Height of the wanted graph
 	 * @param curvePaint Paint that will be used to draw curve
-	 * @return A Bitmap with the generated curve, with the wanted height and width and in the ARGB_4444 format
+	 * @return A Bitmap with the generated curve, with the wanted height and width and in the ARGB_8888 format
 	 */
 	private Bitmap generateBitmap1CurvesGraphPath(float[] curveData, @Px int width, @Px int height, @NonNull Paint curvePaint) {
-
 		//  Initializing graph path
 		Path curvePath = new Path();
 
@@ -443,51 +412,51 @@ public class HourlyForecastGraphView extends ForecastView {
 			if (curveDatum > maxValue) maxValue = curveDatum;
 			if (curveDatum < minValue) minValue = curveDatum;
 		}
-
+		
 		//  Find the value to adjust all values so that the minimum is 0
-		float addValueMinTo0 = minValue * (-1);
+		float addValueMinTo0 = minValue * (-1F);
 		//  Find scale factor of Y axis
 		float scaleFactorY = 1 / (maxValue + addValueMinTo0);
-
+		
 		//  Doing Bezier curve calculations for each curve
-		float connectionPointsX, point1_X, point1_Y, point2_Y, point2_X;
-		float columnWidth = width / (float) curveData.length,
-				halfColumnWidth = columnWidth / 2F,
-				//  To avoid curve trimming
-				top = 4,
-				bottom = height - 4,
-				drawHeight = bottom - top;
-
+		float connectionPointsX, point1X, point1Y, point2Y, point2X;
+		float columnWidth = width / (float) curveData.length;
+		float halfColumnWidth = columnWidth / 2F;
+		//  To avoid curve trimming
+		float top = 4F;
+		float bottom = height - 4F;
+		float drawHeight = bottom - top;
+		
 		//  Clear each paths
 		curvePath.reset();
-
+		
 		//  If min and max values are the same, the resulting curve is a flat curve
 		if (minValue != maxValue) {
 			//  Position calculation for the first point
-			point1_X = halfColumnWidth;
-			point1_Y = bottom - drawHeight * (curveData[0] + addValueMinTo0) * scaleFactorY;
-
-			curvePath.moveTo(0, point1_Y);
-
+			point1X = halfColumnWidth;
+			point1Y = bottom - drawHeight * (curveData[0] + addValueMinTo0) * scaleFactorY;
+			
+			curvePath.moveTo(0, point1Y);
+			
 			for (int index = 1; index < curveData.length; index++) {
-
+				
 				//  Position calculations
-				point2_X = index * COLUMN_WIDTH + halfColumnWidth;
-				point2_Y = bottom - drawHeight * (curveData[index] + addValueMinTo0) * scaleFactorY;
-
+				point2X = index * this.columnWidth + halfColumnWidth;
+				point2Y = bottom - drawHeight * (curveData[index] + addValueMinTo0) * scaleFactorY;
+				
 				//  Middle connection point
-				connectionPointsX = (point1_X + point2_X) / 2F;
-
+				connectionPointsX = (point1X + point2X) / 2F;
+				
 				//  Extending each curves
-				curvePath.cubicTo(connectionPointsX, point1_Y, connectionPointsX, point2_Y, point2_X, point2_Y);
-
+				curvePath.cubicTo(connectionPointsX, point1Y, connectionPointsX, point2Y, point2X, point2Y);
+				
 				//  Moving to new points to old points
-				point1_X = point2_X;
-				point1_Y = point2_Y;
+				point1X = point2X;
+				point1Y = point2Y;
 			}
-
-			curvePath.lineTo(width, point1_Y);
-			curvePath.moveTo(width, point1_Y);
+			
+			curvePath.lineTo(width, point1Y);
+			curvePath.moveTo(width, point1Y);
 		} else {
 			curvePath.moveTo(0, drawHeight);
 
@@ -500,7 +469,7 @@ public class HourlyForecastGraphView extends ForecastView {
 		curvePath.close();
 
 		//  Generating returned Bitmap
-		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_4444);
+		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(returnedBitmap);
 		canvas.drawPath(curvePath, curvePaint);
 
@@ -542,7 +511,7 @@ public class HourlyForecastGraphView extends ForecastView {
 		super.onDraw(canvas);
 		
 		HourlyWeatherForecast currentHourlyWeatherForecast;
-		int halfWidthX = COLUMN_WIDTH / 2, drawableX = halfWidthX - dpToPx(25);
+		int halfWidthX = columnWidth / 2, drawableX = halfWidthX - dpToPx(25);
 		
 		drawStructureAndDate(canvas, hourlyWeatherForecastList, timeZone);
 		
@@ -565,9 +534,9 @@ public class HourlyForecastGraphView extends ForecastView {
 			drawWindDirection(canvas, currentHourlyWeatherForecast.getWindDirection(), dpToPx(620), drawableX, dpToPx(50));
 			
 			drawPrecipitations(canvas, currentHourlyWeatherForecast, dpToPx(720), halfWidthX);
-
-			halfWidthX += COLUMN_WIDTH;
-			drawableX += COLUMN_WIDTH;
+			
+			halfWidthX += columnWidth;
+			drawableX += columnWidth;
 		}
 
 		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(175), null);
