@@ -1,18 +1,14 @@
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Android.gitlab-ci.yml
-
-# Read more about this script on this blog post https://about.gitlab.com/2018/10/24/setting-up-gitlab-ci-for-android-projects/, by Jason Lenny
-# If you are interested in using Android with FastLane for publishing take a look at the Android-Fastlane template.
-
-image: openjdk:17-jdk
+# Derivated from Gitlab original template for Android CI/CD
+# Adapted in order to work with Gradle 8 which work with JDK 17
+image: debian:latest
 
 # Enable cache to speed up the CI process
 cache:
-  key: ${CI_PROJECT_ID}
+  key: ${CI_PROJECT_ID}-${CI_COMMIT_SHA}
   paths:
-  - .gradle/
+    - .gradle/
+    - /android-home/
+
 
 variables:
 
@@ -31,41 +27,48 @@ variables:
   # when the script was last modified for latest compileSdkVersion, it was which is written down below
   ANDROID_SDK_TOOLS: "9477386"
 
+
 # Packages installation before running script
 before_script:
   - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1
-
-  # Setup path as ANDROID_SDK_ROOT for moving/exporting the downloaded sdk into it
-  - export ANDROID_SDK_ROOT="${PWD}/android-home"
+  - apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1 openjdk-17-jdk
+  
+  # Setup path as android_home for moving/exporting the downloaded sdk into it
+  - export ANDROID_HOME="${PWD}/android-home"
+  - export ROOT_HOME="${PWD}/"
   # Create a new directory at specified location
-  - install -d $ANDROID_SDK_ROOT
-  # Here we are installing androidSDK tools from official source,
-  # (the key thing here is the url from where you are downloading these sdk tool for command line, so please do note this url pattern there and here as well)
-  # after that unzipping those tools and
-  # then running a series of SDK manager commands to install necessary android SDK packages that'll allow the app to build
-  - wget --output-document=$ANDROID_SDK_ROOT/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
-  # move to the archive at ANDROID_SDK_ROOT
-  - pushd $ANDROID_SDK_ROOT
-  - unzip -d cmdline-tools cmdline-tools.zip
-  - pushd cmdline-tools
-  # since commandline tools version 7583922 the root folder is named "cmdline-tools" so we rename it if necessary
-  - mv cmdline-tools tools || true
-  - popd
-  - popd
-  - export PATH=$PATH:${ANDROID_SDK_ROOT}/cmdline-tools/tools/bin/
+  - install -d $ANDROID_HOME
+  
+  # Check if the command-line tools archive is in the cache and extract it if it is
+  - >
+    if [ -f android-home/cmdline-tools.zip ]; then
+      echo "Command-line tools archive found in cache, skipping download";
+      pushd $ANDROID_HOME;
+      unzip -q android-home/cmdline-tools.zip;
+      popd;
+    fi
 
-  # Nothing fancy here, just checking sdkManager version
-  - sdkmanager --version
+  # If the archive is not in the cache, download it and extract it
+  - >
+    if [ ! -f android-home/cmdline-tools.zip ]; then
+      wget --output-document=$ANDROID_HOME/cmdline-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip;
+      pushd $ANDROID_HOME;
+      unzip -q cmdline-tools.zip;
+      popd;
+      # Cache the downloaded archive for future job runs
+      # mv $ANDROID_HOME/cmdline-tools.zip android-home/;
+    fi
+
+  - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/bin/
 
   # use yes to accept all licenses
-  - yes | sdkmanager --licenses || true
-  - sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}"
-  - sdkmanager "platform-tools"
-  - sdkmanager "build-tools;${ANDROID_BUILD_TOOLS}"
+  - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses 1> /dev/null || true
+  - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_COMPILE_SDK}"
+  - sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
+  - sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
 
   # Not necessary, but just for surity
-  - chmod +x ./gradlew
+  #- chmod +x ./gradlew
 
 # Basic android and gradle stuff
 # Check linting
@@ -73,7 +76,7 @@ lintDebug:
   interruptible: true
   stage: build
   script:
-    - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint
+    - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint 
 
 # Make Project
 assembleDebug:
@@ -91,4 +94,3 @@ debugTests:
   stage: test
   script:
     - ./gradlew -Pci --console=plain :app:testDebug
-
