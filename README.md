@@ -16,15 +16,16 @@ Only the necessary data are used by the application, these data are:
 
 OpenWeatherMaps privacy policy: [openweather.co.uk/privacy-policy](https://openweather.co.uk/privacy-policy)
 
-## 📲 Disponibility on apps markets
+## 📲 Availability on apps markets
 #### Google Play Store
-For now it is only available on the PlayStore as a closed alpha, there is the possibility to add people on request.
-But I will release it on pulic soon on the PlayStore.
+For now it is only available on the PlayStore as a closed alpha, there is the possibility to add
+people on request.
+But I will release it on public soon on the PlayStore.
 
 #### F-Droid
 For now it is not available on F-Droid but I am thinking to put my app on it.
 
-## ⚠️ Disclamer
+## ⚠️ Disclaimer
 This application is powered by the OpenWeatherMaps APIs but has no connection or affiliation with this company.
 
 ## ⚖️ Credits
