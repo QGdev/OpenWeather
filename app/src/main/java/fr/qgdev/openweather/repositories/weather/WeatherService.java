@@ -232,19 +232,12 @@ public class WeatherService {
     
     public boolean deviceIsConnected() {
         ConnectivityManager connectivityManager = context.getSystemService(ConnectivityManager.class);
-        Network[] networks = connectivityManager.getAllNetworks();
-        NetworkCapabilities networkCapabilities;
-        boolean deviceIsConnected = false;
-        
-        for (Network network : networks) {
-            networkCapabilities = connectivityManager.getNetworkCapabilities(network);
-            if (networkCapabilities == null) break;
-            if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)) {
-                deviceIsConnected = true;
-                break;
-            }
-        }
-        return deviceIsConnected;
+        Network network = connectivityManager.getActiveNetwork();
+        NetworkCapabilities networkCapabilities = connectivityManager.getNetworkCapabilities(network);
+    
+        return networkCapabilities != null &&
+                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED);
     }
     
     public boolean isApiKeyValid() {
