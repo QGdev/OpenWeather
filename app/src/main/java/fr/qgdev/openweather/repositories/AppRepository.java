@@ -276,22 +276,14 @@ public class AppRepository {
     public LiveData<Integer> countPlaces() {
         return mPlaceDao.getPlacesCountLiveData();
     }
-    
-    /**
-     * Is api key valid boolean.
-     *
-     * @return the boolean
-     */
-    public boolean isApiKeyValid() {
-        return weatherService.isApiKeyValid();
-    }
+
     
     /**
      * Is api key registered boolean.
      *
      * @return the boolean
      */
-    public boolean isAPIKeyRegistered() {
+    public boolean isApiKeyRegistered() {
         return weatherService.isApiKeyRegistered();
     }
     
@@ -300,7 +292,7 @@ public class AppRepository {
      *
      * @return the boolean
      */
-    public boolean isAPIKeyValid() {
+    public boolean isApiKeyValid() {
         return weatherService.isApiKeyValid();
     }
     

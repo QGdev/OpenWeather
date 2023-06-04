@@ -182,7 +182,7 @@ public class PlacesFragment extends Fragment {
 				setNoPlacesViewState();
 				return;
 			} else {
-				if (!placesViewModel.hasDataAlreadyBeenUpdated() && appRepository.isAPIKeyValid()) {
+				if (!placesViewModel.hasDataAlreadyBeenUpdated() && appRepository.isApiKeyValid()) {
 					appRepository.updateAllPlaces(fetchUpdateCallback);
 					placesViewModel.dataHasBeenUpdated();
 				}
@@ -376,7 +376,7 @@ public class PlacesFragment extends Fragment {
 		swipeRefreshLayout.setOnRefreshListener(
 				  () -> {
 					  swipeRefreshLayout.setRefreshing(true);
-					  if (appRepository.isAPIKeyValid()) {
+					  if (appRepository.isApiKeyValid()) {
 						  appRepository.updateAllPlaces(fetchUpdateCallback);
 					  } else {
 						  swipeRefreshLayout.setRefreshing(false);
@@ -390,9 +390,9 @@ public class PlacesFragment extends Fragment {
 	
 	
 	private void setNoPlacesViewState() {
-		if (!appRepository.isAPIKeyRegistered()) {    //	An API key must be set
+		if (!appRepository.isApiKeyRegistered()) {    //	An API key must be set
 			informationTextView.setText(R.string.error_no_api_key_registered);
-		} else if (!appRepository.isAPIKeyValid()) {    //	Must have 32 alphanumerical characters
+		} else if (!appRepository.isApiKeyValid()) {    //	Must have 32 alphanumerical characters
 			informationTextView.setText(R.string.error_api_key_incorrectly_formed);
 		} else {    //	No place as been registered
 			informationTextView.setText(R.string.error_no_places_registered);
@@ -403,10 +403,10 @@ public class PlacesFragment extends Fragment {
 	}
 	
 	private void setExistingPlacesViewState(View container) {
-		if (!appRepository.isAPIKeyRegistered()) {   //	No API key is registered
+		if (!appRepository.isApiKeyRegistered()) {   //	No API key is registered
 			showSnackbar(container, mContext.getString(R.string.error_no_api_key_registered));
 		} else {
-			if (!appRepository.isAPIKeyValid())    //	API key is registered but malformed
+			if (!appRepository.isApiKeyValid())    //	API key is registered but malformed
 				showSnackbar(container, mContext.getString(R.string.error_api_key_incorrectly_formed));
 		}
 		informationTextView.setVisibility(View.GONE);
