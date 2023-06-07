@@ -258,6 +258,10 @@ public class CurrentWeather {
 		this.sunset = sunset;
 	}
 	
+	public boolean isDaytime() {
+		return getDt() > getSunrise() && getDt() < getSunset();
+	}
+	
 	public float getWindSpeed() {
 		return windSpeed;
 	}
@@ -298,12 +302,20 @@ public class CurrentWeather {
 		this.rain = rain;
 	}
 	
+	public boolean thereIsRain() {
+		return rain > 0;
+	}
+	
 	public float getSnow() {
 		return snow;
 	}
 	
 	public void setSnow(float snow) {
 		this.snow = snow;
+	}
+	
+	public boolean thereIsSnow() {
+		return snow > 0;
 	}
 	
 	@NonNull
