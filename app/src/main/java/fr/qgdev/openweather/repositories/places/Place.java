@@ -391,6 +391,10 @@ public class Place {
 		return weatherAlertsList.size();
 	}
 	
+	public boolean thereIsWeatherAlerts() {
+		return !weatherAlertsList.isEmpty();
+	}
+	
 	
 	@NonNull
 	@Override
