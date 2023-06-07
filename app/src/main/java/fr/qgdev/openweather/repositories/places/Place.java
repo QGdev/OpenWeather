@@ -383,11 +383,11 @@ public class Place {
 		return dailyWeatherForecastList.get(day).clone();
 	}
 	
-	public WeatherAlert getMWeatherAlert(int index) {
+	public WeatherAlert getWeatherAlert(int index) {
 		return weatherAlertsList.get(index).clone();
 	}
 	
-	public int getMWeatherAlertCount() {
+	public int getWeatherAlertCount() {
 		return weatherAlertsList.size();
 	}
 	

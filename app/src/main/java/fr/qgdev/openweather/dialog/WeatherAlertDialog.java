@@ -44,7 +44,7 @@ public class WeatherAlertDialog extends Dialog {
 		//	Fill weather alerts section
 		LinearLayout alertListLinearLayout = findViewById(R.id.alertList);
 		WeatherAlertAdapter weatherAlertAdapter = new WeatherAlertAdapter(context, place, formattingService);
-		for (int i = 0; i < place.getMWeatherAlertCount(); i++) {
+		for (int i = 0; i < place.getWeatherAlertCount(); i++) {
 			alertListLinearLayout.addView(weatherAlertAdapter.getView(i, null, null), i);
 		}
 	}
