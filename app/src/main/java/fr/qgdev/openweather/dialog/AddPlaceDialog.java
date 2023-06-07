@@ -101,9 +101,9 @@ public class AddPlaceDialog extends Dialog {
 			//  The country name doesn't exist, the field is not focused and the field isn't empty
 			if (getCountryCode() == null && !hasFocus && !getCountryField().isEmpty()) {
 				countryTextInputLayout.setError(context.getString(R.string.error_place_country_not_in_list));
-			} else {
-				countryTextInputLayout.setErrorEnabled(false);
+				return;
 			}
+			countryTextInputLayout.setErrorEnabled(false);
 		});
 		
 		
@@ -156,19 +156,19 @@ public class AddPlaceDialog extends Dialog {
 		addButton.setOnClickListener(
 				verifyButtonView -> {
 					disableDialogWindowControls();
-
+					
 					//  Nothing was registered
-					if (getCityField().isEmpty() || getCountryField().isEmpty() || getCountryCode() == null) {
-						if (getCityField().isEmpty())
-							cityTextInputLayout.setError(context.getString(R.string.error_place_city_field_empty));
-						if (getCountryField().isEmpty())
-							countryTextInputLayout.setError(context.getString(R.string.error_place_country_field_empty));
-						else if (getCountryCode() == null)
-							countryTextInputLayout.setError(context.getString(R.string.error_place_country_not_in_list));
-
+					if (getCityField().isEmpty()) {
+						cityTextInputLayout.setError(context.getString(R.string.error_place_city_field_empty));
+						enableDialogWindowControls();
+					} else if (getCountryField().isEmpty()) {
+						countryTextInputLayout.setError(context.getString(R.string.error_place_country_field_empty));
+						enableDialogWindowControls();
+					} else if (getCountryCode() == null) {
+						countryTextInputLayout.setError(context.getString(R.string.error_place_country_not_in_list));
 						enableDialogWindowControls();
 					}
-
+					
 					//  API key and place settings is correctly registered
 					else {
 						appRepository.findPlaceAndAdd(getCityField(), getCountryCode(), fetchDataCallback);
