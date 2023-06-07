@@ -1,5 +1,11 @@
 package fr.qgdev.openweather.adapter;
 
+import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.COMPACT;
+import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.EXTENDED;
+import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.EXTENDED_DAILY;
+import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.EXTENDED_FULLY;
+import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.EXTENDED_HOURLY;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -93,142 +99,15 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	public void remove(int position) {
 		notifyItemRemoved(position);
 	}
-
+	
+	
 	/**
-	 * setListeners(Place currentPlace, PlaceViewHolder holder)
+	 * setVisibilityState(PlaceViewHolder holder, Place currentPlace)
 	 * <p>
-	 *     Will initialize all listeners in the PlaceViewHolder
+	 * Set the visibility of the views depending on the current view type
 	 * </p>
-	 *
-	 * @param currentPlace  The place
-	 * @param holder        The place viewHolder where all listeners will be initialized
 	 */
-	private void setListeners(Place currentPlace, PlaceViewHolder holder) {
-		int placeViewType = holder.getItemViewType();
-		Integer placeID = currentPlace.getProperties().getPlaceId();
-		
-		//  Set listener for the whole place card item
-		holder.cardView.setOnClickListener(v -> {
-			if (ViewType.fromInt(placeViewType) == ViewType.COMPACT) {
-				placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED);
-			} else {
-				placesViewModel.setPlaceViewType(placeID, ViewType.COMPACT);
-			}
-			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
-		});
-
-		//  Set listener for the hourly weather forecast tab
-		holder.hourlyForecast.setOnClickListener(v -> {
-			switch (ViewType.fromInt(placeViewType)) {
-				case EXTENDED:
-					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_HOURLY);
-					break;
-				case EXTENDED_HOURLY:
-					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED);
-					break;
-				case EXTENDED_DAILY:
-					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_FULLY);
-					break;
-				case EXTENDED_FULLY:
-					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_DAILY);
-					break;
-				default:
-					placesViewModel.setPlaceViewType(placeID, ViewType.COMPACT);
-					break;
-			}
-			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
-		});
-
-		//  Set listener for the daily weather forecast tab
-		holder.dailyForecast.setOnClickListener(v -> {
-			switch (ViewType.fromInt(placeViewType)) {
-				case EXTENDED:
-					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_DAILY);
-					break;
-				case EXTENDED_DAILY:
-					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED);
-					break;
-				case EXTENDED_HOURLY:
-					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_FULLY);
-					break;
-				case EXTENDED_FULLY:
-					placesViewModel.setPlaceViewType(placeID, ViewType.EXTENDED_HOURLY);
-					break;
-				default:
-					placesViewModel.setPlaceViewType(placeID, ViewType.COMPACT);
-					break;
-			}
-			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
-		});
-
-		//  Set listener for the weather alerts tab
-		holder.weatherAlertLayout.setOnClickListener(v -> {
-			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context,
-					  currentPlace,
-					  formattingService);
-			weatherAlertDialog.build();
-		});
-
-		//  Set listener for the weather alert icon
-		holder.weatherAlertIcon.setOnClickListener(v -> {
-			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context,
-					  currentPlace,
-					  formattingService);
-			weatherAlertDialog.build();
-		});
-	}
-
-	/**
-	 * getCountryName(String countryCode)
-	 * <p>
-	 * Will find country name related to a country code
-	 * </p>
-	 *
-	 * @param countryCode String Country code of a place
-	 * @return Will return the corresponding country name
-	 * @apiNote Country code must be present in string file resources
-	 */
-	private String getCountryName(String countryCode) {
-		int index = this.countryCodes.indexOf(countryCode);
-		return this.countryNames.get(index);
-	}
-
-
-	/**
-	 * onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-	 * <p>
-	 * Will inflate created viewHolder
-	 * </p>
-	 *
-	 * @param parent   ViewHolder parent
-	 * @param viewType ViewHolder view type
-	 * @return Will return the inflated placeViewHolder
-	 * @see RecyclerView.Adapter<>
-	 */
-	@NonNull
-	@Override
-	public PlaceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		View view = inflater.inflate(R.layout.adapter_places, parent, false);
-		return new PlaceViewHolder(context, view);
-	}
-
-
-	/**
-	 * onBindViewHolder(@NonNull PlaceViewHolder holder, final int position)
-	 * <p>
-	 * Will fill PlaceViewHolder with data
-	 * </p>
-	 *
-	 * @param holder   PlaceViewHolder which will be filled with place data
-	 * @param position Place position in placeViewArrayList
-	 * @see RecyclerView.Adapter<>
-	 */
-	@Override
-	public void onBindViewHolder(@NonNull PlaceViewHolder holder, final int position) {
-		
-		Place currentPlace = placesViewModel.getPlaces().get(position);
-		
+	private void setVisibilityState(@NonNull PlaceViewHolder holder, Place currentPlace) {
 		switch (placesViewModel.getPlaceViewType(currentPlace.getProperties().getPlaceId())) {
 			
 			//  Extended view
@@ -244,7 +123,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				
 				holder.detailedInformationsLayout.setVisibility(View.VISIBLE);
 				holder.weatherAlertIcon.setVisibility(View.GONE);
-
+				
 				holder.forecastInformationsLayout.setVisibility(View.VISIBLE);
 				holder.hourlyForecastExpandIcon.setRotation(0);
 				holder.hourlyForecastLayout.setVisibility(View.GONE);
@@ -252,7 +131,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				holder.dailyForecastLayout.setVisibility(View.GONE);
 				
 				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
-				if (currentPlace.getMWeatherAlertCount() > 0) {
+				if (currentPlace.thereIsWeatherAlerts()) {
 					holder.weatherAlertLayout.setVisibility(View.VISIBLE);
 				} else {
 					holder.weatherAlertLayout.setVisibility(View.GONE);
@@ -273,14 +152,14 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				
 				holder.detailedInformationsLayout.setVisibility(View.VISIBLE);
 				holder.weatherAlertIcon.setVisibility(View.GONE);
-
+				
 				holder.forecastInformationsLayout.setVisibility(View.VISIBLE);
 				holder.hourlyForecastExpandIcon.setRotation(180);
 				holder.hourlyForecastLayout.setVisibility(View.VISIBLE);
 				holder.dailyForecastExpandIcon.setRotation(0);
 				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
 				
-				if (currentPlace.getMWeatherAlertCount() > 0) {
+				if (currentPlace.thereIsWeatherAlerts()) {
 					holder.weatherAlertLayout.setVisibility(View.VISIBLE);
 				} else {
 					holder.weatherAlertLayout.setVisibility(View.GONE);
@@ -301,7 +180,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				
 				holder.detailedInformationsLayout.setVisibility(View.VISIBLE);
 				holder.weatherAlertIcon.setVisibility(View.GONE);
-
+				
 				holder.forecastInformationsLayout.setVisibility(View.VISIBLE);
 				holder.hourlyForecastExpandIcon.setRotation(0);
 				holder.hourlyForecastLayout.setVisibility(View.GONE);
@@ -309,7 +188,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				holder.dailyForecastLayout.setVisibility(View.VISIBLE);
 				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
 				
-				if (currentPlace.getMWeatherAlertCount() > 0) {
+				if (currentPlace.thereIsWeatherAlerts()) {
 					holder.weatherAlertLayout.setVisibility(View.VISIBLE);
 				} else {
 					holder.weatherAlertLayout.setVisibility(View.GONE);
@@ -337,7 +216,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				holder.dailyForecastLayout.setVisibility(View.VISIBLE);
 				holder.lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
 				
-				if (currentPlace.getMWeatherAlertCount() > 0) {
+				if (currentPlace.thereIsWeatherAlerts()) {
 					holder.weatherAlertLayout.setVisibility(View.VISIBLE);
 				} else {
 					holder.weatherAlertLayout.setVisibility(View.GONE);
@@ -366,7 +245,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				holder.dailyForecastLayout.setVisibility(View.GONE);
 				holder.lastUpdateAvailableLayout.setVisibility(View.GONE);
 				
-				if (currentPlace.getMWeatherAlertCount() > 0) {
+				if (currentPlace.thereIsWeatherAlerts()) {
 					holder.weatherAlertIcon.setVisibility(View.VISIBLE);
 				} else {
 					holder.weatherAlertIcon.setVisibility(View.GONE);
@@ -375,6 +254,145 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				break;
 			}
 		}
+	}
+	
+	
+	/**
+	 * setListeners(Place currentPlace, PlaceViewHolder holder)
+	 * <p>
+	 * Will initialize all listeners in the PlaceViewHolder
+	 * </p>
+	 *
+	 * @param currentPlace The place
+	 * @param holder       The place viewHolder where all listeners will be initialized
+	 */
+	private void setListeners(Place currentPlace, PlaceViewHolder holder) {
+		int placeViewType = holder.getItemViewType();
+		Integer placeID = currentPlace.getProperties().getPlaceId();
+		
+		//  Set listener for the whole place card item
+		holder.cardView.setOnClickListener(v -> {
+			if (ViewType.fromInt(placeViewType) == COMPACT) {
+				placesViewModel.setPlaceViewType(placeID, EXTENDED);
+			} else {
+				placesViewModel.setPlaceViewType(placeID, COMPACT);
+			}
+			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
+		});
+		
+		//  Set listener for the hourly weather forecast tab
+		holder.hourlyForecast.setOnClickListener(v -> {
+			switch (ViewType.fromInt(placeViewType)) {
+				case EXTENDED:
+					placesViewModel.setPlaceViewType(placeID, EXTENDED_HOURLY);
+					break;
+				case EXTENDED_HOURLY:
+					placesViewModel.setPlaceViewType(placeID, EXTENDED);
+					break;
+				case EXTENDED_DAILY:
+					placesViewModel.setPlaceViewType(placeID, EXTENDED_FULLY);
+					break;
+				case EXTENDED_FULLY:
+					placesViewModel.setPlaceViewType(placeID, EXTENDED_DAILY);
+					break;
+				default:
+					placesViewModel.setPlaceViewType(placeID, COMPACT);
+					break;
+			}
+			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
+		});
+		
+		//  Set listener for the daily weather forecast tab
+		holder.dailyForecast.setOnClickListener(v -> {
+			switch (ViewType.fromInt(placeViewType)) {
+				case EXTENDED:
+					placesViewModel.setPlaceViewType(placeID, EXTENDED_DAILY);
+					break;
+				case EXTENDED_DAILY:
+					placesViewModel.setPlaceViewType(placeID, EXTENDED);
+					break;
+				case EXTENDED_HOURLY:
+					placesViewModel.setPlaceViewType(placeID, EXTENDED_FULLY);
+					break;
+				case EXTENDED_FULLY:
+					placesViewModel.setPlaceViewType(placeID, EXTENDED_HOURLY);
+					break;
+				default:
+					placesViewModel.setPlaceViewType(placeID, COMPACT);
+					break;
+			}
+			this.notifyItemChanged(holder.getAbsoluteAdapterPosition());
+		});
+		
+		//  Set listener for the weather alerts tab
+		holder.weatherAlertLayout.setOnClickListener(v -> {
+			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context,
+					  currentPlace,
+					  formattingService);
+			weatherAlertDialog.build();
+		});
+		
+		//  Set listener for the weather alert icon
+		holder.weatherAlertIcon.setOnClickListener(v -> {
+			final WeatherAlertDialog weatherAlertDialog = new WeatherAlertDialog(context,
+					  currentPlace,
+					  formattingService);
+			weatherAlertDialog.build();
+		});
+	}
+	
+	/**
+	 * getCountryName(String countryCode)
+	 * <p>
+	 * Will find country name related to a country code
+	 * </p>
+	 *
+	 * @param countryCode String Country code of a place
+	 * @return Will return the corresponding country name
+	 * @apiNote Country code must be present in string file resources
+	 */
+	private String getCountryName(String countryCode) {
+		int index = this.countryCodes.indexOf(countryCode);
+		return this.countryNames.get(index);
+	}
+	
+	
+	/**
+	 * onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	 * <p>
+	 * Will inflate created viewHolder
+	 * </p>
+	 *
+	 * @param parent   ViewHolder parent
+	 * @param viewType ViewHolder view type
+	 * @return Will return the inflated placeViewHolder
+	 * @see RecyclerView.Adapter<>
+	 */
+	@NonNull
+	@Override
+	public PlaceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+		LayoutInflater inflater = LayoutInflater.from(context);
+		View view = inflater.inflate(R.layout.adapter_places, parent, false);
+		return new PlaceViewHolder(context, view);
+	}
+	
+	
+	/**
+	 * onBindViewHolder(@NonNull PlaceViewHolder holder, final int position)
+	 * <p>
+	 * Will fill PlaceViewHolder with data
+	 * </p>
+	 *
+	 * @param holder   PlaceViewHolder which will be filled with place data
+	 * @param position Place position in placeViewArrayList
+	 * @see RecyclerView.Adapter<>
+	 */
+	@Override
+	public void onBindViewHolder(@NonNull PlaceViewHolder holder, final int position) {
+		
+		Place currentPlace = placesViewModel.getPlaces().get(position);
+		
+		setVisibilityState(holder, currentPlace);
 		
 		setListeners(currentPlace, holder);
 		
@@ -401,22 +419,13 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 				weatherIconId = R.drawable.thunderstorm_flat;
 				break;
 			
-			case 200:
-			case 201:
-			case 202:
-			case 230:
-			case 231:
-			case 232:
-				weatherIconId = R.drawable.storm_flat;
-				break;
-
 			//  Drizzle and Rain (Light)
 			case 300:
 			case 310:
 			case 500:
 			case 501:
 			case 520:
-				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
+				if (currentWeather.isDaytime()) {
 					weatherIconId = R.drawable.rain_and_sun_flat;
 				}
 				//  Night
@@ -424,7 +433,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 					weatherIconId = R.drawable.rainy_night_flat;
 				}
 				break;
-
+			
 			//Drizzle and Rain (Moderate)
 			case 301:
 			case 302:
@@ -436,7 +445,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 531:
 				weatherIconId = R.drawable.rain_flat;
 				break;
-
+			
 			//Drizzle and Rain (Heavy)
 			case 312:
 			case 314:
@@ -446,13 +455,13 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 522:
 				weatherIconId = R.drawable.heavy_rain_flat;
 				break;
-
+			
 			//  Snow
 			case 600:
 			case 601:
 			case 620:
 			case 621:
-				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
+				if (currentWeather.isDaytime()) {
 					weatherIconId = R.drawable.snow_flat;
 				}
 				//  Night
@@ -460,12 +469,12 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 					weatherIconId = R.drawable.snow_and_night_flat;
 				}
 				break;
-
+			
 			case 602:
 			case 622:
 				weatherIconId = R.drawable.snow_flat;
 				break;
-
+			
 			case 611:
 			case 612:
 			case 613:
@@ -473,7 +482,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 616:
 				weatherIconId = R.drawable.sleet_flat;
 				break;
-
+			
 			//  Atmosphere
 			case 701:
 			case 711:
@@ -485,7 +494,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			case 762:
 			case 771:
 			case 781:
-				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
+				if (currentWeather.isDaytime()) {
 					weatherIconId = R.drawable.fog_flat;
 				}
 				//  Night
@@ -493,11 +502,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 					weatherIconId = R.drawable.fog_and_night_flat;
 				}
 				break;
-
+			
 			//  Sky
 			case 800:
 				//  Day
-				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
+				if (currentWeather.isDaytime()) {
 					weatherIconId = R.drawable.sun_flat;
 				}
 				//  Night
@@ -505,11 +514,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 					weatherIconId = R.drawable.moon_phase_flat;
 				}
 				break;
-
+			
 			case 801:
 			case 802:
 			case 803:
-				if (currentWeather.getDt() >= currentWeather.getSunrise() && currentWeather.getDt() < currentWeather.getSunset()) {
+				if (currentWeather.isDaytime()) {
 					weatherIconId = R.drawable.clouds_and_sun_flat;
 				}
 				//  Night
@@ -517,13 +526,20 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 					weatherIconId = R.drawable.cloudy_night_flat;
 				}
 				break;
-
+			
 			case 804:
 				weatherIconId = R.drawable.cloudy_flat;
 				break;
 			
 			//  Default
+			//	Thunderstorm and rain
 			default:
+			case 200:
+			case 201:
+			case 202:
+			case 230:
+			case 231:
+			case 232:
 				weatherIconId = R.drawable.storm_flat;
 				break;
 		}
@@ -597,25 +613,21 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		
 		//  Precipitations
 		//  If There is no rain or snow, so there is nothing to show about precipitations
-		if (currentWeather.getRain() > 0 || currentWeather.getSnow() > 0) {
+		boolean thereIsRain = currentWeather.thereIsRain();
+		boolean thereIsSnow = currentWeather.thereIsSnow();
+		
+		
+		if (thereIsRain || thereIsSnow) {
 			holder.precipitationLayout.setVisibility(View.VISIBLE);
-			
 			holder.rainTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.getRain(), true));
 			holder.snowTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.getSnow(), true));
 			
-			//  If There is no rain, so there is nothing to show about rain
-			if (currentWeather.getRain() > 0)
-				holder.precipitationLayout.findViewById(R.id.rain_precipitations).setVisibility(View.VISIBLE);
-			else
-				holder.precipitationLayout.findViewById(R.id.rain_precipitations).setVisibility(View.GONE);
-			//  If There is no snow, so there is nothing to show about snow
-			if (currentWeather.getSnow() > 0)
-				holder.precipitationLayout.findViewById(R.id.snow_precipitations).setVisibility(View.VISIBLE);
-			else
-				holder.precipitationLayout.findViewById(R.id.snow_precipitations).setVisibility(View.GONE);
+			holder.precipitationLayout.findViewById(R.id.rain_precipitations).setVisibility(thereIsRain ? View.VISIBLE : View.GONE);
+			holder.precipitationLayout.findViewById(R.id.snow_precipitations).setVisibility(thereIsSnow ? View.VISIBLE : View.GONE);
 		} else {
 			holder.precipitationLayout.setVisibility(View.GONE);
 		}
+		
 		
 		holder.hourlyForecastGraphView.initialization(currentPlace.getHourlyWeatherForecastList(), currentPlace.getDailyWeatherForecastList(), formattingService, currentPlace.getProperties().getTimeZone());
 		holder.dailyForecastGraphView.initialization(currentPlace.getDailyWeatherForecastList(), currentPlace.getProperties().getTimeZone(), formattingService);
