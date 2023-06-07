@@ -12,7 +12,7 @@ import java.util.Set;
 
 
 public class SecuredPreferenceDataStore extends PreferenceDataStore {
-	private final String SP_FILENAME = "fr.qgdev.openweather_preferences";
+	private static final String SP_FILENAME = "fr.qgdev.openweather_preferences";
 	private final SharedPreferences sharedPreferences;
 	
 	public SecuredPreferenceDataStore(Context context) {
