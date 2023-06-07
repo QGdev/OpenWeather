@@ -7,7 +7,6 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
         android:logo="@mipmap/ic_launcher"
@@ -17,6 +16,7 @@
         android:hardwareAccelerated="true"
         android:largeHeap="false"
         android:enabled="true"
+        android:allowBackup="false"
         android:fullBackupOnly="false"
         android:theme="@style/MaterialTheme"
         android:usesCleartextTraffic="false">
