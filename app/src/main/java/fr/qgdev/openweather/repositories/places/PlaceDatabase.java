@@ -128,7 +128,7 @@ public abstract class PlaceDatabase extends RoomDatabase {
         List<Place> placeList = new ArrayList<>();
         databaseWriteExecutor.execute(() -> {
             
-            if (properties.size() > 0) {
+            if (!properties.isEmpty()) {
                 Place place;
                 for (Properties p : properties) {
                     int id = p.getPlaceId();
@@ -259,11 +259,11 @@ public abstract class PlaceDatabase extends RoomDatabase {
     
     public void swapPlaces(int placeOrderA, int placeOrderB) {
         runInTransaction(() -> {
-            int placeA_ID = propertiesDAO().getIDFromPlaceOrder(placeOrderA);
-            int placeB_ID = propertiesDAO().getIDFromPlaceOrder(placeOrderB);
-            
-            propertiesDAO().updateOrderFromPlaceID(placeA_ID, placeOrderB);
-            propertiesDAO().updateOrderFromPlaceID(placeB_ID, placeOrderA);
+            int placeAId = propertiesDAO().getIDFromPlaceOrder(placeOrderA);
+            int placeBId = propertiesDAO().getIDFromPlaceOrder(placeOrderB);
+    
+            propertiesDAO().updateOrderFromPlaceID(placeAId, placeOrderB);
+            propertiesDAO().updateOrderFromPlaceID(placeBId, placeOrderA);
         });
     }
 }
