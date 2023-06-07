@@ -9,6 +9,10 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 public class StringListTypeConverter {
+	
+	private StringListTypeConverter() {
+	}
+	
 	@TypeConverter
 	public static List<String> fromString(String value) {
 		Type listType = new TypeToken<List<String>>() {
@@ -19,7 +23,6 @@ public class StringListTypeConverter {
 	@TypeConverter
 	public static String fromList(List<String> list) {
 		Gson gson = new Gson();
-		String json = gson.toJson(list);
-		return json;
+		return gson.toJson(list);
 	}
 }
