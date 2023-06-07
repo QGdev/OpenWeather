@@ -56,7 +56,7 @@ public class PlacesFragment extends Fragment {
 	
 	private FetchCallback fetchUpdateCallback;
 	
-	private static AtomicInteger refreshCounter;
+	private AtomicInteger refreshCounter;
 	
 	/**
 	 * Show snackbar.
@@ -247,11 +247,11 @@ public class PlacesFragment extends Fragment {
 					initialPosition = viewHolder.getAbsoluteAdapterPosition();
 					itemAsBeenMoved = true;
 				}
-				int initialPosition = viewHolder.getAbsoluteAdapterPosition();
-				int finalPosition = target.getAbsoluteAdapterPosition();
+				int initialPos = viewHolder.getAbsoluteAdapterPosition();
+				int finalPos = target.getAbsoluteAdapterPosition();
 				
-				appRepository.movePlace(initialPosition, finalPosition);
-				placeRecyclerViewAdapter.notifyItemMoved(initialPosition, finalPosition);
+				appRepository.movePlace(initialPos, finalPos);
+				placeRecyclerViewAdapter.notifyItemMoved(initialPos, finalPos);
 				
 				return false;
 			}
