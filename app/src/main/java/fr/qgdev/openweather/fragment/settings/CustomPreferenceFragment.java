@@ -35,7 +35,7 @@ public class CustomPreferenceFragment extends PreferenceFragmentCompat {
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		View root = super.onCreateView(inflater, container, savedInstanceState);
-		RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
+		RecyclerView recyclerView = root.findViewById(androidx.preference.R.id.recycler_view);
 		
 		recyclerView.setPadding(0, 0, 0, getResources().getDimensionPixelSize(R.dimen.recycler_view_bottom_padding));
 		recyclerView.setClipToPadding(false);
