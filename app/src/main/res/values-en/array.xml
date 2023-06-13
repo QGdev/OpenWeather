@@ -12,5 +12,4 @@
 		<item>"Use of openweathermap.org APIs is licensed under CC BY-SA 4.O"</item>
 		<item>"Icons made by freepik.com from flaticon.com "</item>
 	</string-array>
-    <string name="title_settings_units_temperature_kelvin">Kelvin</string>
 </resources>

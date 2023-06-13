@@ -265,5 +265,4 @@
 		<item>"L'utilisation des API de openweathermap.org est sous licence CC BY-SA 4.0"</item>
 		<item>"Icônes réalisées par freepik.com et disponibles sur flaticon.com "</item>
 	</string-array>
-    <string name="title_settings_units_temperature_kelvin">Kelvin</string>
 </resources>

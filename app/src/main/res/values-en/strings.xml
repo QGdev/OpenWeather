@@ -3,11 +3,7 @@
     <string name="from_date">From</string>
     <string name="until_date">Until</string>
     <string name="title_dialog_weather_alert">Weather alert</string>
-    <string name="title_settings_time_offset_place_country">Relative to the country of the registered places</string>
-    <string name="title_settings_time_offset_user_country">Relative to the user\'s country</string>
-    <string name="title_settings_time_format_24h">24 h</string>
-    <string name="title_settings_time_format_12h">12 h</string>
-    <string name="title_places">Places</string>
+	<string name="title_places">Places</string>
     <string name="title_temperature_feelslike">Feels Like</string>
     <string name="title_humidity">Humidity</string>
     <string name="title_pressure">Pressure</string>

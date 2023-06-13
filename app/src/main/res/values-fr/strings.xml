@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="title_settings_time_offset_place_country">Par rapport au pays des lieux enregistrés</string>
-	<string name="title_settings_time_offset_user_country">Par rapport au pays de l\'utilisateur</string>
-	<string name="title_settings_time_format_24h">24 h</string>
-	<string name="title_settings_time_format_12h">12 h</string>
 	<string name="title_places">Lieux</string>
 	<string name="title_temperature_feelslike">Resssenti</string>
 	<string name="title_humidity">Humiditée</string>
