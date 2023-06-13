@@ -51,6 +51,7 @@ public class PlacesFragment extends Fragment {
 	
 	private TextView informationTextView;
 	private SwipeRefreshLayout swipeRefreshLayout;
+	private FloatingActionButton addPlacesFab;
 	private RecyclerView placeRecyclerView;
 	private PlaceRecyclerViewAdapter placeRecyclerViewAdapter;
 	
@@ -118,9 +119,10 @@ public class PlacesFragment extends Fragment {
 		
 		informationTextView = root.findViewById(R.id.information_textview);
 		swipeRefreshLayout = root.findViewById(R.id.swipe_refresh);
-		FloatingActionButton addPlacesFab = root.findViewById(R.id.add_places);
+		addPlacesFab = root.findViewById(R.id.add_places);
 		
 		placeRecyclerView = root.findViewById(R.id.place_list);
+		
 		refreshCounter = new AtomicInteger();
 		refreshCounter.set(0);
 		
@@ -228,7 +230,7 @@ public class PlacesFragment extends Fragment {
 			
 			@Override
 			public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-				logger.warning("GET_MOVEMENT_FLAGS");
+				logger.info("GET_MOVEMENT_FLAGS");
 				//	If the holder is an other view type than COMPACT or if there is no items in the recyclerView, swipe and drag&drop are disabled
 				if (recyclerView.getChildCount() == 0 || viewHolder.getItemViewType() != 0) {
 					return makeMovementFlags(0, 0);
@@ -392,8 +394,10 @@ public class PlacesFragment extends Fragment {
 	private void setNoPlacesViewState() {
 		if (!appRepository.isApiKeyRegistered()) {    //	An API key must be set
 			informationTextView.setText(R.string.error_no_api_key_registered);
+			addPlacesFab.setVisibility(View.GONE);
 		} else if (!appRepository.isApiKeyValid()) {    //	Must have 32 alphanumerical characters
 			informationTextView.setText(R.string.error_api_key_incorrectly_formed);
+			addPlacesFab.setVisibility(View.GONE);
 		} else {    //	No place as been registered
 			informationTextView.setText(R.string.error_no_places_registered);
 		}
