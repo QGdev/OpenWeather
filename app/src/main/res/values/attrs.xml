@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GaugeBarView">
+        <attr name="sectionsBoundaries" format="reference" />
+        <attr name="sectionsColors" format="reference" />
+        <attr name="labelText" format="string" />
+        <attr name="value" format="float" />
+    </declare-styleable>
+</resources>

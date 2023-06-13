@@ -2,6 +2,7 @@ package fr.qgdev.openweather.customview;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -76,7 +77,30 @@ public class GaugeBarView extends View {
 	public GaugeBarView(@NonNull Context context, @Nullable AttributeSet attrs) {
 		super(context, attrs);
 		initComponents();
+		if (!this.isInEditMode()) {
+			initSectionsFromAttributes(context, attrs);
+		}
+		initValuesFromAttributes(context, attrs);
 		
+	}
+	
+	/**
+	 * AirQualityView Constructor
+	 * <p>
+	 * Just build AirQualityView object only with Context, AttributeSet and defStyleAttr
+	 * </p>
+	 *
+	 * @param context      Current context, only used to construct super class
+	 * @param attrs        AttributeSet for the gaugeView
+	 * @param defStyleAttr Default style attribute for the gaugeView
+	 */
+	public GaugeBarView(Context context, @Nullable @org.jetbrains.annotations.Nullable AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+		initComponents();
+		if (!this.isInEditMode()) {
+			initSectionsFromAttributes(context, attrs);
+		}
+		initValuesFromAttributes(context, attrs);
 	}
 	
 	/**
@@ -118,7 +142,6 @@ public class GaugeBarView extends View {
 		valuePaint.setTextAlign(Paint.Align.LEFT);
 	}
 	
-	
 	/**
 	 * getNewSectionPaint(int color)
 	 * <p>
@@ -138,6 +161,106 @@ public class GaugeBarView extends View {
 		paint.setAlpha(255);
 		paint.setStyle(Paint.Style.FILL);
 		return paint;
+	}
+	
+	private void initSectionsFromAttributes(@NonNull Context context, AttributeSet attrs) {
+		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.GaugeBarView);
+		
+		
+		//	Sections settings
+		//		Check if the sections settings are present
+		//		The view requires both sectionsBoundaries and sectionsColors
+		
+		//	If both attributes are present, we can retrieve them
+		//		Otherwise, we throw an exception
+		if (!(typedArray.hasValue(R.styleable.GaugeBarView_sectionsBoundaries)
+				  && typedArray.hasValue(R.styleable.GaugeBarView_sectionsColors))) {
+			throw new IllegalArgumentException("You must specify sectionsBoundaries and sectionsColors attributes");
+		}
+		
+		//	Retrieve sections boundaries
+		TypedArray tmp = getResources().obtainTypedArray(typedArray
+				  .getResourceId(R.styleable.GaugeBarView_sectionsBoundaries, 0));
+		
+		// Check if the array has at least two values
+		if (tmp.length() < 2) {
+			throw new IllegalArgumentException("sectionsBoundaries, array must have at least two values");
+		}
+		
+		sectionsBoundaries = new float[tmp.length()];
+		
+		// Iterate through the TypedArray and retrieve the values
+		// Check if the values are in ascending order
+		
+		// Retrieve the first value
+		sectionsBoundaries[0] = tmp.getFloat(0, 0.0f);
+		float lastValue = sectionsBoundaries[0];
+		
+		// Retrieve the other values
+		for (int i = 1; i < tmp.length(); i++) {
+			sectionsBoundaries[i] = tmp.getFloat(i, 0.0f);
+			
+			if (sectionsBoundaries[i] > lastValue) lastValue = sectionsBoundaries[i];
+			else throw new IllegalArgumentException("sectionsBoundaries must be in ascending order");
+		}
+		
+		tmp.recycle();
+		
+		//	Retrieve sections colors
+		tmp = getResources().obtainTypedArray(typedArray
+				  .getResourceId(R.styleable.GaugeBarView_sectionsColors, 0));
+		
+		// Check if the array has at least two values
+		if (tmp.length() < 2) {
+			throw new IllegalArgumentException("sectionsColors, array must have at least two values");
+		}
+		
+		//	Check if sectionsBoundaries and sectionsColors have the same length
+		if (sectionsBoundaries.length != tmp.length()) {
+			throw new IllegalArgumentException("sectionsBoundaries and sectionsColors must have the same length");
+		}
+		
+		sectionsPaints = new Paint[tmp.length()];
+		
+		// Iterate through the TypedArray and retrieve the values
+		for (int i = 0; i < tmp.length(); i++) {
+			sectionsPaints[i] = getNewSectionPaint(tmp.getResourceId(i, 0));
+		}
+		
+		tmp.recycle();
+		typedArray.recycle();
+	}
+	
+	/**
+	 * initValuesFromAttributes(Context context, AttributeSet attrs)
+	 * <p>
+	 * Used to retrieve attributes from the AttributeSet
+	 * and initialize the gauge with these values
+	 * if they are present
+	 * else use default values
+	 * </p>
+	 *
+	 * @param context Current context, only used to construct super class
+	 * @param attrs   AttributeSet for the gaugeView
+	 */
+	private void initValuesFromAttributes(@NonNull Context context, AttributeSet attrs) {
+		TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.GaugeBarView);
+		
+		//	Check if the labelText is present
+		if (typedArray.hasValue(R.styleable.GaugeBarView_labelText)) {
+			labelText = typedArray.getString(R.styleable.GaugeBarView_labelText);
+		} else {
+			labelText = "";
+		}
+		
+		//	Check if the value is present
+		if (typedArray.hasValue(R.styleable.GaugeBarView_value)) {
+			value = typedArray.getFloat(R.styleable.GaugeBarView_value, 0);
+		} else {
+			value = 0;
+		}
+		
+		typedArray.recycle();
 	}
 	
 	
@@ -232,7 +355,7 @@ public class GaugeBarView extends View {
 		
 		int finalLowerBound = 0;
 		
-		while (finalLowerBound < sectionsBoundaries.length && sectionsBoundaries[finalLowerBound + 1] <= value) {
+		while (finalLowerBound < sectionsBoundaries.length - 1 && sectionsBoundaries[finalLowerBound + 1] <= value) {
 			finalLowerBound++;
 		}
 		
@@ -270,7 +393,7 @@ public class GaugeBarView extends View {
 	@Override
 	protected void onDraw(@NonNull Canvas canvas) {
 		super.onDraw(canvas);
-		
+
 		float halfGaugeBarThickness = barThickness / 2;
 		int width = getWidth() - getPaddingLeft() - getPaddingRight();
 		float gaugeBarWidth = width - leftGaugeMargin - rightGaugeMargin;
@@ -312,6 +435,7 @@ public class GaugeBarView extends View {
 		canvas.drawText(labelText, textLabelX, textY, labelTextPaint);
 		canvas.drawText(String.valueOf(value), textValueX, textY, valuePaint);
 		canvas.drawCircle(cursorX, gaugeBarYMiddle, halfGaugeBarThickness + 4F, cursorPaint);
+		
 	}
 	
 	/**
@@ -330,7 +454,6 @@ public class GaugeBarView extends View {
 		int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 		
 		if (widthSize < minWidth) widthSize = (int) minWidth;
-		
 		if (heightSize < minHeight) heightSize = (int) minHeight;
 		
 		setMeasuredDimension(widthSize, heightSize);

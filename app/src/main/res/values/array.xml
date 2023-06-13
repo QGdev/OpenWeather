@@ -517,15 +517,6 @@
         <item>"Icons made by freepik.com from flaticon.com "</item>
     </string-array>
 
-    <string-array name="time_offset">
-        <item name="default">@string/title_settings_time_offset_place_country</item>
-        <item>@string/title_settings_time_offset_user_country</item>
-    </string-array>
-    <string-array name="time_offset_values">
-        <item>place</item>
-        <item>user</item>
-    </string-array>
-
     <string-array name="time_format">
         <item name="default">@string/title_settings_time_format_24h</item>
         <item>@string/title_settings_time_format_12h</item>
@@ -579,9 +570,54 @@
         <item>angular</item>
     </string-array>
 
-    <string name="title_settings_time_offset_place_country">Relative to the country of the registered places</string>
-    <string name="title_settings_time_offset_user_country">Relative to the user\'s country</string>
-    <string name="title_settings_time_format_24h">24 h</string>
-    <string name="title_settings_time_format_12h">12 h</string>
-    <string name="title_settings_units_temperature_kelvin">Kelvin</string>
+    <array name="air_quality_sections_boundaries_so2">
+        <item>0</item>
+        <item>20</item>
+        <item>80</item>
+        <item>250</item>
+        <item>350</item>
+    </array>
+    <array name="air_quality_sections_boundaries_no2">
+        <item>0</item>
+        <item>40</item>
+        <item>70</item>
+        <item>150</item>
+        <item>200</item>
+    </array>
+    <array name="air_quality_sections_boundaries_pm10">
+        <item>0</item>
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+    </array>
+    <array name="air_quality_sections_boundaries_pm2_5">
+        <item>0</item>
+        <item>10</item>
+        <item>25</item>
+        <item>50</item>
+        <item>75</item>
+    </array>
+    <array name="air_quality_sections_boundaries_o3">
+        <item>0</item>
+        <item>60</item>
+        <item>100</item>
+        <item>140</item>
+        <item>180</item>
+    </array>
+
+    <array name="air_quality_sections_boundaries_co">
+        <item>0</item>
+        <item>4400</item>
+        <item>9400</item>
+        <item>12400</item>
+        <item>15400</item>
+    </array>
+    <array name="air_quality_sections_colors">
+        <item>@color/colorUvLow</item>
+        <item>@color/colorUvModerate</item>
+        <item>@color/colorUvHigh</item>
+        <item>@color/colorUvVeryHigh</item>
+        <item>@color/colorUvExtreme</item>
+    </array>
 </resources>
