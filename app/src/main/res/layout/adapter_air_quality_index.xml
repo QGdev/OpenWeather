@@ -124,197 +124,71 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
 
-            <GridLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="10dp"
-                android:columnCount="2"
-                android:columnOrderPreserved="true"
-                android:paddingLeft="10dp"
-                android:useDefaultMargins="true"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/composition_title">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                <fr.qgdev.openweather.customview.GaugeBarView
+                    android:id="@+id/air_quality_gauge_so2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:labelText="SO₂"
+                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_so2"
+                    app:sectionsColors="@array/air_quality_sections_colors"
+                    app:value="50" />
 
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:gravity="center"
-                        android:text="CO"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
+                <fr.qgdev.openweather.customview.GaugeBarView
+                    android:id="@+id/air_quality_gauge_no2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:labelText="NO₂"
+                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_no2"
+                    app:sectionsColors="@array/air_quality_sections_colors"
+                    app:value="50" />
 
-                    <TextView
-                        android:id="@+id/textview_co"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="201.941"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-                </LinearLayout>
+                <fr.qgdev.openweather.customview.GaugeBarView
+                    android:id="@+id/air_quality_gauge_pm10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:labelText="PM₁₀"
+                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_pm10"
+                    app:sectionsColors="@array/air_quality_sections_colors"
+                    app:value="50" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                <fr.qgdev.openweather.customview.GaugeBarView
+                    android:id="@+id/air_quality_gauge_pm2_5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:labelText="PM₂.₅"
+                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_pm2_5"
+                    app:sectionsColors="@array/air_quality_sections_colors"
+                    app:value="50" />
 
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:gravity="center"
-                        android:text="NO"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
+                <fr.qgdev.openweather.customview.GaugeBarView
+                    android:id="@+id/air_quality_gauge_o3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:labelText="O₃"
+                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_o3"
+                    app:sectionsColors="@array/air_quality_sections_colors"
+                    app:value="50" />
 
-                    <TextView
-                        android:id="@+id/textview_no"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.019"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:gravity="center"
-                        android:text="NO₂"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/textview_no2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.771"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:gravity="center"
-                        android:text="O₃"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/textview_o3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="68.665"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:gravity="center"
-                        android:text="SO₂"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/textview_so2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.641"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:gravity="center"
-                        android:text="NH₃"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/textview_nh3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.5"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:gravity="center"
-                        android:text="PM₂.₅"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/textview_pm2.5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.54"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:layout_width="50dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:gravity="center"
-                        android:text="PM₁₀"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-
-                    <TextView
-                        android:id="@+id/textview_pm10"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0.124"
-                        android:textColor="@color/colorSecondaryText"
-                        android:textSize="18sp" />
-                </LinearLayout>
+                <fr.qgdev.openweather.customview.GaugeBarView
+                    android:id="@+id/air_quality_gauge_co"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:labelText="CO"
+                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_co"
+                    app:sectionsColors="@array/air_quality_sections_colors"
+                    app:value="50" />
 
 
-            </GridLayout>
+            </LinearLayout>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
