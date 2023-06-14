@@ -68,64 +68,64 @@
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="@string/about_the_developer_section_title"
-				android:layout_margin="5dp"
+                android:text="@string/title_about_the_developer_section"
+                android:layout_margin="5dp"
 				android:textSize="24sp" />
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:paddingStart="10dp"
-				android:paddingBottom="5dp"
-				android:text="@string/about_the_developer_section_content"
-				android:textSize="20sp" />
+                android:paddingBottom="5dp"
+                android:text="@string/content_about_the_developer_section"
+                android:textSize="20sp" />
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="5dp"
-				android:text="@string/about_thanks_section_title"
+                android:layout_margin="5dp"
+                android:text="@string/title_about_thanks_section"
+                android:textSize="24sp" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingStart="10dp"
+                android:paddingBottom="5dp"
+                android:text="@string/content_about_thanks_section"
+                android:textSize="20sp" />
+
+			<TextView
+				android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/title_about_your_data_section"
+                android:layout_margin="5dp"
 				android:textSize="24sp" />
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:paddingStart="10dp"
-				android:paddingBottom="5dp"
-				android:text="@string/about_thanks_section_content"
-				android:textSize="20sp" />
-
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@string/about_your_data_section_title"
-				android:layout_margin="5dp"
-				android:textSize="24sp" />
-
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:paddingStart="10dp"
-				android:paddingBottom="5dp"
-				android:text="@string/about_your_data_section_content"
-				android:textSize="20sp"
+                android:paddingBottom="5dp"
+                android:text="@string/content_about_your_data_section"
+                android:textSize="20sp"
 				android:linksClickable="true"
 				android:autoLink="web" />
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_margin="5dp"
-				android:text="@string/about_application_section_title"
-				android:textSize="24sp" />
+                android:layout_margin="5dp"
+                android:text="@string/title_about_application_section"
+                android:textSize="24sp" />
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:paddingStart="10dp"
-				android:paddingBottom="5dp"
-				android:text="@string/about_application_section_content"
-				android:autoLink="web"
+                android:paddingBottom="5dp"
+                android:text="@string/content_about_application_section"
+                android:autoLink="web"
 				android:linksClickable="true"
 				android:textSize="20sp" />
 
@@ -154,7 +154,7 @@
 		android:layout_marginTop="10dp"
 		android:height="50dp"
 		android:enabled="true"
-		android:gravity="bottom|end"
-		android:text="@string/title_dialog_exit_button"
-		android:textSize="20sp" />
+        android:gravity="bottom|end"
+        android:text="@string/dialog_exit_button"
+        android:textSize="20sp" />
 </LinearLayout>

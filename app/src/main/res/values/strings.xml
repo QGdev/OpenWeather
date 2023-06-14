@@ -108,12 +108,12 @@
 	<string name="until_date">Until</string>
 	<string name="title_dialog_weather_alert">Weather alert</string>
 	<string name="about_us">About us</string>
-	<string name="title_dialog_exit_button">Exit</string>
+	<string name="dialog_exit_button">Exit</string>
 
-	<string name="about_the_developer_section_title">About the developer</string>
-	<string name="about_the_developer_section_content">I am French computer science student, who had an idea during lockdown and turned it into an application to practice Java and Android development.</string>
-	<string name="about_your_data_section_title">About your data</string>
-	<string name="about_your_data_section_content">The data is only stored on your phone, apart from you, no one has access to it.\nThe application only sends some data to openweathermap.org, this data is linked to cities, the first time a city is entered, we send the city as well as its country, after once this city is registered, we only send the city coordinates.\nThere is no intermediary between OpenWeatherMaps and the application, the data received is directly processed on the application.\nThe OpenWeatherMaps privacy policy is available here: openweather.co.uk/privacy-policy</string>
+	<string name="title_about_the_developer_section">About the developer</string>
+	<string name="content_about_the_developer_section">I am French computer science student, who had an idea during lockdown and turned it into an application to practice Java and Android development.</string>
+	<string name="title_about_your_data_section">About your data</string>
+	<string name="content_about_your_data_section">The data is only stored on your phone, apart from you, no one has access to it.\nThe application only sends some data to openweathermap.org, this data is linked to cities, the first time a city is entered, we send the city as well as its country, after once this city is registered, we only send the city coordinates.\nThere is no intermediary between OpenWeatherMaps and the application, the data received is directly processed on the application.\nThe OpenWeatherMaps privacy policy is available here: openweather.co.uk/privacy-policy</string>
 	<string name="place_deletion_successful">Successfully deleted !</string>
 	<string name="icon_legend_data_time">Date and hour</string>
 	<string name="icon_legend_weather_condition">Weather conditions</string>
@@ -163,20 +163,38 @@
 	<string name="wind_direction_westsouthwest">WSW</string>
 	<string name="wind_direction_west">W</string>
 	<string name="wind_direction_westnorthwest">WNW</string>
-	<string name="about_thanks_section_title">Thanks</string>
-	<string name="about_thanks_section_content">I would like to say thank you to my best friend who tested the application in the very early stages of development and always had good ideas.</string>
+	<string name="title_about_thanks_section">Thanks</string>
+	<string name="content_about_thanks_section">I would like to say thank you to my best friend who tested the application in the very early stages of development and always had good ideas.</string>
 	<string name="title_settings_aqi_state">Air quality</string>
 	<string name="summary_enable_settings_aqi_state">Air quality will be fetch and displayed</string>
 	<string name="summary_disable_settings_aqi_state">Air quality will be ignored</string>
-    <string name="title_air_quality">Air Quality</string>
-    <string name="air_quality_1">Good</string>
-    <string name="air_quality_concentrations_title">Composition (in µg/m³) :</string>
+	<string name="title_air_quality">Air Quality</string>
+	<string name="title_air_quality_concentrations">Composition (in µg/m³) :</string>
+	<string name="air_quality_1">Good</string>
 	<string name="air_quality_2">Moderate</string>
 	<string name="air_quality_3">Unhealthy (sensitives)</string>
 	<string name="air_quality_4">Unhealthy</string>
 	<string name="air_quality_5">Very unhealthy</string>
-	<string name="about_application_section_content">This application and its source code have been placed under the GPL-3.0 license.\nThe source code of the application is available on: github.com/QGdev/OpenWeather.\nThis does not include the OpenWeatherMap API or data, or even the FreePik graphics resources, which are licensed separately.</string>
-	<string name="about_application_section_title">About this app</string>
+
+	<string name="title_dialog_air_quality_information">Air quality information</string>
+
+	<string name="title_air_quality_so2">SO₂ - Sulphur dioxide</string>
+	<string name="title_air_quality_no2">NO₂ - Nitrogen dioxide</string>
+	<string name="title_air_quality_pm10">PM₁₀ - Particulate matter 10</string>
+	<string name="title_air_quality_pm25">PM₂.₅ - Particulate matter 2.5</string>
+	<string name="title_air_quality_o3">O₃ - Ozone</string>
+	<string name="title_air_quality_co">CO - Carbon monoxide</string>
+
+	<string name="content_air_quality_so2_information">Sulfur dioxide, or SO₂, is a gaseous pollutant primarily emitted from the combustion of fossil fuels such as coal and oil. It is responsible for the characteristic pungent odor when present in high concentrations. SO₂ can cause respiratory problems and contribute to the formation of acid rain.</string>
+	<string name="content_air_quality_no2_information">Nitrogen dioxide, or NO₂, is a reddish-brown gas emitted by vehicles, power plants, and industrial facilities. It is an indicator of traffic-related air pollution. NO₂ can irritate the respiratory tract, worsen asthma symptoms, and contribute to the formation of smog.</string>
+	<string name="content_air_quality_pm10_information">PM₁₀ refers to fine particulate matter suspended in the air, with a diameter of less than 10 micrometers. It can originate from natural sources like desert dust, as well as human activities such as fuel combustion, industrial emissions, and traffic. PM₁₀ can penetrate deep into the respiratory system and cause health problems such as irritation, allergies, and cardiovascular issues.</string>
+	<string name="content_air_quality_pm25_information">PM₂.₅ refers to fine particulate matter suspended in the air, with a diameter of less than 2.5 micrometers. It is mainly produced by incomplete combustion of fossil fuels, industrial emissions, and traffic. PM₂.₅ is of particular concern as it can penetrate deep into the lungs and even enter the bloodstream, causing severe respiratory problems, cardiovascular diseases, and long-term adverse health effects.</string>
+	<string name="content_air_quality_o3_information">Ozone, or O₃, is a gas present in the atmosphere that can be beneficial or harmful depending on its location. At ground level, ozone is a pollutant formed from chemical reactions between greenhouse gas emissions and sunlight. It can cause respiratory problems, irritate the respiratory tract, and worsen existing lung diseases. However, in the stratosphere, ozone plays an important role in protecting the Earth from ultraviolet radiation.</string>
+	<string name="content_air_quality_co_information">Carbon monoxide, or CO, is a colorless and odorless gas produced by incomplete combustion of fossil fuels such as gasoline, coal, and wood. It is primarily emitted by vehicles, heating appliances, and generators. CO is dangerous as it binds to hemoglobin in the blood, reducing its capacity to transport oxygen. High exposure to CO can cause symptoms such as headaches, dizziness, nausea, and in severe cases, it can be fatal.</string>
+
+
+	<string name="content_about_application_section">This application and its source code have been placed under the GPL-3.0 license.\nThe source code of the application is available on: github.com/QGdev/OpenWeather.\nThis does not include the OpenWeatherMap API or data, or even the FreePik graphics resources, which are licensed separately.</string>
+	<string name="title_about_application_section">About this app</string>
 	<string name="error_storage_security">An error occurred while initializing the storage</string>
 	<string name="error_no_api_key_registered">API key isn\'t registered, please go into settings and register one</string>
 	<string name="error_api_key_incorrectly_formed">The registered API key must have 32 alphanumerical characters</string>

@@ -65,11 +65,11 @@
 	<string name="until_date">Au</string>
 	<string name="title_dialog_weather_alert">Alertes Météorologiques</string>
 	<string name="about_us">À propos</string>
-	<string name="title_dialog_exit_button">Quitter</string>
-	<string name="about_your_data_section_content">Les données sont uniquement stockées sur votre téléphone, à part vous, personne n\'y a accès.\nL\'application n\'envoie que certaines données à OpenWeatherMaps, ces données sont liées aux villes, la première fois, qu\'une ville est renseignée, nous envoyons la ville ainsi que son pays, une fois cette ville enregistrée, nous n\'enverons uniquement les coordonnées de cette ville.\n Il n\'y a aucun intermédiaire entre OpenWeatherMaps et l\'application, les données reçues sont directement traîtées sur l\'application.\nLa politique de confidentialité de OpenWeatherMaps est disponible ici: openweather.co.uk/privacy-policy</string>
-	<string name="about_the_developer_section_title">À propos du développeur</string>
-	<string name="about_your_data_section_title">À propos de vos données</string>
-	<string name="about_the_developer_section_content">Je suis un étudiant français en informatique, qui a eu une idée pendant le confinement et l\'a transformée en une application pour pratiquer le développement Java et Android.</string>
+	<string name="dialog_exit_button">Quitter</string>
+	<string name="content_about_your_data_section">Les données sont uniquement stockées sur votre téléphone, à part vous, personne n\'y a accès.\nL\'application n\'envoie que certaines données à OpenWeatherMaps, ces données sont liées aux villes, la première fois, qu\'une ville est renseignée, nous envoyons la ville ainsi que son pays, une fois cette ville enregistrée, nous n\'enverons uniquement les coordonnées de cette ville.\n Il n\'y a aucun intermédiaire entre OpenWeatherMaps et l\'application, les données reçues sont directement traîtées sur l\'application.\nLa politique de confidentialité de OpenWeatherMaps est disponible ici: openweather.co.uk/privacy-policy</string>
+	<string name="title_about_the_developer_section">À propos du développeur</string>
+	<string name="title_about_your_data_section">À propos de vos données</string>
+	<string name="content_about_the_developer_section">Je suis un étudiant français en informatique, qui a eu une idée pendant le confinement et l\'a transformée en une application pour pratiquer le développement Java et Android.</string>
 	<string name="error_device_not_connected">" Impossible de se connecter à Internet, veuillez vérifier votre connexion et réessayer"</string>
 	<string name="error_place_deletion">Une erreur est survenue lors de la suppression</string>
 	<string name="error_cannot_save_place_treatment">Impossible de sauvegarder la lieu à cause d\'une erreur de traitement</string>
@@ -127,22 +127,39 @@
 	<string name="wind_direction_westsouthwest">OSO</string>
 	<string name="wind_direction_west">O</string>
 	<string name="wind_direction_westnorthwest">ONO</string>
-	<string name="about_thanks_section_content">Je voudrais dire merci à mon meilleur ami qui a testé l\'application lors des toutes premières phases de développement et qui a toujours eu de bonnes idées.</string>
-	<string name="about_thanks_section_title">Remerciement</string>
+	<string name="content_about_thanks_section">Je voudrais dire merci à mon meilleur ami qui a testé l\'application lors des toutes premières phases de développement et qui a toujours eu de bonnes idées.</string>
+	<string name="title_about_thanks_section">Remerciement</string>
 	<string name="title_settings_aqi_state">Qualité de l\'air</string>
 	<string name="summary_enable_settings_aqi_state">La qualité de l\'air sera recherchée et affichée</string>
 	<string name="summary_disable_settings_aqi_state">La qualité de l\'air sera ignorée</string>
 	<string name="title_air_quality">Qualité de l\'air</string>
-    <string name="air_quality_1">Bon</string>
-    <string name="air_quality_concentrations_title">Composition (en µg/m³) :</string>
-    <string name="air_quality_2">Modérée</string>
-    <string name="air_quality_5">Très Mauvais</string>
-    <string name="air_quality_4">Mauvais</string>
-    <string name="air_quality_3">Mauvais (sensible)</string>
-    <string name="error_place_move">Une erreur est survenue lors du déplacement</string>
-    <string name="about_application_section_title">À propos de l\'application</string>
-    <string name="about_application_section_content">Cette application et son code source ont été placés sous la licence GPL-3.\nLe code source de mon applicetion est disponible ici: github.com/QGdev/OpenWeather.\nCela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
-    <string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
-    <string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
-    <string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
+	<string name="title_air_quality_concentrations">Composition (en µg/m³) :</string>
+	<string name="air_quality_1">Bon</string>
+	<string name="air_quality_2">Modérée</string>
+	<string name="air_quality_5">Très Mauvais</string>
+	<string name="air_quality_4">Mauvais</string>
+	<string name="air_quality_3">Mauvais (sensible)</string>
+
+	<string name="title_dialog_air_quality_information">Informations sur la qualité de l\'air</string>
+
+	<string name="title_air_quality_so2">SO₂ - Dioxyde de soufre</string>
+	<string name="title_air_quality_no2">NO₂ - Dioxyde d\'azote</string>
+	<string name="title_air_quality_pm10">PM₁₀ - Particules fines (≤ 10 µm)</string>
+	<string name="title_air_quality_pm25">PM₂.₅ - Particules fines (≤ 2.5 µm)</string>
+	<string name="title_air_quality_o3">O₃ - Ozone</string>
+	<string name="title_air_quality_co">CO - Monoxyde de carbone</string>
+
+	<string name="content_air_quality_so2_information">Le dioxyde de soufre ou SO₂ est un polluant gazeux provenant principalement de la combustion des combustibles fossiles, tels que le charbon et le pétrole. Il est responsable de l\'odeur âcre caractéristique lorsqu'il est présent en concentrations élevées. Le SO₂ peut causer des problèmes respiratoires et contribuer à la formation de pluies acides.</string>
+	<string name="content_air_quality_no2_information">Le dioxyde d\'azote ou NO₂ est un gaz brun-rougeâtre émis par les véhicules, les centrales électriques et les installations industrielles. Il est un indicateur de la pollution atmosphérique liée au trafic. Le NO₂ peut irriter les voies respiratoires, aggraver les symptômes de l\'asthme et contribuer à la formation de smog.</string>
+	<string name="content_air_quality_pm10_information">Les PM₁₀ font référence aux particules fines en suspension dans l\'air, d\'un diamètre inférieur à 10 micromètres. Elles peuvent provenir de sources naturelles comme les poussières désertiques, mais aussi des activités humaines telles que la combustion de combustibles, les émissions industrielles et le trafic routier. Les PM₁₀ peuvent pénétrer profondément dans les voies respiratoires et causer des problèmes de santé tels que des irritations, des allergies et des problèmes cardiovasculaires.</string>
+	<string name="content_air_quality_pm25_information">Les PM₂.₅ font référence aux particules fines en suspension dans l\'air, d\'un diamètre inférieur à 2,5 micromètres. Elles sont principalement produites par la combustion incomplète de combustibles fossiles, les émissions industrielles et le trafic routier. Les PM₂.₅ sont particulièrement préoccupantes car elles peuvent pénétrer profondément dans les poumons et même dans la circulation sanguine, causant des problèmes respiratoires graves, des maladies cardiovasculaires et des effets néfastes sur la santé à long terme.</string>
+	<string name="content_air_quality_o3_information">L\'ozone ou O₃ est un gaz présent dans l\'atmosphère qui peut être bénéfique ou nocif en fonction de son emplacement. Au niveau du sol, l\'ozone est un polluant qui se forme à partir des réactions chimiques entre les émissions de gaz à effet de serre et la lumière du soleil. Il peut causer des problèmes respiratoires, des irritations des voies respiratoires et aggraver les maladies pulmonaires existantes. Cependant, dans la stratosphère, l'ozone joue un rôle important en protégeant la Terre des rayons ultraviolets du soleil.</string>
+	<string name="content_air_quality_co_information">Le monoxyde de carbone ou CO est un gaz incolore et inodore produit par la combustion incomplète de combustibles fossiles, tels que l\'essence, le charbon et le bois. Il est principalement émis par les véhicules, les appareils de chauffage et les générateurs. Le CO est dangereux car il se lie à l\'hémoglobine dans le sang, réduisant ainsi sa capacité à transporter l'oxygène. Une exposition élevée au CO peut provoquer des symptômes tels que des maux de tête, des étourdissements, des nausées et, dans les cas graves, peut être fatal.</string>
+
+	<string name="error_place_move">Une erreur est survenue lors du déplacement</string>
+	<string name="title_about_application_section">À propos de l\'application</string>
+	<string name="content_about_application_section">Cette application et son code source ont été placés sous la licence GPL-3.\nLe code source de mon applicetion est disponible ici: github.com/QGdev/OpenWeather.\nCela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
+	<string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
+	<string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
+	<string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
 </resources>
