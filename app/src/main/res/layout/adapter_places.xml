@@ -71,8 +71,9 @@
 				<!--    Feels Like Temperature     !-->
 				<TextView
 					android:id="@+id/temperature_feelslike_text"
-					android:layout_width="100dp"
+					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
+					android:paddingEnd="16dp"
 					android:text="@string/title_temperature_feelslike"
 					android:textColor="@color/colorSecondaryText"
 					android:textSize="20sp"
@@ -196,7 +197,7 @@
 						android:layout_height="wrap_content"
 						android:contentDescription="@string/description_visibility"
 						android:drawablePadding="@dimen/env_variables_drawing_padding"
-						android:text="1000 hpa"
+						android:text="10 km"
 						android:textColor="@color/colorSecondaryText"
 						android:textSize="18sp"
 						android:tooltipText="@string/description_visibility"
