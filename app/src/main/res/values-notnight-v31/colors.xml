@@ -16,5 +16,5 @@
     <color name="colorTertiaryGraphPaint">@android:color/system_accent3_500</color>
 
     <color name="colorBackground">@android:color/background_light</color>
-    <color name="colorBackgroundTiles">@android:color/system_accent1_10</color>
+    <color name="colorBackgroundTiles">@android:color/system_accent3_10</color>
 </resources>

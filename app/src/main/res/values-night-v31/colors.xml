@@ -9,11 +9,11 @@
 
     <!-- Only used for custom views like Forecasts to make custom drawings!-->
     <color name="colorPrimaryPaint">@android:color/system_neutral1_0</color>
-    <color name="colorSecondaryPaint">@android:color/system_accent1_300</color>
-    <color name="colorTertiaryPaint">@android:color/system_accent3_300</color>
+    <color name="colorSecondaryPaint">@android:color/system_accent1_200</color>
+    <color name="colorTertiaryPaint">@android:color/system_accent3_200</color>
     <color name="colorPrimaryGraphPaint">@android:color/system_neutral1_0</color>
-    <color name="colorSecondaryGraphPaint">@android:color/system_accent1_300</color>
-    <color name="colorTertiaryGraphPaint">@android:color/system_accent3_300</color>
+    <color name="colorSecondaryGraphPaint">@android:color/system_accent1_200</color>
+    <color name="colorTertiaryGraphPaint">@android:color/system_accent3_200</color>
 
     <color name="colorBackground">@android:color/background_dark</color>
     <color name="colorBackgroundTiles">@android:color/system_neutral1_900</color>
