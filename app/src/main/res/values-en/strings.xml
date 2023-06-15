@@ -52,7 +52,7 @@
 	<string name="error_cannot_save_place">Cannot save the place</string>
 	<string name="error_cannot_refresh_place_list">Cannot refresh places</string>
 	<string name="dialog_confirmation_title_delete_place">Deleting a place</string>
-	<string name="dialog_confirmation_message_delete_place">Delete %s, %s ?</string>
+	<string name="dialog_confirmation_message_delete_place" formatted="false">Delete %s, %s ?</string>
 	<string name="dialog_confirmation_choice_yes">Yes, delete it</string>
 	<string name="dialog_confirmation_choice_no">No, keep it</string>
 	<string name="title_precipitations_1h">Precipitations - 1h</string>
