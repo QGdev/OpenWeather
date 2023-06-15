@@ -145,7 +145,7 @@ public class AddPlaceDialog extends Dialog {
 						showSnackbar(dialogWindow, context.getString(R.string.error_place_already_added));
 						break;
 					default:
-						showSnackbar(dialogWindow, context.getString(R.string.error_unknow_error));
+						showSnackbar(dialogWindow, context.getString(R.string.error_unknown_error));
 						break;
 				}
 			}

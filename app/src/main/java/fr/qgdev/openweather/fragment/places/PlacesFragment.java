@@ -350,7 +350,7 @@ public class PlacesFragment extends Fragment {
 						showSnackbar(container, mContext.getString(R.string.error_place_not_found));
 						break;
 					default:
-						showSnackbar(container, mContext.getString(R.string.error_unknow_error));
+						showSnackbar(container, mContext.getString(R.string.error_unknown_error));
 						break;
 				}
 				if (placesViewModel.getPlaces().size() == refreshCounter.incrementAndGet()) {
