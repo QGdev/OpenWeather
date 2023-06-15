@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="dialog_max_width">275dp</dimen>
-    <dimen name="env_variables_width">130dp</dimen>
+    <dimen name="env_variables_width">120dp</dimen>
 </resources>
