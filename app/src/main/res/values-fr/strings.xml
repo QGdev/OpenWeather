@@ -43,13 +43,13 @@
 	<string name="error_wrong_api_key">OpenWeatherMaps n\'a pas reconnu votre clé API</string>
 	<string name="error_server_unreachable">Impossible d\'atteindre les serveurs OMW , vérifiez votre connexion et réessayez</string>
 	<string name="error_place_not_found">Lieu introuvable</string>
-	<string name="error_unknow_error">Une erreur inconnue s\'est produite</string>
-	<string name="place_added_succcessfully">a été ajouté avec succès</string>
+	<string name="error_unknown_error">Une erreur inconnue s\'est produite</string>
+	<string name="place_added_successfully">a été ajouté avec succès</string>
 	<string name="error_place_country_not_in_list">Le pays doit être présent dans la liste</string>
 	<string name="error_cannot_save_place">Impossible de sauvegarder le lieu</string>
 	<string name="error_cannot_refresh_place_list">Impossible de rafraîchir les lieux</string>
 	<string name="dialog_confirmation_title_delete_place">Supprimer un lieu</string>
-	<string name="dialog_confirmation_message_delete_place" formatted="false">Supprimer %s, %s ?</string>
+	<string name="dialog_confirmation_message_delete_place"><![CDATA[Supprimer %s, %s ?]]></string>
 	<string name="dialog_confirmation_choice_yes">Oui, supprimez-le</string>
 	<string name="dialog_confirmation_choice_no">Non, gardez-le</string>
 	<string name="title_precipitations_1h">Précipitations - 1h</string>

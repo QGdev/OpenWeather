@@ -72,7 +72,7 @@
 	<string name="error_place_not_found">Place not found</string>
 	<string name="error_wrong_api_key">OpenWeatherMaps didn\'t recognize your API key</string>
 	<string name="error_too_many_request_in_a_day">Cannot get weather data, too many requests today</string>
-	<string name="error_unknow_error">Unknown error happened</string>
+	<string name="error_unknown_error">Unknown error happened</string>
 	<string name="error_device_not_connected">Cannot connect to internet, please verify your connection and try again</string>
 
 	<string name="url_owm_weather_data" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/onecall?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
@@ -80,7 +80,7 @@
 	<string name="url_owm_properties_name" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s&lang=%s]]></string>
 	<string name="url_owm_properties_coordinates" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
 
-	<string name="place_added_succcessfully">was successfully added</string>
+	<string name="place_added_successfully">was successfully added</string>
 
 	<string name="error_place_country_not_in_list">The country must exist in the list</string>
 	<string name="error_cannot_save_place">Cannot save the place</string>
@@ -91,7 +91,7 @@
 
 
 	<string name="dialog_confirmation_title_delete_place">Deleting a place</string>
-	<string name="dialog_confirmation_message_delete_place" formatted="false">Delete %s, %s ?</string>
+	<string name="dialog_confirmation_message_delete_place"><![CDATA[Delete %s, %s ?]]></string>
 	<string name="dialog_confirmation_choice_yes">Yes, delete it</string>
 	<string name="dialog_confirmation_choice_no">No, keep it</string>
 	<string name="title_precipitations_1h">Precipitations - 1h</string>
