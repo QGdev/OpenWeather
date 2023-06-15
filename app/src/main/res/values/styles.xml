@@ -59,10 +59,17 @@
 		<item name="cornerSize">40dp</item>
 	</style>
 
-	<style name="MaterialTheme.SnackBar" parent="Widget.MaterialComponents.Snackbar">
+	<style name="MaterialTheme.SnackBar" parent="Widget.Material3.Snackbar">
 		<item name="maxLines">6</item>
 		<item name="android:ellipsize">none</item>
 	</style>
 
+	<style name="MaterialTheme.AppBarOverlay" parent="Widget.Material3.AppBarLayout" />
 
+	<style name="MaterialTheme.Toolbar" parent="Widget.Material3.Toolbar">
+		<item name="android:background">@color/colorPrimary</item>
+		<item name="android:textColorPrimary">@color/colorFirstText</item>
+		<item name="android:textColorSecondary">@color/colorSecondaryText</item>
+		<item name="android:statusBarColor">@color/colorPrimaryDark</item>
+	</style>
 </resources>
