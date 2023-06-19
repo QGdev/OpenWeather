@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,7 @@ import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.customview.DailyForecastGraphView;
 import fr.qgdev.openweather.customview.GaugeBarView;
 import fr.qgdev.openweather.customview.HourlyForecastGraphView;
+import fr.qgdev.openweather.dialog.AirQualityInfoDialog;
 import fr.qgdev.openweather.dialog.WeatherAlertDialog;
 import fr.qgdev.openweather.fragment.places.PlacesViewModel;
 import fr.qgdev.openweather.metrics.AirQuality;
@@ -267,17 +269,14 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		private final ImageView airQualityCircle;
 		private final TextView airQualityIndex;
 		private final TextView airQualityMessage;
-		//	Might be reintegrated later
-		//	private final TextView airQualityNO;
-		//	private final TextView airQualityNH3;
-		
-		//   Only for test purpose
 		private final GaugeBarView airQualityGaugeSO2;
 		private final GaugeBarView airQualityGaugeNO2;
 		private final GaugeBarView airQualityGaugePM10;
 		private final GaugeBarView airQualityGaugePM25;
 		private final GaugeBarView airQualityGaugeO3;
 		private final GaugeBarView airQualityGaugeCO;
+		
+		private final ImageView airQualityInfoIcon;
 		
 		private final LinearLayout precipitationLayout;
 		private final TextView rainTextView;
@@ -342,16 +341,13 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			this.airQualityIndex = itemView.findViewById(R.id.airquality_number);
 			this.airQualityMessage = itemView.findViewById(R.id.airquality_text);
 			
-			//	Might be reintegrated later
-			//	this.airQualityNO = itemView.findViewById(R.id.textview_no);
-			//	this.airQualityNH3 = itemView.findViewById(R.id.textview_nh3);
-			
 			this.airQualityGaugeSO2 = itemView.findViewById(R.id.air_quality_gauge_so2);
 			this.airQualityGaugeNO2 = itemView.findViewById(R.id.air_quality_gauge_no2);
 			this.airQualityGaugePM10 = itemView.findViewById(R.id.air_quality_gauge_pm10);
 			this.airQualityGaugePM25 = itemView.findViewById(R.id.air_quality_gauge_pm2_5);
 			this.airQualityGaugeO3 = itemView.findViewById(R.id.air_quality_gauge_o3);
 			this.airQualityGaugeCO = itemView.findViewById(R.id.air_quality_gauge_co);
+			this.airQualityInfoIcon = itemView.findViewById(R.id.air_quality_information_dialog);
 			
 			this.precipitationLayout = itemView.findViewById(R.id.precipitations);
 			this.rainTextView = itemView.findViewById(R.id.rain_precipitations_current_value);
@@ -634,6 +630,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 						  formattingService);
 				weatherAlertDialog.build();
 			});
+			
+			airQualityInfoIcon.setOnClickListener(v -> {
+				AppCompatActivity tmp = (AppCompatActivity) context;
+				AirQualityInfoDialog.display(tmp.getSupportFragmentManager());
+			});
 		}
 		
 		public void bindData(@NonNull Context context, @NonNull FormattingService formattingService, @NonNull PlaceRecyclerViewAdapter placeRecyclerViewAdapter, @NonNull PlacesViewModel placesViewModel, @NonNull Place place) {
@@ -844,29 +845,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 					airQualityMessage.setText(context.getText(R.string.air_quality_1));
 					break;
 			}
-			
-			//	Might be reintegrated later
-			//	airQualityNO.setText(String.format("%.3f", airQuality.getNo()));
-			//	airQualityNH3.setText(String.format("%.3f", airQuality.getNh3()));
-			
-			//	   Only for test purposes
-			int[] gaugeColors = new int[]{R.color.colorUvLow, R.color.colorUvModerate, R.color.colorUvHigh, R.color.colorUvVeryHigh, R.color.colorUvExtreme};
-			
-			/*
-			airQualityGaugeSO2.setGaugeSections(new float[]{0, 20, 80, 250, 350}, gaugeColors);
-			airQualityGaugeNO2.setGaugeSections(new float[]{0, 40, 70, 150, 200}, gaugeColors);
-			airQualityGaugePM10.setGaugeSections(new float[]{0, 20, 50, 100, 200}, gaugeColors);
-			airQualityGaugePM25.setGaugeSections(new float[]{0, 10, 25, 50, 75}, gaugeColors);
-			airQualityGaugeO3.setGaugeSections(new float[]{0, 60, 100, 140, 180}, gaugeColors);
-			airQualityGaugeCO.setGaugeSections(new float[]{0, 4400, 9400, 12400, 15400}, gaugeColors);
-			
-			airQualityGaugeSO2.setLabelText("SO₂");
-			airQualityGaugeNO2.setLabelText("NO₂");
-			airQualityGaugePM10.setLabelText("PM₁₀");
-			airQualityGaugePM25.setLabelText("PM₂.₅");
-			airQualityGaugeO3.setLabelText("O₃");
-			airQualityGaugeCO.setLabelText("CO");
-			*/
 			
 			airQualityGaugeSO2.setValue(airQuality.getSo2());
 			airQualityGaugeNO2.setValue(airQuality.getNo2());

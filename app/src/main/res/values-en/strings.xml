@@ -133,7 +133,7 @@
 	<string name="summary_enable_settings_aqi_state">"Air quality will be fetch and displayed "</string>
 	<string name="summary_disable_settings_aqi_state">Air quality will be ignored</string>
 	<string name="title_air_quality">Air Quality</string>
-	<string name="title_air_quality_concentrations">Composition (in µg/m³) :</string>
+	<string name="title_air_quality_concentrations">Composition</string>
 	<string name="air_quality_1">Good</string>
 	<string name="air_quality_2">Moderate</string>
 	<string name="air_quality_5">Very unhealthy</string>
@@ -163,4 +163,5 @@
 	<string name="error_storage_security">An error occurred while initializing the storage</string>
 	<string name="error_no_api_key_registered">API key isn\'t registered, please go into settings and register one</string>
 	<string name="error_api_key_incorrectly_formed">The registered API key must have 32 alphanumerical characters</string>
+	<string name="air_quality_composition_unit">in µg/m³</string>
 </resources>

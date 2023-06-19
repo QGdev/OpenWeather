@@ -133,7 +133,7 @@
 	<string name="summary_enable_settings_aqi_state">La qualité de l\'air sera recherchée et affichée</string>
 	<string name="summary_disable_settings_aqi_state">La qualité de l\'air sera ignorée</string>
 	<string name="title_air_quality">Qualité de l\'air</string>
-	<string name="title_air_quality_concentrations">Composition (en µg/m³) :</string>
+	<string name="title_air_quality_concentrations">Composition</string>
 	<string name="air_quality_1">Bon</string>
 	<string name="air_quality_2">Modérée</string>
 	<string name="air_quality_5">Très Mauvais</string>
@@ -162,4 +162,5 @@
 	<string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
 	<string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
 	<string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
+	<string name="air_quality_composition_unit">en µg/m³</string>
 </resources>

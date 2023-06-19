@@ -169,7 +169,7 @@
 	<string name="summary_enable_settings_aqi_state">Air quality will be fetch and displayed</string>
 	<string name="summary_disable_settings_aqi_state">Air quality will be ignored</string>
 	<string name="title_air_quality">Air Quality</string>
-	<string name="title_air_quality_concentrations">Composition (in µg/m³) :</string>
+	<string name="title_air_quality_concentrations">Composition</string>
 	<string name="air_quality_1">Good</string>
 	<string name="air_quality_2">Moderate</string>
 	<string name="air_quality_3">Unhealthy (sensitives)</string>
@@ -202,4 +202,5 @@
 	<string name="title_settings_time_format_24h" translatable="false">24 h</string>
 	<string name="title_settings_time_format_12h" translatable="false">12 h</string>
 	<string name="title_settings_units_temperature_kelvin" translatable="false">Kelvin</string>
+	<string name="air_quality_composition_unit">in µg/m³</string>
 </resources>

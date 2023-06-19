@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="5dp"
     android:layout_marginTop="20dp"
-    android:layout_marginEnd="5dp"
+    android:layout_marginEnd="20dp"
     android:animateLayoutChanges="true"
     android:animationCache="true"
     android:background="@drawable/round_square"
@@ -13,7 +13,6 @@
     android:paddingStart="18dp"
     android:paddingTop="10dp"
     android:paddingEnd="10dp"
-    android:paddingBottom="10dp"
     android:visibility="visible">
 
     <!--    Title !-->
@@ -119,77 +118,106 @@
                 android:text="@string/title_air_quality_concentrations"
                 android:textColor="@color/colorFirstText"
                 android:textSize="20sp"
-                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/composition_title"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/composition_title">
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <fr.qgdev.openweather.customview.GaugeBarView
-                    android:id="@+id/air_quality_gauge_so2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:labelText="SO₂"
-                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_so2"
-                    app:sectionsColors="@array/air_quality_sections_colors"
-                    app:value="50" />
+            <fr.qgdev.openweather.customview.GaugeBarView
+                android:id="@+id/air_quality_gauge_so2"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                app:labelText="SO₂"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/composition_title"
+                app:sectionsBoundaries="@array/air_quality_sections_boundaries_so2"
+                app:sectionsColors="@array/air_quality_sections_colors"
+                app:value="50" />
 
-                <fr.qgdev.openweather.customview.GaugeBarView
-                    android:id="@+id/air_quality_gauge_no2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:labelText="NO₂"
-                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_no2"
-                    app:sectionsColors="@array/air_quality_sections_colors"
-                    app:value="50" />
+            <fr.qgdev.openweather.customview.GaugeBarView
+                android:id="@+id/air_quality_gauge_no2"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                app:labelText="NO₂"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/air_quality_gauge_so2"
+                app:sectionsBoundaries="@array/air_quality_sections_boundaries_no2"
+                app:sectionsColors="@array/air_quality_sections_colors"
+                app:value="50" />
 
-                <fr.qgdev.openweather.customview.GaugeBarView
-                    android:id="@+id/air_quality_gauge_pm10"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:labelText="PM₁₀"
-                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_pm10"
-                    app:sectionsColors="@array/air_quality_sections_colors"
-                    app:value="50" />
+            <fr.qgdev.openweather.customview.GaugeBarView
+                android:id="@+id/air_quality_gauge_pm10"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                app:labelText="PM₁₀"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/air_quality_gauge_no2"
+                app:sectionsBoundaries="@array/air_quality_sections_boundaries_pm10"
+                app:sectionsColors="@array/air_quality_sections_colors"
+                app:value="50" />
 
-                <fr.qgdev.openweather.customview.GaugeBarView
-                    android:id="@+id/air_quality_gauge_pm2_5"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:labelText="PM₂.₅"
-                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_pm2_5"
-                    app:sectionsColors="@array/air_quality_sections_colors"
-                    app:value="50" />
+            <fr.qgdev.openweather.customview.GaugeBarView
+                android:id="@+id/air_quality_gauge_pm2_5"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                app:labelText="PM₂.₅"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/air_quality_gauge_pm10"
+                app:sectionsBoundaries="@array/air_quality_sections_boundaries_pm2_5"
+                app:sectionsColors="@array/air_quality_sections_colors"
+                app:value="50" />
 
-                <fr.qgdev.openweather.customview.GaugeBarView
-                    android:id="@+id/air_quality_gauge_o3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:labelText="O₃"
-                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_o3"
-                    app:sectionsColors="@array/air_quality_sections_colors"
-                    app:value="50" />
+            <fr.qgdev.openweather.customview.GaugeBarView
+                android:id="@+id/air_quality_gauge_o3"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                app:labelText="O₃"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/air_quality_gauge_pm2_5"
+                app:sectionsBoundaries="@array/air_quality_sections_boundaries_o3"
+                app:sectionsColors="@array/air_quality_sections_colors"
+                app:value="50" />
 
-                <fr.qgdev.openweather.customview.GaugeBarView
-                    android:id="@+id/air_quality_gauge_co"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:labelText="CO"
-                    app:sectionsBoundaries="@array/air_quality_sections_boundaries_co"
-                    app:sectionsColors="@array/air_quality_sections_colors"
-                    app:value="50" />
+            <fr.qgdev.openweather.customview.GaugeBarView
+                android:id="@+id/air_quality_gauge_co"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                app:labelText="CO"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/air_quality_gauge_o3"
+                app:sectionsBoundaries="@array/air_quality_sections_boundaries_co"
+                app:sectionsColors="@array/air_quality_sections_colors"
+                app:value="50" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="5dp"
+                android:text="@string/air_quality_composition_unit"
+                android:textColor="@color/colorTertiaryText"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/air_quality_information_dialog"
+                app:layout_constraintTop_toBottomOf="@id/air_quality_gauge_co" />
 
 
-            </LinearLayout>
-
-
+            <ImageView
+                android:id="@+id/air_quality_information_dialog"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/ic_about_us_24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/air_quality_gauge_co" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>

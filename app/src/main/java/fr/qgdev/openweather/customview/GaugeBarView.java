@@ -6,14 +6,14 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.icu.math.BigDecimal;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import java.math.BigDecimal;
 
 import fr.qgdev.openweather.R;
 
@@ -79,9 +79,8 @@ public class GaugeBarView extends View {
 		initComponents();
 		if (!this.isInEditMode()) {
 			initSectionsFromAttributes(context, attrs);
+			initValuesFromAttributes(context, attrs);
 		}
-		initValuesFromAttributes(context, attrs);
-		
 	}
 	
 	/**
@@ -99,8 +98,8 @@ public class GaugeBarView extends View {
 		initComponents();
 		if (!this.isInEditMode()) {
 			initSectionsFromAttributes(context, attrs);
+			initValuesFromAttributes(context, attrs);
 		}
-		initValuesFromAttributes(context, attrs);
 	}
 	
 	/**
@@ -140,6 +139,11 @@ public class GaugeBarView extends View {
 		valuePaint.setAlpha(255);
 		valuePaint.setTextSize(textSize);
 		valuePaint.setTextAlign(Paint.Align.LEFT);
+		
+		if (isInEditMode()) {
+			labelTextPaint.setTypeface(Typeface.DEFAULT);
+			valuePaint.setTypeface(Typeface.DEFAULT);
+		}
 	}
 	
 	/**
@@ -393,7 +397,7 @@ public class GaugeBarView extends View {
 	@Override
 	protected void onDraw(@NonNull Canvas canvas) {
 		super.onDraw(canvas);
-
+		
 		float halfGaugeBarThickness = barThickness / 2;
 		int width = getWidth() - getPaddingLeft() - getPaddingRight();
 		float gaugeBarWidth = width - leftGaugeMargin - rightGaugeMargin;
@@ -435,7 +439,6 @@ public class GaugeBarView extends View {
 		canvas.drawText(labelText, textLabelX, textY, labelTextPaint);
 		canvas.drawText(String.valueOf(value), textValueX, textY, valuePaint);
 		canvas.drawCircle(cursorX, gaugeBarYMiddle, halfGaugeBarThickness + 4F, cursorPaint);
-		
 	}
 	
 	/**
