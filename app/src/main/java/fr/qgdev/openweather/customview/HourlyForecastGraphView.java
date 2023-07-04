@@ -1,3 +1,60 @@
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
 package fr.qgdev.openweather.customview;
 
 import android.content.Context;
@@ -6,7 +63,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,8 +113,8 @@ public class HourlyForecastGraphView extends ForecastView {
 	public HourlyForecastGraphView(@NonNull Context context) {
 		super(context);
 	}
-
-
+	
+	
 	/**
 	 * HourlyForecastGraphView Constructor
 	 * <p>
@@ -128,7 +184,7 @@ public class HourlyForecastGraphView extends ForecastView {
 			
 			isDayTime[index] = dailyWeatherForecast.getSunrise() < hourlyWeatherForecast.getDt() && hourlyWeatherForecast.getDt() < dailyWeatherForecast.getSunset();
 		}
-
+		
 		return isDayTime;
 	}
 	
@@ -206,28 +262,10 @@ public class HourlyForecastGraphView extends ForecastView {
 					  hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastList, HourlyWeatherForecast::getSnow),
 					  hourlyWeatherForecastArrayToSelectedAttributeFloatArray(hourlyWeatherForecastList, HourlyWeatherForecast::getPop),
 					  this.width, dpToPx(40), tertiaryGraphPaint, primaryGraphPaint, popBarGraphPaint);
-
+			
 		} catch (Exception e) {
 			logger.log(Level.WARNING, e.getMessage());
 		}
-	}
-
-	/**
-	 * onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-	 * <p>
-	 * Used to set Measured Dimensions<br>
-	 * IT IS A DUMB METHOD, DOESN'T TAKE CARE OF PARAMETERS<br>
-	 * JUST TAKE CURRENT WIDTH AND CURRENT HEIGHT OF THE VIEW
-	 * </p>
-	 *
-	 * @param widthMeasureSpec  Minimum Width in pixel
-	 * @param heightMeasureSpec Minimum Height in pixel
-	 * @apiNote DUMB METHOD, PARAMETERS ARE IGNORED !
-	 * @see View
-	 */
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		setMeasuredDimension(this.width, this.height);
 	}
 	
 	
@@ -282,8 +320,8 @@ public class HourlyForecastGraphView extends ForecastView {
 			xDiv += columnWidth;
 		}
 	}
-
-
+	
+	
 	/**
 	 * drawTemperatures(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -300,8 +338,8 @@ public class HourlyForecastGraphView extends ForecastView {
 		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.getTemperature(), false), middleOfColumnX, y, this.primaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.getTemperatureFeelsLike(), false), middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
 	}
-
-
+	
+	
 	/**
 	 * drawPressure(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -316,8 +354,8 @@ public class HourlyForecastGraphView extends ForecastView {
 	private void drawPressure(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
 		canvas.drawText(formattingService.getFormattedPressure(currentHourlyWeatherForecast.getPressure(), false), middleOfColumnX, y, this.primaryPaint);
 	}
-
-
+	
+	
 	/**
 	 * drawDewPoint(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -332,8 +370,8 @@ public class HourlyForecastGraphView extends ForecastView {
 	private void drawDewPoint(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
 		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.getDewPoint(), false), middleOfColumnX, y, this.primaryPaint);
 	}
-
-
+	
+	
 	/**
 	 * drawVisibility(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -348,8 +386,8 @@ public class HourlyForecastGraphView extends ForecastView {
 	private void drawVisibility(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
 		canvas.drawText(formattingService.getFloatFormattedDistance(currentHourlyWeatherForecast.getVisibility(), true), middleOfColumnX, y, this.primaryPaint);
 	}
-
-
+	
+	
 	/**
 	 * drawWindSpeed(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -365,8 +403,8 @@ public class HourlyForecastGraphView extends ForecastView {
 		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.getWindSpeed(), true), middleOfColumnX, y, this.primaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.getWindGustSpeed(), true), middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
 	}
-
-
+	
+	
 	/**
 	 * drawWindDirection(@NonNull Canvas canvas, short windDirection, @Px int top, @Px int left, @Px int width)
 	 * <p>
@@ -382,7 +420,7 @@ public class HourlyForecastGraphView extends ForecastView {
 	private void drawWindDirection(@NonNull Canvas canvas, short windDirection, @Px int top, @Px int left, @Px int width) {
 		int middle = width / 2;
 		drawWindDirectionIcon(canvas, windDirection, left + dpToPx(5), top, width - dpToPx(15));
-
+		
 		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(windDirection), left + middle, top + width + dpToPx(5), this.primaryPaint);
 		canvas.drawText(formattingService.getFormattedDirectionInDegrees(windDirection), left + middle, top + width + dpToPx(25), this.primaryPaint);
 	}
@@ -403,11 +441,11 @@ public class HourlyForecastGraphView extends ForecastView {
 	private Bitmap generateBitmap1CurvesGraphPath(float[] curveData, @Px int width, @Px int height, @NonNull Paint curvePaint) {
 		//  Initializing graph path
 		Path curvePath = new Path();
-
+		
 		//  Searching for max and min values in array
 		float minValue = curveData[0],
-				maxValue = curveData[0];
-
+				  maxValue = curveData[0];
+		
 		for (float curveDatum : curveData) {
 			if (curveDatum > maxValue) maxValue = curveDatum;
 			if (curveDatum < minValue) minValue = curveDatum;
@@ -459,24 +497,24 @@ public class HourlyForecastGraphView extends ForecastView {
 			curvePath.moveTo(width, point1Y);
 		} else {
 			curvePath.moveTo(0, drawHeight);
-
+			
 			curvePath.lineTo(0, drawHeight);
 			curvePath.lineTo(width, drawHeight);
-
+			
 			curvePath.moveTo(width, drawHeight);
 		}
 		// Close path
 		curvePath.close();
-
+		
 		//  Generating returned Bitmap
 		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(returnedBitmap);
 		canvas.drawPath(curvePath, curvePaint);
-
+		
 		return returnedBitmap;
 	}
-
-
+	
+	
 	/**
 	 * drawPrecipitations((@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -493,10 +531,10 @@ public class HourlyForecastGraphView extends ForecastView {
 		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.getSnow(), true), middleOfColumnX, y + dpToPx(25), this.primaryPaint);
 		
 		canvas.drawText(String.format("%d %%", BigDecimal.valueOf(currentHourlyWeatherForecast.getPop() * 100).intValue()), middleOfColumnX, y + dpToPx(50), this.secondaryPaint);
-
+		
 	}
-
-
+	
+	
 	/**
 	 * onDraw(@NonNull Canvas canvas)
 	 * <p>
@@ -538,7 +576,7 @@ public class HourlyForecastGraphView extends ForecastView {
 			halfWidthX += columnWidth;
 			drawableX += columnWidth;
 		}
-
+		
 		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(175), null);
 		canvas.drawBitmap(this.humidityGraph, 0, dpToPx(255), null);
 		canvas.drawBitmap(this.pressureGraph, 0, dpToPx(320), null);

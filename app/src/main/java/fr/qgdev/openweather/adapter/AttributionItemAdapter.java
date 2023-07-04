@@ -1,3 +1,60 @@
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
 package fr.qgdev.openweather.adapter;
 
 import android.content.Context;
@@ -26,11 +83,11 @@ import fr.qgdev.openweather.R;
  * @see android.widget.BaseAdapter
  */
 public class AttributionItemAdapter extends BaseAdapter {
-
+	
 	private final List<String> attributionTitleList;
 	private final List<String> attributionDescriptionList;
 	private final LayoutInflater inflater;
-
+	
 	/**
 	 * AttributionItemAdapter Constructor
 	 * <p>
@@ -46,7 +103,7 @@ public class AttributionItemAdapter extends BaseAdapter {
 		this.attributionTitleList = attributionTitleList;
 		this.attributionDescriptionList = attributionDescriptionList;
 	}
-
+	
 	/**
 	 * getCount()
 	 * <p>
@@ -59,7 +116,7 @@ public class AttributionItemAdapter extends BaseAdapter {
 	public int getCount() {
 		return 0;
 	}
-
+	
 	/**
 	 * getItem(int position)
 	 * <p>
@@ -73,7 +130,7 @@ public class AttributionItemAdapter extends BaseAdapter {
 	public Object getItem(int position) {
 		return null;
 	}
-
+	
 	/**
 	 * getItemId()
 	 * <p>
@@ -88,8 +145,8 @@ public class AttributionItemAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return 0;
 	}
-
-
+	
+	
 	/**
 	 * getView(int position, View view, ViewGroup parent)
 	 * <p>
@@ -105,14 +162,14 @@ public class AttributionItemAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
 		view = inflater.inflate(R.layout.adapter_attribution_item, null);
-
+		
 		TextView attributionTitle = view.findViewById(R.id.attribution_title);
 		TextView attributionContent = view.findViewById(R.id.attribution_content);
-
+		
 		attributionTitle.setText(this.attributionTitleList.get(position));
 		attributionContent.setText(this.attributionDescriptionList.get(position));
 		attributionContent.setClickable(true);
-
+		
 		return view;
 	}
 }

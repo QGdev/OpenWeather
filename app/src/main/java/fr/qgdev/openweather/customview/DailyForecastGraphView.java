@@ -1,3 +1,60 @@
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
 package fr.qgdev.openweather.customview;
 
 import android.content.Context;
@@ -5,7 +62,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,8 +113,8 @@ public class DailyForecastGraphView extends ForecastView {
 		super(context);
 		initComponents(context);
 	}
-
-
+	
+	
 	/**
 	 * DailyForecastGraphView Constructor
 	 * <p>
@@ -72,8 +128,8 @@ public class DailyForecastGraphView extends ForecastView {
 		super(context, attrs);
 		initComponents(context);
 	}
-
-
+	
+	
 	/**
 	 * initComponents(@NonNull Context context)
 	 * <p>
@@ -86,16 +142,16 @@ public class DailyForecastGraphView extends ForecastView {
 	protected void initComponents(@NonNull Context context) {
 		super.initComponents(context);
 		this.context = context;
-
+		
 		this.moonLightIconPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		this.moonShadowIconPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
+		
 		this.moonLightIconPaint.setColor(getResources().getColor(R.color.colorMoonLight, null));
 		this.moonLightIconPaint.setStrokeWidth(5);
 		this.moonLightIconPaint.setAlpha(255);
 		this.moonLightIconPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 		this.moonLightIconPaint.setTextAlign(Paint.Align.CENTER);
-
+		
 		this.moonShadowIconPaint.setColor(getResources().getColor(R.color.colorMoonShadow, null));
 		this.moonShadowIconPaint.setStrokeWidth(5);
 		this.moonShadowIconPaint.setAlpha(255);
@@ -128,13 +184,13 @@ public class DailyForecastGraphView extends ForecastView {
 					  extractTemperaturesFromDailyWeatherForecastList(dailyWeatherForecastList),
 					  extractFeelsLikeTemperaturesFromDailyWeatherForecastList(dailyWeatherForecastList),
 					  this.width, dpToPx(50), primaryGraphPaint, secondaryGraphPaint);
-
+			
 			//  Wind speeds graph
 			this.windSpeedsGraph = generateBitmap2CurvesGraphPath(
 					  dailyWeatherForecastArrayToSelectedAttributeFloatArray(dailyWeatherForecastList, DailyWeatherForecast::getWindSpeed),
 					  dailyWeatherForecastArrayToSelectedAttributeFloatArray(dailyWeatherForecastList, DailyWeatherForecast::getWindGustSpeed),
 					  this.width, dpToPx(50), primaryGraphPaint, secondaryGraphPaint);
-
+			
 			//  Precipitations graph
 			this.precipitationsGraph = generateBitmapPrecipitationsGraphPath(
 					  dailyWeatherForecastArrayToSelectedAttributeFloatArray(dailyWeatherForecastList, DailyWeatherForecast::getRain),
@@ -144,25 +200,6 @@ public class DailyForecastGraphView extends ForecastView {
 		} catch (Exception e) {
 			logger.log(Level.WARNING, e.getMessage());
 		}
-	}
-
-
-	/**
-	 * onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-	 * <p>
-	 * Used to set Measured Dimensions<br>
-	 * IT IS A DUMB METHOD, DOESN'T TAKE CARE OF PARAMETERS<br>
-	 * JUST TAKE CURRENT WIDTH AND CURRENT HEIGHT OF THE VIEW
-	 * </p>
-	 *
-	 * @param widthMeasureSpec  Minimum Width in pixel
-	 * @param heightMeasureSpec Minimum Height in pixel
-	 * @apiNote DUMB METHOD, PARAMETERS ARE IGNORED !
-	 * @see View
-	 */
-	@Override
-	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		setMeasuredDimension(this.width, this.height);
 	}
 	
 	
@@ -281,8 +318,8 @@ public class DailyForecastGraphView extends ForecastView {
 			xDivDayPeriod = quarterColumnWidth / 2F;
 		}
 	}
-
-
+	
+	
 	/**
 	 * drawMaxMinTemperatures(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -307,12 +344,12 @@ public class DailyForecastGraphView extends ForecastView {
 				  getResources().getDrawable(this.context.getResources().getIdentifier("temperature_minimum_material", "drawable", this.context.getPackageName()), null),
 				  formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMinimum(), true),
 				  top + dpToPx(30),
-				left,
-				dpToPx(10),
-				this.tertiaryPaint);
+				  left,
+				  dpToPx(10),
+				  this.tertiaryPaint);
 	}
-
-
+	
+	
 	/**
 	 * drawTemperatures(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -345,8 +382,8 @@ public class DailyForecastGraphView extends ForecastView {
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureNight(), false), textX, textY1, this.primaryPaint);
 		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureNightFeelsLike(), false), textX, textY2, this.secondaryPaint);
 	}
-
-
+	
+	
 	/**
 	 * drawMoonPhase(@NonNull Canvas canvas, float moonPhase, float x, float y, float sideLength)
 	 * <p>
@@ -386,14 +423,14 @@ public class DailyForecastGraphView extends ForecastView {
 			if (moonPhase < 0.5F) {
 				startX = dX;
 				stopX = (circleRadius * 2);
-
+				
 			}
 			//  Last half of the moon cycle
 			else {
 				startX = 0;
 				stopX = dX;
 			}
-
+			
 			//  Draw shadow part
 			for (int i = startX; i <= stopX; i++) {
 				if (left + i < middle)  //  First half
@@ -404,8 +441,8 @@ public class DailyForecastGraphView extends ForecastView {
 		}
 		canvas.drawBitmap(moonBitmap, x, y, null);
 	}
-
-
+	
+	
 	/**
 	 * drawEnvironmentalVariables(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left, Paint paint)
 	 * <p>
@@ -439,8 +476,8 @@ public class DailyForecastGraphView extends ForecastView {
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.moonset_material), formattingService.getFormattedTime(new Date(dailyWeatherForecast.getMoonset()), timeZone), textY6, firstColumn, dpToPx(5), paint);
 		drawMoonPhase(canvas, dailyWeatherForecast.getMoonPhase(), secondColumn, textY5, dpToPx(70));
 	}
-
-
+	
+	
 	/**
 	 * drawWindVariables(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -467,8 +504,8 @@ public class DailyForecastGraphView extends ForecastView {
 		
 		drawWindDirectionIcon(canvas, dailyWeatherForecast.getWindDirection(), left + halfColumnWidth + quarterColumnWidth - dpToPx(20), textY + dpToPx(30), dpToPx(35));
 	}
-
-
+	
+	
 	/**
 	 * drawPrecipitationsVariables(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
@@ -490,8 +527,8 @@ public class DailyForecastGraphView extends ForecastView {
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.snow_material), formattingService.getFloatFormattedShortDistance(dailyWeatherForecast.getSnow(), true), textY, secondColumn, dpToPx(5), this.primaryPaint);
 		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.umbrella_material), String.format("%d %%", BigDecimal.valueOf(dailyWeatherForecast.getPop() * 100).intValue()), textY2, firstColumn, dpToPx(5), this.secondaryPaint);
 	}
-
-
+	
+	
 	/**
 	 * onDraw(@NonNull Canvas canvas)
 	 * <p>
@@ -525,7 +562,7 @@ public class DailyForecastGraphView extends ForecastView {
 			quarterOfColumnWidth += columnWidth;
 			halfOfColumnWidth += columnWidth;
 		}
-
+		
 		canvas.drawBitmap(this.temperaturesGraph, 0, dpToPx(140), null);
 		canvas.drawBitmap(this.windSpeedsGraph, 0, dpToPx(460), null);
 		canvas.drawBitmap(this.precipitationsGraph, 0, dpToPx(590), null);

@@ -1,3 +1,60 @@
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
 package fr.qgdev.openweather.dialog;
 
 import android.app.Dialog;
@@ -21,7 +78,7 @@ import fr.qgdev.openweather.repositories.places.Place;
  * @see Dialog
  */
 public class WeatherAlertDialog extends Dialog {
-
+	
 	/**
 	 * WeatherAlertDialog Constructor
 	 * <p>
@@ -36,11 +93,11 @@ public class WeatherAlertDialog extends Dialog {
 	public WeatherAlertDialog(Context context, Place place, FormattingService formattingService) {
 		super(context);
 		setContentView(R.layout.dialog_weather_alert);
-
+		
 		//	Set exit button behavior
 		Button exitButton = findViewById(R.id.exit_button);
 		exitButton.setOnClickListener(v -> dismiss());
-
+		
 		//	Fill weather alerts section
 		LinearLayout alertListLinearLayout = findViewById(R.id.alertList);
 		WeatherAlertAdapter weatherAlertAdapter = new WeatherAlertAdapter(context, place, formattingService);
@@ -48,7 +105,7 @@ public class WeatherAlertDialog extends Dialog {
 			alertListLinearLayout.addView(weatherAlertAdapter.getView(i, null, null), i);
 		}
 	}
-
+	
 	/**
 	 * build()
 	 * <p>

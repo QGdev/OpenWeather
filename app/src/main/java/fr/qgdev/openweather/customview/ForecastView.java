@@ -1,3 +1,60 @@
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
 package fr.qgdev.openweather.customview;
 
 import android.content.Context;
@@ -83,8 +140,8 @@ public abstract class ForecastView extends View {
 		super(context, attrs);
 		initComponents(context);
 	}
-
-
+	
+	
 	/**
 	 * onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	 * <p>
@@ -102,11 +159,11 @@ public abstract class ForecastView extends View {
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		setMeasuredDimension(this.width, this.height);
 	}
-
-
+	
+	
 	//  Graph generation functions
 	//______________________________________________________________________________________________
-
+	
 	/**
 	 * generateBitmap2CurvesGraphPath(float[] firstCurveData, float[] secondCurveData, int width, int height, @NonNull Paint firstCurvePaint, @NonNull Paint secondCurvePaint)
 	 * <p>
@@ -123,15 +180,15 @@ public abstract class ForecastView extends View {
 	 * @apiNote firstCurveData & secondCurveData must have the same number of elements
 	 */
 	protected Bitmap generateBitmap2CurvesGraphPath(float[] firstCurveData, float[] secondCurveData, @Px int width, @Px int height, @NonNull Paint firstCurvePaint, @NonNull Paint secondCurvePaint) {
-
+		
 		//  Initializing graph paths
 		Path firstCurvePath = new Path();
 		Path secondCurvePath = new Path();
-
+		
 		//  Searching for max and min values in arrays
 		float minValue = firstCurveData[0],
-				maxValue = firstCurveData[0];
-
+				  maxValue = firstCurveData[0];
+		
 		for (int index = 0; index < firstCurveData.length; index++) {
 			if (firstCurveData[index] > maxValue) maxValue = firstCurveData[index];
 			if (firstCurveData[index] < minValue) minValue = firstCurveData[index];
@@ -201,30 +258,30 @@ public abstract class ForecastView extends View {
 		} else {
 			firstCurvePath.moveTo(0, drawHeight);
 			secondCurvePath.moveTo(0, drawHeight);
-
+			
 			firstCurvePath.lineTo(0, drawHeight);
 			secondCurvePath.lineTo(0, drawHeight);
 			firstCurvePath.lineTo(width, drawHeight);
 			secondCurvePath.lineTo(width, drawHeight);
-
+			
 			firstCurvePath.moveTo(width, drawHeight);
 			secondCurvePath.moveTo(width, drawHeight);
 		}
 		//  Close paths
 		firstCurvePath.close();
 		secondCurvePath.close();
-
+		
 		//  Generating returned Bitmap
 		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(returnedBitmap);
 		canvas.drawPath(firstCurvePath, firstCurvePaint);
 		canvas.drawPath(secondCurvePath, secondCurvePaint);
-
-
+		
+		
 		return returnedBitmap;
 	}
-
-
+	
+	
 	/**
 	 * generateBitmapPrecipitationsGraphPath(float[] rainData, float[] snowData, float[] popData, int width, int height, @NonNull Paint rainCurvePaint, @NonNull Paint snowCurvePaint, @NonNull Paint popCurvePaint)
 	 * <p>
@@ -243,16 +300,16 @@ public abstract class ForecastView extends View {
 	 * @apiNote rainData, snowData & popData must have the same number of elements
 	 */
 	protected Bitmap generateBitmapPrecipitationsGraphPath(float[] rainData, float[] snowData, float[] popData, @Px int width, @Px int height, @NonNull Paint rainCurvePaint, @NonNull Paint snowCurvePaint, @NonNull Paint popCurvePaint) {
-
+		
 		//  Initializing graph paths
 		Path rainCurvePath = new Path(),
-				snowCurvePath = new Path(),
-				popCurvePath = new Path();
-
+				  snowCurvePath = new Path(),
+				  popCurvePath = new Path();
+		
 		//  Searching for max and min values in arrays
 		float minValue = rainData[0],
-				maxValue = rainData[0];
-
+				  maxValue = rainData[0];
+		
 		for (int index = 0; index < rainData.length; index++) {
 			if (rainData[index] > maxValue) maxValue = rainData[index];
 			if (rainData[index] < minValue) minValue = rainData[index];
@@ -331,32 +388,32 @@ public abstract class ForecastView extends View {
 			rainCurvePath.moveTo(0, drawHeight);
 			snowCurvePath.moveTo(0, drawHeight);
 			popCurvePath.moveTo(0, drawHeight);
-
+			
 			rainCurvePath.lineTo(width, drawHeight);
 			snowCurvePath.lineTo(width, drawHeight);
-
+			
 			rainCurvePath.moveTo(width, drawHeight);
 			snowCurvePath.moveTo(width, drawHeight);
 			popCurvePath.moveTo(width, drawHeight);
-
+			
 		}
-
+		
 		//  Close paths
 		rainCurvePath.close();
 		snowCurvePath.close();
 		popCurvePath.close();
-
+		
 		//  Generating returned Bitmap
 		Bitmap returnedBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(returnedBitmap);
 		canvas.drawPath(popCurvePath, popCurvePaint);
 		canvas.drawPath(rainCurvePath, rainCurvePaint);
 		canvas.drawPath(snowCurvePath, snowCurvePaint);
-
+		
 		return returnedBitmap;
 	}
-
-
+	
+	
 	/**
 	 * drawTextWithDrawable(@NonNull Canvas canvas, @NonNull Drawable drawable, @NonNull String text, @Px float top, @Px float left, @Px float spaceBetween, @NonNull Paint paint)
 	 * <p>
@@ -389,8 +446,8 @@ public abstract class ForecastView extends View {
 		drawable.draw(canvas);
 		canvas.drawText(text, textX, textY, paint);
 	}
-
-
+	
+	
 	/**
 	 * drawWeatherConditionIcons(@NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height, boolean isDayTime)
 	 * <p>
@@ -409,9 +466,9 @@ public abstract class ForecastView extends View {
 	protected void drawWeatherConditionIcons(@NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height, boolean isDayTime) {
 		//  WEATHER CONDITION DRAWING
 		int weatherIconId;
-
+		
 		switch (weatherCode) {
-
+			
 			//  Thunderstorm Group
 			case 210:
 			case 211:
@@ -419,7 +476,7 @@ public abstract class ForecastView extends View {
 			case 221:
 				weatherIconId = R.drawable.thunderstorm_flat;
 				break;
-
+			
 			case 200:
 			case 201:
 			case 202:
@@ -428,7 +485,7 @@ public abstract class ForecastView extends View {
 			case 232:
 				weatherIconId = R.drawable.storm_flat;
 				break;
-
+			
 			//  Drizzle and Rain (Light)
 			case 300:
 			case 310:
@@ -443,7 +500,7 @@ public abstract class ForecastView extends View {
 					weatherIconId = R.drawable.rainy_night_flat;
 				}
 				break;
-
+			
 			//Drizzle and Rain (Moderate)
 			case 301:
 			case 302:
@@ -455,7 +512,7 @@ public abstract class ForecastView extends View {
 			case 531:
 				weatherIconId = R.drawable.rain_flat;
 				break;
-
+			
 			//Drizzle and Rain (Heavy)
 			case 312:
 			case 314:
@@ -465,7 +522,7 @@ public abstract class ForecastView extends View {
 			case 522:
 				weatherIconId = R.drawable.heavy_rain_flat;
 				break;
-
+			
 			//  Snow
 			case 600:
 			case 601:
@@ -484,7 +541,7 @@ public abstract class ForecastView extends View {
 			case 622:
 				weatherIconId = R.drawable.snow_flat;
 				break;
-
+			
 			case 611:
 			case 612:
 			case 613:
@@ -492,7 +549,7 @@ public abstract class ForecastView extends View {
 			case 616:
 				weatherIconId = R.drawable.sleet_flat;
 				break;
-
+			
 			//  Atmosphere
 			case 701:
 			case 711:
@@ -512,7 +569,7 @@ public abstract class ForecastView extends View {
 					weatherIconId = R.drawable.fog_and_night_flat;
 				}
 				break;
-
+			
 			//  Sky
 			case 800:
 				//  Day
@@ -524,7 +581,7 @@ public abstract class ForecastView extends View {
 					weatherIconId = R.drawable.moon_phase_flat;
 				}
 				break;
-
+			
 			case 801:
 			case 802:
 			case 803:
@@ -552,8 +609,8 @@ public abstract class ForecastView extends View {
 		drawable.setBounds(left, top, left + width, top + height);
 		drawable.draw(canvas);
 	}
-
-
+	
+	
 	/**
 	 * drawWeatherConditionIcons(@NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height)
 	 * <p>
@@ -572,8 +629,8 @@ public abstract class ForecastView extends View {
 	protected void drawWeatherConditionIcons(@NonNull Canvas canvas, @Px int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height) {
 		this.drawWeatherConditionIcons(canvas, weatherCode, top, left, width, height, true);
 	}
-
-
+	
+	
 	/**
 	 * drawUvIndex(@NonNull Canvas canvas, @Px int uvIndex, @Px int x, @Px int y, @Px int sideLength)
 	 * <p>
@@ -618,26 +675,26 @@ public abstract class ForecastView extends View {
 			} else {
 				this.sunIconPaint.setColor(getResources().getColor(R.color.colorUvExtreme, null));
 			}
-
+			
 			//  Draw sun rays
 			for (float angle = 0; angle < maxAngle; angle += deltaAngle) {
 				cosAngle = BigDecimal.valueOf(Math.cos(angle)).floatValue();
 				sinAngle = BigDecimal.valueOf(Math.sin(angle)).floatValue();
-
+				
 				sunCanvas.drawLine(middle + cosAngle * startRadius, middle + sinAngle * startRadius, middle + cosAngle * stopRadius, middle + sinAngle * stopRadius, this.sunIconPaint);
 			}
 		} else {
 			this.sunIconPaint.setColor(getResources().getColor(R.color.colorIcons, null));
 		}
-
+		
 		//  Draw the center of the sun an put uv index number in it
 		sunCanvas.drawCircle(middle, middle, circleRadius, this.sunIconPaint);
 		sunCanvas.drawText(String.valueOf(uvIndex), middle, middle + this.sunIconPaint.getTextSize() / 3F, this.sunIconPaint);
-
+		
 		canvas.drawBitmap(sunBitmap, x, y, null);
 	}
-
-
+	
+	
 	/**
 	 * drawWindDirectionIcon(@NonNull Canvas canvas, float windDirection, @Px int x, @Px int y, @Px int sideLength)
 	 * <p>
@@ -677,7 +734,7 @@ public abstract class ForecastView extends View {
 		
 		canvas.drawBitmap(compassBitmap, x, y, null);
 	}
-
+	
 	/**
 	 * initComponents(@NonNull Context context)
 	 * <p>
@@ -712,55 +769,55 @@ public abstract class ForecastView extends View {
 		this.structurePaint.setTextSize(spToPx(16));
 		this.structurePaint.setStrokeWidth(0.55F);
 		this.structurePaint.setTextAlign(Paint.Align.CENTER);
-
+		
 		this.primaryPaint.setColor(getResources().getColor(R.color.colorPrimaryPaint, null));
 		this.primaryPaint.setStrokeWidth(2);
 		this.primaryPaint.setAlpha(255);
 		this.primaryPaint.setTextSize(spToPx(16));
 		this.primaryPaint.setTextAlign(Paint.Align.CENTER);
-
+		
 		this.secondaryPaint.setColor(getResources().getColor(R.color.colorSecondaryPaint, null));
 		this.secondaryPaint.setStrokeWidth(2);
 		this.secondaryPaint.setAlpha(255);
 		this.secondaryPaint.setTextSize(spToPx(16));
 		this.secondaryPaint.setTextAlign(Paint.Align.CENTER);
-
+		
 		this.tertiaryPaint.setColor(getResources().getColor(R.color.colorTertiaryPaint, null));
 		this.tertiaryPaint.setStrokeWidth(2);
 		this.tertiaryPaint.setAlpha(255);
 		this.tertiaryPaint.setTextSize(spToPx(16));
 		this.tertiaryPaint.setTextAlign(Paint.Align.CENTER);
-
+		
 		this.primaryGraphPaint.setColor(getResources().getColor(R.color.colorPrimaryGraphPaint, null));
 		this.primaryGraphPaint.setStrokeWidth(5);
 		this.primaryGraphPaint.setAlpha(155);
 		this.primaryGraphPaint.setPathEffect(null);
 		this.primaryGraphPaint.setStyle(Paint.Style.STROKE);
-
+		
 		this.secondaryGraphPaint.setColor(getResources().getColor(R.color.colorSecondaryGraphPaint, null));
 		this.secondaryGraphPaint.setStrokeWidth(5);
 		this.secondaryGraphPaint.setAlpha(155);
 		this.secondaryGraphPaint.setPathEffect(new DashPathEffect(new float[]{10, 5}, 0));
 		this.secondaryGraphPaint.setStyle(Paint.Style.STROKE);
-
+		
 		this.tertiaryGraphPaint.setColor(getResources().getColor(R.color.colorTertiaryGraphPaint, null));
 		this.tertiaryGraphPaint.setStrokeWidth(5);
 		this.tertiaryGraphPaint.setAlpha(155);
 		this.tertiaryGraphPaint.setPathEffect(null);
 		this.tertiaryGraphPaint.setStyle(Paint.Style.STROKE);
-
+		
 		this.popBarGraphPaint.setColor(getResources().getColor(R.color.colorSecondaryGraphPaint, null));
 		this.popBarGraphPaint.setStrokeWidth(5);
 		this.popBarGraphPaint.setAlpha(155);
 		this.popBarGraphPaint.setPathEffect(null);
 		this.popBarGraphPaint.setStyle(Paint.Style.FILL);
-
+		
 		this.iconsPaint.setColor(getResources().getColor(R.color.colorIcons, null));
 		this.iconsPaint.setStrokeWidth(3);
 		this.iconsPaint.setAlpha(255);
 		this.iconsPaint.setPathEffect(null);
 		this.iconsPaint.setStyle(Paint.Style.STROKE);
-
+		
 		this.sunIconPaint.setColor(getResources().getColor(R.color.colorUvExtreme, null));
 		this.sunIconPaint.setStrokeWidth(2.5F);
 		this.sunIconPaint.setAlpha(255);
@@ -769,11 +826,11 @@ public abstract class ForecastView extends View {
 		this.sunIconPaint.setStyle(Paint.Style.STROKE);
 		this.sunIconPaint.setTextAlign(Paint.Align.CENTER);
 	}
-
-
+	
+	
 	//  Pixel to Complex Units conversion
 	//----------------------------------------------------------------------------------------------
-
+	
 	/**
 	 * spToPx(float sp)
 	 * <p>
@@ -785,12 +842,12 @@ public abstract class ForecastView extends View {
 	 */
 	protected int spToPx(float sp) {
 		return (int) TypedValue.applyDimension(
-				TypedValue.COMPLEX_UNIT_SP,
-				sp,
-				getResources().getDisplayMetrics());
+				  TypedValue.COMPLEX_UNIT_SP,
+				  sp,
+				  getResources().getDisplayMetrics());
 	}
-
-
+	
+	
 	/**
 	 * dpToPx(float dip)
 	 * <p>
@@ -802,8 +859,8 @@ public abstract class ForecastView extends View {
 	 */
 	protected int dpToPx(float dip) {
 		return (int) TypedValue.applyDimension(
-				TypedValue.COMPLEX_UNIT_DIP,
-				dip,
-				getResources().getDisplayMetrics());
+				  TypedValue.COMPLEX_UNIT_DIP,
+				  dip,
+				  getResources().getDisplayMetrics());
 	}
 }

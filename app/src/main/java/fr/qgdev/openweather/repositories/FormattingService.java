@@ -1,3 +1,60 @@
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
 package fr.qgdev.openweather.repositories;
 
 import android.content.Context;
@@ -79,37 +136,37 @@ public class FormattingService {
 	private float distanceToInches(float distance) {
 		return distance * 0.0393701F;
 	}
-
+	
 	private float distanceToMetric(float distance) {
 		return distance / 1000F;
 	}
-
+	
 	////    Speed
 	private float speedToImperial(float speed) {
 		return speed * 2.23694F;
 	}
-
+	
 	private float speedToMetric(float speed) {
 		return speed * 3.6F;
 	}
-
+	
 	//  Pressure conversion
 	private float toHpa(float pressure) {
 		return pressure;
 	}
-
+	
 	private float toMbar(float pressure) {
 		return pressure;
 	}
-
+	
 	private float toPsi(float pressure) {
 		return pressure * 0.0145038F;
 	}
-
+	
 	private float toInhg(float pressure) {
 		return pressure * 0.02953F;
 	}
-
+	
 	//  Wind direction conversion
 	private String toDegrees(short direction) {
 		return String.format(settingsManager.getDefaultLocale(), "%d°", direction);
@@ -143,39 +200,39 @@ public class FormattingService {
 		
 		return "N/A";
 	}
-
+	
 	public float convertTemperature(float temperature) {
 		return this.temperatureConversion.temperatureConversion(temperature);
 	}
-
+	
 	public float convertDistance(float distance) {
 		return this.measureConversion.distanceConversion(distance);
 	}
-
+	
 	public float convertShortDistance(float distance) {
 		return this.measureConversion.shortDistanceConversion(distance);
 	}
-
+	
 	public float convertSpeed(float speed) {
 		return this.measureConversion.speedConversion(speed);
 	}
-
+	
 	public float convertPressure(float pressure) {
 		return this.pressureConversion.pressureConversion(pressure);
 	}
-
+	
 	public String convertDirection(short direction, boolean isReadable) {
 		if (isReadable && direction >= 0 && direction <= 360)
 			return this.directionConversion.directionConversion(direction);
 		return "N/A";
 	}
-
+	
 	private SimpleDateFormat getSimpleDateFormatForTimeZone(SimpleDateFormat simpleDateFormat, TimeZone timeZone) {
 		SimpleDateFormat clonedSimpleDateFormat = (SimpleDateFormat) simpleDateFormat.clone();
 		clonedSimpleDateFormat.setTimeZone(timeZone);
 		return clonedSimpleDateFormat;
 	}
-
+	
 	//  Temperature formatting
 	////    Int
 	public String getIntFormattedTemperature(float temperature, boolean spaceBetween) {
@@ -184,7 +241,7 @@ public class FormattingService {
 				  BigDecimal.valueOf(convertTemperature(temperature)).intValue(),
 				  (spaceBetween) ? " " : "");
 	}
-
+	
 	////    Float
 	public String getFloatFormattedTemperature(float temperature, boolean spaceBetween) {
 		return String.format(settingsManager.getDefaultLocale(),
@@ -192,7 +249,7 @@ public class FormattingService {
 				  convertTemperature(temperature),
 				  (spaceBetween) ? " " : "");
 	}
-
+	
 	//  Short Distance formatting
 	////    Int
 	public String getIntFormattedShortDistance(float shortDistance, boolean spaceBetween) {
@@ -201,7 +258,7 @@ public class FormattingService {
 				  BigDecimal.valueOf(convertShortDistance(shortDistance)).intValue(),
 				  (spaceBetween) ? " " : "");
 	}
-
+	
 	////    Float
 	public String getFloatFormattedShortDistance(float shortDistance, boolean spaceBetween) {
 		return String.format(settingsManager.getDefaultLocale(),
@@ -209,7 +266,7 @@ public class FormattingService {
 				  convertShortDistance(shortDistance),
 				  (spaceBetween) ? " " : "");
 	}
-
+	
 	//  Distance formatting
 	////    Int
 	public String getIntFormattedDistance(float distance, boolean spaceBetween) {
@@ -218,7 +275,7 @@ public class FormattingService {
 				  BigDecimal.valueOf(convertDistance(distance)).intValue(),
 				  (spaceBetween) ? " " : "");
 	}
-
+	
 	////    Float
 	public String getFloatFormattedDistance(float distance, boolean spaceBetween) {
 		return String.format(settingsManager.getDefaultLocale(),
@@ -226,7 +283,7 @@ public class FormattingService {
 				  convertDistance(distance),
 				  (spaceBetween) ? " " : "");
 	}
-
+	
 	//  Speed formatting
 	////    Int
 	public String getIntFormattedSpeed(float speed, boolean spaceBetween) {
@@ -235,7 +292,7 @@ public class FormattingService {
 				  BigDecimal.valueOf(convertSpeed(speed)).intValue(),
 				  (spaceBetween) ? " " : "");
 	}
-
+	
 	////    Float
 	public String getFloatFormattedSpeed(float speed, boolean spaceBetween) {
 		return String.format(settingsManager.getDefaultLocale(),
@@ -243,7 +300,7 @@ public class FormattingService {
 				  convertSpeed(speed),
 				  (spaceBetween) ? " " : "");
 	}
-
+	
 	//  Pressure formatting
 	public String getFormattedPressure(float pressure, boolean spaceBetween) {
 		return String.format(settingsManager.getDefaultLocale(),
@@ -251,38 +308,38 @@ public class FormattingService {
 				  convertPressure(pressure),
 				  (spaceBetween) ? " " : "");
 	}
-
+	
 	//  Direction formatting
 	////    Selected choice
 	public String getFormattedDirection(short direction, boolean isReadable) {
 		return convertDirection(direction, isReadable);
 	}
-
+	
 	////    Cardinal points
 	public String getFormattedDirectionInCardinalPoints(short direction) {
 		if (direction >= 0 && direction <= 360)
 			return toCardinal(direction);
 		else return "N/A";
 	}
-
+	
 	////    Degrees direction
 	public String getFormattedDirectionInDegrees(short direction) {
 		if (direction >= 0 && direction <= 360)
 			return toDegrees(direction);
 		else return "N/A";
 	}
-
+	
 	//  TimeHour formatting
 	////    Hour
 	public String getFormattedHour(Date date, TimeZone timeZone) {
 		return getSimpleDateFormatForTimeZone(this.hourFormat, timeZone).format(date);
 	}
-
+	
 	////    Time
 	public String getFormattedTime(Date date, TimeZone timeZone) {
 		return getSimpleDateFormatForTimeZone(this.timeFormat, timeZone).format(date);
 	}
-
+	
 	////    Day short name formatting
 	public String getFormattedShortDayName(Date date, TimeZone timeZone) {
 		return getSimpleDateFormatForTimeZone(this.shortDayNameFormat, timeZone).format(date);
@@ -342,7 +399,7 @@ public class FormattingService {
 					public float distanceConversion(float distance) {
 						return distanceToMiles(distance);
 					}
-
+					
 					@Override
 					public float shortDistanceConversion(float distance) {
 						return distanceToInches(distance);
@@ -368,7 +425,7 @@ public class FormattingService {
 					public float distanceConversion(float distance) {
 						return distanceToMetric(distance);
 					}
-
+					
 					@Override
 					public float shortDistanceConversion(float distance) {
 						return distance;
@@ -451,28 +508,28 @@ public class FormattingService {
 		this.shortDayNameFormat = new SimpleDateFormat("EE", defaultLocale);
 		this.dayMonthFormat = new SimpleDateFormat("dd/MM", defaultLocale);
 	}
-
+	
 	private interface TemperatureConversion {
 		//  Converting for temperature
 		float temperatureConversion(float temperature);
 	}
-
+	
 	private interface MeasureConversion {
 		//  Converting for short distances like precipitations quantities
 		float shortDistanceConversion(float distance);
-
+		
 		//  Converting for distances like visibility
 		float distanceConversion(float distance);
-
+		
 		//  Converting speed like wind speeds
 		float speedConversion(float speed);
 	}
-
+	
 	private interface PressureConversion {
 		//  Converting for pressure
 		float pressureConversion(float pressure);
 	}
-
+	
 	private interface DirectionConversion {
 		//  Converting for direction
 		String directionConversion(short direction);

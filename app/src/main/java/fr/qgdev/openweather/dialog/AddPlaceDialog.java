@@ -1,3 +1,60 @@
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+/*
+ *   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
+ *
+ *   This file is part of OpenWeather.
+ *
+ *   OpenWeather is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   OpenWeather is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
 package fr.qgdev.openweather.dialog;
 
 import android.app.Dialog;
@@ -150,34 +207,34 @@ public class AddPlaceDialog extends Dialog {
 				}
 			}
 		};
-
-
+		
+		
 		//  Verify button click listener
 		addButton.setOnClickListener(
-				verifyButtonView -> {
-					disableDialogWindowControls();
-					
-					//  Nothing was registered
-					if (getCityField().isEmpty()) {
-						cityTextInputLayout.setError(context.getString(R.string.error_place_city_field_empty));
-						enableDialogWindowControls();
-					} else if (getCountryField().isEmpty()) {
-						countryTextInputLayout.setError(context.getString(R.string.error_place_country_field_empty));
-						enableDialogWindowControls();
-					} else if (getCountryCode() == null) {
-						countryTextInputLayout.setError(context.getString(R.string.error_place_country_not_in_list));
-						enableDialogWindowControls();
-					}
-					
-					//  API key and place settings is correctly registered
-					else {
-						appRepository.findPlaceAndAdd(getCityField(), getCountryCode(), fetchDataCallback);
-					}
-				});
-
+				  verifyButtonView -> {
+					  disableDialogWindowControls();
+					  
+					  //  Nothing was registered
+					  if (getCityField().isEmpty()) {
+						  cityTextInputLayout.setError(context.getString(R.string.error_place_city_field_empty));
+						  enableDialogWindowControls();
+					  } else if (getCountryField().isEmpty()) {
+						  countryTextInputLayout.setError(context.getString(R.string.error_place_country_field_empty));
+						  enableDialogWindowControls();
+					  } else if (getCountryCode() == null) {
+						  countryTextInputLayout.setError(context.getString(R.string.error_place_country_not_in_list));
+						  enableDialogWindowControls();
+					  }
+					  
+					  //  API key and place settings is correctly registered
+					  else {
+						  appRepository.findPlaceAndAdd(getCityField(), getCountryCode(), fetchDataCallback);
+					  }
+				  });
+		
 		exitButton.setOnClickListener(v -> dismiss());
 	}
-
+	
 	/**
 	 * getCityField()
 	 * <p>
@@ -193,7 +250,7 @@ public class AddPlaceDialog extends Dialog {
 		}
 		return city.toString();
 	}
-
+	
 	/**
 	 * getCountryField()
 	 * <p>
@@ -209,7 +266,7 @@ public class AddPlaceDialog extends Dialog {
 		}
 		return country.toString();
 	}
-
+	
 	/**
 	 * getCountryCode()
 	 * <p>
@@ -225,7 +282,7 @@ public class AddPlaceDialog extends Dialog {
 		if (indexOf == -1) return null;
 		return countryCodes.get(indexOf);
 	}
-
+	
 	/**
 	 * showSnackbar(...)
 	 * <p>
@@ -242,7 +299,7 @@ public class AddPlaceDialog extends Dialog {
 				  .setMaxInlineActionWidth(3)
 				  .show();
 	}
-
+	
 	/**
 	 * disableDialogWindowControls()
 	 * <p>
@@ -254,7 +311,7 @@ public class AddPlaceDialog extends Dialog {
 		exitButton.setEnabled(false);
 		addButtonProgressSpinner.setVisibility(View.VISIBLE);
 	}
-
+	
 	/**
 	 * enableDialogWindowControls()
 	 * <p>
@@ -266,7 +323,7 @@ public class AddPlaceDialog extends Dialog {
 		exitButton.setEnabled(true);
 		addButtonProgressSpinner.setVisibility(View.GONE);
 	}
-
+	
 	/**
 	 * build()
 	 * <p>
