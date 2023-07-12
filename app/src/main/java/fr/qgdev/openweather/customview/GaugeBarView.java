@@ -72,9 +72,9 @@ public class GaugeBarView extends View {
 	private float[] sectionsBoundaries = new float[]{0, 25, 75};
 	
 	/**
-	 * AirQualityView Constructor
+	 * GaugeBarView Constructor
 	 * <p>
-	 * Just build AirQualityView object only with context
+	 * Just build GaugeBarView object only with context
 	 * </p>
 	 *
 	 * @param context Current context, only used to construct super class
@@ -86,9 +86,9 @@ public class GaugeBarView extends View {
 	
 	
 	/**
-	 * AirQualityView Constructor
+	 * GaugeBarView Constructor
 	 * <p>
-	 * Just build AirQualityView object only with Context and AttributeSet
+	 * Just build GaugeBarView object only with Context and AttributeSet
 	 * </p>
 	 *
 	 * @param context Current context, only used to construct super class
@@ -104,9 +104,9 @@ public class GaugeBarView extends View {
 	}
 	
 	/**
-	 * AirQualityView Constructor
+	 * GaugeBarView Constructor
 	 * <p>
-	 * Just build AirQualityView object only with Context, AttributeSet and defStyleAttr
+	 * Just build GaugeBarView object only with Context, AttributeSet and defStyleAttr
 	 * </p>
 	 *
 	 * @param context      Current context, only used to construct super class
