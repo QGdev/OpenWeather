@@ -22,12 +22,8 @@ package fr.qgdev.openweather.adapter;
 
 import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.COMPACT;
 import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.EXTENDED;
-import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.EXTENDED_DAILY;
-import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.EXTENDED_FULLY;
-import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.EXTENDED_HOURLY;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -42,6 +38,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -51,6 +48,7 @@ import java.util.Date;
 import java.util.List;
 
 import fr.qgdev.openweather.R;
+import fr.qgdev.openweather.customview.AqiBarView;
 import fr.qgdev.openweather.customview.DailyForecastGraphView;
 import fr.qgdev.openweather.customview.GaugeBarView;
 import fr.qgdev.openweather.customview.HourlyForecastGraphView;
@@ -217,9 +215,14 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		UNDEFINED(-1),   //	Useful when place is removed
 		COMPACT(0),
 		EXTENDED(1),
-		EXTENDED_HOURLY(2),
-		EXTENDED_DAILY(3),
-		EXTENDED_FULLY(4);
+		EXTENDED_HOURLY(3),
+		EXTENDED_DAILY(5),
+		EXTENDED_AIR_QUALITY(9),
+		
+		EXTENDED_HOURLY_DAILY(7),
+		EXTENDED_HOURLY_AIR_QUALITY(11),
+		EXTENDED_DAILY_AIR_QUALITY(13),
+		EXTENDED_FULLY(15);
 		
 		private final int viewTypeID;
 		
@@ -228,24 +231,65 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		}
 		
 		public static ViewType fromInt(int id) {
-			switch (id) {
-				default:
-				case 0:
-					return COMPACT;
-				case 1:
-					return EXTENDED;
-				case 2:
-					return EXTENDED_HOURLY;
-				case 3:
-					return EXTENDED_DAILY;
-				case 4:
-					return EXTENDED_FULLY;
+			for (ViewType type : ViewType.values()) {
+				if (type.viewTypeID == id) return type;
 			}
+			return UNDEFINED;
+		}
+		
+		public static ViewType fromBinaryFoldersState(boolean[] state) {
+			// Check for impossible states
+			if (!state[0] && (state[1] || state[2] || state[3]))
+				throw new IllegalArgumentException("Impossible state, the view cannot be extended and compact at the same time");
+			
+			int stateID = 0;
+			for (int i = 0; i < state.length; i++) {
+				if (state[i]) stateID += Math.pow(2, i);
+			}
+			
+			return ViewType.fromInt(stateID);
 		}
 		
 		public int toInt() {
 			return this.viewTypeID;
 		}
+		
+		/**
+		 * getUnsignedBinaryFoldersState()
+		 * <p>
+		 * Will return the binary state of the view type of the folders
+		 * - 0000: Compact
+		 * - 0001: Extended
+		 * - 0011: Extended with Hourly tab extended
+		 * - 0101: Extended with Daily tab extended
+		 * - 1001: Extended with Air Quality tab extended
+		 * - 0111: Extended with Hourly and Daily tabs extended
+		 * - 1011: Extended with Hourly and Air Quality tabs extended
+		 * - 1101: Extended with Daily and Air Quality tabs extended
+		 * - 1111: Fully Extended
+		 * </p>
+		 *
+		 * @return Will return a boolean array of the binary state of the folders
+		 */
+		public boolean[] getBinaryFoldersState() {
+			boolean[] state = new boolean[4];
+			int stateID = this.viewTypeID;
+			for (int i = 0; i < state.length; i++) {
+				state[i] = stateID % 2 == 1;
+				stateID /= 2;
+			}
+			return state;
+		}
+		
+		public boolean isCompact() {
+			return this.viewTypeID == 0;
+		}
+		
+		public boolean isExtended() {
+			return this.viewTypeID < 0;
+		}
+		
+		
 	}
 	
 	
@@ -286,9 +330,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		private final TextView sunsetTextView;
 		private final TextView cloudinessTextView;
 		
-		private final ImageView airQualityCircle;
-		private final TextView airQualityIndex;
-		private final TextView airQualityMessage;
+		
+		private final ConstraintLayout airQualityLayout;
+		private final ImageView airQualityExpandIcon;
+		private final ConstraintLayout airQualityDetailsLayout;
+		private final AqiBarView airQualityIndexBar;
 		private final GaugeBarView airQualityGaugeSO2;
 		private final GaugeBarView airQualityGaugeNO2;
 		private final GaugeBarView airQualityGaugePM10;
@@ -310,14 +356,13 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		
 		private final LinearLayout hourlyForecastLayout;
 		private final HorizontalScrollView hourlyForecastScrollview;
-		private final LinearLayout hourlyForecast;
+		private final ConstraintLayout hourlyForecast;
 		private final ImageView hourlyForecastExpandIcon;
 		
 		private final HourlyForecastGraphView hourlyForecastGraphView;
 		
-		private final LinearLayout dailyForecastLayout;
 		private final HorizontalScrollView dailyForecastScrollview;
-		private final LinearLayout dailyForecast;
+		private final ConstraintLayout dailyForecast;
 		
 		private final DailyForecastGraphView dailyForecastGraphView;
 		
@@ -357,9 +402,11 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			this.sunsetTextView = itemView.findViewById(R.id.sunset_value);
 			this.cloudinessTextView = itemView.findViewById(R.id.cloudiness_value);
 			
-			this.airQualityCircle = itemView.findViewById(R.id.airquality_circle);
-			this.airQualityIndex = itemView.findViewById(R.id.airquality_number);
-			this.airQualityMessage = itemView.findViewById(R.id.airquality_text);
+			this.airQualityLayout = itemView.findViewById(R.id.air_quality);
+			this.airQualityExpandIcon = itemView.findViewById(R.id.air_quality_expand_icon);
+			this.airQualityDetailsLayout = itemView.findViewById(R.id.air_quality_composition_details);
+			
+			this.airQualityIndexBar = itemView.findViewById(R.id.aqi_bar);
 			
 			this.airQualityGaugeSO2 = itemView.findViewById(R.id.air_quality_gauge_so2);
 			this.airQualityGaugeNO2 = itemView.findViewById(R.id.air_quality_gauge_no2);
@@ -384,7 +431,6 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			this.hourlyForecastExpandIcon = itemView.findViewById(R.id.hourly_forecast_expand_icon);
 			this.hourlyForecastGraphView = itemView.findViewById(R.id.hourly_graphview);
 			
-			this.dailyForecastLayout = itemView.findViewById(R.id.daily_forecast);
 			this.dailyForecastScrollview = itemView.findViewById(R.id.daily_forecast_scroll_view);
 			this.dailyForecast = itemView.findViewById(R.id.daily_forecast_layout);
 			this.dailyForecastExpandIcon = itemView.findViewById(R.id.daily_forecast_expand_icon);
@@ -420,151 +466,77 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		 * </p>
 		 */
 		private void setVisibilityState(@NonNull Context context, @NonNull ViewType viewType, @NonNull Place place) {
-			switch (viewType) {
+			
+			boolean[] viewStateBinary = viewType.getBinaryFoldersState();
+			
+			if (viewType.isCompact()) {
+				//  Compact view
+				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
+					pressureTextView.setVisibility(View.GONE);
+				else windGustSpeedTextView.setVisibility(View.GONE);
 				
-				//  Extended view
-				case EXTENDED: {
-					if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
-						pressureTextView.setVisibility(View.VISIBLE);
-					else windGustSpeedTextView.setVisibility(View.VISIBLE);
-					
-					visibilityTextView.setVisibility(View.VISIBLE);
-					sunriseTextView.setVisibility(View.VISIBLE);
-					sunsetTextView.setVisibility(View.VISIBLE);
-					cloudinessTextView.setVisibility(View.VISIBLE);
-					
-					detailedInformationsLayout.setVisibility(View.VISIBLE);
-					weatherAlertIcon.setVisibility(View.GONE);
-					
-					forecastInformationsLayout.setVisibility(View.VISIBLE);
-					hourlyForecastExpandIcon.setRotation(0);
-					hourlyForecastLayout.setVisibility(View.GONE);
-					dailyForecastExpandIcon.setRotation(0);
-					dailyForecastLayout.setVisibility(View.GONE);
-					
-					lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
-					if (place.thereIsWeatherAlerts()) {
-						weatherAlertLayout.setVisibility(View.VISIBLE);
-					} else {
-						weatherAlertLayout.setVisibility(View.GONE);
-					}
-					break;
-				}
+				visibilityTextView.setVisibility(View.GONE);
+				sunriseTextView.setVisibility(View.GONE);
+				sunsetTextView.setVisibility(View.GONE);
+				cloudinessTextView.setVisibility(View.GONE);
 				
-				//  Hourly extended view
-				case EXTENDED_HOURLY: {
-					if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
-						pressureTextView.setVisibility(View.VISIBLE);
-					else windGustSpeedTextView.setVisibility(View.VISIBLE);
-					
-					visibilityTextView.setVisibility(View.VISIBLE);
-					sunriseTextView.setVisibility(View.VISIBLE);
-					sunsetTextView.setVisibility(View.VISIBLE);
-					cloudinessTextView.setVisibility(View.VISIBLE);
-					
-					detailedInformationsLayout.setVisibility(View.VISIBLE);
-					weatherAlertIcon.setVisibility(View.GONE);
-					
-					forecastInformationsLayout.setVisibility(View.VISIBLE);
-					hourlyForecastExpandIcon.setRotation(180);
-					hourlyForecastLayout.setVisibility(View.VISIBLE);
-					dailyForecastExpandIcon.setRotation(0);
-					lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
-					
-					if (place.thereIsWeatherAlerts()) {
-						weatherAlertLayout.setVisibility(View.VISIBLE);
-					} else {
-						weatherAlertLayout.setVisibility(View.GONE);
-					}
-					break;
-				}
+				detailedInformationsLayout.setVisibility(View.GONE);
+				forecastInformationsLayout.setVisibility(View.GONE);
+				weatherAlertIcon.setVisibility(View.GONE);
 				
-				//  Daily extended view
-				case EXTENDED_DAILY: {
-					if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
-						pressureTextView.setVisibility(View.VISIBLE);
-					else windGustSpeedTextView.setVisibility(View.VISIBLE);
-					
-					visibilityTextView.setVisibility(View.VISIBLE);
-					sunriseTextView.setVisibility(View.VISIBLE);
-					sunsetTextView.setVisibility(View.VISIBLE);
-					cloudinessTextView.setVisibility(View.VISIBLE);
-					
-					detailedInformationsLayout.setVisibility(View.VISIBLE);
+				if (place.thereIsWeatherAlerts()) {
+					weatherAlertIcon.setVisibility(View.VISIBLE);
+				} else {
 					weatherAlertIcon.setVisibility(View.GONE);
-					
-					forecastInformationsLayout.setVisibility(View.VISIBLE);
-					hourlyForecastExpandIcon.setRotation(0);
-					hourlyForecastLayout.setVisibility(View.GONE);
-					dailyForecastExpandIcon.setRotation(180);
-					dailyForecastLayout.setVisibility(View.VISIBLE);
-					lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
-					
-					if (place.thereIsWeatherAlerts()) {
-						weatherAlertLayout.setVisibility(View.VISIBLE);
-					} else {
-						weatherAlertLayout.setVisibility(View.GONE);
-					}
-					break;
 				}
-				//  Fully extended view
-				case EXTENDED_FULLY: {
-					if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
-						pressureTextView.setVisibility(View.VISIBLE);
-					else windGustSpeedTextView.setVisibility(View.VISIBLE);
-					
-					visibilityTextView.setVisibility(View.VISIBLE);
-					sunriseTextView.setVisibility(View.VISIBLE);
-					sunsetTextView.setVisibility(View.VISIBLE);
-					cloudinessTextView.setVisibility(View.VISIBLE);
-					
-					detailedInformationsLayout.setVisibility(View.VISIBLE);
-					weatherAlertIcon.setVisibility(View.GONE);
-					
-					forecastInformationsLayout.setVisibility(View.VISIBLE);
-					hourlyForecastExpandIcon.setRotation(180);
-					hourlyForecastLayout.setVisibility(View.VISIBLE);
-					dailyForecastExpandIcon.setRotation(180);
-					dailyForecastLayout.setVisibility(View.VISIBLE);
-					lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
-					
-					if (place.thereIsWeatherAlerts()) {
-						weatherAlertLayout.setVisibility(View.VISIBLE);
-					} else {
-						weatherAlertLayout.setVisibility(View.GONE);
-					}
-					break;
+			} else {
+				//	Not compact so it's extended
+				if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
+					pressureTextView.setVisibility(View.VISIBLE);
+				else windGustSpeedTextView.setVisibility(View.VISIBLE);
+				
+				visibilityTextView.setVisibility(View.VISIBLE);
+				sunriseTextView.setVisibility(View.VISIBLE);
+				sunsetTextView.setVisibility(View.VISIBLE);
+				cloudinessTextView.setVisibility(View.VISIBLE);
+				
+				detailedInformationsLayout.setVisibility(View.VISIBLE);
+				forecastInformationsLayout.setVisibility(View.VISIBLE);
+				weatherAlertIcon.setVisibility(View.GONE);
+				lastUpdateAvailableLayout.setVisibility(View.VISIBLE);
+				if (place.thereIsWeatherAlerts()) {
+					weatherAlertLayout.setVisibility(View.VISIBLE);
+				} else {
+					weatherAlertLayout.setVisibility(View.GONE);
 				}
-				case COMPACT:
-				default: {
-					//  Compact view
-					if (context.getResources().getInteger(R.integer.env_variables_column_count) == 2)
-						pressureTextView.setVisibility(View.GONE);
-					else windGustSpeedTextView.setVisibility(View.GONE);
-					
-					visibilityTextView.setVisibility(View.GONE);
-					sunriseTextView.setVisibility(View.GONE);
-					sunsetTextView.setVisibility(View.GONE);
-					cloudinessTextView.setVisibility(View.GONE);
-					
-					detailedInformationsLayout.setVisibility(View.GONE);
-					weatherAlertIcon.setVisibility(View.GONE);
-					
-					forecastInformationsLayout.setVisibility(View.GONE);
-					hourlyForecastExpandIcon.setRotation(0);
-					hourlyForecastLayout.setVisibility(View.GONE);
-					dailyForecastExpandIcon.setRotation(0);
-					dailyForecastLayout.setVisibility(View.GONE);
-					lastUpdateAvailableLayout.setVisibility(View.GONE);
-					
-					if (place.thereIsWeatherAlerts()) {
-						weatherAlertIcon.setVisibility(View.VISIBLE);
-					} else {
-						weatherAlertIcon.setVisibility(View.GONE);
-					}
-					
-					break;
-				}
+			}
+			
+			// For each view extended types
+			// Hourly forecast
+			if (viewStateBinary[1]) {
+				hourlyForecastLayout.setVisibility(View.VISIBLE);
+				hourlyForecastExpandIcon.setRotation(0);
+			} else {
+				hourlyForecastLayout.setVisibility(View.GONE);
+				hourlyForecastExpandIcon.setRotation(180);
+			}
+			
+			// Daily forecast
+			if (viewStateBinary[2]) {
+				dailyForecastScrollview.setVisibility(View.VISIBLE);
+				dailyForecastExpandIcon.setRotation(0);
+			} else {
+				dailyForecastScrollview.setVisibility(View.GONE);
+				dailyForecastExpandIcon.setRotation(180);
+			}
+			
+			// Air quality details
+			if (viewStateBinary[3]) {
+				airQualityDetailsLayout.setVisibility(View.VISIBLE);
+				airQualityExpandIcon.setRotation(0);
+			} else {
+				airQualityDetailsLayout.setVisibility(View.GONE);
+				airQualityExpandIcon.setRotation(180);
 			}
 		}
 		
@@ -583,7 +555,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			
 			//  Set listener for the whole place card item
 			cardView.setOnClickListener(v -> {
-				if (viewType == COMPACT) {
+				if (viewType.isCompact()) {
 					placesViewModel.setPlaceViewType(placeID, EXTENDED);
 				} else {
 					placesViewModel.setPlaceViewType(placeID, COMPACT);
@@ -593,45 +565,43 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			
 			//  Set listener for the hourly weather forecast tab
 			hourlyForecast.setOnClickListener(v -> {
-				switch (viewType) {
-					case EXTENDED:
-						placesViewModel.setPlaceViewType(placeID, EXTENDED_HOURLY);
-						break;
-					case EXTENDED_HOURLY:
-						placesViewModel.setPlaceViewType(placeID, EXTENDED);
-						break;
-					case EXTENDED_DAILY:
-						placesViewModel.setPlaceViewType(placeID, EXTENDED_FULLY);
-						break;
-					case EXTENDED_FULLY:
-						placesViewModel.setPlaceViewType(placeID, EXTENDED_DAILY);
-						break;
-					default:
-						placesViewModel.setPlaceViewType(placeID, COMPACT);
-						break;
-				}
+				if (viewType.isCompact()) return;
+				
+				boolean[] viewStateBinary = viewType.getBinaryFoldersState();
+				
+				// Toggle the state of the touched folder
+				viewStateBinary[1] = !viewStateBinary[1];
+				
+				// Set the view type
+				placesViewModel.setPlaceViewType(placeID, ViewType.fromBinaryFoldersState(viewStateBinary));
 				placeRecyclerViewAdapter.notifyItemChanged(getAbsoluteAdapterPosition());
 			});
 			
 			//  Set listener for the daily weather forecast tab
 			dailyForecast.setOnClickListener(v -> {
-				switch (viewType) {
-					case EXTENDED:
-						placesViewModel.setPlaceViewType(placeID, EXTENDED_DAILY);
-						break;
-					case EXTENDED_DAILY:
-						placesViewModel.setPlaceViewType(placeID, EXTENDED);
-						break;
-					case EXTENDED_HOURLY:
-						placesViewModel.setPlaceViewType(placeID, EXTENDED_FULLY);
-						break;
-					case EXTENDED_FULLY:
-						placesViewModel.setPlaceViewType(placeID, EXTENDED_HOURLY);
-						break;
-					default:
-						placesViewModel.setPlaceViewType(placeID, COMPACT);
-						break;
-				}
+				if (viewType.isCompact()) return;
+				
+				boolean[] viewStateBinary = viewType.getBinaryFoldersState();
+				
+				// Toggle the state of the touched folder
+				viewStateBinary[2] = !viewStateBinary[2];
+				
+				// Set the view type
+				placesViewModel.setPlaceViewType(placeID, ViewType.fromBinaryFoldersState(viewStateBinary));
+				placeRecyclerViewAdapter.notifyItemChanged(getAbsoluteAdapterPosition());
+			});
+			
+			//  Set listener for the air quality details tab
+			airQualityLayout.setOnClickListener(v -> {
+				if (viewType.isCompact()) return;
+				
+				boolean[] viewStateBinary = viewType.getBinaryFoldersState();
+				
+				// Toggle the state of the touched folder
+				viewStateBinary[3] = !viewStateBinary[3];
+				
+				// Set the view type
+				placesViewModel.setPlaceViewType(placeID, ViewType.fromBinaryFoldersState(viewStateBinary));
 				placeRecyclerViewAdapter.notifyItemChanged(getAbsoluteAdapterPosition());
 			});
 			
@@ -835,36 +805,42 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			cloudinessTextView.setText(String.format("%d%%", currentWeather.getCloudiness()));
 			
 			//	Air quality
-			airQualityIndex.setText(String.valueOf(airQuality.getAqi()));
+			airQualityIndexBar.setIndexValue(airQuality.getAqi());
+			
+			int aqiColor;
+			String aqiMessage;
 			
 			switch (airQuality.getAqi()) {
 				
 				case 5:
-					airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvExtreme)));
-					airQualityMessage.setText(context.getText(R.string.air_quality_5));
+					aqiColor = R.color.colorAqiHazardous;
+					aqiMessage = context.getString(R.string.air_quality_5);
 					break;
 				
 				case 4:
-					airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvVeryHigh)));
-					airQualityMessage.setText(context.getText(R.string.air_quality_4));
+					aqiColor = R.color.colorAqiVeryBad;
+					aqiMessage = context.getString(R.string.air_quality_4);
 					break;
 				
 				case 3:
-					airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvHigh)));
-					airQualityMessage.setText(context.getText(R.string.air_quality_3));
+					aqiColor = R.color.colorAqiBad;
+					aqiMessage = context.getString(R.string.air_quality_3);
 					break;
 				
 				case 2:
-					airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvModerate)));
-					airQualityMessage.setText(context.getText(R.string.air_quality_2));
+					aqiColor = R.color.colorAqiModerate;
+					aqiMessage = context.getString(R.string.air_quality_2);
 					break;
 				
 				case 1:
 				default:
-					airQualityCircle.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.colorUvLow)));
-					airQualityMessage.setText(context.getText(R.string.air_quality_1));
+					aqiColor = R.color.colorAqiGood;
+					aqiMessage = context.getString(R.string.air_quality_1);
 					break;
 			}
+			
+			airQualityIndexBar.setIndexPaintColor(aqiColor);
+			airQualityIndexBar.setLabelText(aqiMessage);
 			
 			airQualityGaugeSO2.setValue(airQuality.getSo2());
 			airQualityGaugeNO2.setValue(airQuality.getNo2());
