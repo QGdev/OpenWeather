@@ -8,8 +8,8 @@ android {
         applicationId "fr.qgdev.openweather"
         minSdkVersion 27
         targetSdk 33
-        versionCode 8
-        versionName '0.9.3'
+        versionCode 9
+        versionName '0.9.4'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
