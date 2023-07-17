@@ -118,12 +118,13 @@ public class PlacesFragment extends Fragment {
 		super.onAttach(context);
 		mContext = context;
 		appRepository = new AppRepository(mContext.getApplicationContext());
-		placesViewModel = PlacesViewModelFactory.getInstance().create();
+		placesViewModel = PlacesViewModelFactory.getInstance();
 		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, placesViewModel, appRepository.getFormattingService());
 		
 		//
 		appRepository.getPlacesLiveData().observeForever(places -> {
 			if (places == null) return;
+			logger.info("PlacesLiveData changed, updating places: " + places.size());
 			placesViewModel.setPlaces(places);
 		});
 	}
