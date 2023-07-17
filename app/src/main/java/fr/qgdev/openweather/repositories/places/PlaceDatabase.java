@@ -133,7 +133,7 @@ public abstract class PlaceDatabase extends RoomDatabase {
                             hourlyWeatherForecastDAO().getFromPlaceID(id),
                             dailyWeatherForecastDAO().getFromPlaceID(id),
                             weatherAlertDAO().getFromPlaceID(id));
-                    placeList.add(p.getOrder(), place);
+                    placeList.add(place);
                 }
                 mutableLiveData.postValue(placeList);
             }));
@@ -146,13 +146,13 @@ public abstract class PlaceDatabase extends RoomDatabase {
         
         List<Properties> properties = propertiesDAO().getProperties();
         List<Place> placeList = new ArrayList<>();
+
         databaseWriteExecutor.execute(() -> {
             
             if (!properties.isEmpty()) {
-                Place place;
                 for (Properties p : properties) {
                     int id = p.getPlaceId();
-                    place = new Place(geolocationDAO().getFromPlaceID(id),
+                    Place place = new Place(geolocationDAO().getFromPlaceID(id),
                             p,
                             currentWeatherDAO().getFromPlaceID(id),
                             airQualityDAO().getFromPlaceID(id),
@@ -160,7 +160,7 @@ public abstract class PlaceDatabase extends RoomDatabase {
                             hourlyWeatherForecastDAO().getFromPlaceID(id),
                             dailyWeatherForecastDAO().getFromPlaceID(id),
                             weatherAlertDAO().getFromPlaceID(id));
-                    placeList.add(p.getOrder(), place);
+                    placeList.add(place);
                 }
             }
         });

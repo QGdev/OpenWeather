@@ -71,8 +71,7 @@ public class AppRepository {
         placeDatabase = db;
         mPlaceDao = db.placeDAO();
         
-        mutableLiveDataPlaces = new MutableLiveData<>(null);
-        new Thread(() -> mutableLiveDataPlaces.postValue(getPlaces())).start();
+        mutableLiveDataPlaces = (MutableLiveData<List<Place>>) placeDatabase.getAllPlacesLiveData();
     }
     
     /**
@@ -134,12 +133,12 @@ public class AppRepository {
      */
     public synchronized void delete(Place place) {
         placeDatabase.deletePlace(place, position -> {
-            repositoryCallback.onPlaceDeletion(position);
             List<Place> places = mutableLiveDataPlaces.getValue();
             if (places == null) return;
             
             places.remove(place);
             mutableLiveDataPlaces.postValue(places);
+            repositoryCallback.onPlaceDeletion(position);
         });
     }
     
@@ -150,12 +149,12 @@ public class AppRepository {
      */
     public synchronized void update(Place place) {
         placeDatabase.updatePlace(place, (Place p) -> {
-            repositoryCallback.onPlaceUpdate(p.getProperties().getOrder());
             List<Place> places = mutableLiveDataPlaces.getValue();
             if (places == null) return;
             
             places.set(p.getProperties().getOrder(), p);
             mutableLiveDataPlaces.postValue(places);
+            repositoryCallback.onPlaceUpdate(p.getProperties().getOrder());
         });
     }
     
