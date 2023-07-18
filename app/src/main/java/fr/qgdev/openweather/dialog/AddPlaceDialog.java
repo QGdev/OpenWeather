@@ -211,6 +211,15 @@ public class AddPlaceDialog extends Dialog {
 		if (city == null || city.length() == 0) {
 			return "";
 		}
+		
+		// remove extra spaces at the beginning and at the end
+		while (city.charAt(0) == ' ') {
+			city.delete(0, 1);
+		}
+		while (city.charAt(city.length() - 1) == ' ') {
+			city.delete(city.length() - 1, city.length());
+		}
+		
 		return city.toString();
 	}
 	
@@ -227,6 +236,15 @@ public class AddPlaceDialog extends Dialog {
 		if (country.length() == 0) {
 			return "";
 		}
+		
+		// remove extra spaces at the beginning and at the end
+		while (country.charAt(0) == ' ') {
+			country.delete(0, 1);
+		}
+		while (country.charAt(country.length() - 1) == ' ') {
+			country.delete(country.length() - 1, country.length());
+		}
+		
 		return country.toString();
 	}
 	
