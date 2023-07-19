@@ -33,4 +33,18 @@
 
     <dimen name="text_size_tile_title">25sp</dimen>
 
+
+    <dimen name="text_size_dialog_title">20sp</dimen>
+    <dimen name="text_size_dialog_subtitle">18sp</dimen>
+    <dimen name="text_size_dialog_content">16sp</dimen>
+
+    <dimen name="text_marginTop_dialog_title">8dp</dimen>
+    <dimen name="text_marginBottom_dialog_title">0dp</dimen>
+    <dimen name="text_marginStart_dialog_title">0dp</dimen>
+    <dimen name="text_marginEnd_dialog_title">0dp</dimen>
+
+    <dimen name="text_marginTop_dialog_content">16dp</dimen>
+    <dimen name="text_marginBottom_dialog_content">8dp</dimen>
+    <dimen name="text_marginStart_dialog_content">8dp</dimen>
+    <dimen name="text_marginEnd_dialog_content">8dp</dimen>
 </resources>
