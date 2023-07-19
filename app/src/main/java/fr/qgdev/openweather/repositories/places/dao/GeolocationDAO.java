@@ -39,7 +39,7 @@ public interface GeolocationDAO {
 	Geolocation getFromPlaceID(int id);
 	
 	@Query("SELECT * FROM geolocation WHERE city LIKE :city AND countryCode = :countryCode")
-	LiveData<List<Geolocation>> getSimilarPlace(String city, String countryCode);
+	LiveData<List<Geolocation>> getSimilarPlaces(String city, String countryCode);
 	
 	@Query("DELETE FROM geolocation WHERE placeId = :id")
 	void deleteFromPlaceID(int id);
