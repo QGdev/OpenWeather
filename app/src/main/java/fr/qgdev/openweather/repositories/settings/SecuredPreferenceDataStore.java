@@ -223,4 +223,23 @@ public class SecuredPreferenceDataStore extends PreferenceDataStore {
 	public boolean getBoolean(String key, boolean defValue) {
 		return sharedPreferences.getBoolean(key, defValue);
 	}
+	
+	/**
+	 * Checks whether the data store contains a preference.
+	 *
+	 * @param key The name of the preference to check
+	 */
+	public void remove(String key) {
+		sharedPreferences.edit().remove(key).apply();
+	}
+	
+	/**
+	 * Checks whether the data store contains a preference.
+	 *
+	 * @param key The name of the preference to check
+	 * @return {@code true} if the preference exists in the data store, {@code false} otherwise
+	 */
+	public boolean contains(String key) {
+		return sharedPreferences.contains(key);
+	}
 }
