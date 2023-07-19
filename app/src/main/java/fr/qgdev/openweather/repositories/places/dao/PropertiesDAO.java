@@ -49,7 +49,7 @@ public interface PropertiesDAO {
 	int getIDFromPlaceOrder(int order);
 	
 	@Query("SELECT * FROM properties WHERE placeId = :placeID")
-	Properties getFromId(int placeID);
+	Properties getFromPlaceId(int placeID);
 	
 	@Query("UPDATE properties SET `order` = :newOrder WHERE placeId = :placeID")
 	void updateOrderFromPlaceID(int placeID, int newOrder);
