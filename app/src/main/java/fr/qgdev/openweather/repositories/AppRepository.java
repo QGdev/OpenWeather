@@ -22,7 +22,6 @@ package fr.qgdev.openweather.repositories;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -55,7 +54,6 @@ public class AppRepository {
     private final FormattingService formattingService;
     
     private final MutableLiveData<List<Place>> mutableLiveDataPlaces;
-    private RepositoryCallback repositoryCallback;
     
     /**
      * Instantiates a new App repository.
@@ -117,7 +115,6 @@ public class AppRepository {
      */
     public synchronized void insert(Place place) {
         placeDatabase.insertPlace(place, p -> {
-            repositoryCallback.onPlaceInsertion(p.getProperties().getOrder());
             List<Place> places = mutableLiveDataPlaces.getValue();
             if (places == null) return;
             
@@ -138,7 +135,6 @@ public class AppRepository {
             
             places.remove(place);
             mutableLiveDataPlaces.postValue(places);
-            repositoryCallback.onPlaceDeletion(position);
         });
     }
     
@@ -151,10 +147,10 @@ public class AppRepository {
         placeDatabase.updatePlace(place, (Place p) -> {
             List<Place> places = mutableLiveDataPlaces.getValue();
             if (places == null) return;
-            
+            if (places.size() <= p.getProperties().getOrder()) return;
+    
             places.set(p.getProperties().getOrder(), p);
             mutableLiveDataPlaces.postValue(places);
-            repositoryCallback.onPlaceUpdate(p.getProperties().getOrder());
         });
     }
     
@@ -195,18 +191,18 @@ public class AppRepository {
         FetchDataCallback fetchCallbackInternal = new FetchDataCallback() {
             @Override
             public void onSuccess(Place place) {
-                
+    
                 Geolocation placeGeo = place.getGeolocation();
-                
+    
                 LiveData<List<Geolocation>> result = placeDatabase.geolocationDAO()
-                        .getSimilarPlace(placeGeo.getCity(), placeGeo.getCountryCode());
-                
+                        .getSimilarPlaces(placeGeo.getCity(), placeGeo.getCountryCode());
+    
                 result.observeForever(new Observer<>() {
                     @Override
                     public void onChanged(List<Geolocation> geolocations) {
-                        
+            
                         if (geolocations == null) return;
-                        
+            
                         //TODO: Implementation of a coordinates checker in order to know if this place is not registered under an other city/country
                         if (!geolocations.isEmpty()) {
                             fetchCallback.onError(RequestStatus.ALREADY_PRESENT);
@@ -313,22 +309,6 @@ public class AppRepository {
      */
     public boolean isApiKeyValid() {
         return weatherService.isApiKeyValid();
-    }
-    
-    /**
-     * Attach callbacks.
-     *
-     * @param repositoryCallback the repository callback
-     */
-    public void attachCallbacks(@NonNull RepositoryCallback repositoryCallback) {
-        this.repositoryCallback = repositoryCallback;
-    }
-    
-    /**
-     * Detach callbacks.
-     */
-    public void detachCallbacks() {
-        repositoryCallback = null;
     }
     
     /**

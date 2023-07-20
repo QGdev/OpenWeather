@@ -96,7 +96,6 @@ public class PlacesFragment extends Fragment {
 	public void onDetach() {
 		super.onDetach();
 		mContext = null;
-		if (appRepository != null) appRepository.detachCallbacks();
 	}
 	
 	/**
@@ -147,48 +146,6 @@ public class PlacesFragment extends Fragment {
 		refreshCounter = new AtomicInteger();
 		refreshCounter.set(0);
 		
-		
-		//	Initialize Fragment FragmentCallbacks
-		AppRepository.RepositoryCallback repositoryCallback = new AppRepository.RepositoryCallback() {
-			@Override
-			public void onPlaceDeletion(int position) {
-				AppRepository.RepositoryAction<Integer> action;
-				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.DELETION,
-						  position);
-				placesViewModel.addRepositoryPlaceAction(action);
-			}
-			
-			@Override
-			public void onPlaceInsertion(int position) {
-				AppRepository.RepositoryAction<Integer> action;
-				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.INSERTION,
-						  position);
-				placesViewModel.addRepositoryPlaceAction(action);
-			}
-			
-			@Override
-			public void onPlaceUpdate(int position) {
-				AppRepository.RepositoryAction<Integer> action;
-				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.UPDATE,
-						  position);
-				placesViewModel.addRepositoryPlaceAction(action);
-			}
-			
-			@Override
-			public void onMovedPlace(int initialPosition, int finalPosition) {
-				Integer[] data = new Integer[2];
-				data[0] = initialPosition;
-				data[1] = finalPosition;
-				
-				AppRepository.RepositoryAction<Integer[]> action;
-				action = new AppRepository.RepositoryAction<>(AppRepository.RepositoryActionType.MOVED,
-						  data);
-				placesViewModel.addRepositoryPlaceAction(action);
-			}
-		};
-		
-		appRepository.attachCallbacks(repositoryCallback);
-		
 		//  Initialisation of the RecyclerView
 		//________________________________________________________________
 		//
@@ -204,41 +161,16 @@ public class PlacesFragment extends Fragment {
 			if (places.isEmpty()) {
 				setNoPlacesViewState();
 				return;
-			} else {
-				if (!placesViewModel.hasDataAlreadyBeenUpdated() && appRepository.isApiKeyValid()) {
-					appRepository.updateAllPlaces(fetchUpdateCallback);
-					placesViewModel.dataHasBeenUpdated();
-				}
-				setExistingPlacesViewState(container);
 			}
 			
-			while (!placesViewModel.isRepositoryPlaceActionEmpty()) {
-				AppRepository.RepositoryAction<?> action = placesViewModel.pollRepositoryPlaceAction();
-				
-				switch (action.getType()) {
-					case INSERTION:
-						placeRecyclerViewAdapter.notifyItemInserted((Integer) action.getData());
-						//	Touch visibilities only for the first item
-						if (places.size() == 1) {
-							swipeRefreshLayout.setVisibility(View.VISIBLE);
-							informationTextView.setVisibility(View.GONE);
-						}
-						break;
-					case DELETION:
-						placeRecyclerViewAdapter.notifyItemRemoved((Integer) action.getData());
-						if (places.isEmpty()) {
-							setNoPlacesViewState();
-						}
-						break;
-					case UPDATE:
-						placeRecyclerViewAdapter.notifyItemChanged((Integer) action.getData());
-						break;
-					case MOVED:
-						Integer[] data = (Integer[]) action.getData();
-						placeRecyclerViewAdapter.notifyItemMoved(data[0], data[1]);
-						break;
-				}
+			if (!placesViewModel.hasDataAlreadyBeenUpdated() && appRepository.isApiKeyValid()) {
+				appRepository.updateAllPlaces(fetchUpdateCallback);
+				placesViewModel.dataHasBeenUpdated();
+			} else {
+				placeRecyclerViewAdapter.notifyDataSetChanged();
 			}
+			
+			setExistingPlacesViewState(container);
 		});
 		
 		
@@ -276,18 +208,26 @@ public class PlacesFragment extends Fragment {
 				appRepository.movePlace(initialPos, finalPos);
 				placeRecyclerViewAdapter.notifyItemMoved(initialPos, finalPos);
 				
-				return false;
+				return true;
 			}
 			
 			@Override
 			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 				if (direction == ItemTouchHelper.START || direction == ItemTouchHelper.END) {
 					int index = viewHolder.getLayoutPosition();
+					
+					if (index >= placesViewModel.getPlaces().size()) {
+						placeRecyclerViewAdapter.notifyItemRemoved(index);
+						return;
+					}
 					Place place = placesViewModel.getPlaces().get(index);
 					new AlertDialog.Builder(mContext)
 							  .setTitle(mContext.getString(R.string.dialog_confirmation_title_delete_place))
 							  .setMessage(String.format(mContext.getString(R.string.dialog_confirmation_message_delete_place), place.getGeolocation().getCity(), place.getGeolocation().getCountryCode()))
-							  .setPositiveButton(mContext.getString(R.string.dialog_confirmation_choice_yes), (dialog, which) -> appRepository.delete(place))
+							  .setPositiveButton(mContext.getString(R.string.dialog_confirmation_choice_yes), (dialogInterface, i) -> {
+								  appRepository.delete(place);
+								  placeRecyclerViewAdapter.notifyItemRemoved(index);
+							  })
 							  .setNegativeButton(mContext.getString(R.string.dialog_confirmation_choice_no), (dialogInterface, i) -> placeRecyclerViewAdapter.notifyItemChanged(index))
 							  .setCancelable(false)
 							  .show();
@@ -331,15 +271,12 @@ public class PlacesFragment extends Fragment {
 			@Override
 			public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
 				super.clearView(recyclerView, viewHolder);
-				if (itemAsBeenMoved) {
-					repositoryCallback.onMovedPlace(initialPosition, viewHolder.getAbsoluteAdapterPosition());
-					itemAsBeenMoved = false;
-				}
+				itemAsBeenMoved = false;
 				viewHolder.itemView.setAlpha(1);
 			}
 		});
-		itemTouchHelper.attachToRecyclerView(placeRecyclerView);
 		
+		itemTouchHelper.attachToRecyclerView(placeRecyclerView);
 		
 		//  acquire data of the places callback
 		fetchUpdateCallback = new FetchCallback() {

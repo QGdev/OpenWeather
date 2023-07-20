@@ -20,18 +20,15 @@
 
 package fr.qgdev.openweather.fragment.places;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 import fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter;
-import fr.qgdev.openweather.repositories.AppRepository;
 import fr.qgdev.openweather.repositories.places.Place;
 
 /**
@@ -41,7 +38,6 @@ public class PlacesViewModel extends ViewModel {
 	
 	private final MutableLiveData<List<Place>> places;
 	private final HashMap<Integer, PlaceRecyclerViewAdapter.ViewType> placesViewType;
-	private final ConcurrentLinkedQueue<AppRepository.RepositoryAction<?>> repositoryActions;
 	private boolean dataHasAlreadyBeenUpdated;
 	
 	
@@ -52,7 +48,6 @@ public class PlacesViewModel extends ViewModel {
 		dataHasAlreadyBeenUpdated = false;
 		places = new MutableLiveData<>(null);
 		placesViewType = new HashMap<>();
-		repositoryActions = new ConcurrentLinkedQueue<>();
 	}
 	
 	/**
@@ -157,32 +152,5 @@ public class PlacesViewModel extends ViewModel {
 		} else {
 			placesViewType.replace(placeID, newViewType);
 		}
-	}
-	
-	/**
-	 * Add repository place action.
-	 *
-	 * @param action the action
-	 */
-	public void addRepositoryPlaceAction(@NonNull AppRepository.RepositoryAction<?> action) {
-		repositoryActions.add(action);
-	}
-	
-	/**
-	 * Poll repository place action app repository . repository action.
-	 *
-	 * @return the app repository . repository action
-	 */
-	public synchronized AppRepository.RepositoryAction<?> pollRepositoryPlaceAction() {
-		return repositoryActions.poll();
-	}
-	
-	/**
-	 * Is repository place action empty boolean.
-	 *
-	 * @return the boolean
-	 */
-	public boolean isRepositoryPlaceActionEmpty() {
-		return repositoryActions.isEmpty();
 	}
 }
