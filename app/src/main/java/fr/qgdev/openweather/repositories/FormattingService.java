@@ -40,20 +40,29 @@ public class FormattingService {
 	private MeasureConversion measureConversion;
 	private PressureConversion pressureConversion;
 	private DirectionConversion directionConversion;
-	//  Pressure format specifier for int or float format
+	
+	//  Temperature format specifier for int or float format
+	private String temperatureUnitSymbol;
 	private String temperatureFormatSpecifierInt;
 	private String temperatureFormatSpecifierFloat;
+	
 	//  Short distance format specifier for int or float format
+	private String shortDistanceUnitSymbol;
 	private String shortDistanceFormatSpecifierInt;
 	private String shortDistanceFormatSpecifierFloat;
+	
 	//  Distance format specifier for int or float format
+	private String distanceUnitSymbol;
 	private String distanceFormatSpecifierInt;
 	private String distanceFormatSpecifierFloat;
+	
 	//  Speed format specifier for int or float format
+	private String speedUnitSymbol;
 	private String speedFormatSpecifierInt;
 	private String speedFormatSpecifierFloat;
 	
 	//  Pressure format specifier
+	private String pressureUnitSymbol;
 	private String pressureFormatSpecifier;
 	
 	//  TimeHour format specifier
@@ -198,78 +207,111 @@ public class FormattingService {
 	
 	//  Temperature formatting
 	////    Int
-	public String getIntFormattedTemperature(float temperature, boolean spaceBetween) {
+	public String getIntFormattedTemperature(float temperature, FormattingSpec formattingSpec) {
 		return String.format(settingsManager.getDefaultLocale(),
 				  temperatureFormatSpecifierInt,
 				  BigDecimal.valueOf(convertTemperature(temperature)).intValue(),
-				  (spaceBetween) ? " " : "");
+				  (formattingSpec.value % 2 == 1) ? " " : "",
+				  (formattingSpec.value >= 2) ? temperatureUnitSymbol : "");
 	}
 	
 	////    Float
-	public String getFloatFormattedTemperature(float temperature, boolean spaceBetween) {
+	public String getFloatFormattedTemperature(float temperature, FormattingSpec formattingSpec) {
 		return String.format(settingsManager.getDefaultLocale(),
 				  temperatureFormatSpecifierFloat,
 				  convertTemperature(temperature),
-				  (spaceBetween) ? " " : "");
+				  (formattingSpec.value % 2 == 1) ? " " : "",
+				  (formattingSpec.value >= 2) ? temperatureUnitSymbol : "");
 	}
 	
 	//  Short Distance formatting
 	////    Int
-	public String getIntFormattedShortDistance(float shortDistance, boolean spaceBetween) {
+	public String getIntFormattedShortDistance(float shortDistance, FormattingSpec formattingSpec) {
 		return String.format(settingsManager.getDefaultLocale(),
 				  shortDistanceFormatSpecifierInt,
 				  BigDecimal.valueOf(convertShortDistance(shortDistance)).intValue(),
-				  (spaceBetween) ? " " : "");
+				  (formattingSpec.value % 2 == 1) ? " " : "",
+				  (formattingSpec.value >= 2) ? shortDistanceUnitSymbol : "");
 	}
 	
 	////    Float
-	public String getFloatFormattedShortDistance(float shortDistance, boolean spaceBetween) {
+	public String getFloatFormattedShortDistance(float shortDistance, FormattingSpec formattingSpec) {
 		return String.format(settingsManager.getDefaultLocale(),
 				  shortDistanceFormatSpecifierFloat,
 				  convertShortDistance(shortDistance),
-				  (spaceBetween) ? " " : "");
+				  (formattingSpec.value % 2 == 1) ? " " : "",
+				  (formattingSpec.value >= 2) ? shortDistanceUnitSymbol : "");
 	}
 	
 	//  Distance formatting
 	////    Int
-	public String getIntFormattedDistance(float distance, boolean spaceBetween) {
+	public String getIntFormattedDistance(float distance, FormattingSpec formattingSpec) {
 		return String.format(settingsManager.getDefaultLocale(),
 				  distanceFormatSpecifierInt,
 				  BigDecimal.valueOf(convertDistance(distance)).intValue(),
-				  (spaceBetween) ? " " : "");
+				  (formattingSpec.value % 2 == 1) ? " " : "",
+				  (formattingSpec.value >= 2) ? distanceUnitSymbol : "");
 	}
 	
 	////    Float
-	public String getFloatFormattedDistance(float distance, boolean spaceBetween) {
+	public String getFloatFormattedDistance(float distance, FormattingSpec formattingSpec) {
 		return String.format(settingsManager.getDefaultLocale(),
 				  distanceFormatSpecifierFloat,
 				  convertDistance(distance),
-				  (spaceBetween) ? " " : "");
+				  (formattingSpec.value % 2 == 1) ? " " : "",
+				  (formattingSpec.value >= 2) ? distanceUnitSymbol : "");
 	}
 	
 	//  Speed formatting
 	////    Int
-	public String getIntFormattedSpeed(float speed, boolean spaceBetween) {
+	public String getIntFormattedSpeed(float speed, FormattingSpec formattingSpec) {
 		return String.format(settingsManager.getDefaultLocale(),
 				  speedFormatSpecifierInt,
 				  BigDecimal.valueOf(convertSpeed(speed)).intValue(),
-				  (spaceBetween) ? " " : "");
+				  (formattingSpec.value % 2 == 1) ? " " : "",
+				  (formattingSpec.value >= 2) ? speedUnitSymbol : "");
 	}
 	
 	////    Float
-	public String getFloatFormattedSpeed(float speed, boolean spaceBetween) {
+	public String getFloatFormattedSpeed(float speed, FormattingSpec formattingSpec) {
 		return String.format(settingsManager.getDefaultLocale(),
 				  speedFormatSpecifierFloat,
 				  convertSpeed(speed),
-				  (spaceBetween) ? " " : "");
+				  (formattingSpec.value % 2 == 1) ? " " : "",
+				  (formattingSpec.value >= 2) ? speedUnitSymbol : "");
 	}
 	
 	//  Pressure formatting
-	public String getFormattedPressure(float pressure, boolean spaceBetween) {
+	public String getFormattedPressure(float pressure, FormattingSpec formattingSpec) {
 		return String.format(settingsManager.getDefaultLocale(),
 				  pressureFormatSpecifier,
 				  convertPressure(pressure),
-				  (spaceBetween) ? " " : "");
+				  (formattingSpec.value % 2 == 1) ? " " : "",
+				  (formattingSpec.value >= 2) ? pressureUnitSymbol : "");
+	}
+	
+	private void temperatureUnitInit() {
+		temperatureFormatSpecifierInt = "%d%s°%s";
+		temperatureFormatSpecifierFloat = "%.1f%s°%s";
+		
+		switch (settingsManager.getTemperatureSetting()) {
+			case FAHRENHEIT: {
+				temperatureUnitSymbol = "F";
+				this.temperatureConversion = this::toFahrenheit;
+				break;
+			}
+			case KELVIN: {
+				temperatureUnitSymbol = "K";
+				this.temperatureConversion = this::toKelvin;
+				break;
+			}
+			default:    //  Default case is using Celsius unit
+			case CELSIUS: {
+				temperatureUnitSymbol = "C";
+				this.temperatureConversion = this::toCelsius;
+				break;
+			}
+		}
 	}
 	
 	//  Direction formatting
@@ -318,44 +360,19 @@ public class FormattingService {
 		return getSimpleDateFormatForTimeZone(this.fullTimeHourFormat, timeZone).format(date);
 	}
 	
-	private void temperatureUnitInit() {
-		//  Temperature
-		switch (settingsManager.getTemperatureSetting()) {
-			case FAHRENHEIT: {
-				temperatureFormatSpecifierInt = "%d%s°F";
-				temperatureFormatSpecifierFloat = "%.1f%s°F";
-				
-				this.temperatureConversion = this::toFahrenheit;
-				break;
-			}
-			case KELVIN: {
-				temperatureFormatSpecifierInt = "%d%s°K";
-				temperatureFormatSpecifierFloat = "%.1f%s°K";
-				
-				this.temperatureConversion = this::toKelvin;
-				break;
-			}
-			default:    //  Default case is using Celsius unit
-			case CELSIUS: {
-				temperatureFormatSpecifierInt = "%d%s°C";
-				temperatureFormatSpecifierFloat = "%.1f%s°C";
-				
-				this.temperatureConversion = this::toCelsius;
-				break;
-			}
-		}
-	}
-	
 	private void measureUnitInit() {
-		//  Measure
+		shortDistanceFormatSpecifierInt = "%d%s%s";
+		shortDistanceFormatSpecifierFloat = "%.2f%s%s";
+		distanceFormatSpecifierInt = "%d%s%s";
+		distanceFormatSpecifierFloat = "%.1f%s%s";
+		speedFormatSpecifierInt = "%d%s%s";
+		speedFormatSpecifierFloat = "%.1f%s%s";
+		
 		switch (settingsManager.getMeasureSetting()) {
 			case IMPERIAL: {
-				shortDistanceFormatSpecifierInt = "%d%sin.";
-				shortDistanceFormatSpecifierFloat = "%.2f%sin.";
-				distanceFormatSpecifierInt = "%d%smi.";
-				distanceFormatSpecifierFloat = "%.1f%smi.";
-				speedFormatSpecifierInt = "%d%smph";
-				speedFormatSpecifierFloat = "%.1f%smph";
+				shortDistanceUnitSymbol = "in";
+				distanceUnitSymbol = "mi";
+				speedUnitSymbol = "mph";
 				
 				this.measureConversion = new MeasureConversion() {
 					@Override
@@ -377,12 +394,10 @@ public class FormattingService {
 			}
 			default:    //  Default case is using metric units
 			case METRIC: {
-				shortDistanceFormatSpecifierInt = "%d%smm";
-				shortDistanceFormatSpecifierFloat = "%.1f%smm";
-				distanceFormatSpecifierInt = "%d%skm";
-				distanceFormatSpecifierFloat = "%.1f%skm";
-				speedFormatSpecifierInt = "%d%skm/h";
-				speedFormatSpecifierFloat = "%.1f%skm/h";
+				shortDistanceUnitSymbol = "mm";
+				distanceUnitSymbol = "km";
+				speedUnitSymbol = "km/h";
+				
 				this.measureConversion = new MeasureConversion() {
 					@Override
 					public float distanceConversion(float distance) {
@@ -408,26 +423,43 @@ public class FormattingService {
 		//  Pressure
 		switch (settingsManager.getPressureSetting()) {
 			case BAROMETRIC: {
-				pressureFormatSpecifier = "%.0f%smBar";
+				pressureFormatSpecifier = "%.0f%s%s";
+				pressureUnitSymbol = "mBar";
 				this.pressureConversion = this::toMbar;
 				break;
 			}
 			case POUNDS_SQUARE_INCH: {
-				pressureFormatSpecifier = "%.2f%spsi";
+				pressureFormatSpecifier = "%.2f%s%s";
+				pressureUnitSymbol = "psi";
 				this.pressureConversion = this::toPsi;
 				break;
 			}
 			case INCH_MERCURY: {
-				pressureFormatSpecifier = "%.2f%sinHg";
+				pressureFormatSpecifier = "%.2f%s%s";
+				pressureUnitSymbol = "inHg";
 				this.pressureConversion = this::toInhg;
 				break;
 			}
 			default:    //  Default case is using pascal unit
 			case HECTOPASCAL: {
-				pressureFormatSpecifier = "%.0f%shPa";
+				pressureFormatSpecifier = "%.0f%s%s";
+				pressureUnitSymbol = "hPa";
 				this.pressureConversion = this::toHpa;
 				break;
 			}
+		}
+	}
+	
+	public enum FormattingSpec {
+		NO_UNIT_NO_SPACE(0),
+		NO_UNIT_BUT_SPACE(1),   // Actually only useful for temperature formatting
+		UNIT_BUT_NO_SPACE(2),
+		UNIT_AND_SPACE(3);
+		
+		public final int value;
+		
+		FormattingSpec(int value) {
+			this.value = value;
 		}
 	}
 	
