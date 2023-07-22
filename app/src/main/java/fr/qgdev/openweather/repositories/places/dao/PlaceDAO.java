@@ -24,6 +24,10 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
 
+import java.util.List;
+
+import fr.qgdev.openweather.repositories.places.Geolocation;
+
 @Dao
 public abstract class PlaceDAO {
 	
@@ -32,4 +36,7 @@ public abstract class PlaceDAO {
 	
 	@Query("SELECT COUNT(*) FROM properties")
 	public abstract Integer getPlacesCount();
+	
+	@Query("SELECT * FROM geolocation NATURAL JOIN properties")
+	public abstract LiveData<List<Geolocation>> getBasicListing();
 }

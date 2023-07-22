@@ -109,6 +109,25 @@ public class AppRepository {
     }
     
     /**
+     * Gets place live data from place id.
+     *
+     * @param placeId the place id
+     * @return the place live data
+     */
+    public LiveData<Place> getPlaceFromPlaceId(int placeId) {
+        return placeDatabase.getPlaceFromPLaceIdLiveData(placeId);
+    }
+    
+    /**
+     * Gets basic listing of registered places.
+     *
+     * @return the basic listing live data
+     */
+    public LiveData<List<Geolocation>> getBasicListingLiveData() {
+        return mPlaceDao.getBasicListing();
+    }
+    
+    /**
      * Insert.
      *
      * @param place the place
