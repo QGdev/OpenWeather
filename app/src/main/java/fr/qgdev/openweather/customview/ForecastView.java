@@ -31,6 +31,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -412,11 +413,12 @@ public abstract class ForecastView extends View {
 	
 	
 	/**
-	 * drawWeatherConditionIcons(@NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height, boolean isDayTime)
+	 * drawWeatherConditionIcons(@NonNull Context context, @NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height, boolean isDayTime)
 	 * <p>
 	 * Used to draw drawable corresponding to weatherCode
 	 * </p>
 	 *
+	 * @param context     Context is used to retrieve drawables
 	 * @param canvas      Elements will be drawn on it
 	 * @param weatherCode Weather code of the weather
 	 * @param top         Where element will be drawn on the y axis
@@ -426,7 +428,7 @@ public abstract class ForecastView extends View {
 	 * @param isDayTime   Describes if it is day time or not
 	 * @apiNote canvas shouldn't be null
 	 */
-	protected void drawWeatherConditionIcons(@NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height, boolean isDayTime) {
+	protected void drawWeatherConditionIcons(@NonNull Context context, @NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height, boolean isDayTime) {
 		//  WEATHER CONDITION DRAWING
 		int weatherIconId;
 		
@@ -568,20 +570,21 @@ public abstract class ForecastView extends View {
 			
 		}
 		
-		Drawable drawable = AppCompatResources.getDrawable(context, weatherIconId);
+		Drawable drawable = getDrawable(context, weatherIconId);
 		drawable.setBounds(left, top, left + width, top + height);
 		drawable.draw(canvas);
 	}
 	
 	
 	/**
-	 * drawWeatherConditionIcons(@NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height)
+	 * drawWeatherConditionIcons(@NonNull Context context, @NonNull Canvas canvas, int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height)
 	 * <p>
 	 * Used to draw drawable corresponding to weatherCode<br>
 	 * Exactly the same as rawWeatherConditionIcons(@NonNullCanvas, int, @Px int, @Px int, @Px int, @Px int, boolean)<br>
 	 * But the boolean parameter is set to true so it will only draw dayTime icons
 	 * </p>
 	 *
+	 * @param context     Context is used to retrieve drawables
 	 * @param canvas      Elements will be drawn on it
 	 * @param weatherCode Weather code of the weather
 	 * @param top         Where element will be drawn on the y axis
@@ -589,8 +592,8 @@ public abstract class ForecastView extends View {
 	 * @param width       The width of the element
 	 * @param height      The height of the element
 	 */
-	protected void drawWeatherConditionIcons(@NonNull Canvas canvas, @Px int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height) {
-		this.drawWeatherConditionIcons(canvas, weatherCode, top, left, width, height, true);
+	protected void drawWeatherConditionIcons(@NonNull Context context, @NonNull Canvas canvas, @Px int weatherCode, @Px int top, @Px int left, @Px int width, @Px int height) {
+		this.drawWeatherConditionIcons(context, canvas, weatherCode, top, left, width, height, true);
 	}
 	
 	
@@ -825,5 +828,23 @@ public abstract class ForecastView extends View {
 				  TypedValue.COMPLEX_UNIT_DIP,
 				  dip,
 				  getResources().getDisplayMetrics());
+	}
+	
+	/**
+	 * getDrawable(@NonNull Context context, @DrawableRes int drawableId)
+	 * <p>
+	 * Just a function do get drawables with AppCompatResources
+	 * </p>
+	 *
+	 * @param context    The context needed to retrieve drawable
+	 * @param drawableId The resource ID of the asked drawable
+	 * @return The asked drawable
+	 * @throws NullPointerException If the drawable hasn't been found, an exception is thrown
+	 */
+	protected Drawable getDrawable(@NonNull Context context, @DrawableRes int drawableId) {
+		Drawable drawable = AppCompatResources.getDrawable(context, drawableId);
+		if (drawable == null) throw new NullPointerException("Cannot find asked drawable");
+		
+		return drawable;
 	}
 }

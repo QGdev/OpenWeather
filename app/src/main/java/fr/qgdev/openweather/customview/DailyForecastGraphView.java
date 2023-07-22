@@ -20,6 +20,9 @@
 
 package fr.qgdev.openweather.customview;
 
+import static fr.qgdev.openweather.repositories.FormattingService.FormattingSpec.UNIT_AND_SPACE;
+import static fr.qgdev.openweather.repositories.FormattingService.FormattingSpec.UNIT_BUT_NO_SPACE;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -33,6 +36,7 @@ import androidx.annotation.Px;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -284,28 +288,28 @@ public class DailyForecastGraphView extends ForecastView {
 	
 	
 	/**
-	 * drawMaxMinTemperatures(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
+	 * drawMaxMinTemperatures(@NonNull Context context, @NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
 	 * Used to draw min and max temperatures of the day
 	 * </p>
 	 *
+	 * @param context              Context in order to retrieve drawables
 	 * @param canvas               Elements will be drawn on it
 	 * @param dailyWeatherForecast Where data will be taken
 	 * @param top                  Where temperatures will be drawn on the y axis
 	 * @param left                 Where temperatures will be drawn on the x axis
 	 */
-	private void drawMaxMinTemperatures(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, int top, int left) {
-		//  Temperatures
+	private void drawMaxMinTemperatures(@NonNull Context context, @NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, int top, int left) {
 		drawTextWithDrawable(canvas,
-				  getResources().getDrawable(this.context.getResources().getIdentifier("temperature_maximum_material", "drawable", this.context.getPackageName()), null),
-				  formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMaximum(), true),
+				  getDrawable(context, R.drawable.temperature_maximum_material),
+				  formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMaximum(), UNIT_AND_SPACE),
 				  top,
 				  left,
 				  dpToPx(10),
 				  this.secondaryPaint);
 		drawTextWithDrawable(canvas,
-				  getResources().getDrawable(this.context.getResources().getIdentifier("temperature_minimum_material", "drawable", this.context.getPackageName()), null),
-				  formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMinimum(), true),
+				  getDrawable(context, R.drawable.temperature_minimum_material),
+				  formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMinimum(), UNIT_AND_SPACE),
 				  top + dpToPx(30),
 				  left,
 				  dpToPx(10),
@@ -330,20 +334,28 @@ public class DailyForecastGraphView extends ForecastView {
 		float textY2 = top + dpToPx(25);
 		//  Temperatures
 		////    Morning
-		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMorning(), false), textX, textY1, this.primaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMorningFeelsLike(), false), textX, textY2, this.secondaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMorning(), UNIT_BUT_NO_SPACE),
+				  textX, textY1, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureMorningFeelsLike(), UNIT_BUT_NO_SPACE),
+				  textX, textY2, this.secondaryPaint);
 		textX += quarterColumnWidth;
 		////    Noon
-		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureDay(), false), textX, textY1, this.primaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureDayFeelsLike(), false), textX, textY2, this.secondaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureDay(), UNIT_BUT_NO_SPACE),
+				  textX, textY1, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureDayFeelsLike(), UNIT_BUT_NO_SPACE),
+				  textX, textY2, this.secondaryPaint);
 		textX += quarterColumnWidth;
 		////    Evening
-		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureEvening(), false), textX, textY1, this.primaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureEveningFeelsLike(), false), textX, textY2, this.secondaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureEvening(), UNIT_BUT_NO_SPACE),
+				  textX, textY1, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureEveningFeelsLike(), UNIT_BUT_NO_SPACE),
+				  textX, textY2, this.secondaryPaint);
 		textX += quarterColumnWidth;
 		////    Night
-		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureNight(), false), textX, textY1, this.primaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureNightFeelsLike(), false), textX, textY2, this.secondaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureNight(), UNIT_BUT_NO_SPACE),
+				  textX, textY1, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getTemperatureNightFeelsLike(), UNIT_BUT_NO_SPACE),
+				  textX, textY2, this.secondaryPaint);
 	}
 	
 	
@@ -407,18 +419,19 @@ public class DailyForecastGraphView extends ForecastView {
 	
 	
 	/**
-	 * drawEnvironmentalVariables(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left, Paint paint)
+	 * drawEnvironmentalVariables(@NonNull Context context, @NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left, Paint paint)
 	 * <p>
 	 * Used to draw environmental variables such as pressure, cloudiness, humidity, dewPoint, sunrise, sunset, UVIndex Icon, moonrise, moonset and moonphase Icon
 	 * </p>
 	 *
+	 * @param context              Context is used to retrieve drawables
 	 * @param canvas               Elements will be drawn on it
 	 * @param dailyWeatherForecast Where data will be taken
 	 * @param top                  Where elements will be drawn on the y axis
 	 * @param left                 Where elements will be drawn on the x axis
 	 * @param paint                Paint used to draw text elements
 	 */
-	private void drawEnvironmentalVariables(@NonNull Canvas canvas, @NonNull DailyWeatherForecast dailyWeatherForecast, @Px int top, @Px int left, @NonNull Paint paint) {
+	private void drawEnvironmentalVariables(@NonNull Context context, @NonNull Canvas canvas, @NonNull DailyWeatherForecast dailyWeatherForecast, @Px int top, @Px int left, @NonNull Paint paint) {
 		int firstColumn = left + dpToPx(20);
 		int secondColumn = firstColumn + halfColumnWidth;
 		int textY1 = top;
@@ -428,67 +441,116 @@ public class DailyForecastGraphView extends ForecastView {
 		int textY5 = textY4 + dpToPx(35);
 		int textY6 = textY5 + dpToPx(35);
 		
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.barometer_material), formattingService.getFormattedPressure(dailyWeatherForecast.getPressure(), true), textY1, firstColumn, dpToPx(5), paint);
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.cloudy_material), String.format("%d %%", dailyWeatherForecast.getCloudiness()), textY1, secondColumn, dpToPx(5), paint);
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.humidity_material), String.format("%d %%", dailyWeatherForecast.getHumidity()), textY2, firstColumn, dpToPx(5), paint);
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.dew_point_material), formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getDewPoint(), true), textY2, secondColumn, dpToPx(5), paint);
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.sunrise_material), formattingService.getFormattedTime(new Date(dailyWeatherForecast.getSunrise()), timeZone), textY3, firstColumn, dpToPx(5), paint);
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.sunset_material), formattingService.getFormattedTime(new Date(dailyWeatherForecast.getSunset()), timeZone), textY4, firstColumn, dpToPx(5), paint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.barometer_material),
+				  formattingService.getFormattedPressure(dailyWeatherForecast.getPressure(), UNIT_AND_SPACE),
+				  textY1, firstColumn, dpToPx(5), paint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.cloudy_material),
+				  String.format(Locale.US, "%d %%", dailyWeatherForecast.getCloudiness()),
+				  textY1, secondColumn, dpToPx(5), paint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.humidity_material),
+				  String.format(Locale.US, "%d %%", dailyWeatherForecast.getHumidity()),
+				  textY2, firstColumn, dpToPx(5), paint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.dew_point_material),
+				  formattingService.getFloatFormattedTemperature(dailyWeatherForecast.getDewPoint(), UNIT_AND_SPACE),
+				  textY2, secondColumn, dpToPx(5), paint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.sunrise_material),
+				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getSunrise()), timeZone),
+				  textY3, firstColumn, dpToPx(5), paint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.sunset_material),
+				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getSunset()), timeZone),
+				  textY4, firstColumn, dpToPx(5), paint);
+		
 		drawUvIndex(canvas, dailyWeatherForecast.getUvIndex(), secondColumn, textY3, dpToPx(70));
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.moonrise_material), formattingService.getFormattedTime(new Date(dailyWeatherForecast.getMoonrise()), timeZone), textY5, firstColumn, dpToPx(5), paint);
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.moonset_material), formattingService.getFormattedTime(new Date(dailyWeatherForecast.getMoonset()), timeZone), textY6, firstColumn, dpToPx(5), paint);
+		
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.moonrise_material),
+				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getMoonrise()), timeZone),
+				  textY5, firstColumn, dpToPx(5), paint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.moonset_material),
+				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getMoonset()), timeZone),
+				  textY6, firstColumn, dpToPx(5), paint);
+		
 		drawMoonPhase(canvas, dailyWeatherForecast.getMoonPhase(), secondColumn, textY5, dpToPx(70));
 	}
 	
 	
 	/**
-	 * drawWindVariables(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
+	 * drawWindVariables(@NonNull Context context, @NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
 	 * Used to draw wind variables (wind speed, wind gust speed, wind direction)
 	 * </p>
 	 *
+	 * @param context              Context is used to retrieve drawables
 	 * @param canvas               Elements will be drawn on it
 	 * @param dailyWeatherForecast Where data will be taken
 	 * @param top                  Where elements will be drawn on the y axis
 	 * @param left                 Where elements will be drawn on the x axis
 	 */
-	private void drawWindVariables(@NonNull Canvas canvas, @NonNull DailyWeatherForecast dailyWeatherForecast, @Px int top, @Px int left) {
+	private void drawWindVariables(@NonNull Context context, @NonNull Canvas canvas, @NonNull DailyWeatherForecast dailyWeatherForecast, @Px int top, @Px int left) {
 		int firstColumn = left + dpToPx(20);
 		int secondColumn = firstColumn + halfColumnWidth;
 		int textY = top + dpToPx(30);
 		int textY2 = textY + dpToPx(40);
 		int textY3 = textY2 + dpToPx(20);
 		
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.windsock_material), formattingService.getFloatFormattedSpeed(dailyWeatherForecast.getWindSpeed(), true), textY, firstColumn, dpToPx(5), this.primaryPaint);
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.wind_material), formattingService.getFloatFormattedSpeed(dailyWeatherForecast.getWindGustSpeed(), true), textY, secondColumn, dpToPx(5), this.secondaryPaint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.windsock_material),
+				  formattingService.getFloatFormattedSpeed(dailyWeatherForecast.getWindSpeed(), UNIT_AND_SPACE),
+				  textY, firstColumn, dpToPx(5), this.primaryPaint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.wind_material),
+				  formattingService.getFloatFormattedSpeed(dailyWeatherForecast.getWindGustSpeed(), UNIT_AND_SPACE),
+				  textY, secondColumn, dpToPx(5), this.secondaryPaint);
 		
-		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(dailyWeatherForecast.getWindDirection()), left + quarterColumnWidth, textY2, this.primaryPaint);
-		canvas.drawText(formattingService.getFormattedDirectionInDegrees(dailyWeatherForecast.getWindDirection()), left + quarterColumnWidth, textY3, this.primaryPaint);
+		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(dailyWeatherForecast.getWindDirection()),
+				  left + quarterColumnWidth, textY2, this.primaryPaint);
+		canvas.drawText(formattingService.getFormattedDirectionInDegrees(dailyWeatherForecast.getWindDirection()),
+				  left + quarterColumnWidth, textY3, this.primaryPaint);
 		
-		drawWindDirectionIcon(canvas, dailyWeatherForecast.getWindDirection(), left + halfColumnWidth + quarterColumnWidth - dpToPx(20), textY + dpToPx(30), dpToPx(35));
+		drawWindDirectionIcon(canvas,
+				  dailyWeatherForecast.getWindDirection(),
+				  left + halfColumnWidth + quarterColumnWidth - dpToPx(20),
+				  textY + dpToPx(30), dpToPx(35));
 	}
 	
 	
 	/**
-	 * drawPrecipitationsVariables(@NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
+	 * drawPrecipitationsVariables(@NonNull Context context, @NonNull Canvas canvas, DailyWeatherForecast dailyWeatherForecast, float top, float left)
 	 * <p>
 	 * Used to draw wind variables (wind speed, wind gust speed, wind direction)
 	 * </p>
 	 *
+	 * @param context              Context is used to retrieve drawables
 	 * @param canvas               Elements will be drawn on it
 	 * @param dailyWeatherForecast Where data will be taken
 	 * @param top                  Where elements will be drawn on the y axis
 	 * @param left                 Where elements will be drawn on the x axis
 	 */
-	private void drawPrecipitationsVariables(@NonNull Canvas canvas, @NonNull DailyWeatherForecast dailyWeatherForecast, @Px int top, @Px int left) {
+	private void drawPrecipitationsVariables(@NonNull Context context, @NonNull Canvas canvas, @NonNull DailyWeatherForecast dailyWeatherForecast, @Px int top, @Px int left) {
 		int firstColumn = left + dpToPx(20);
 		int secondColumn = firstColumn + halfColumnWidth;
 		int textY = top;
 		int textY2 = textY + dpToPx(35);
 		
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.rain_material), formattingService.getFloatFormattedShortDistance(dailyWeatherForecast.getRain(), true), textY, firstColumn, dpToPx(5), this.tertiaryPaint);
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.snow_material), formattingService.getFloatFormattedShortDistance(dailyWeatherForecast.getSnow(), true), textY, secondColumn, dpToPx(5), this.primaryPaint);
-		drawTextWithDrawable(canvas, context.getDrawable(R.drawable.umbrella_material), String.format("%d %%", BigDecimal.valueOf(dailyWeatherForecast.getPop() * 100).intValue()), textY2, firstColumn, dpToPx(5), this.secondaryPaint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.rain_material),
+				  formattingService.getFloatFormattedShortDistance(dailyWeatherForecast.getRain(), UNIT_AND_SPACE),
+				  textY, firstColumn, dpToPx(5), this.tertiaryPaint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.snow_material),
+				  formattingService.getFloatFormattedShortDistance(dailyWeatherForecast.getSnow(), UNIT_AND_SPACE),
+				  textY, secondColumn, dpToPx(5), this.primaryPaint);
+		drawTextWithDrawable(canvas,
+				  getDrawable(context, R.drawable.umbrella_material),
+				  String.format(Locale.US, "%d %%", BigDecimal.valueOf(dailyWeatherForecast.getPop() * 100).intValue()),
+				  textY2, firstColumn, dpToPx(5), this.secondaryPaint);
 	}
 	
 	
@@ -505,20 +567,26 @@ public class DailyForecastGraphView extends ForecastView {
 	protected void onDraw(@NonNull Canvas canvas) {
 		super.onDraw(canvas);
 		
-		int leftOfColumn = 0, halfOfColumnWidth = halfColumnWidth, quarterOfColumnWidth = quarterColumnWidth, sixthOfColumnWidth = sixthColumnWidth;
+		int leftOfColumn = 0;
+		int halfOfColumnWidth = halfColumnWidth;
+		int quarterOfColumnWidth = quarterColumnWidth;
+		int sixthOfColumnWidth = sixthColumnWidth;
 		
 		drawStructureAndDate(canvas, dpToPx(15), dpToPx(35), dpToPx(125), dpToPx(230), dailyWeatherForecastList, timeZone);
 		
 		for (DailyWeatherForecast dailyWeatherForecast : dailyWeatherForecastList) {
-			drawWeatherConditionIcons(canvas, dailyWeatherForecast.getWeatherCode(), dpToPx(30), sixthOfColumnWidth, dpToPx(70), dpToPx(70));
-			drawMaxMinTemperatures(canvas, dailyWeatherForecast, dpToPx(30), halfOfColumnWidth);
+			drawWeatherConditionIcons(context,
+					  canvas,
+					  dailyWeatherForecast.getWeatherCode(),
+					  dpToPx(30), sixthOfColumnWidth, dpToPx(70), dpToPx(70));
+			drawMaxMinTemperatures(context, canvas, dailyWeatherForecast, dpToPx(30), halfOfColumnWidth);
 			
 			drawTemperatures(canvas, dailyWeatherForecast, dpToPx(210), leftOfColumn);
 			
-			drawEnvironmentalVariables(canvas, dailyWeatherForecast, dpToPx(250), leftOfColumn, this.primaryPaint);
-			drawWindVariables(canvas, dailyWeatherForecast, dpToPx(485), leftOfColumn);
+			drawEnvironmentalVariables(context, canvas, dailyWeatherForecast, dpToPx(250), leftOfColumn, this.primaryPaint);
+			drawWindVariables(context, canvas, dailyWeatherForecast, dpToPx(485), leftOfColumn);
 			
-			drawPrecipitationsVariables(canvas, dailyWeatherForecast, dpToPx(650), leftOfColumn);
+			drawPrecipitationsVariables(context, canvas, dailyWeatherForecast, dpToPx(650), leftOfColumn);
 			
 			leftOfColumn += columnWidth;
 			sixthOfColumnWidth += columnWidth;

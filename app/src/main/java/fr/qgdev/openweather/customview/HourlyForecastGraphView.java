@@ -20,6 +20,9 @@
 
 package fr.qgdev.openweather.customview;
 
+import static fr.qgdev.openweather.repositories.FormattingService.FormattingSpec.UNIT_AND_SPACE;
+import static fr.qgdev.openweather.repositories.FormattingService.FormattingSpec.UNIT_BUT_NO_SPACE;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -36,6 +39,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -233,7 +237,7 @@ public class HourlyForecastGraphView extends ForecastView {
 	
 	
 	/**
-	 * drawStructureAndDate(@NonNull Canvas canvas, @NonNull ArrayList<HourlyWeatherForecast> hourlyWeatherForecastList, @NonNull TimeZone timeZone)
+	 * drawStructureAndDate(@NonNull Canvas canvas, @NonNull List<HourlyWeatherForecast> hourlyWeatherForecastList, @NonNull TimeZone timeZone)
 	 * <p>
 	 * Used to draw principal elements of the view such as date, day moments and separators
 	 * </p>
@@ -270,8 +274,10 @@ public class HourlyForecastGraphView extends ForecastView {
 			if (previousItemDay != currentItemDay) {
 				previousItemDay = currentItemDay;
 				canvas.drawLine(xDiv, 0, xDiv, canvas.getHeight(), this.datePaint);
-				canvas.drawText(formattingService.getFormattedShortDayName(date, timeZone), xDiv + 10F, dateFirstLineY, this.datePaint);
-				canvas.drawText(formattingService.getFormattedDayMonth(date, timeZone), xDiv + 10F, dateSecondLineY, this.datePaint);
+				canvas.drawText(formattingService.getFormattedShortDayName(date, timeZone),
+						  xDiv + 10F, dateFirstLineY, this.datePaint);
+				canvas.drawText(formattingService.getFormattedDayMonth(date, timeZone),
+						  xDiv + 10F, dateSecondLineY, this.datePaint);
 			}
 			//  Draw hour div
 			else {
@@ -297,9 +303,11 @@ public class HourlyForecastGraphView extends ForecastView {
 	 * @param middleOfColumnX              Where temperatures will be drawn on the x axis
 	 */
 	private void drawTemperatures(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
-		//Temperatures
-		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.getTemperature(), false), middleOfColumnX, y, this.primaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.getTemperatureFeelsLike(), false), middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.getTemperature(), UNIT_BUT_NO_SPACE),
+				  middleOfColumnX, y, this.primaryPaint);
+		
+		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.getTemperatureFeelsLike(), UNIT_BUT_NO_SPACE),
+				  middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
 	}
 	
 	
@@ -315,7 +323,8 @@ public class HourlyForecastGraphView extends ForecastView {
 	 * @param middleOfColumnX              Where pressure will be drawn on the x axis
 	 */
 	private void drawPressure(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
-		canvas.drawText(formattingService.getFormattedPressure(currentHourlyWeatherForecast.getPressure(), false), middleOfColumnX, y, this.primaryPaint);
+		canvas.drawText(formattingService.getFormattedPressure(currentHourlyWeatherForecast.getPressure(), UNIT_BUT_NO_SPACE),
+				  middleOfColumnX, y, this.primaryPaint);
 	}
 	
 	
@@ -331,7 +340,8 @@ public class HourlyForecastGraphView extends ForecastView {
 	 * @param middleOfColumnX              Where dewPoint will be drawn on the x axis
 	 */
 	private void drawDewPoint(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
-		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.getDewPoint(), false), middleOfColumnX, y, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedTemperature(currentHourlyWeatherForecast.getDewPoint(), UNIT_BUT_NO_SPACE),
+				  middleOfColumnX, y, this.primaryPaint);
 	}
 	
 	
@@ -347,7 +357,8 @@ public class HourlyForecastGraphView extends ForecastView {
 	 * @param middleOfColumnX              Where visibility distance will be drawn on the x axis
 	 */
 	private void drawVisibility(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
-		canvas.drawText(formattingService.getFloatFormattedDistance(currentHourlyWeatherForecast.getVisibility(), true), middleOfColumnX, y, this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedDistance(currentHourlyWeatherForecast.getVisibility(), UNIT_AND_SPACE),
+				  middleOfColumnX, y, this.primaryPaint);
 	}
 	
 	
@@ -363,8 +374,11 @@ public class HourlyForecastGraphView extends ForecastView {
 	 * @param middleOfColumnX              Where wind speed will be drawn on the x axis
 	 */
 	private void drawWindSpeed(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
-		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.getWindSpeed(), true), middleOfColumnX, y, this.primaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.getWindGustSpeed(), true), middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.getWindSpeed(), UNIT_AND_SPACE),
+				  middleOfColumnX, y, this.primaryPaint);
+		
+		canvas.drawText(formattingService.getFloatFormattedSpeed(currentHourlyWeatherForecast.getWindGustSpeed(), UNIT_AND_SPACE),
+				  middleOfColumnX, y + dpToPx(25), this.secondaryPaint);
 	}
 	
 	
@@ -384,8 +398,11 @@ public class HourlyForecastGraphView extends ForecastView {
 		int middle = width / 2;
 		drawWindDirectionIcon(canvas, windDirection, left + dpToPx(5), top, width - dpToPx(15));
 		
-		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(windDirection), left + middle, top + width + dpToPx(5), this.primaryPaint);
-		canvas.drawText(formattingService.getFormattedDirectionInDegrees(windDirection), left + middle, top + width + dpToPx(25), this.primaryPaint);
+		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(windDirection),
+				  left + middle, top + width + dpToPx(5), this.primaryPaint);
+		
+		canvas.drawText(formattingService.getFormattedDirectionInDegrees(windDirection),
+				  left + middle, top + width + dpToPx(25), this.primaryPaint);
 	}
 	
 	
@@ -490,11 +507,15 @@ public class HourlyForecastGraphView extends ForecastView {
 	 * @param middleOfColumnX              Where precipitations will be drawn on the x axis
 	 */
 	private void drawPrecipitations(@NonNull Canvas canvas, @NonNull HourlyWeatherForecast currentHourlyWeatherForecast, @Px int y, @Px int middleOfColumnX) {
-		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.getRain(), true), middleOfColumnX, y, this.tertiaryPaint);
-		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.getSnow(), true), middleOfColumnX, y + dpToPx(25), this.primaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.getRain(), UNIT_AND_SPACE),
+				  middleOfColumnX, y, this.tertiaryPaint);
 		
-		canvas.drawText(String.format("%d %%", BigDecimal.valueOf(currentHourlyWeatherForecast.getPop() * 100).intValue()), middleOfColumnX, y + dpToPx(50), this.secondaryPaint);
+		canvas.drawText(formattingService.getFloatFormattedShortDistance(currentHourlyWeatherForecast.getSnow(), UNIT_AND_SPACE),
+				  middleOfColumnX, y + dpToPx(25), this.primaryPaint);
 		
+		int convertedPopValue = BigDecimal.valueOf(currentHourlyWeatherForecast.getPop() * 100).intValue();
+		canvas.drawText(String.format(Locale.US, "%d %%", convertedPopValue),
+				  middleOfColumnX, y + dpToPx(50), this.secondaryPaint);
 	}
 	
 	
@@ -519,22 +540,48 @@ public class HourlyForecastGraphView extends ForecastView {
 		for (int index = 0; index < hourlyWeatherForecastList.size(); index++) {
 			currentHourlyWeatherForecast = hourlyWeatherForecastList.get(index);
 			
-			drawWeatherConditionIcons(canvas, currentHourlyWeatherForecast.getWeatherCode(), dpToPx(70), drawableX, dpToPx(50), dpToPx(50), isDayTime[index]);
+			drawWeatherConditionIcons(context,
+					  canvas,
+					  currentHourlyWeatherForecast.getWeatherCode(),
+					  dpToPx(70), drawableX, dpToPx(50), dpToPx(50), isDayTime[index]);
 			
-			drawTemperatures(canvas, currentHourlyWeatherForecast, dpToPx(140), halfWidthX);
-			canvas.drawText(String.format("%d%%", currentHourlyWeatherForecast.getHumidity()), halfWidthX, dpToPx(245), this.tertiaryPaint);
-			drawPressure(canvas, currentHourlyWeatherForecast, dpToPx(310), halfWidthX);
+			drawTemperatures(canvas,
+					  currentHourlyWeatherForecast,
+					  dpToPx(140), halfWidthX);
 			
-			drawUvIndex(canvas, currentHourlyWeatherForecast.getUvIndex(), drawableX, dpToPx(360), dpToPx(50));
+			canvas.drawText(String.format(Locale.US, "%d%%", currentHourlyWeatherForecast.getHumidity()),
+					  halfWidthX, dpToPx(245), this.tertiaryPaint);
 			
-			drawDewPoint(canvas, currentHourlyWeatherForecast, dpToPx(435), halfWidthX);
-			canvas.drawText(String.format("%d%%", currentHourlyWeatherForecast.getCloudiness()), halfWidthX, dpToPx(465), this.primaryPaint);
-			drawVisibility(canvas, currentHourlyWeatherForecast, dpToPx(495), halfWidthX);
+			drawPressure(canvas,
+					  currentHourlyWeatherForecast,
+					  dpToPx(310), halfWidthX);
 			
-			drawWindSpeed(canvas, currentHourlyWeatherForecast, dpToPx(530), halfWidthX);
-			drawWindDirection(canvas, currentHourlyWeatherForecast.getWindDirection(), dpToPx(620), drawableX, dpToPx(50));
+			drawUvIndex(canvas,
+					  currentHourlyWeatherForecast.getUvIndex(),
+					  drawableX, dpToPx(360), dpToPx(50));
 			
-			drawPrecipitations(canvas, currentHourlyWeatherForecast, dpToPx(720), halfWidthX);
+			drawDewPoint(canvas,
+					  currentHourlyWeatherForecast,
+					  dpToPx(435), halfWidthX);
+			
+			canvas.drawText(String.format(Locale.US, "%d%%", currentHourlyWeatherForecast.getCloudiness()),
+					  halfWidthX, dpToPx(465), this.primaryPaint);
+			
+			drawVisibility(canvas,
+					  currentHourlyWeatherForecast,
+					  dpToPx(495), halfWidthX);
+			
+			drawWindSpeed(canvas,
+					  currentHourlyWeatherForecast,
+					  dpToPx(530), halfWidthX);
+			
+			drawWindDirection(canvas,
+					  currentHourlyWeatherForecast.getWindDirection(),
+					  dpToPx(620), drawableX, dpToPx(50));
+			
+			drawPrecipitations(canvas,
+					  currentHourlyWeatherForecast,
+					  dpToPx(720), halfWidthX);
 			
 			halfWidthX += columnWidth;
 			drawableX += columnWidth;

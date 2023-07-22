@@ -22,6 +22,7 @@ package fr.qgdev.openweather.adapter;
 
 import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.COMPACT;
 import static fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter.ViewType.EXTENDED;
+import static fr.qgdev.openweather.repositories.FormattingService.FormattingSpec.UNIT_AND_SPACE;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -441,7 +442,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			setDrawableCompoundTextView(context, this.windGustSpeedTextView, R.drawable.wind_material);
 			setDrawableCompoundTextView(context, this.humidityTextView, R.drawable.humidity_material);
 			setDrawableCompoundTextView(context, this.pressureTextView, R.drawable.barometer_material);
-			setDrawableCompoundTextView(context, this.visibilityTextView, R.drawable.visibility_24dp);
+			setDrawableCompoundTextView(context, this.visibilityTextView, R.drawable.visibility);
 			setDrawableCompoundTextView(context, this.sunriseTextView, R.drawable.sunrise_material);
 			setDrawableCompoundTextView(context, this.sunsetTextView, R.drawable.sunset_material);
 			setDrawableCompoundTextView(context, this.cloudinessTextView, R.drawable.cloudy_material);
@@ -637,8 +638,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			CurrentWeather currentWeather = place.getCurrentWeather();
 			AirQuality airQuality = place.getAirQuality();
 			
-			temperatureTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.getTemperature(), true));
-			temperatureFeelsLikeTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.getTemperatureFeelsLike(), true));
+			temperatureTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.getTemperature(), UNIT_AND_SPACE));
+			temperatureFeelsLikeTextView.setText(formattingService.getFloatFormattedTemperature(currentWeather.getTemperatureFeelsLike(), UNIT_AND_SPACE));
 			
 			weatherDescription.setText(currentWeather.getWeatherDescription());
 			
@@ -786,23 +787,23 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			windDirectionTextView.setText(formattingService.getFormattedDirection(currentWeather.getWindDirection(), currentWeather.isWindDirectionReadable()));
 			
 			////  Wind speed and Wind gust Speed
-			windSpeedTextView.setText(formattingService.getIntFormattedSpeed(currentWeather.getWindSpeed(), true));
-			windGustSpeedTextView.setText(formattingService.getIntFormattedSpeed(currentWeather.getWindGustSpeed(), true));
+			windSpeedTextView.setText(formattingService.getIntFormattedSpeed(currentWeather.getWindSpeed(), UNIT_AND_SPACE));
+			windGustSpeedTextView.setText(formattingService.getIntFormattedSpeed(currentWeather.getWindGustSpeed(), UNIT_AND_SPACE));
 			
 			//  Humidity
-			humidityTextView.setText(String.format("%d %%", currentWeather.getHumidity()));
+			humidityTextView.setText(String.format(Locale.US, "%d %%", currentWeather.getHumidity()));
 			
 			//  Pressure
-			pressureTextView.setText(formattingService.getFormattedPressure(currentWeather.getPressure(), true));
+			pressureTextView.setText(formattingService.getFormattedPressure(currentWeather.getPressure(), UNIT_AND_SPACE));
 			
 			//  Visibility
-			visibilityTextView.setText(formattingService.getIntFormattedDistance(currentWeather.getVisibility(), true));
+			visibilityTextView.setText(formattingService.getIntFormattedDistance(currentWeather.getVisibility(), UNIT_AND_SPACE));
 			
 			//  Sunrise and sunset
 			sunriseTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.getSunrise()), place.getProperties().getTimeZone()));
 			sunsetTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.getSunset()), place.getProperties().getTimeZone()));
 			
-			cloudinessTextView.setText(String.format("%d%%", currentWeather.getCloudiness()));
+			cloudinessTextView.setText(String.format(Locale.US, "%d%%", currentWeather.getCloudiness()));
 			
 			//	Air quality
 			airQualityIndexBar.setIndexValue(airQuality.getAqi());
@@ -857,8 +858,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			
 			if (thereIsRain || thereIsSnow) {
 				precipitationLayout.setVisibility(View.VISIBLE);
-				rainTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.getRain(), true));
-				snowTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.getSnow(), true));
+				rainTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.getRain(), UNIT_AND_SPACE));
+				snowTextView.setText(formattingService.getFloatFormattedShortDistance(currentWeather.getSnow(), UNIT_AND_SPACE));
 				
 				precipitationLayout.findViewById(R.id.rain_precipitations).setVisibility(thereIsRain ? View.VISIBLE : View.GONE);
 				precipitationLayout.findViewById(R.id.snow_precipitations).setVisibility(thereIsSnow ? View.VISIBLE : View.GONE);
