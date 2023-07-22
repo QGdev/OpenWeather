@@ -1,16 +1,36 @@
+<!--
+  ~  Copyright (c) 2019 - 2023
+  ~  QGdev - Quentin GOMES DOS REIS
+  ~
+  ~  This file is part of OpenWeather.
+  ~
+  ~  OpenWeather is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  OpenWeather is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+  -->
+
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="128dp"
-    android:height="128dp"
+    android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="511.998"
     android:viewportHeight="511.998">
-  <path
-      android:pathData="m399.297,348.641c-53.598,0 -97.203,-43.604 -97.203,-97.202 0,-30.492 24.169,-76.407 38.577,-101.063 9.546,-16.338 19.751,-31.784 28.735,-43.495 13.244,-17.264 21.065,-23.383 29.891,-23.383s16.647,6.119 29.891,23.383c8.983,11.711 19.188,27.157 28.735,43.495 14.407,24.655 38.577,70.57 38.577,101.063 -0.001,53.597 -43.606,97.202 -97.203,97.202z"
-      android:fillColor="#525cdd" />
-  <path
-      android:pathData="m198.999,511.998c-101.182,0 -183.5,-82.317 -183.5,-183.5 0,-60.987 53.795,-159.633 76.924,-199.214 19.247,-32.938 39.773,-64.018 57.799,-87.517 29.565,-38.539 40.68,-41.767 48.777,-41.767s19.212,3.228 48.776,41.768c18.026,23.499 38.553,54.579 57.8,87.517 23.128,39.581 76.924,138.227 76.924,199.214 0,101.182 -82.318,183.499 -183.5,183.499z"
-      android:fillColor="#7dd5f4" />
-  <path
-      android:pathData="m305.575,129.284c-19.247,-32.938 -39.773,-64.018 -57.8,-87.517 -29.564,-38.539 -40.679,-41.767 -48.776,-41.767v511.998c101.182,0 183.5,-82.317 183.5,-183.5 0,-60.987 -53.795,-159.633 -76.924,-199.214z"
+    <path
+        android:pathData="m399.297,348.641c-53.598,0 -97.203,-43.604 -97.203,-97.202 0,-30.492 24.169,-76.407 38.577,-101.063 9.546,-16.338 19.751,-31.784 28.735,-43.495 13.244,-17.264 21.065,-23.383 29.891,-23.383s16.647,6.119 29.891,23.383c8.983,11.711 19.188,27.157 28.735,43.495 14.407,24.655 38.577,70.57 38.577,101.063 -0.001,53.597 -43.606,97.202 -97.203,97.202z"
+        android:fillColor="#525cdd" />
+    <path
+        android:pathData="m198.999,511.998c-101.182,0 -183.5,-82.317 -183.5,-183.5 0,-60.987 53.795,-159.633 76.924,-199.214 19.247,-32.938 39.773,-64.018 57.799,-87.517 29.565,-38.539 40.68,-41.767 48.777,-41.767s19.212,3.228 48.776,41.768c18.026,23.499 38.553,54.579 57.8,87.517 23.128,39.581 76.924,138.227 76.924,199.214 0,101.182 -82.318,183.499 -183.5,183.499z"
+        android:fillColor="#7dd5f4" />
+    <path
+        android:pathData="m305.575,129.284c-19.247,-32.938 -39.773,-64.018 -57.8,-87.517 -29.564,-38.539 -40.679,-41.767 -48.776,-41.767v511.998c101.182,0 183.5,-82.317 183.5,-183.5 0,-60.987 -53.795,-159.633 -76.924,-199.214z"
       android:fillColor="#4793ff"/>
   <path
       android:pathData="m165.302,401.842c-2.545,0 -5.124,-0.648 -7.486,-2.013 -7.174,-4.142 -9.632,-13.315 -5.49,-20.49l67.366,-116.682c4.142,-7.174 13.315,-9.635 20.49,-5.49 7.174,4.142 9.632,13.315 5.49,20.49l-67.366,116.682c-2.778,4.811 -7.82,7.503 -13.004,7.503z"

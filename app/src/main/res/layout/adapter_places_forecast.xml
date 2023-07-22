@@ -84,7 +84,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="end"
-            android:src="@drawable/ic_expend_menu_icon_24dp"
+            android:src="@drawable/ic_expend_menu_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/colorIcons" />
@@ -150,7 +150,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="end"
-            android:src="@drawable/ic_expend_menu_icon_24dp"
+            android:src="@drawable/ic_expend_menu_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/colorIcons" />

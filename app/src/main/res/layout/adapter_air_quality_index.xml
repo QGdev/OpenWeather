@@ -92,7 +92,7 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="end"
-            android:src="@drawable/ic_expend_menu_icon_24dp"
+            android:src="@drawable/ic_expend_menu_icon"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/colorIcons" />
@@ -201,7 +201,7 @@
                 android:layout_height="24dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="5dp"
-                android:src="@drawable/ic_about_us_24dp"
+                android:src="@drawable/ic_about_us"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/air_quality_gauge_co" />

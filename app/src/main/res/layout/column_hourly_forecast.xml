@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright (c) 2019 - 2023
+  ~  QGdev - Quentin GOMES DOS REIS
+  ~
+  ~  This file is part of OpenWeather.
+  ~
+  ~  OpenWeather is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  OpenWeather is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+  -->
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -12,7 +32,7 @@
         android:layout_height="20dp"
         android:layout_marginTop="20dp"
         app:tint="@color/colorIcons"
-        android:src="@drawable/time_24dp"
+        android:src="@drawable/time"
         android:tooltipText="@string/icon_legend_data_time" />
 
     <ImageView
@@ -84,7 +104,7 @@
         android:layout_height="20dp"
         android:layout_marginTop="10dp"
         app:tint="@color/colorIcons"
-        android:src="@drawable/visibility_24dp"
+        android:src="@drawable/visibility"
         android:tooltipText="@string/icon_legend_visibility" />
 
     <ImageView

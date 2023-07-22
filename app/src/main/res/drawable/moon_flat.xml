@@ -1,16 +1,36 @@
+<!--
+  ~  Copyright (c) 2019 - 2023
+  ~  QGdev - Quentin GOMES DOS REIS
+  ~
+  ~  This file is part of OpenWeather.
+  ~
+  ~  OpenWeather is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  OpenWeather is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+  -->
+
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="128dp"
-    android:height="128dp"
+    android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="512.079"
     android:viewportHeight="512.079">
-  <path
-      android:pathData="m228.04,352.693c-68.712,0 -124.614,-55.901 -124.614,-124.613 0,-68.713 55.902,-124.614 124.614,-124.614s124.614,55.901 124.614,124.614c0,68.711 -55.902,124.613 -124.614,124.613z"
-      android:fillColor="#fdbf00" />
-  <path
-      android:pathData="m228.04,103.465v249.228c68.712,0 124.614,-55.901 124.614,-124.613 0,-68.714 -55.902,-124.615 -124.614,-124.615z"
-      android:fillColor="#ff8856" />
-  <path
-      android:pathData="m228.04,75.691c-8.284,0 -15,-6.716 -15,-15v-45.652c0,-8.284 6.716,-15 15,-15s15,6.716 15,15v45.651c0,8.285 -6.716,15.001 -15,15.001z"
+    <path
+        android:pathData="m228.04,352.693c-68.712,0 -124.614,-55.901 -124.614,-124.613 0,-68.713 55.902,-124.614 124.614,-124.614s124.614,55.901 124.614,124.614c0,68.711 -55.902,124.613 -124.614,124.613z"
+        android:fillColor="#fdbf00" />
+    <path
+        android:pathData="m228.04,103.465v249.228c68.712,0 124.614,-55.901 124.614,-124.613 0,-68.714 -55.902,-124.615 -124.614,-124.615z"
+        android:fillColor="#ff8856" />
+    <path
+        android:pathData="m228.04,75.691c-8.284,0 -15,-6.716 -15,-15v-45.652c0,-8.284 6.716,-15 15,-15s15,6.716 15,15v45.651c0,8.285 -6.716,15.001 -15,15.001z"
       android:fillColor="#fdbf00"/>
   <path
       android:pathData="m60.651,243.078h-45.651c-8.284,0 -15,-6.716 -15,-15s6.716,-15 15,-15h45.651c8.284,0 15,6.716 15,15s-6.716,15 -15,15z"

@@ -1,4 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~  Copyright (c) 2019 - 2023
+  ~  QGdev - Quentin GOMES DOS REIS
+  ~
+  ~  This file is part of OpenWeather.
+  ~
+  ~  OpenWeather is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  OpenWeather is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+  -->
+
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/air_quality_information_dialog"
@@ -27,7 +47,7 @@
                     android:id="@+id/exit_button"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_baseline_close_24"
+                    android:src="@drawable/ic_baseline_close"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -40,7 +60,7 @@
                     android:layout_marginStart="16dp"
                     android:text="@string/title_dialog_air_quality_information"
                     android:textColor="@color/colorFirstText"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/text_size_dialog_title"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/exit_button"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -71,7 +91,7 @@
                 android:layout_marginTop="8dp"
                 android:text="@string/title_air_quality_so2"
                 android:textColor="@color/colorFirstText"
-                android:textSize="20sp" />
+                android:textSize="@dimen/text_size_dialog_title" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -81,7 +101,7 @@
                 android:justificationMode="inter_word"
                 android:text="@string/content_air_quality_so2_information"
                 android:textColor="@color/colorSecondaryText"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_dialog_content" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -89,7 +109,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/title_air_quality_no2"
                 android:textColor="@color/colorFirstText"
-                android:textSize="20sp" />
+                android:textSize="@dimen/text_size_dialog_title" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -99,7 +119,7 @@
                 android:justificationMode="inter_word"
                 android:text="@string/content_air_quality_no2_information"
                 android:textColor="@color/colorSecondaryText"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_dialog_content" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -107,7 +127,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/title_air_quality_pm10"
                 android:textColor="@color/colorFirstText"
-                android:textSize="20sp" />
+                android:textSize="@dimen/text_size_dialog_title" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -117,7 +137,7 @@
                 android:justificationMode="inter_word"
                 android:text="@string/content_air_quality_pm10_information"
                 android:textColor="@color/colorSecondaryText"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_dialog_content" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -126,7 +146,7 @@
                 android:justificationMode="inter_word"
                 android:text="@string/title_air_quality_pm25"
                 android:textColor="@color/colorFirstText"
-                android:textSize="20sp" />
+                android:textSize="@dimen/text_size_dialog_title" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -136,7 +156,7 @@
                 android:justificationMode="inter_word"
                 android:text="@string/content_air_quality_pm25_information"
                 android:textColor="@color/colorSecondaryText"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_dialog_content" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -144,7 +164,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/title_air_quality_o3"
                 android:textColor="@color/colorFirstText"
-                android:textSize="20sp" />
+                android:textSize="@dimen/text_size_dialog_title" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -154,7 +174,7 @@
                 android:justificationMode="inter_word"
                 android:text="@string/content_air_quality_o3_information"
                 android:textColor="@color/colorSecondaryText"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_dialog_content" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -162,7 +182,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/title_air_quality_co"
                 android:textColor="@color/colorFirstText"
-                android:textSize="20sp" />
+                android:textSize="@dimen/text_size_dialog_title" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -172,7 +192,7 @@
                 android:justificationMode="inter_word"
                 android:text="@string/content_air_quality_co_information"
                 android:textColor="@color/colorSecondaryText"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_size_dialog_content" />
 
         </LinearLayout>
 

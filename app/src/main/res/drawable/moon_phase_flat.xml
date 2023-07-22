@@ -1,16 +1,36 @@
+<!--
+  ~  Copyright (c) 2019 - 2023
+  ~  QGdev - Quentin GOMES DOS REIS
+  ~
+  ~  This file is part of OpenWeather.
+  ~
+  ~  OpenWeather is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  OpenWeather is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+  -->
+
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="128dp"
-    android:height="128dp"
+    android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="512"
     android:viewportHeight="512">
-  <path
-      android:pathData="m255.939,512c-141.159,0 -171,-114.841 -171,-256s29.841,-256 171,-256 256,114.841 256,256 -114.842,256 -256,256z"
-      android:fillColor="#fff4f4" />
-  <path
-      android:pathData="m255.939,0v512c141.159,0 256,-114.841 256,-256s-114.842,-256 -256,-256z"
-      android:fillColor="#f6efea" />
-  <path
-      android:pathData="M195.938,262m-60,0a60,60 0,1 1,120 0a60,60 0,1 1,-120 0"
+    <path
+        android:pathData="m255.939,512c-141.159,0 -171,-114.841 -171,-256s29.841,-256 171,-256 256,114.841 256,256 -114.842,256 -256,256z"
+        android:fillColor="#fff4f4" />
+    <path
+        android:pathData="m255.939,0v512c141.159,0 256,-114.841 256,-256s-114.842,-256 -256,-256z"
+        android:fillColor="#f6efea" />
+    <path
+        android:pathData="M195.938,262m-60,0a60,60 0,1 1,120 0a60,60 0,1 1,-120 0"
       android:fillColor="#f6efea"
       android:fillType="evenOdd"/>
   <path
