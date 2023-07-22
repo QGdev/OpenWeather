@@ -47,6 +47,7 @@ import com.google.android.material.card.MaterialCardView;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.customview.AqiBarView;
@@ -172,6 +173,9 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 	 */
 	@Override
 	public void onBindViewHolder(@NonNull PlaceViewHolder holder, final int position) {
+		
+		//	In order to avoid fatal errors when binding is called on a deleted place
+		if (position >= placesViewModel.getPlaces().size()) return;
 		
 		Place place = placesViewModel.getPlaces().get(position);
 		holder.bindData(context, formattingService, this, placesViewModel, place);
