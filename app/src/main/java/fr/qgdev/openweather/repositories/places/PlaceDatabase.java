@@ -167,6 +167,41 @@ public abstract class PlaceDatabase extends RoomDatabase {
         return placeList;
     }
     
+    public LiveData<Place> getPlaceFromOrderLiveData(int order) {
+        MutableLiveData<Place> mutableLiveData = new MutableLiveData<>(null);
+        Runnable runnable = () -> {
+            int id = propertiesDAO().getIDFromPlaceOrder(order);
+            Place place = new Place(geolocationDAO().getFromPlaceID(id),
+                    propertiesDAO().getFromPlaceId(id),
+                    currentWeatherDAO().getFromPlaceID(id),
+                    airQualityDAO().getFromPlaceID(id),
+                    minutelyWeatherForecastDAO().getFromPlaceID(id),
+                    hourlyWeatherForecastDAO().getFromPlaceID(id),
+                    dailyWeatherForecastDAO().getFromPlaceID(id),
+                    weatherAlertDAO().getFromPlaceID(id));
+            mutableLiveData.postValue(place);
+        };
+        new Thread(runnable).start();
+        return mutableLiveData;
+    }
+    
+    public LiveData<Place> getPlaceFromPlaceIdLiveData(int id) {
+        MutableLiveData<Place> mutableLiveData = new MutableLiveData<>(null);
+        Runnable runnable = () -> {
+            Place place = new Place(geolocationDAO().getFromPlaceID(id),
+                    propertiesDAO().getFromPlaceId(id),
+                    currentWeatherDAO().getFromPlaceID(id),
+                    airQualityDAO().getFromPlaceID(id),
+                    minutelyWeatherForecastDAO().getFromPlaceID(id),
+                    hourlyWeatherForecastDAO().getFromPlaceID(id),
+                    dailyWeatherForecastDAO().getFromPlaceID(id),
+                    weatherAlertDAO().getFromPlaceID(id));
+            mutableLiveData.postValue(place);
+        };
+        new Thread(runnable).start();
+        return mutableLiveData;
+    }
+    
     
     private void insertMinutelyWeatherForecasts(List<MinutelyWeatherForecast> minutelyWeatherForecasts) {
         for (MinutelyWeatherForecast minutelyWeatherForecast : minutelyWeatherForecasts) {

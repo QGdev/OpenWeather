@@ -115,7 +115,7 @@ public class AppRepository {
      * @return the place live data
      */
     public LiveData<Place> getPlaceFromPlaceId(int placeId) {
-        return placeDatabase.getPlaceFromPLaceIdLiveData(placeId);
+        return placeDatabase.getPlaceFromPlaceIdLiveData(placeId);
     }
     
     /**
