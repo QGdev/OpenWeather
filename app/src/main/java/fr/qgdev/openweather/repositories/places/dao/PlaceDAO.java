@@ -37,6 +37,6 @@ public abstract class PlaceDAO {
 	@Query("SELECT COUNT(*) FROM properties")
 	public abstract Integer getPlacesCount();
 	
-	@Query("SELECT * FROM geolocation NATURAL JOIN properties")
+	@Query("SELECT * FROM geolocation")
 	public abstract LiveData<List<Geolocation>> getBasicListing();
 }
