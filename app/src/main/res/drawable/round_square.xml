@@ -1,4 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright on artistic content - Freepik
+  ~    Icon made by freepik.com from www.flaticon.com
+  ~    - The main artistic content belongs to Freepik but some artistic modifications may have been made to the original content.
+  ~    - This file is not covered by the license of this project.
+  ~    - The original file has been transformed into Android Drawable format.
+  ~
+  -->
+
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <corners android:radius="10dp" />
     <stroke
