@@ -190,7 +190,7 @@ public class AppRepository {
 	
 	/**
 	 * Generate a random place id that is not already used.
-	 * Check if the id is not already contained in the
+	 * Check if the id is not 0 or already contained in the
 	 * provided list.
 	 *
 	 * @param ids The list of ids of existing ids
@@ -202,9 +202,9 @@ public class AppRepository {
 		int placeID = r.nextInt();
 		int attempts = 0;
 		
-		while (ids.contains(placeID) && attempts < 5) {
-			if (r.nextBoolean() && placeID < Integer.MIN_VALUE + 1000) placeID -= r.nextInt(1000);
-			else placeID += r.nextInt(1000);
+		while ((ids.contains(placeID) || placeID == 0) && attempts < 5) {
+			if (r.nextBoolean() && placeID < Integer.MIN_VALUE + 10) placeID -= r.nextInt(10);
+			else placeID += r.nextInt(10);
 			attempts++;
 		}
 		
