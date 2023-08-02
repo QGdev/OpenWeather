@@ -143,27 +143,24 @@ public abstract class PlaceDatabase extends RoomDatabase {
     }
     
     public List<Place> getAllPlaces() {
-        
+    
         List<Properties> properties = propertiesDAO().getProperties();
         List<Place> placeList = new ArrayList<>();
-
-        databaseWriteExecutor.execute(() -> {
-            
-            if (!properties.isEmpty()) {
-                for (Properties p : properties) {
-                    int id = p.getPlaceId();
-                    Place place = new Place(geolocationDAO().getFromPlaceID(id),
-                            p,
-                            currentWeatherDAO().getFromPlaceID(id),
-                            airQualityDAO().getFromPlaceID(id),
-                            minutelyWeatherForecastDAO().getFromPlaceID(id),
-                            hourlyWeatherForecastDAO().getFromPlaceID(id),
-                            dailyWeatherForecastDAO().getFromPlaceID(id),
-                            weatherAlertDAO().getFromPlaceID(id));
-                    placeList.add(place);
-                }
+    
+        if (!properties.isEmpty()) {
+            for (Properties p : properties) {
+                int id = p.getPlaceId();
+                Place place = new Place(geolocationDAO().getFromPlaceID(id),
+                        p,
+                        currentWeatherDAO().getFromPlaceID(id),
+                        airQualityDAO().getFromPlaceID(id),
+                        minutelyWeatherForecastDAO().getFromPlaceID(id),
+                        hourlyWeatherForecastDAO().getFromPlaceID(id),
+                        dailyWeatherForecastDAO().getFromPlaceID(id),
+                        weatherAlertDAO().getFromPlaceID(id));
+                placeList.add(place);
             }
-        });
+        }
         return placeList;
     }
     
