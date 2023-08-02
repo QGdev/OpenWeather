@@ -123,7 +123,6 @@ public class PlacesFragment extends Fragment {
 		//
 		appRepository.getPlacesLiveData().observeForever(places -> {
 			if (places == null) return;
-			logger.info("PlacesLiveData changed, updating places: " + places.size());
 			placesViewModel.setPlaces(places);
 		});
 	}
