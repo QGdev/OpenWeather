@@ -1,23 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~   Copyright (c) 2023 QGdev - Quentin GOMES DOS REIS
-  ~
-  ~   This file is part of OpenWeather.
-  ~
-  ~   OpenWeather is free software: you can redistribute it and/or modify
-  ~   it under the terms of the GNU General Public License as published by
-  ~   the Free Software Foundation, either version 3 of the License, or
-  ~   (at your option) any later version.
-  ~
-  ~   OpenWeather is distributed in the hope that it will be useful,
-  ~   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  ~   GNU General Public License for more details.
-  ~
-  ~   You should have received a copy of the GNU General Public License
-  ~   along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
-  -->
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedAttribute">
@@ -27,33 +8,60 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <permission
+        android:name="fr.qgdev.openweather.permission.UPDATE_WIDGET"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="fr.qgdev.openweather.permission.UPDATE_WIDGET" />
+
     <application
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
-        android:logo="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:isGame="false"
-        android:supportsRtl="false"
-        android:hardwareAccelerated="true"
-        android:largeHeap="false"
-        android:enabled="true"
         android:allowBackup="false"
-        android:fullBackupOnly="false"
-        android:theme="@style/MaterialTheme"
         android:enableOnBackInvokedCallback="true"
+        android:enabled="true"
+        android:fullBackupOnly="false"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:isGame="false"
+        android:label="@string/app_name"
+        android:largeHeap="false"
+        android:logo="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="false"
+        android:theme="@style/MaterialTheme"
         android:usesCleartextTraffic="false">
 
-        <activity android:name=".MainActivity" />
 
+        <receiver
+            android:name=".widgets.WidgetStandardPlace"
+            android:exported="false"
+            android:permission="fr.qgdev.openweather.permission.UPDATE_WIDGET">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_standard_place_info" />
+        </receiver>
+
+        <activity
+            android:name=".widgets.WidgetStandardPlaceConfigureActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".MainActivity" />
         <activity
             android:name=".splash.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
     </application>
+
 </manifest>
