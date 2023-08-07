@@ -119,7 +119,7 @@ public class AppRepository {
 	 * @param placeId the place id
 	 * @return the place live data
 	 */
-	public LiveData<Place> getPlaceFromPlaceId(int placeId) {
+	public LiveData<Place> getPlaceFromPlaceIdLiveData(int placeId) {
 		return placeDatabase.getPlaceFromPlaceIdLiveData(placeId);
 	}
 	
