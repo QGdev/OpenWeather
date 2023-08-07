@@ -185,4 +185,8 @@
 	<string name="error_api_key_incorrectly_formed">The registered API key must have 32 alphanumerical characters</string>
 	<string name="air_quality_composition_unit">in µg/m³</string>
 	<string name="title_about_attributions_section">Attributions</string>
+
+	<string name="add_widget">Add widget</string>
+	<string name="widget_standard_info_description">Show basic weather for a specific location</string>
+	<string name="widget_configure">Parameterize</string>
 </resources>

@@ -183,5 +183,9 @@
 	<string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
 	<string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
 	<string name="air_quality_composition_unit">en µg/m³</string>
-    <string name="title_about_attributions_section">Attributions</string>
+	<string name="title_about_attributions_section">Attributions</string>
+
+	<string name="add_widget">Ajouter le widget</string>
+	<string name="widget_standard_info_description">Montre la météo de manière basique pour un lieu spécifique</string>
+	<string name="widget_configure">Paramètrer</string>
 </resources>
