@@ -67,6 +67,7 @@ public class FormattingService {
 	
 	//  TimeHour format specifier
 	private SimpleDateFormat hourFormat;
+	private SimpleDateFormat shortHourFormat;
 	private SimpleDateFormat timeFormat;
 	private SimpleDateFormat shortDayNameFormat;
 	private SimpleDateFormat dayMonthFormat;
@@ -340,6 +341,11 @@ public class FormattingService {
 		return getSimpleDateFormatForTimeZone(this.hourFormat, timeZone).format(date);
 	}
 	
+	////    Short hour
+	public String getFormattedShortHour(Date date, TimeZone timeZone) {
+		return getSimpleDateFormatForTimeZone(this.shortHourFormat, timeZone).format(date);
+	}
+	
 	////    Time
 	public String getFormattedTime(Date date, TimeZone timeZone) {
 		return getSimpleDateFormatForTimeZone(this.timeFormat, timeZone).format(date);
@@ -484,9 +490,10 @@ public class FormattingService {
 		//  timeDate
 		switch (settingsManager.getTimeSetting()) {
 			case TWELVE_HOURS: {
-				this.hourFormat = new SimpleDateFormat("KK:00 a", defaultLocale);
-				this.timeFormat = new SimpleDateFormat("KK:mm a", defaultLocale);
-				this.fullTimeHourFormat = new SimpleDateFormat("dd/MM/yy KK:mm a", defaultLocale);
+				this.hourFormat = new SimpleDateFormat("hh:00 a", defaultLocale);
+				this.shortHourFormat = new SimpleDateFormat("ha", defaultLocale);
+				this.timeFormat = new SimpleDateFormat("hh:mm a", defaultLocale);
+				this.fullTimeHourFormat = new SimpleDateFormat("dd/MM/yy hh:mm a", defaultLocale);
 				
 				break;
 			}
@@ -494,6 +501,7 @@ public class FormattingService {
 			default:    //  Default case is using 24 hours format
 			case TWENTY_FOUR_HOURS: {
 				this.hourFormat = new SimpleDateFormat("HH:00", defaultLocale);
+				this.shortHourFormat = new SimpleDateFormat("H'h'", defaultLocale);
 				this.timeFormat = new SimpleDateFormat("HH:mm", defaultLocale);
 				this.fullTimeHourFormat = new SimpleDateFormat("dd/MM/yy HH:mm", defaultLocale);
 				
