@@ -21,6 +21,7 @@
 package fr.qgdev.openweather.repositories;
 
 import android.content.Context;
+import android.content.Intent;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -387,5 +388,16 @@ public class AppRepository {
 	 */
 	public boolean isApiKeyValid() {
 		return weatherService.isApiKeyValid();
+	}
+	
+	/**
+	 * Will send a broadcast to all widgets to update them.
+	 *
+	 * @param context the context used to send the broadcast
+	 */
+	public void updateWidgets(Context context) {
+		Intent updateIntent = new Intent("android.appwidget.action.APPWIDGET_UPDATE");
+		updateIntent.setPackage("fr.qgdev.openweather");
+		context.sendBroadcast(updateIntent, "fr.qgdev.openweather.permission.UPDATE_WIDGET");
 	}
 }
