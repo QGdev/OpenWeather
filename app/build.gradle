@@ -30,6 +30,9 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
     namespace 'fr.qgdev.openweather'
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
