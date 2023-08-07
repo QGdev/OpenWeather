@@ -40,4 +40,12 @@
         <attr name="textColor" />
         <attr name="subtextColor" />
     </declare-styleable>
+
+    <dimen name="widget_margin">0dp</dimen>
+
+    <declare-styleable name="AppWidgetAttrs">
+        <attr name="appWidgetPadding" format="dimension" />
+        <attr name="appWidgetInnerRadius" format="dimension" />
+        <attr name="appWidgetRadius" format="dimension" />
+    </declare-styleable>
 </resources>
