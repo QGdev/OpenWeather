@@ -28,6 +28,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +67,8 @@ public class PlacesFragment extends Fragment {
 	private final Logger logger = Logger.getLogger(TAG);
 	
 	private Context mContext;
+	
+	private Vibrator vibrator;
 	
 	private AppRepository appRepository;
 	private PlacesViewModel placesViewModel;
@@ -116,6 +120,7 @@ public class PlacesFragment extends Fragment {
 	public void onAttach(@NonNull Context context) {
 		super.onAttach(context);
 		mContext = context;
+		vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
 		appRepository = new AppRepository(mContext.getApplicationContext());
 		placesViewModel = PlacesViewModelFactory.getInstance();
 		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, placesViewModel, appRepository.getFormattingService());
@@ -214,6 +219,11 @@ public class PlacesFragment extends Fragment {
 			public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 				if (direction == ItemTouchHelper.START || direction == ItemTouchHelper.END) {
 					int index = viewHolder.getLayoutPosition();
+					Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+					
+					if (vibrator != null) {
+						vibrator.vibrate(VibrationEffect.createOneShot(100, 25));
+					}
 					
 					if (index >= placesViewModel.getPlaces().size()) {
 						placeRecyclerViewAdapter.notifyItemRemoved(index);
@@ -285,6 +295,9 @@ public class PlacesFragment extends Fragment {
 				if (placesViewModel.getPlaces().size() == refreshCounter.incrementAndGet()) {
 					swipeRefreshLayout.setRefreshing(false);
 					refreshCounter.set(0);
+					appRepository.updateWidgets(mContext);
+					
+					vibrator.vibrate(VibrationEffect.createOneShot(100, 25));
 				}
 			}
 			
@@ -313,6 +326,7 @@ public class PlacesFragment extends Fragment {
 				if (placesViewModel.getPlaces().size() == refreshCounter.incrementAndGet()) {
 					swipeRefreshLayout.setRefreshing(false);
 					refreshCounter.set(0);
+					appRepository.updateWidgets(mContext);
 				}
 			}
 		};
@@ -335,6 +349,7 @@ public class PlacesFragment extends Fragment {
 		swipeRefreshLayout.setOnRefreshListener(
 				  () -> {
 					  swipeRefreshLayout.setRefreshing(true);
+					  vibrator.vibrate(VibrationEffect.createOneShot(100, 50));
 					  if (appRepository.isApiKeyValid()) {
 						  appRepository.updateAllPlaces(fetchUpdateCallback);
 					  } else {
