@@ -41,7 +41,7 @@
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_standard_place_info" />
+                android:resource="@xml/widget_standard_info" />
         </receiver>
 
         <activity
