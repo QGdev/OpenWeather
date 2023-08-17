@@ -23,14 +23,13 @@ package fr.qgdev.openweather.widgets;
 
 import static fr.qgdev.openweather.repositories.FormattingService.FormattingSpec.NO_UNIT_NO_SPACE;
 
-import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
+import android.util.SizeF;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.RemoteViews;
 
+import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 
 import java.util.Calendar;
@@ -40,46 +39,40 @@ import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.metrics.CurrentWeather;
 import fr.qgdev.openweather.metrics.DailyWeatherForecast;
 import fr.qgdev.openweather.metrics.HourlyWeatherForecast;
-import fr.qgdev.openweather.repositories.AppRepository;
 import fr.qgdev.openweather.repositories.FormattingService;
 import fr.qgdev.openweather.repositories.places.Place;
 
 /**
- * Implementation of App Widget functionality.
- * App Widget Configuration implemented in {@link WidgetStandardPlaceConfigureActivity WidgetStandardPlaceInfoConfigureActivity}
+ * Bind a widget to a place depending on the widget type
  */
-public class WidgetStandardPlace extends AppWidgetProvider {
+public class WidgetsBinder {
 	
 	/**
-	 * Update a specific widget
+	 * Bind data to a widget layout and return it
+	 * The binding will be done according to the widget type
 	 *
-	 * @param context          the context of the application
-	 * @param appWidgetManager the widget manager to update the widget
-	 * @param repository       the repository to get the data
-	 * @param appWidgetId      the widget id of the widget to update
+	 * @param context           the context of the application
+	 * @param widgetType        the widget type to bind
+	 * @param place             the place to bind to the widget
+	 * @param formattingService the formatting service to format the data
+	 * @return RemoteViews      the widget remote view with the data
 	 */
-	protected static void updateAppWidget(Context context, AppWidgetManager appWidgetManager, AppRepository repository,
-													  int appWidgetId) {
+	public static RemoteViews bindWidget(@NonNull Context context, @NonNull WidgetType widgetType, @NonNull Place place, @NonNull FormattingService formattingService) {
+		RemoteViews views;
 		
-		Integer placeID = WidgetStandardPlaceConfigureActivity.loadWidgetSettings(context, appWidgetId);
-		
-		if (placeID == null) {
-			return;
+		switch (widgetType) {
+			case STANDARD:
+				views = bindStandardWidget(context, place, formattingService, true);
+				break;
+			case STANDARD_COMPACT:
+				views = bindStandardWidget(context, place, formattingService, false);
+				break;
+			case MINIMAL:
+			default:
+				views = bindMinimalWidget(context, place, formattingService);
+				break;
 		}
-		
-		repository.getPlaceFromPlaceIdLiveData(placeID).observeForever(place -> {
-			if (place == null) {
-				return;
-			}
-			
-			// Construct the RemoteViews object
-			RemoteViews view = bindStandardWidget(context,
-					  place,
-					  repository.getFormattingService());
-			
-			// Instruct the widget manager to update the widget
-			appWidgetManager.updateAppWidget(appWidgetId, view);
-		});
+		return views;
 	}
 	
 	/**
@@ -88,11 +81,11 @@ public class WidgetStandardPlace extends AppWidgetProvider {
 	 * @param context           the context of the application
 	 * @param place             the place to bind to the widget
 	 * @param formattingService the formatting service to format the data
-	 * @return the widget remote view with the data
+	 * @return RemoteViews      the widget remote view with the data
 	 */
-	private static RemoteViews bindStandardWidget(Context context, Place place, FormattingService formattingService) {
+	protected static RemoteViews bindStandardWidget(@NonNull Context context, @NonNull Place place, @NonNull FormattingService formattingService, boolean hasTheFourthHour) {
 		// Construct the RemoteViews object
-		RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.widget_standard_place);
+		RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.widget_standard);
 		
 		// Fill the widget with the place data
 		view.setTextViewText(R.id.city, place.getGeolocation().getCity());
@@ -166,6 +159,11 @@ public class WidgetStandardPlace extends AppWidgetProvider {
 							 place.getProperties().getTimeZone()));
 		
 		// Fourth hour
+		// Can be hidden if the widget is too small
+		if (!hasTheFourthHour) {
+			view.setViewVisibility(R.id.forecast_4h, View.GONE);
+			return view;
+		}
 		view.setTextViewText(R.id.forecast_4h_temperature_value,
 				  formattingService.getIntFormattedTemperature(hourlyWeatherForecasts[3].getTemperature(), NO_UNIT_NO_SPACE));
 		view.setImageViewResource(R.id.forecast_4h_weather_icon,
@@ -178,11 +176,34 @@ public class WidgetStandardPlace extends AppWidgetProvider {
 	}
 	
 	/**
+	 * Binds the minimal widget with the given place.
+	 *
+	 * @param context           the context
+	 * @param place             the place
+	 * @param formattingService the formatting service
+	 * @return RemoteViews       The widget remote view with the data
+	 */
+	protected static RemoteViews bindMinimalWidget(@NonNull Context context, @NonNull Place place, @NonNull FormattingService formattingService) {
+		// Construct the RemoteViews object
+		RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.widget_minimal_linear);
+		
+		// Fill the widget with the place data
+		CurrentWeather currentWeather = place.getCurrentWeather();
+		
+		view.setTextViewText(R.id.temperature_value,
+				  formattingService.getFloatFormattedTemperature(currentWeather.getTemperature(), NO_UNIT_NO_SPACE));
+		
+		view.setImageViewResource(R.id.weather_icon, getWeatherIcon(currentWeather.getWeatherCode(), currentWeather.isDaytime()));
+		
+		return view;
+	}
+	
+	/**
 	 * Returns the weather icon id for the given weather code and if it is daytime or not.
 	 *
-	 * @param weatherCode The weather code
-	 * @param isDaytime   True if it is daytime, false otherwise
-	 * @return The weather icon id
+	 * @param weatherCode the weather code
+	 * @param isDaytime   true if it is daytime, false otherwise
+	 * @return int        the weather icon id
 	 */
 	private static int getWeatherIcon(int weatherCode, boolean isDaytime) {
 		final int weatherIconId;
@@ -326,68 +347,148 @@ public class WidgetStandardPlace extends AppWidgetProvider {
 	}
 	
 	/**
-	 * Update the widget with the given data
-	 *
-	 * @param context          The context
-	 * @param appWidgetManager The widget manager
-	 * @param appWidgetIds     All the widget ids
+	 * Will list all the widgets types available with their layout and size
+	 * This is needed in order to find the best widget type that can fit in the given size
 	 */
-	@Override
-	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+	protected enum WidgetType {
+		STANDARD("STANDARD", R.layout.widget_standard, 320, 180),
+		STANDARD_COMPACT("STANDARD_COMPACT", R.layout.widget_standard, 280, 180),
 		
-		AppRepository repository = new AppRepository(context);
+		MINIMAL("MINIMAL", R.layout.widget_minimal_linear, 190, 80);
 		
-		// There may be multiple widgets active, so update all of them
-		for (int appWidgetId : appWidgetIds) {
-			updateAppWidget(context, appWidgetManager, repository, appWidgetId);
+		private final String id;
+		private final int layout;
+		private final int width;
+		private final int height;
+		
+		/**
+		 * Create a new widget type
+		 *
+		 * @param id     Widget type id
+		 * @param layout Widget type layout as a layout resource id
+		 * @param width  Widget type width in dp
+		 * @param height Widget type height in dp
+		 */
+		WidgetType(@NonNull String id, @LayoutRes int layout, int width, int height) {
+			if (id.isBlank() || id.isEmpty())
+				throw new IllegalArgumentException("Id must not be blank or empty");
+			if (width < 0) throw new IllegalArgumentException("Width must be positive");
+			if (height < 0) throw new IllegalArgumentException("Height must be positive");
+			
+			this.id = id;
+			this.layout = layout;
+			this.width = width;
+			this.height = height;
 		}
-	}
-	
-	/**
-	 * dpToPx(@NonNull Context context, float dip)
-	 * <p>
-	 * Just a DP to PX converter method
-	 * </p>
-	 *
-	 * @param context Application context in order to access to resources
-	 * @param dip     DP value that you want to convert
-	 * @return The DP converted value into PX
-	 */
-	private int dpToPx(@NonNull Context context, float dip) {
-		return (int) TypedValue.applyDimension(
-				  TypedValue.COMPLEX_UNIT_DIP,
-				  dip,
-				  context.getResources().getDisplayMetrics());
-	}
-	
-	/**
-	 * Will handle receiving broadcast intents sent
-	 *
-	 * @param context The Context in which the receiver is running.
-	 * @param intent  The Intent being received.
-	 */
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context.getApplicationContext());
-		ComponentName thisWidget = new ComponentName(context.getApplicationContext(), WidgetStandardPlace.class);
-		int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget);
-		if (appWidgetIds != null && appWidgetIds.length > 0) {
-			onUpdate(context, appWidgetManager, appWidgetIds);
+		
+		/**
+		 * Will return the largest widget type that can fit in the given SizeF
+		 *
+		 * @param size SizeF to check
+		 * @return WidgetType   Largest widget type that can fit in the given SizeF
+		 */
+		public static WidgetType fromSizeF(SizeF size) {
+			//	Get the the largest widget type that can fit in the given size
+			for (WidgetType type : WidgetType.values()) {
+				if (type.width <= size.getWidth() && type.height <= size.getHeight()) {
+					return type;
+				}
+			}
+			return null;
 		}
-	}
-	
-	
-	/**
-	 * Called when the widget is deleted from the home screen.
-	 *
-	 * @param context      The context
-	 * @param appWidgetIds The app widget id
-	 */
-	@Override
-	public void onDeleted(Context context, int[] appWidgetIds) {
-		// When the user deletes the widget, delete the preference associated with it.
-		for (int appWidgetId : appWidgetIds) {
-			WidgetStandardPlaceConfigureActivity.deleteWidgetSettings(context, appWidgetId);
+		
+		/**
+		 * Will return the widget type that match the given id
+		 *
+		 * @param id Id to check
+		 * @return WidgetType   Widget type that match the given id or null if none match
+		 */
+		public static WidgetType fromString(String id) {
+			for (WidgetType type : WidgetType.values()) {
+				if (type.id.equalsIgnoreCase(id)) {
+					return type;
+				}
+			}
+			return null;
+		}
+		
+		private static float dpToPx(Context context, float dp) {
+			return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.getResources().getDisplayMetrics());
+		}
+		
+		/**
+		 * Get the widget type id
+		 *
+		 * @return String   Widget type id
+		 */
+		public String getId() {
+			return id;
+		}
+		
+		/**
+		 * Get the widget type layout
+		 *
+		 * @return int   Widget type layout
+		 */
+		public int getLayout() {
+			return layout;
+		}
+		
+		/**
+		 * Get the widget type width
+		 *
+		 * @return int   Widget type width
+		 */
+		public int getWidth() {
+			return width;
+		}
+		
+		/**
+		 * Get the widget type height
+		 *
+		 * @return int   Widget type height
+		 */
+		public int getHeight() {
+			return height;
+		}
+		
+		/**
+		 * Get the widget type width in pixels
+		 *
+		 * @param context Android context
+		 * @return int   Widget type width in pixels
+		 */
+		public int getPxWidth(Context context) {
+			return (int) dpToPx(context, width);
+		}
+		
+		/**
+		 * Get the widget type height in pixels
+		 *
+		 * @param context Android context
+		 * @return int   Widget type height in pixels
+		 */
+		public int getPxHeight(Context context) {
+			return (int) dpToPx(context, height);
+		}
+		
+		/**
+		 * Get the widget type SizeF (width and height)
+		 *
+		 * @return SizeF   Widget type SizeF
+		 */
+		public SizeF getSizeF() {
+			return new SizeF(width, height);
+		}
+		
+		/**
+		 * Convert the widget type to a string
+		 *
+		 * @return String   Widget type as a string
+		 */
+		@Override
+		public String toString() {
+			return id;
 		}
 	}
 }
