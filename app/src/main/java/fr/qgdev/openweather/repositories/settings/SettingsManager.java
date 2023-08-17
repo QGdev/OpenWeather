@@ -22,14 +22,17 @@ package fr.qgdev.openweather.repositories.settings;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import java.util.Locale;
 
-public class SettingsManager {
+public final class SettingsManager {
 	
 	private final SecuredPreferenceDataStore securedPreferenceDataStore;
 	
-	public SettingsManager(Context context) {
-		securedPreferenceDataStore = new SecuredPreferenceDataStore(context);
+	public SettingsManager(@NonNull Context context) {
+		securedPreferenceDataStore = new SecuredPreferenceDataStore(context,
+				  "fr.qgdev.openweather_preferences");
 	}
 	
 	public TemperatureSettings getTemperatureSetting() {

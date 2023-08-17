@@ -31,15 +31,14 @@ import androidx.security.crypto.MasterKeys;
 import java.util.Set;
 
 
-public class SecuredPreferenceDataStore extends PreferenceDataStore {
-	private static final String SP_FILENAME = "fr.qgdev.openweather_preferences";
+public final class SecuredPreferenceDataStore extends PreferenceDataStore {
 	private final SharedPreferences sharedPreferences;
 	
-	public SecuredPreferenceDataStore(Context context) {
+	public SecuredPreferenceDataStore(Context context, String filename) {
 		try {
 			String masterKey = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC);
 			sharedPreferences = EncryptedSharedPreferences
-					  .create(SP_FILENAME,
+					  .create(filename,
 								 masterKey,
 								 context,
 								 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
@@ -68,7 +67,7 @@ public class SecuredPreferenceDataStore extends PreferenceDataStore {
 	 * @see #getString(String, String)
 	 */
 	@Override
-	public void putString(String key, @Nullable @org.jetbrains.annotations.Nullable String value) {
+	public void putString(String key, @Nullable String value) {
 		sharedPreferences.edit().putString(key, value).apply();
 	}
 	
@@ -82,7 +81,7 @@ public class SecuredPreferenceDataStore extends PreferenceDataStore {
 	 * @see #getStringSet(String, Set)
 	 */
 	@Override
-	public void putStringSet(String key, @Nullable @org.jetbrains.annotations.Nullable Set<String> values) {
+	public void putStringSet(String key, @Nullable Set<String> values) {
 		sharedPreferences.edit().putStringSet(key, values).apply();
 	}
 	
@@ -153,7 +152,7 @@ public class SecuredPreferenceDataStore extends PreferenceDataStore {
 	@Nullable
 	@org.jetbrains.annotations.Nullable
 	@Override
-	public String getString(String key, @Nullable @org.jetbrains.annotations.Nullable String defValue) {
+	public String getString(String key, @Nullable String defValue) {
 		return sharedPreferences.getString(key, defValue);
 	}
 	
@@ -168,7 +167,7 @@ public class SecuredPreferenceDataStore extends PreferenceDataStore {
 	@Nullable
 	@org.jetbrains.annotations.Nullable
 	@Override
-	public Set<String> getStringSet(String key, @Nullable @org.jetbrains.annotations.Nullable Set<String> defValues) {
+	public Set<String> getStringSet(String key, @Nullable Set<String> defValues) {
 		return sharedPreferences.getStringSet(key, defValues);
 	}
 	
