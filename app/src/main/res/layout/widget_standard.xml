@@ -35,7 +35,7 @@
         android:layout_alignParentEnd="true"
         android:isScrollContainer="false"
         android:maxLines="2"
-        android:text="City"
+        android:text="Nantes"
         android:textColor="@color/colorTertiaryText"
         android:textSize="18sp" />
 
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginBottom="5dp"
-            android:text="23°"
+            android:text="23,4°"
             android:textColor="@color/colorFirstText"
             android:textSize="40sp"
             android:textStyle="bold" />
@@ -68,7 +68,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/temperature_value"
-            android:text="21°C"
+            android:text="21°"
             android:textColor="@color/colorFirstText"
             android:textSize="18sp" />
 
@@ -80,7 +80,7 @@
             android:layout_below="@id/temperature_value"
             android:layout_marginStart="10dp"
             android:layout_toEndOf="@id/temperature_max_value"
-            android:text="11°C"
+            android:text="11°"
             android:textColor="@color/colorSecondaryText"
             android:textSize="17sp" />
     </RelativeLayout>
@@ -224,6 +224,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/forecast_4h"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"

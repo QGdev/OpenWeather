@@ -187,5 +187,6 @@
 
 	<string name="add_widget">Ajouter le widget</string>
 	<string name="widget_standard_info_description">Montre la météo de manière basique pour un lieu spécifique</string>
-	<string name="widget_configure">Paramètrer</string>
+	<string name="widget_configure">Configuration du widget</string>
+	<string name="label_widget">Widget classique</string>
 </resources>
