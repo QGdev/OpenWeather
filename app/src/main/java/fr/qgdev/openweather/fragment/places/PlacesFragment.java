@@ -295,7 +295,7 @@ public class PlacesFragment extends Fragment {
 				if (placesViewModel.getPlaces().size() == refreshCounter.incrementAndGet()) {
 					swipeRefreshLayout.setRefreshing(false);
 					refreshCounter.set(0);
-					appRepository.updateWidgets(mContext);
+					appRepository.getWidgetsManager().updateWidgets(mContext);
 					
 					vibrator.vibrate(VibrationEffect.createOneShot(100, 25));
 				}
@@ -326,7 +326,7 @@ public class PlacesFragment extends Fragment {
 				if (placesViewModel.getPlaces().size() == refreshCounter.incrementAndGet()) {
 					swipeRefreshLayout.setRefreshing(false);
 					refreshCounter.set(0);
-					appRepository.updateWidgets(mContext);
+					appRepository.getWidgetsManager().updateWidgets(mContext);
 				}
 			}
 		};

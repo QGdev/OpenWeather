@@ -79,7 +79,7 @@ public class PeriodicUpdaterWorker extends Worker {
 		
 		//	Wait for all places to be updated in order to update widgets
 		while (remainingPlaces.compareAndSet(0, 0)) ;
-		mRepository.updateWidgets(context);
+		mRepository.getWidgetsManager().updateWidgets(context);
 		
 		// In case of errors, return failure
 		// If every updates did fail, it will return failure

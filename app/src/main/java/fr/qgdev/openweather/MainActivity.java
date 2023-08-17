@@ -89,6 +89,6 @@ public class MainActivity extends AppCompatActivity {
 				  ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
 				  periodicWorkRequest);
 		
-		appRepository.updateWidgets(context);
+		appRepository.getWidgetsManager().updateWidgets(context);
 	}
 }
