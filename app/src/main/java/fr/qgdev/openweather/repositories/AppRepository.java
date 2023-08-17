@@ -39,6 +39,7 @@ import fr.qgdev.openweather.repositories.weather.FetchCallback;
 import fr.qgdev.openweather.repositories.weather.FetchDataCallback;
 import fr.qgdev.openweather.repositories.weather.RequestStatus;
 import fr.qgdev.openweather.repositories.weather.WeatherService;
+import fr.qgdev.openweather.widgets.WidgetsManager;
 
 /**
  * AppRepository class
@@ -52,6 +53,7 @@ import fr.qgdev.openweather.repositories.weather.WeatherService;
 public class AppRepository {
 	
 	private final SettingsManager settingsManager;
+	private final WidgetsManager widgetsManager;
 	
 	private final WeatherService weatherService;
 	private final PlaceDatabase placeDatabase;
@@ -68,6 +70,7 @@ public class AppRepository {
 	 */
 	public AppRepository(Context context) {
 		settingsManager = new SettingsManager(context);
+		widgetsManager = new WidgetsManager(context);
 		weatherService = new WeatherService(context, settingsManager);
 		formattingService = new FormattingService(context, settingsManager);
 		
@@ -85,6 +88,15 @@ public class AppRepository {
 	 */
 	public SettingsManager getSettingsManager() {
 		return this.settingsManager;
+	}
+	
+	/**
+	 * Gets widgets manager.
+	 *
+	 * @return the widgets manager
+	 */
+	public WidgetsManager getWidgetsManager() {
+		return this.widgetsManager;
 	}
 	
 	/**
