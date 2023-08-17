@@ -71,7 +71,8 @@ public class CustomPreferenceFragment extends PreferenceFragmentCompat {
 	@Override
 	public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
 		PreferenceManager preferenceManager = getPreferenceManager();
-		preferenceManager.setPreferenceDataStore(new SecuredPreferenceDataStore(getContext()));
+		preferenceManager.setPreferenceDataStore(new SecuredPreferenceDataStore(getContext(),
+				  "fr.qgdev.openweather_preferences"));
 		addPreferencesFromResource(R.xml.settings_preferences);
 	}
 }
