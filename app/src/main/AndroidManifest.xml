@@ -15,10 +15,8 @@
     <uses-permission android:name="fr.qgdev.openweather.permission.UPDATE_WIDGET" />
 
     <application
-        android:allowBackup="false"
         android:enableOnBackInvokedCallback="true"
         android:enabled="true"
-        android:fullBackupOnly="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:isGame="false"
@@ -28,12 +26,17 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="false"
         android:theme="@style/MaterialTheme"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:fullBackupOnly="false"
         android:usesCleartextTraffic="false">
 
 
         <receiver
-            android:name=".widgets.WidgetStandardPlace"
+            android:name=".widgets.WidgetsProvider"
+            android:enabled="@bool/widgets_enabled"
             android:exported="false"
+            android:label="@string/label_widget"
             android:permission="fr.qgdev.openweather.permission.UPDATE_WIDGET">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -41,12 +44,14 @@
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/widget_standard_info" />
+                android:resource="@xml/widget_info" />
         </receiver>
 
         <activity
-            android:name=".widgets.WidgetStandardPlaceConfigureActivity"
-            android:exported="false">
+            android:name=".widgets.WidgetsConfigurationActivity"
+            android:enabled="@bool/widgets_enabled"
+            android:exported="false"
+            android:theme="@style/MaterialTheme.WidgetConfig">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
