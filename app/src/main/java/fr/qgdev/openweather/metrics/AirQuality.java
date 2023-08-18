@@ -53,7 +53,8 @@ public class AirQuality {
 	 * Instantiates a new Air quality.
 	 */
 	public AirQuality() {
-		this.aqi = 0;
+		this.placeId = 0;
+		this.aqi = 1;
 		this.co = 0;
 		this.no = 0;
 		this.no2 = 0;
@@ -73,17 +74,17 @@ public class AirQuality {
 	@Ignore
 	public AirQuality(JSONObject airQuality) throws JSONException {
 		JSONObject content = airQuality.getJSONArray("list").getJSONObject(0);
-		this.aqi = content.getJSONObject("main").getInt("aqi");
+		setAqi(content.getJSONObject("main").getInt("aqi"));
 		
 		JSONObject componentsJSON = content.getJSONObject("components");
-		this.co = BigDecimal.valueOf(componentsJSON.getDouble("co")).floatValue();
-		this.no = BigDecimal.valueOf(componentsJSON.getDouble("no")).floatValue();
-		this.no2 = BigDecimal.valueOf(componentsJSON.getDouble("no2")).floatValue();
-		this.o3 = BigDecimal.valueOf(componentsJSON.getDouble("o3")).floatValue();
-		this.so2 = BigDecimal.valueOf(componentsJSON.getDouble("so2")).floatValue();
-		this.pm2_5 = BigDecimal.valueOf(componentsJSON.getDouble("pm2_5")).floatValue();
-		this.pm10 = BigDecimal.valueOf(componentsJSON.getDouble("pm10")).floatValue();
-		this.nh3 = BigDecimal.valueOf(componentsJSON.getDouble("nh3")).floatValue();
+		setCo(BigDecimal.valueOf(componentsJSON.getDouble("co")).floatValue());
+		setNo(BigDecimal.valueOf(componentsJSON.getDouble("no")).floatValue());
+		setNo2(BigDecimal.valueOf(componentsJSON.getDouble("no2")).floatValue());
+		setO3(BigDecimal.valueOf(componentsJSON.getDouble("o3")).floatValue());
+		setSo2(BigDecimal.valueOf(componentsJSON.getDouble("so2")).floatValue());
+		setPm2_5(BigDecimal.valueOf(componentsJSON.getDouble("pm2_5")).floatValue());
+		setPm10(BigDecimal.valueOf(componentsJSON.getDouble("pm10")).floatValue());
+		setNh3(BigDecimal.valueOf(componentsJSON.getDouble("nh3")).floatValue());
 	}
 	
 	
@@ -116,10 +117,13 @@ public class AirQuality {
 	
 	/**
 	 * Sets the Air Quality Index.
+	 * Must be between 1 and 5.
 	 *
 	 * @param aqi the Air Quality Index
+	 * @throws IllegalArgumentException if the AQI is not between 1 and 5
 	 */
 	public void setAqi(int aqi) {
+		if (aqi < 1 || aqi > 5) throw new IllegalArgumentException("AQI must be between 1 and 5");
 		this.aqi = aqi;
 	}
 	
@@ -134,10 +138,13 @@ public class AirQuality {
 	
 	/**
 	 * Sets the Carbon Monoxide concentration.
+	 * Must be null or positive.
 	 *
 	 * @param co the Carbon Monoxide concentration
+	 * @throws IllegalArgumentException if the CO is negative
 	 */
 	public void setCo(float co) {
+		if (co < 0.0f) throw new IllegalArgumentException("CO must be positive");
 		this.co = co;
 	}
 	
@@ -152,10 +159,13 @@ public class AirQuality {
 	
 	/**
 	 * Sets the Nitrogen Monoxide concentration.
+	 * Must be null or positive.
 	 *
 	 * @param no the Nitrogen Monoxide concentration
+	 * @throws IllegalArgumentException if the NO is negative
 	 */
 	public void setNo(float no) {
+		if (no < 0.0f) throw new IllegalArgumentException("NO must be positive");
 		this.no = no;
 	}
 	
@@ -170,10 +180,13 @@ public class AirQuality {
 	
 	/**
 	 * Sets the Nitrogen Dioxide concentration.
+	 * Must be null or positive.
 	 *
 	 * @param no2 the Nitrogen Dioxide concentration
+	 * @throws IllegalArgumentException if the NO2 is negative
 	 */
 	public void setNo2(float no2) {
+		if (no2 < 0.0f) throw new IllegalArgumentException("NO2 must be positive");
 		this.no2 = no2;
 	}
 	
@@ -188,10 +201,13 @@ public class AirQuality {
 	
 	/**
 	 * Sets the Ozone concentration.
+	 * Must be null or positive.
 	 *
 	 * @param o3 the Ozone concentration
+	 * @throws IllegalArgumentException if the O3 is negative
 	 */
 	public void setO3(float o3) {
+		if (o3 < 0.0f) throw new IllegalArgumentException("O3 must be positive");
 		this.o3 = o3;
 	}
 	
@@ -206,10 +222,13 @@ public class AirQuality {
 	
 	/**
 	 * Sets the Sulfur Dioxide concentration.
+	 * Must be null or positive.
 	 *
 	 * @param so2 the Sulfur Dioxide concentration
+	 * @throws IllegalArgumentException if the SO2 is negative
 	 */
 	public void setSo2(float so2) {
+		if (so2 < 0.0f) throw new IllegalArgumentException("SO2 must be positive");
 		this.so2 = so2;
 	}
 	
@@ -224,10 +243,13 @@ public class AirQuality {
 	
 	/**
 	 * Sets the Particulate Matter 2.5 concentration.
+	 * Must be null or positive.
 	 *
 	 * @param pm2_5 the Particulate Matter 2.5 concentration
+	 * @throws IllegalArgumentException if the PM2.5 is negative
 	 */
 	public void setPm2_5(float pm2_5) {
+		if (pm2_5 < 0.0f) throw new IllegalArgumentException("PM2.5 must be positive");
 		this.pm2_5 = pm2_5;
 	}
 	
@@ -242,10 +264,13 @@ public class AirQuality {
 	
 	/**
 	 * Sets the Particulate Matter 10 concentration.
+	 * Must be null or positive.
 	 *
 	 * @param pm10 the Particulate Matter 10 concentration
+	 * @throws IllegalArgumentException if the PM10 is negative
 	 */
 	public void setPm10(float pm10) {
+		if (pm10 < 0.0f) throw new IllegalArgumentException("PM10 must be positive");
 		this.pm10 = pm10;
 	}
 	
@@ -261,10 +286,13 @@ public class AirQuality {
 	
 	/**
 	 * Sets the Ammonia concentration.
+	 * Must be null or positive.
 	 *
 	 * @param nh3 the Ammonia concentration
+	 * @throws IllegalArgumentException if the NH3 is negative
 	 */
 	public void setNh3(float nh3) {
+		if (nh3 < 0.0f) throw new IllegalArgumentException("NH3 must be positive");
 		this.nh3 = nh3;
 	}
 	
@@ -273,19 +301,20 @@ public class AirQuality {
 	 *
 	 * @return the cloned object
 	 */
+	@NonNull
 	@Override
 	public AirQuality clone() {
 		AirQuality clonedObject = new AirQuality();
-		clonedObject.placeId = placeId;
-		clonedObject.aqi = this.aqi;
-		clonedObject.co = this.co;
-		clonedObject.no = this.no;
-		clonedObject.no2 = this.no2;
-		clonedObject.o3 = this.o3;
-		clonedObject.so2 = this.so2;
-		clonedObject.pm2_5 = this.pm2_5;
-		clonedObject.pm10 = this.pm10;
-		clonedObject.nh3 = this.nh3;
+		clonedObject.setPlaceId(placeId);
+		clonedObject.setAqi(aqi);
+		clonedObject.setCo(co);
+		clonedObject.setNo(no);
+		clonedObject.setNo2(no2);
+		clonedObject.setO3(o3);
+		clonedObject.setSo2(so2);
+		clonedObject.setPm2_5(pm2_5);
+		clonedObject.setPm10(pm10);
+		clonedObject.setNh3(nh3);
 		
 		return clonedObject;
 	}
