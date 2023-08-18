@@ -85,6 +85,7 @@ public class WidgetsSettings {
 	 *
 	 * @return The widget settings as a string
 	 */
+	@NonNull
 	@Override
 	public String toString() {
 		return "WidgetsSettings{" +
@@ -129,5 +130,17 @@ public class WidgetsSettings {
 		
 		if (placeId != that.placeId) return false;
 		return widgetId == that.widgetId;
+	}
+	
+	/**
+	 * Get the hash code of the widget settings
+	 *
+	 * @return The hash code of the widget settings
+	 */
+	@Override
+	public int hashCode() {
+		int result = placeId;
+		result = 31 * result + widgetId;
+		return result;
 	}
 }
