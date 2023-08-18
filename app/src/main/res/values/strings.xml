@@ -227,4 +227,8 @@
     <string name="widget_standard_info_description">Show basic weather for a specific location</string>
     <string name="widget_configure">Widget configuration</string>
     <string name="label_widget">Classic widget</string>
+    <string name="title_settings_update">Data update</string>
+    <string name="title_settings_update_periodic">Periodic updates</string>
+    <string name="summary_enabled_settings_update_periodic">Data will be updated in background</string>
+    <string name="summary_disabled_settings_update_periodic">Data will not be updated in background</string>
 </resources>

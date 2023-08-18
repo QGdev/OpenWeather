@@ -1,3 +1,23 @@
+<!--
+  ~  Copyright (c) 2019 - 2023
+  ~  QGdev - Quentin GOMES DOS REIS
+  ~
+  ~  This file is part of OpenWeather.
+  ~
+  ~  OpenWeather is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  OpenWeather is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+  -->
+
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -57,13 +77,20 @@
             app:useSimpleSummaryProvider="true" />
 
         <androidx.preference.ListPreference
-            app:defaultValue="cardinal"
             app:entries="@array/wind_direction_units"
             app:entryValues="@array/wind_direction_units_values"
             app:key="conf_direction_unit"
             app:title="@string/title_settings_units_direction"
+            app:defaultValue="cardinal"
             app:useSimpleSummaryProvider="true" />
 
     </androidx.preference.PreferenceCategory>
 
+    <androidx.preference.PreferenceCategory app:title="@string/title_settings_update">
+        <androidx.preference.SwitchPreference
+            app:key="conf_update_periodic"
+            app:summaryOff="@string/summary_disabled_settings_update_periodic"
+            app:summaryOn="@string/summary_enabled_settings_update_periodic"
+            app:title="@string/title_settings_update_periodic" />
+    </androidx.preference.PreferenceCategory>
 </androidx.preference.PreferenceScreen>

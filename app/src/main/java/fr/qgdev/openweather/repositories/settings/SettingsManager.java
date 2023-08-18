@@ -98,4 +98,8 @@ public final class SettingsManager {
 	public String getApiKey() {
 		return securedPreferenceDataStore.getString("conf_api_key", null);
 	}
+	
+	public boolean isPeriodicUpdateEnabled() {
+		return securedPreferenceDataStore.getBoolean("conf_update_periodic", false);
+	}
 }

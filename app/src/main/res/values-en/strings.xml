@@ -180,14 +180,18 @@
 	<string name="error_place_move">An error occurred while moving place</string>
 	<string name="title_about_application_section">About this app</string>
 	<string name="content_about_application_section">This application and its source code have been placed under the GPL-3.0 license.\nThe source code of the application is available on: github.com/QGdev/OpenWeather.\nThis does not include the OpenWeatherMap API or data, or even the FreePik graphics resources, which are licensed separately.</string>
-	<string name="error_storage_security">An error occurred while initializing the storage</string>
-	<string name="error_no_api_key_registered">API key isn\'t registered, please go into settings and register one</string>
-	<string name="error_api_key_incorrectly_formed">The registered API key must have 32 alphanumerical characters</string>
-	<string name="air_quality_composition_unit">in µg/m³</string>
-	<string name="title_about_attributions_section">Attributions</string>
+    <string name="error_storage_security">An error occurred while initializing the storage</string>
+    <string name="error_no_api_key_registered">API key isn\'t registered, please go into settings and register one</string>
+    <string name="error_api_key_incorrectly_formed">The registered API key must have 32 alphanumerical characters</string>
+    <string name="air_quality_composition_unit">in µg/m³</string>
+    <string name="title_about_attributions_section">Attributions</string>
 
-	<string name="add_widget">Add widget</string>
-	<string name="widget_standard_info_description">Show basic weather for a specific location</string>
-	<string name="widget_configure">Widget configuration</string>
-	<string name="label_widget">Classic widget</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_standard_info_description">Show basic weather for a specific location</string>
+    <string name="widget_configure">Widget configuration</string>
+    <string name="label_widget">Classic widget</string>
+    <string name="title_settings_update">Data update</string>
+    <string name="title_settings_update_periodic">Periodic updates</string>
+    <string name="summary_enabled_settings_update_periodic">Data will be updated in background</string>
+    <string name="summary_disabled_settings_update_periodic">Data will not be updated in background</string>
 </resources>

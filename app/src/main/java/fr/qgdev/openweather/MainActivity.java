@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 import fr.qgdev.openweather.repositories.AppRepository;
 import fr.qgdev.openweather.repositories.PeriodicUpdaterWorker;
+import fr.qgdev.openweather.repositories.settings.SettingsManager;
 
 /**
  * MainActivity
@@ -59,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
 		
 		Context context = getApplicationContext();
 		AppRepository appRepository = new AppRepository(context);
+		SettingsManager settingsManager = appRepository.getSettingsManager();
 		
 		BottomNavigationView navView = findViewById(R.id.nav_view);
 		
@@ -68,27 +70,35 @@ public class MainActivity extends AppCompatActivity {
 		NavController navController = navHostFragment.getNavController();
 		NavigationUI.setupWithNavController(navView, navController);
 		
-		//  Do some maths to know how many time there is until the next hour like is 12:50, the next given hour will be 13:00
-		//  Don't want the raw next hour but the exact next hour like 13:00, 14:00, 15:00, etc...
-		long now = System.currentTimeMillis();
-		//  3600000 is 1 hour in milliseconds
-		long timeUntilNextHour = 3600000 - (now % 3600000);
-		
-		Constraints constraints = new Constraints.Builder()
-				  .setRequiredNetworkType(NetworkType.CONNECTED)
-				  .setRequiresBatteryNotLow(true)
-				  .build();
-		
-		PeriodicWorkRequest periodicWorkRequest =
-				  new PeriodicWorkRequest.Builder(PeriodicUpdaterWorker.class, 15, TimeUnit.MINUTES, 5, TimeUnit.MINUTES)
-							 .setConstraints(constraints)
-							 .setInitialDelay(timeUntilNextHour + 60000, TimeUnit.MILLISECONDS)
-							 .build();
-		
-		WorkManager.getInstance(this.getApplicationContext()).enqueueUniquePeriodicWork("PeriodicUpdaterWorker",
-				  ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-				  periodicWorkRequest);
-		
-		appRepository.getWidgetsManager().updateWidgets(context);
+		//  Periodic update
+		//  If periodic update is enabled, we schedule a periodic work request
+		if (settingsManager.isPeriodicUpdateEnabled()) {
+			
+			//  Do some maths to know how many time there is until the next hour like is 12:50, the next given hour will be 13:00
+			//  Don't want the raw next hour but the exact next hour like 13:00, 14:00, 15:00, etc...
+			long now = System.currentTimeMillis();
+			//  3600000 is 1 hour in milliseconds
+			long timeUntilNextHour = 3600000 - (now % 3600000);
+			
+			Constraints constraints = new Constraints.Builder()
+					  .setRequiredNetworkType(NetworkType.CONNECTED)
+					  .setRequiresBatteryNotLow(true)
+					  .build();
+			
+			PeriodicWorkRequest periodicWorkRequest =
+					  new PeriodicWorkRequest.Builder(PeriodicUpdaterWorker.class, 15, TimeUnit.MINUTES, 5, TimeUnit.MINUTES)
+								 .setConstraints(constraints)
+								 .setInitialDelay(timeUntilNextHour + 60000, TimeUnit.MILLISECONDS)
+								 .build();
+			
+			WorkManager.getInstance(this.getApplicationContext()).enqueueUniquePeriodicWork("PeriodicUpdaterWorker",
+					  ExistingPeriodicWorkPolicy.KEEP,
+					  periodicWorkRequest);
+			
+			appRepository.getWidgetsManager().updateWidgets(context);
+		} else {
+			//  Cancel all periodic work
+			WorkManager.getInstance(this.getApplicationContext()).cancelAllWork();
+		}
 	}
 }

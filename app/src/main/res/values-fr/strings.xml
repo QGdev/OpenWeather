@@ -179,14 +179,18 @@
 	<string name="error_place_move">Une erreur est survenue lors du déplacement</string>
 	<string name="title_about_application_section">À propos de l\'application</string>
 	<string name="content_about_application_section">Cette application et son code source ont été placés sous la licence GPL-3.\nLe code source de mon applicetion est disponible ici: github.com/QGdev/OpenWeather.\nCela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
-	<string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
-	<string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
-	<string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
-	<string name="air_quality_composition_unit">en µg/m³</string>
-	<string name="title_about_attributions_section">Attributions</string>
+    <string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
+    <string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
+    <string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
+    <string name="air_quality_composition_unit">en µg/m³</string>
+    <string name="title_about_attributions_section">Attributions</string>
 
-	<string name="add_widget">Ajouter le widget</string>
-	<string name="widget_standard_info_description">Montre la météo de manière basique pour un lieu spécifique</string>
-	<string name="widget_configure">Configuration du widget</string>
-	<string name="label_widget">Widget classique</string>
+    <string name="add_widget">Ajouter le widget</string>
+    <string name="widget_standard_info_description">Montre la météo de manière basique pour un lieu spécifique</string>
+    <string name="widget_configure">Configuration du widget</string>
+    <string name="label_widget">Widget classique</string>
+    <string name="title_settings_update">Mise à jour des données</string>
+    <string name="title_settings_update_periodic">Mises à jour périodiques</string>
+    <string name="summary_enabled_settings_update_periodic">Les données seront mises à jour en arrière-plan</string>
+    <string name="summary_disabled_settings_update_periodic">Les données ne seront pas mises à jour en arrière-plan</string>
 </resources>
