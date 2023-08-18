@@ -57,12 +57,12 @@ public class DailyWeatherForecast {
 	private float dewPoint;
 	
 	private int cloudiness;
-	private long sunrise;
-	private long sunset;
+	private long sunriseDt;
+	private long sunsetDt;
 	private int uvIndex;
 	
-	private long moonrise;
-	private long moonset;
+	private long moonriseDt;
+	private long moonsetDt;
 	private float moonPhase;
 	
 	private float windSpeed;
@@ -73,6 +73,9 @@ public class DailyWeatherForecast {
 	private float rain;
 	private float snow;
 	
+	/**
+	 * Instantiates a new Daily weather forecast.
+	 */
 	public DailyWeatherForecast() {
 		this.dt = 0;
 		
@@ -97,12 +100,12 @@ public class DailyWeatherForecast {
 		this.dewPoint = 0;
 		
 		this.cloudiness = 0;
-		this.sunrise = 0;
-		this.sunset = 0;
+		this.sunriseDt = 0;
+		this.sunsetDt = 0;
 		this.uvIndex = 0;
 		
-		this.moonrise = 0;
-		this.moonset = 0;
+		this.moonriseDt = 0;
+		this.moonsetDt = 0;
 		this.moonPhase = 0;
 		
 		this.windSpeed = 0;
@@ -114,386 +117,761 @@ public class DailyWeatherForecast {
 		this.snow = 0;
 	}
 	
+	/**
+	 * Instantiates a new Daily weather forecast.
+	 *
+	 * @param dailyWeather the daily weather json object from openweathermap
+	 */
 	public DailyWeatherForecast(JSONObject dailyWeather) throws JSONException {
 		//  Time
-		this.dt = dailyWeather.getLong("dt") * 1000;
+		setDt(dailyWeather.getLong("dt") * 1000);
 		
 		//    Weather descriptions
 		JSONObject dailyWeatherDescriptionsJSON = dailyWeather.getJSONArray("weather").getJSONObject(0);
-		this.weather = dailyWeatherDescriptionsJSON.getString("main");
-		this.weatherDescription = dailyWeatherDescriptionsJSON.getString("description");
-		this.weatherCode = dailyWeatherDescriptionsJSON.getInt("id");
+		setWeather(dailyWeatherDescriptionsJSON.getString("main"));
+		setWeatherDescription(dailyWeatherDescriptionsJSON.getString("description"));
+		setWeatherCode(dailyWeatherDescriptionsJSON.getInt("id"));
 		
 		//  Temperatures
 		JSONObject dailyWeatherTemperaturesJSON = dailyWeather.getJSONObject("temp");
-		this.temperatureMorning = BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("morn")).floatValue();
-		this.temperatureDay = BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("day")).floatValue();
-		this.temperatureEvening = BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("eve")).floatValue();
-		this.temperatureNight = BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("night")).floatValue();
-		this.temperatureMinimum = BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("min")).floatValue();
-		this.temperatureMaximum = BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("max")).floatValue();
+		setTemperatureMorning(BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("morn")).floatValue());
+		setTemperatureDay(BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("day")).floatValue());
+		setTemperatureEvening(BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("eve")).floatValue());
+		setTemperatureNight(BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("night")).floatValue());
+		setTemperatureMinimum(BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("min")).floatValue());
+		setTemperatureMaximum(BigDecimal.valueOf(dailyWeatherTemperaturesJSON.getDouble("max")).floatValue());
 		
 		//  Feels Like Temperatures
 		JSONObject dailyWeatherTemperaturesFeelsLikeJSON = dailyWeather.getJSONObject("feels_like");
-		this.temperatureMorningFeelsLike = BigDecimal.valueOf(dailyWeatherTemperaturesFeelsLikeJSON.getDouble("morn")).floatValue();
-		this.temperatureDayFeelsLike = BigDecimal.valueOf(dailyWeatherTemperaturesFeelsLikeJSON.getDouble("day")).floatValue();
-		this.temperatureEveningFeelsLike = BigDecimal.valueOf(dailyWeatherTemperaturesFeelsLikeJSON.getDouble("eve")).floatValue();
-		this.temperatureNightFeelsLike = BigDecimal.valueOf(dailyWeatherTemperaturesFeelsLikeJSON.getDouble("night")).floatValue();
+		setTemperatureMorningFeelsLike(BigDecimal.valueOf(dailyWeatherTemperaturesFeelsLikeJSON.getDouble("morn")).floatValue());
+		setTemperatureDayFeelsLike(BigDecimal.valueOf(dailyWeatherTemperaturesFeelsLikeJSON.getDouble("day")).floatValue());
+		setTemperatureEveningFeelsLike(BigDecimal.valueOf(dailyWeatherTemperaturesFeelsLikeJSON.getDouble("eve")).floatValue());
+		setTemperatureNightFeelsLike(BigDecimal.valueOf(dailyWeatherTemperaturesFeelsLikeJSON.getDouble("night")).floatValue());
 		
 		//  Pressure, Humidity, dewPoint
-		this.pressure = dailyWeather.getInt("pressure");
-		this.humidity = dailyWeather.getInt("humidity");
-		this.dewPoint = BigDecimal.valueOf(dailyWeather.getDouble("dew_point")).floatValue();
+		setPressure(dailyWeather.getInt("pressure"));
+		setHumidity(dailyWeather.getInt("humidity"));
+		setDewPoint(BigDecimal.valueOf(dailyWeather.getDouble("dew_point")).floatValue());
 		
 		//  Sky
-		this.cloudiness = dailyWeather.getInt("clouds");
-		this.sunrise = dailyWeather.getLong("sunrise") * 1000;
-		this.sunset = dailyWeather.getLong("sunset") * 1000;
-		this.uvIndex = BigDecimal.valueOf(dailyWeather.getDouble("uvi")).intValue();
+		setCloudiness(dailyWeather.getInt("clouds"));
+		setSunriseDt(dailyWeather.getLong("sunrise") * 1000);
+		setSunsetDt(dailyWeather.getLong("sunset") * 1000);
+		setUvIndex(BigDecimal.valueOf(dailyWeather.getDouble("uvi")).intValue());
 		
 		//  Moon
-		this.moonrise = dailyWeather.getLong("moonrise") * 1000;
-		this.moonset = dailyWeather.getLong("moonset") * 1000;
-		this.moonPhase = BigDecimal.valueOf(dailyWeather.getDouble("moon_phase")).floatValue();
+		setMoonriseDt(dailyWeather.getLong("moonrise") * 1000);
+		setMoonsetDt(dailyWeather.getLong("moonset") * 1000);
+		setMoonPhase(BigDecimal.valueOf(dailyWeather.getDouble("moon_phase")).floatValue());
 		
 		//  Wind
-		this.windSpeed = BigDecimal.valueOf(dailyWeather.getDouble("wind_speed")).floatValue();
-		this.windDirection = BigDecimal.valueOf(dailyWeather.getInt("wind_deg")).shortValue();
+		setWindSpeed(BigDecimal.valueOf(dailyWeather.getDouble("wind_speed")).floatValue());
+		setWindDirection(BigDecimal.valueOf(dailyWeather.getInt("wind_deg")).shortValue());
 		////    Wind Gusts
 		if (dailyWeather.has("wind_gust")) {
-			this.windGustSpeed = BigDecimal.valueOf(dailyWeather.getDouble("wind_gust")).floatValue();
+			setWindGustSpeed(BigDecimal.valueOf(dailyWeather.getDouble("wind_gust")).floatValue());
 		} else {
-			this.windGustSpeed = 0;
+			setWindGustSpeed(0);
 		}
 		
 		//  Precipitations
 		////    PoP -   Probability of Precipitations
-		this.pop = BigDecimal.valueOf(dailyWeather.getDouble("pop")).floatValue();
+		setPop(BigDecimal.valueOf(dailyWeather.getDouble("pop")).floatValue());
 		////    Rain
 		if (dailyWeather.has("rain")) {
-			this.rain = BigDecimal.valueOf(dailyWeather.getDouble("rain")).floatValue();
+			setRain(BigDecimal.valueOf(dailyWeather.getDouble("rain")).floatValue());
 		} else {
-			this.rain = 0;
+			setRain(0);
 		}
 		////    Snow
 		if (dailyWeather.has("snow")) {
-			this.snow = BigDecimal.valueOf(dailyWeather.getDouble("snow")).floatValue();
+			setSnow(BigDecimal.valueOf(dailyWeather.getDouble("snow")).floatValue());
 		} else {
-			this.snow = 0;
+			setSnow(0);
 		}
 	}
 	
-	@NonNull
-	public DailyWeatherForecast clone() {
-		DailyWeatherForecast returnedDailyWeatherForecast = new DailyWeatherForecast();
-		
-		returnedDailyWeatherForecast.placeId = placeId;
-		
-		////    Time
-		returnedDailyWeatherForecast.dt = this.dt;
-		
-		////    Weather
-		returnedDailyWeatherForecast.weather = this.weather;
-		returnedDailyWeatherForecast.weatherDescription = this.weatherDescription;
-		returnedDailyWeatherForecast.weatherCode = this.weatherCode;
-		
-		////    Temperatures
-		returnedDailyWeatherForecast.temperatureMorning = this.temperatureMorning;
-		returnedDailyWeatherForecast.temperatureDay = this.temperatureDay;
-		returnedDailyWeatherForecast.temperatureEvening = this.temperatureEvening;
-		returnedDailyWeatherForecast.temperatureNight = this.temperatureNight;
-		returnedDailyWeatherForecast.temperatureMinimum = this.temperatureMinimum;
-		returnedDailyWeatherForecast.temperatureMaximum = this.temperatureMaximum;
-		
-		////    Feels like
-		returnedDailyWeatherForecast.temperatureMorningFeelsLike = this.temperatureMorningFeelsLike;
-		returnedDailyWeatherForecast.temperatureDayFeelsLike = this.temperatureDayFeelsLike;
-		returnedDailyWeatherForecast.temperatureEveningFeelsLike = this.temperatureEveningFeelsLike;
-		returnedDailyWeatherForecast.temperatureNightFeelsLike = this.temperatureNightFeelsLike;
-		
-		////    Environmental Variables
-		returnedDailyWeatherForecast.pressure = this.pressure;
-		returnedDailyWeatherForecast.humidity = this.humidity;
-		returnedDailyWeatherForecast.dewPoint = this.dewPoint;
-		
-		////    Sky
-		returnedDailyWeatherForecast.cloudiness = this.cloudiness;
-		returnedDailyWeatherForecast.sunrise = this.sunrise;
-		returnedDailyWeatherForecast.sunset = this.sunset;
-		returnedDailyWeatherForecast.uvIndex = this.uvIndex;
-		
-		////    Moon
-		returnedDailyWeatherForecast.moonrise = this.moonrise;
-		returnedDailyWeatherForecast.moonset = this.moonset;
-		returnedDailyWeatherForecast.moonPhase = this.moonPhase;
-		
-		////    Wind
-		returnedDailyWeatherForecast.windSpeed = this.windSpeed;
-		returnedDailyWeatherForecast.windGustSpeed = this.windGustSpeed;
-		returnedDailyWeatherForecast.windDirection = this.windDirection;
-		
-		////    Precipitations
-		returnedDailyWeatherForecast.pop = this.pop;
-		returnedDailyWeatherForecast.rain = this.rain;
-		returnedDailyWeatherForecast.snow = this.snow;
-		
-		return returnedDailyWeatherForecast;
-	}
+	/*
+	  Getters and Setters
+	 */
 	
-	//	Getter
-	
+	/**
+	 * Gets place id.
+	 *
+	 * @return the place id
+	 */
 	public int getPlaceId() {
 		return placeId;
 	}
 	
+	/**
+	 * Sets place id.
+	 *
+	 * @param placeId the place id
+	 */
 	public void setPlaceId(int placeId) {
 		this.placeId = placeId;
 	}
 	
+	/**
+	 * Gets dt.
+	 *
+	 * @return the dt
+	 */
 	public long getDt() {
 		return dt;
 	}
 	
+	/**
+	 * Sets dt.
+	 *
+	 * @param dt the dt (in milliseconds)
+	 *           Must be positive or zero
+	 */
 	public void setDt(long dt) {
+		if (dt <= 0)
+			throw new IllegalArgumentException("dt must be positive or null");
 		this.dt = dt;
 	}
 	
+	/**
+	 * Gets weather.
+	 *
+	 * @return the weather
+	 */
 	public String getWeather() {
 		return weather;
 	}
 	
+	/**
+	 * Sets weather.
+	 *
+	 * @param weather the weather
+	 */
 	public void setWeather(String weather) {
 		this.weather = weather;
 	}
 	
+	/**
+	 * Gets weather description.
+	 *
+	 * @return the weather description
+	 */
 	public String getWeatherDescription() {
 		return weatherDescription;
 	}
 	
+	/**
+	 * Sets weather description.
+	 *
+	 * @param weatherDescription the weather description
+	 */
 	public void setWeatherDescription(String weatherDescription) {
 		this.weatherDescription = weatherDescription;
 	}
 	
+	/**
+	 * Gets weather code.
+	 *
+	 * @return the weather code
+	 */
 	public int getWeatherCode() {
 		return weatherCode;
 	}
 	
+	/**
+	 * Sets weather code.
+	 *
+	 * @param weatherCode the weather code
+	 *                    Must be positive or null
+	 */
 	public void setWeatherCode(int weatherCode) {
+		if (weatherCode < 0)
+			throw new IllegalArgumentException("weatherCode must be positive or null");
 		this.weatherCode = weatherCode;
 	}
 	
+	/**
+	 * Gets temperature for the morning.
+	 *
+	 * @return the temperature for the morning
+	 */
 	public float getTemperatureMorning() {
 		return temperatureMorning;
 	}
 	
+	/**
+	 * Sets temperature for the morning.
+	 *
+	 * @param temperatureMorning the temperature for the morning
+	 */
 	public void setTemperatureMorning(float temperatureMorning) {
 		this.temperatureMorning = temperatureMorning;
 	}
 	
+	/**
+	 * Gets temperature for the day.
+	 *
+	 * @return the temperature for the day
+	 */
 	public float getTemperatureDay() {
 		return temperatureDay;
 	}
 	
+	/**
+	 * Sets temperature for the day.
+	 *
+	 * @param temperatureDay the temperature for the day
+	 */
 	public void setTemperatureDay(float temperatureDay) {
 		this.temperatureDay = temperatureDay;
 	}
 	
+	/**
+	 * Gets temperature for the evening.
+	 *
+	 * @return the temperature for the evening
+	 */
 	public float getTemperatureEvening() {
 		return temperatureEvening;
 	}
 	
+	/**
+	 * Sets temperature for the evening.
+	 *
+	 * @param temperatureEvening the temperature for the evening
+	 */
 	public void setTemperatureEvening(float temperatureEvening) {
 		this.temperatureEvening = temperatureEvening;
 	}
 	
+	/**
+	 * Gets temperature for the night.
+	 *
+	 * @return the temperature for the night
+	 */
 	public float getTemperatureNight() {
 		return temperatureNight;
 	}
 	
+	/**
+	 * Sets temperature for the night.
+	 *
+	 * @param temperatureNight the temperature for the night
+	 */
 	public void setTemperatureNight(float temperatureNight) {
 		this.temperatureNight = temperatureNight;
 	}
 	
+	/**
+	 * Gets temperature minimum.
+	 *
+	 * @return the temperature minimum
+	 */
 	public float getTemperatureMinimum() {
 		return temperatureMinimum;
 	}
 	
+	/**
+	 * Sets temperature minimum.
+	 *
+	 * @param temperatureMinimum the temperature minimum
+	 */
 	public void setTemperatureMinimum(float temperatureMinimum) {
 		this.temperatureMinimum = temperatureMinimum;
 	}
 	
+	/**
+	 * Gets temperature maximum.
+	 *
+	 * @return the temperature maximum
+	 */
 	public float getTemperatureMaximum() {
 		return temperatureMaximum;
 	}
 	
+	/**
+	 * Sets temperature maximum.
+	 *
+	 * @param temperatureMaximum the temperature maximum
+	 */
 	public void setTemperatureMaximum(float temperatureMaximum) {
 		this.temperatureMaximum = temperatureMaximum;
 	}
 	
+	/**
+	 * Gets feels like temperature for the morning.
+	 *
+	 * @return the feels like temperature for the morning
+	 */
 	public float getTemperatureMorningFeelsLike() {
 		return temperatureMorningFeelsLike;
 	}
 	
+	/**
+	 * Sets feels like temperature for the morning.
+	 *
+	 * @param temperatureMorningFeelsLike the feels like temperature for the morning
+	 */
 	public void setTemperatureMorningFeelsLike(float temperatureMorningFeelsLike) {
 		this.temperatureMorningFeelsLike = temperatureMorningFeelsLike;
 	}
 	
+	/**
+	 * Gets feels like temperature for the day.
+	 *
+	 * @return the feels like temperature for the day
+	 */
 	public float getTemperatureDayFeelsLike() {
 		return temperatureDayFeelsLike;
 	}
 	
+	/**
+	 * Sets feels like temperature for the day.
+	 *
+	 * @param temperatureDayFeelsLike the feels like temperature for the day
+	 */
 	public void setTemperatureDayFeelsLike(float temperatureDayFeelsLike) {
 		this.temperatureDayFeelsLike = temperatureDayFeelsLike;
 	}
 	
+	/**
+	 * Gets feels like temperature for the evening.
+	 *
+	 * @return the feels like temperature for the evening
+	 */
 	public float getTemperatureEveningFeelsLike() {
 		return temperatureEveningFeelsLike;
 	}
 	
+	/**
+	 * Sets feels like temperature for the evening.
+	 *
+	 * @param temperatureEveningFeelsLike the feels like temperature for the evening
+	 */
 	public void setTemperatureEveningFeelsLike(float temperatureEveningFeelsLike) {
 		this.temperatureEveningFeelsLike = temperatureEveningFeelsLike;
 	}
 	
+	/**
+	 * Gets feels like temperature for the night.
+	 *
+	 * @return the feels like temperature for the night
+	 */
 	public float getTemperatureNightFeelsLike() {
 		return temperatureNightFeelsLike;
 	}
 	
+	/**
+	 * Sets feels like temperature for the night.
+	 *
+	 * @param temperatureNightFeelsLike the feels like temperature for the night
+	 */
 	public void setTemperatureNightFeelsLike(float temperatureNightFeelsLike) {
 		this.temperatureNightFeelsLike = temperatureNightFeelsLike;
 	}
 	
+	/**
+	 * Gets pressure value.
+	 *
+	 * @return the pressure value
+	 */
 	public int getPressure() {
 		return pressure;
 	}
 	
-	
-	//	Setter
-	
+	/**
+	 * Sets pressure value.
+	 *
+	 * @param pressure the pressure value
+	 *                 Must be positive or null
+	 */
 	public void setPressure(int pressure) {
+		if (pressure < 0)
+			throw new IllegalArgumentException("pressure must be positive or null");
 		this.pressure = pressure;
 	}
 	
+	/**
+	 * Gets humidity value.
+	 *
+	 * @return the humidity value
+	 */
 	public int getHumidity() {
 		return humidity;
 	}
 	
+	/**
+	 * Sets humidity value.
+	 *
+	 * @param humidity the humidity value
+	 *                 Must be between 0 and 100 (both included)
+	 */
 	public void setHumidity(int humidity) {
+		if (humidity < 0 || humidity > 100)
+			throw new IllegalArgumentException("humidity must be between 0 and 100 (both included)");
 		this.humidity = humidity;
 	}
 	
+	/**
+	 * Gets wind speed value.
+	 *
+	 * @return the wind speed value
+	 */
 	public float getDewPoint() {
 		return dewPoint;
 	}
 	
+	/**
+	 * Sets dew point value.
+	 *
+	 * @param dewPoint the dew point value
+	 */
 	public void setDewPoint(float dewPoint) {
 		this.dewPoint = dewPoint;
 	}
 	
+	/**
+	 * Gets cloud coverage value.
+	 *
+	 * @return the cloudiness value
+	 */
 	public int getCloudiness() {
 		return cloudiness;
 	}
 	
+	/**
+	 * Sets cloud coverage value.
+	 *
+	 * @param cloudiness the cloud coverage value
+	 *                   Must be between 0 and 100 (both included)
+	 */
 	public void setCloudiness(int cloudiness) {
+		if (cloudiness < 0 || cloudiness > 100)
+			throw new IllegalArgumentException("cloudiness must be between 0 and 100 (both included)");
 		this.cloudiness = cloudiness;
 	}
 	
-	public long getSunrise() {
-		return sunrise;
+	/**
+	 * Gets sunrise time.
+	 *
+	 * @return the sunrise time (in milliseconds)
+	 */
+	public long getSunriseDt() {
+		return sunriseDt;
 	}
 	
-	public void setSunrise(long sunrise) {
-		this.sunrise = sunrise;
+	/**
+	 * Sets sunrise time.
+	 *
+	 * @param sunriseDt the sunrise time (in milliseconds)
+	 *                  Must be positive or null
+	 */
+	public void setSunriseDt(long sunriseDt) {
+		if (sunriseDt < 0)
+			throw new IllegalArgumentException("sunrise must be positive or null");
+		this.sunriseDt = sunriseDt;
 	}
 	
-	public long getSunset() {
-		return sunset;
+	/**
+	 * Gets sunset time.
+	 *
+	 * @return the sunset time (in milliseconds)
+	 */
+	public long getSunsetDt() {
+		return sunsetDt;
 	}
 	
-	public void setSunset(long sunset) {
-		this.sunset = sunset;
+	/**
+	 * Sets sunset time.
+	 *
+	 * @param sunsetDt the sunset time (in milliseconds)
+	 *                 Must be positive or null
+	 */
+	public void setSunsetDt(long sunsetDt) {
+		if (sunsetDt < 0)
+			throw new IllegalArgumentException("sunset must be positive or null");
+		this.sunsetDt = sunsetDt;
 	}
 	
+	/**
+	 * Gets UV index.
+	 *
+	 * @return the UV index
+	 */
 	public int getUvIndex() {
 		return uvIndex;
 	}
 	
+	/**
+	 * Sets UV index.
+	 *
+	 * @param uvIndex the UV index
+	 *                Must be positive or null
+	 */
 	public void setUvIndex(int uvIndex) {
+		if (uvIndex < 0)
+			throw new IllegalArgumentException("uvIndex must be positive or null");
 		this.uvIndex = uvIndex;
 	}
 	
-	public long getMoonrise() {
-		return moonrise;
+	/**
+	 * Gets moonrise time.
+	 *
+	 * @return the moonrise time (in milliseconds)
+	 */
+	public long getMoonriseDt() {
+		return moonriseDt;
 	}
 	
-	public void setMoonrise(long moonrise) {
-		this.moonrise = moonrise;
+	/**
+	 * Sets moonrise time.
+	 *
+	 * @param moonriseDt the moonrise time (in milliseconds)
+	 *                   Must be positive or null
+	 */
+	public void setMoonriseDt(long moonriseDt) {
+		if (moonriseDt < 0)
+			throw new IllegalArgumentException("moonrise must be positive or null");
+		this.moonriseDt = moonriseDt;
 	}
 	
-	public long getMoonset() {
-		return moonset;
+	/**
+	 * Gets moonset time.
+	 *
+	 * @return the moonset time (in milliseconds)
+	 */
+	public long getMoonsetDt() {
+		return moonsetDt;
 	}
 	
-	public void setMoonset(long moonset) {
-		this.moonset = moonset;
+	/**
+	 * Sets moonset time.
+	 *
+	 * @param moonsetDt the moonset time (in milliseconds)
+	 *                  Must be positive or null
+	 */
+	public void setMoonsetDt(long moonsetDt) {
+		if (moonsetDt < 0)
+			throw new IllegalArgumentException("moonset must be positive or null");
+		this.moonsetDt = moonsetDt;
 	}
 	
+	/**
+	 * Gets moon phase.
+	 *
+	 * @return the moon phase
+	 */
 	public float getMoonPhase() {
 		return moonPhase;
 	}
 	
+	/**
+	 * Sets moon phase.
+	 *
+	 * @param moonPhase the moon phase
+	 *                  Must be between 0 and 1 (both included)
+	 */
 	public void setMoonPhase(float moonPhase) {
+		if (moonPhase < 0 || moonPhase > 1)
+			throw new IllegalArgumentException("moonPhase must be between 0 and 1 (both included)");
 		this.moonPhase = moonPhase;
 	}
 	
+	/**
+	 * Gets wind speed.
+	 *
+	 * @return the wind speed
+	 */
 	public float getWindSpeed() {
 		return windSpeed;
 	}
 	
+	/**
+	 * Sets wind speed.
+	 *
+	 * @param windSpeed the wind speed
+	 *                  Must be positive or null
+	 */
 	public void setWindSpeed(float windSpeed) {
+		if (windSpeed < 0)
+			throw new IllegalArgumentException("windSpeed must be positive or null");
 		this.windSpeed = windSpeed;
 	}
 	
+	/**
+	 * Gets wind gust speed.
+	 *
+	 * @return the wind gust speed
+	 */
 	public float getWindGustSpeed() {
 		return windGustSpeed;
 	}
 	
+	/**
+	 * Sets wind gust speed.
+	 *
+	 * @param windGustSpeed the wind gust speed
+	 *                      Must be positive or null
+	 */
 	public void setWindGustSpeed(float windGustSpeed) {
+		if (windGustSpeed < 0)
+			throw new IllegalArgumentException("windGustSpeed must be positive or null");
 		this.windGustSpeed = windGustSpeed;
 	}
 	
+	/**
+	 * Gets wind direction.
+	 *
+	 * @return the wind direction
+	 */
 	public short getWindDirection() {
 		return windDirection;
 	}
 	
+	/**
+	 * Sets wind direction.
+	 *
+	 * @param windDirection the wind direction
+	 *                      Must be between 0 and 360 (both included)
+	 */
 	public void setWindDirection(short windDirection) {
+		if (windDirection < 0 || windDirection > 360)
+			throw new IllegalArgumentException("windDirection must be between 0 and 360 (both included)");
 		this.windDirection = windDirection;
 	}
 	
+	/**
+	 * Gets probability of precipitation.
+	 *
+	 * @return the probability of precipitation value
+	 */
 	public float getPop() {
 		return pop;
 	}
 	
+	/**
+	 * Sets probability of precipitation.
+	 *
+	 * @param pop the probability of precipitation value
+	 *            Must be between 0 and 1 (both included)
+	 */
 	public void setPop(float pop) {
+		if (pop < 0 || pop > 1)
+			throw new IllegalArgumentException("pop must be between 0 and 1 (both included)");
 		this.pop = pop;
 	}
 	
+	/**
+	 * Gets rain volume for the day.
+	 *
+	 * @return the rain volume
+	 */
 	public float getRain() {
 		return rain;
 	}
 	
+	
+	/**
+	 * Sets rain volume for the day.
+	 *
+	 * @param rain the rain volume
+	 *             Must be positive or null
+	 */
 	public void setRain(float rain) {
+		if (rain < 0)
+			throw new IllegalArgumentException("rain must be positive or null");
 		this.rain = rain;
 	}
 	
+	/**
+	 * Gets snow volume for the day.
+	 *
+	 * @return the snow volume
+	 */
 	public float getSnow() {
 		return snow;
 	}
 	
+	/**
+	 * Sets snow volume for the day.
+	 *
+	 * @param snow the snow volume
+	 *             Must be positive or null
+	 */
 	public void setSnow(float snow) {
+		if (snow < 0)
+			throw new IllegalArgumentException("snow must be positive or null");
 		this.snow = snow;
 	}
 	
+	/**
+	 * Used to clone the daily weather forecast object.
+	 *
+	 * @return a clone of the daily weather forecast object.
+	 */
+	@NonNull
+	public DailyWeatherForecast clone() {
+		DailyWeatherForecast returnedDailyWeatherForecast = new DailyWeatherForecast();
+		
+		returnedDailyWeatherForecast.setPlaceId(placeId);
+		
+		////    Time
+		returnedDailyWeatherForecast.setDt(this.dt);
+		
+		////    Weather
+		returnedDailyWeatherForecast.setWeather(this.weather);
+		returnedDailyWeatherForecast.setWeatherDescription(this.weatherDescription);
+		returnedDailyWeatherForecast.setWeatherCode(this.weatherCode);
+		
+		////    Temperatures
+		returnedDailyWeatherForecast.setTemperatureMorning(this.temperatureMorning);
+		returnedDailyWeatherForecast.setTemperatureDay(this.temperatureDay);
+		returnedDailyWeatherForecast.setTemperatureEvening(this.temperatureEvening);
+		returnedDailyWeatherForecast.setTemperatureNight(this.temperatureNight);
+		returnedDailyWeatherForecast.setTemperatureMinimum(this.temperatureMinimum);
+		returnedDailyWeatherForecast.setTemperatureMaximum(this.temperatureMaximum);
+		
+		////    Feels like
+		returnedDailyWeatherForecast.setTemperatureMorningFeelsLike(this.temperatureMorningFeelsLike);
+		returnedDailyWeatherForecast.setTemperatureDayFeelsLike(this.temperatureDayFeelsLike);
+		returnedDailyWeatherForecast.setTemperatureEveningFeelsLike(this.temperatureEveningFeelsLike);
+		returnedDailyWeatherForecast.setTemperatureNightFeelsLike(this.temperatureNightFeelsLike);
+		
+		////    Environmental Variables
+		returnedDailyWeatherForecast.setPressure(this.pressure);
+		returnedDailyWeatherForecast.setHumidity(this.humidity);
+		returnedDailyWeatherForecast.setDewPoint(this.dewPoint);
+		
+		////    Sky
+		returnedDailyWeatherForecast.setCloudiness(this.cloudiness);
+		returnedDailyWeatherForecast.setSunriseDt(this.sunriseDt);
+		returnedDailyWeatherForecast.setSunsetDt(this.sunsetDt);
+		returnedDailyWeatherForecast.setUvIndex(this.uvIndex);
+		
+		////    Moon
+		returnedDailyWeatherForecast.setMoonriseDt(this.moonriseDt);
+		returnedDailyWeatherForecast.setMoonsetDt(this.moonsetDt);
+		returnedDailyWeatherForecast.setMoonPhase(this.moonPhase);
+		
+		////    Wind
+		returnedDailyWeatherForecast.setWindSpeed(this.windSpeed);
+		returnedDailyWeatherForecast.setWindGustSpeed(this.windGustSpeed);
+		returnedDailyWeatherForecast.setWindDirection(this.windDirection);
+		
+		////    Precipitations
+		returnedDailyWeatherForecast.setPop(this.pop);
+		returnedDailyWeatherForecast.setRain(this.rain);
+		returnedDailyWeatherForecast.setSnow(this.snow);
+		
+		return returnedDailyWeatherForecast;
+	}
 	
+	/**
+	 * Used to get the daily weather forecast as a string.
+	 *
+	 * @return the daily weather forecast as a string.
+	 */
 	@NonNull
 	@Override
 	public String toString() {
@@ -517,11 +895,11 @@ public class DailyWeatherForecast {
 				  .add("humidity=" + humidity)
 				  .add("dewPoint=" + dewPoint)
 				  .add("cloudiness=" + cloudiness)
-				  .add("sunrise=" + sunrise)
-				  .add("sunset=" + sunset)
+				  .add("sunrise=" + sunriseDt)
+				  .add("sunset=" + sunsetDt)
 				  .add("uvIndex=" + uvIndex)
-				  .add("moonrise=" + moonrise)
-				  .add("moonset=" + moonset)
+				  .add("moonrise=" + moonriseDt)
+				  .add("moonset=" + moonsetDt)
 				  .add("moonPhase=" + moonPhase)
 				  .add("windSpeed=" + windSpeed)
 				  .add("windGustSpeed=" + windGustSpeed)
@@ -532,4 +910,3 @@ public class DailyWeatherForecast {
 				  .toString();
 	}
 }
-

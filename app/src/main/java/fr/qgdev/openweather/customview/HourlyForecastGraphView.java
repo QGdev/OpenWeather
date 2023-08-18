@@ -149,7 +149,7 @@ public class HourlyForecastGraphView extends ForecastView {
 				dailyWeatherForecast = dailyWeatherForecastList.get(dayIndex);
 			}
 			
-			isDayTime[index] = dailyWeatherForecast.getSunrise() < hourlyWeatherForecast.getDt() && hourlyWeatherForecast.getDt() < dailyWeatherForecast.getSunset();
+			isDayTime[index] = dailyWeatherForecast.getSunriseDt() < hourlyWeatherForecast.getDt() && hourlyWeatherForecast.getDt() < dailyWeatherForecast.getSunsetDt();
 		}
 		
 		return isDayTime;

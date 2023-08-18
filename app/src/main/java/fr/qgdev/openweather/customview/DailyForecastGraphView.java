@@ -459,22 +459,22 @@ public class DailyForecastGraphView extends ForecastView {
 				  textY2, secondColumn, dpToPx(5), paint);
 		drawTextWithDrawable(canvas,
 				  getDrawable(context, R.drawable.sunrise_material),
-				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getSunrise()), timeZone),
+				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getSunriseDt()), timeZone),
 				  textY3, firstColumn, dpToPx(5), paint);
 		drawTextWithDrawable(canvas,
 				  getDrawable(context, R.drawable.sunset_material),
-				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getSunset()), timeZone),
+				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getSunsetDt()), timeZone),
 				  textY4, firstColumn, dpToPx(5), paint);
 		
 		drawUvIndex(canvas, dailyWeatherForecast.getUvIndex(), secondColumn, textY3, dpToPx(70));
 		
 		drawTextWithDrawable(canvas,
 				  getDrawable(context, R.drawable.moonrise_material),
-				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getMoonrise()), timeZone),
+				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getMoonriseDt()), timeZone),
 				  textY5, firstColumn, dpToPx(5), paint);
 		drawTextWithDrawable(canvas,
 				  getDrawable(context, R.drawable.moonset_material),
-				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getMoonset()), timeZone),
+				  formattingService.getFormattedTime(new Date(dailyWeatherForecast.getMoonsetDt()), timeZone),
 				  textY6, firstColumn, dpToPx(5), paint);
 		
 		drawMoonPhase(canvas, dailyWeatherForecast.getMoonPhase(), secondColumn, textY5, dpToPx(70));

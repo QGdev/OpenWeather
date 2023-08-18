@@ -56,7 +56,7 @@ import fr.qgdev.openweather.repositories.places.dao.PropertiesDAO;
 import fr.qgdev.openweather.repositories.places.dao.WeatherAlertDAO;
 import fr.qgdev.openweather.utils.ParameterizedRunnable;
 
-@Database(version = 2,
+@Database(version = 3,
         entities = {Geolocation.class,
                 Properties.class,
                 AirQuality.class,
@@ -88,11 +88,25 @@ public abstract class PlaceDatabase extends RoomDatabase {
         }
     };
     
+    private static final Migration migration2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE current_weather RENAME COLUMN sunrise TO sunriseDt");
+            database.execSQL("ALTER TABLE current_weather RENAME COLUMN sunset TO sunsetDt");
+            
+            database.execSQL("ALTER TABLE daily_weather_forecast RENAME COLUMN sunrise TO sunriseDt");
+            database.execSQL("ALTER TABLE daily_weather_forecast RENAME COLUMN sunset TO sunsetDt");
+            database.execSQL("ALTER TABLE daily_weather_forecast RENAME COLUMN moonrise TO moonriseDt");
+            database.execSQL("ALTER TABLE daily_weather_forecast RENAME COLUMN moonset TO moonsetDt");
+        }
+    };
+    
+    
     public static PlaceDatabase getDatabase(final Context context) {
         instance.compareAndSet(null,
                 Room.databaseBuilder(context.getApplicationContext(),
                                 PlaceDatabase.class, "appDB")
-                        .addMigrations(migration1_2)
+                        .addMigrations(migration1_2, migration2_3)
                         .build());
         
         return instance.get();

@@ -113,9 +113,9 @@ public class WidgetsBinder {
 		boolean[] isDaytime = {false, false, false, false};
 		
 		Calendar tmpCalendar = Calendar.getInstance();
-		tmpCalendar.setTimeInMillis(currentWeather.getSunrise());
+		tmpCalendar.setTimeInMillis(currentWeather.getSunriseDt());
 		int sunRiseHour = tmpCalendar.get(Calendar.HOUR_OF_DAY);
-		tmpCalendar.setTimeInMillis(currentWeather.getSunset());
+		tmpCalendar.setTimeInMillis(currentWeather.getSunsetDt());
 		int sunSetHour = tmpCalendar.get(Calendar.HOUR_OF_DAY);
 		
 		for (int i = 0; i < 4; i++) {

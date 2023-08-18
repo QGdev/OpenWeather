@@ -804,8 +804,8 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			visibilityTextView.setText(formattingService.getIntFormattedDistance(currentWeather.getVisibility(), UNIT_AND_SPACE));
 			
 			//  Sunrise and sunset
-			sunriseTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.getSunrise()), place.getProperties().getTimeZone()));
-			sunsetTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.getSunset()), place.getProperties().getTimeZone()));
+			sunriseTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.getSunriseDt()), place.getProperties().getTimeZone()));
+			sunsetTextView.setText(formattingService.getFormattedTime(new Date(currentWeather.getSunsetDt()), place.getProperties().getTimeZone()));
 			
 			cloudinessTextView.setText(String.format(Locale.US, "%d%%", currentWeather.getCloudiness()));
 			
