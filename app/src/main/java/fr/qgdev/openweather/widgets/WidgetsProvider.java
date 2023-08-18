@@ -30,14 +30,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.SizeF;
-import android.util.TypedValue;
 import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 import androidx.collection.ArrayMap;
 import androidx.lifecycle.Observer;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -70,7 +70,6 @@ public class WidgetsProvider extends AppWidgetProvider {
 			for (SizeF size : sizes) {
 				WidgetType type = WidgetType.fromSizeF(new SizeF(size.getWidth(), size.getHeight()));
 				if (type == null) continue;
-				Log.d("WidgetsProvider", "getRemoteViewsMap: " + size + " " + type);
 				views.put(size, bindWidget(context, type, place, formattingService));
 			}
 		} else {
@@ -100,7 +99,8 @@ public class WidgetsProvider extends AppWidgetProvider {
 		
 		// Get actual widget size
 		Bundle appWidgetOptions = appWidgetManager.getAppWidgetOptions(appWidgetId);
-		List<SizeF> sizes = appWidgetOptions.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
+		List<SizeF> sizes = getSizes(appWidgetOptions);
+		if (sizes == null || sizes.isEmpty()) return;
 		
 		repository.getPlaceFromPlaceIdLiveData(widgetsSettings.getPlaceId()).observeForever(new Observer<Place>() {
 			@Override
@@ -112,7 +112,7 @@ public class WidgetsProvider extends AppWidgetProvider {
 				
 				// Instruct the widget manager to update the widget
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-					appWidgetManager.updateAppWidget(appWidgetId, views.get(sizes.get(0)));
+					appWidgetManager.updateAppWidget(appWidgetId, new RemoteViews(views));
 				} else {
 					appWidgetManager.updateAppWidget(appWidgetId, views.get(sizes.get(0)));
 				}
@@ -123,27 +123,30 @@ public class WidgetsProvider extends AppWidgetProvider {
 	}
 	
 	/**
-	 * dpToPx(@NonNull Context context, float dip)
-	 * <p>
-	 * Just a DP to PX converter method
-	 * </p>
+	 * Get the list of sizes available for the widget
 	 *
-	 * @param context Application context in order to access to resources
-	 * @param dip     DP value that you want to convert
-	 * @return The DP converted value into PX
+	 * @param bundle the bundle to get the sizes from
+	 * @return the list of sizes
+	 * @apiNote On AP1 30 and below, the list will only contain one size
 	 */
-	private static int dpToPx(@NonNull Context context, float dip) {
-		return (int) TypedValue.applyDimension(
-				  TypedValue.COMPLEX_UNIT_DIP,
-				  dip,
-				  context.getResources().getDisplayMetrics());
+	@Nullable
+	private static List<SizeF> getSizes(Bundle bundle) {
+		List<SizeF> sizes;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+			// getParcelableArrayList() is only available on API 31 but is deprecated
+			// There is no other way to get the list of sizes for now, it works but it's not clean
+			sizes = bundle.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
+		} else {
+			sizes = List.of(new SizeF(bundle.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH),
+					  bundle.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)));
+		}
+		return sizes;
 	}
 	
 	/**
 	 * Called in response to the {@link AppWidgetManager#ACTION_APPWIDGET_OPTIONS_CHANGED}
 	 * broadcast when this widget has been layed out at a new size.
 	 * <p>
-	 * {@more}
 	 *
 	 * @param context          The {@link Context Context} in which this receiver is
 	 *                         running.
@@ -158,15 +161,7 @@ public class WidgetsProvider extends AppWidgetProvider {
 		super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
 		AppRepository repository = new AppRepository(context);
 		
-		// FOR TEST AND DEBUG
-		int maxWidth = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH);
-		int maxHeight = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT);
-		int minWidth = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH);
-		int minHeight = newOptions.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT);
-		
-		Log.d("WidgetProvider", "onAppWidgetOptionsChanged: maxWidth = " + maxWidth + ", maxHeight = " + maxHeight + ", minWidth = " + minWidth + ", minHeight = " + minHeight);
-		
-		List<SizeF> sizes = newOptions.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
+		List<SizeF> sizes = getSizes(newOptions);
 		if (sizes == null || sizes.isEmpty()) return;
 		
 		// Get WidgetsSettings and specially the placeId
@@ -186,12 +181,9 @@ public class WidgetsProvider extends AppWidgetProvider {
 			//	For Android 12 and above
 			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
 				for (SizeF size : sizes) {
-				}
-				for (SizeF size : sizes) {
 					WidgetType widgetType = WidgetType.fromSizeF(size);
-					Log.d("Widget", "onAppWidgetOptionsChanged: " + size.toString());
+					//	Invalid widget type, so we didn't have a widget for this size
 					if (widgetType == null) continue;
-					Log.d("Widget", "onAppWidgetOptionsChanged: " + widgetType);
 					viewMapping.put(size, bindWidget(context, widgetType, place, repository.getFormattingService()));
 				}
 				remoteViews = new RemoteViews(viewMapping);
