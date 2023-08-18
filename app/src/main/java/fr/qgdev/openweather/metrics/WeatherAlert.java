@@ -37,50 +37,57 @@ import java.util.StringJoiner;
  * The type Weather alert.
  */
 @Entity(tableName = "weather_alerts",
-		  primaryKeys = {"placeId", "startDt", "event",})
+		  primaryKeys = {"placeId", "sender", "startDt", "event"})
 public class WeatherAlert {
 	@NonNull
-	private final String sender;
+	private String sender;
 	@NonNull
-	private final String event;
-	private final long startDt;
-	private final long endDt;
+	private String event;
 	@NonNull
-	private final String description;
-	private final List<String> tags;
+	private long startDt;
+	private long endDt;
+	private String description;
+	private List<String> tags;
 	private int placeId;
 	
 	/**
 	 * Instantiates a new Weather alert.
 	 */
-	public WeatherAlert(@NonNull String sender, @NonNull String event, long startDt, long endDt, @NonNull String description, List<String> tags) {
-		this.sender = sender;
-		this.event = event;
-		this.startDt = startDt;
-		this.endDt = endDt;
-		this.description = description;
-		this.tags = Collections.unmodifiableList(tags);
+	public WeatherAlert() {
+		this.placeId = 0;
+		this.sender = "";
+		this.event = "";
+		this.startDt = 0;
+		this.endDt = 0;
+		this.description = "";
+		this.tags = new ArrayList<>();
 	}
 	
 	/**
 	 * Instantiates a new Weather alert with JSON from OpenWeatherMap.
 	 *
 	 * @param weatherAlert the weather alert JSON from OpenWeatherMap
-	 * @throws JSONException
+	 * @throws JSONException the json exception if the JSON is not correct
 	 */
 	@Ignore
 	public WeatherAlert(JSONObject weatherAlert) throws JSONException {
+		this.placeId = 0;
+		
 		this.sender = weatherAlert.getString("sender_name");
 		this.event = weatherAlert.getString("event");
-		this.startDt = weatherAlert.getLong("start") * 1000;
-		this.endDt = weatherAlert.getLong("end") * 1000;
-		this.description = weatherAlert.getString("description");
+		
+		setStartDt(weatherAlert.getLong("start") * 1000);
+		setEndDt(weatherAlert.getLong("end") * 1000);
+		setDescription(weatherAlert.getString("description"));
 		this.tags = new ArrayList<>();
 		
+		List<String> tmp = new ArrayList<>();
 		JSONArray tagsJSON = weatherAlert.getJSONArray("tags");
-		
-		for (int idx = 0; idx < tagsJSON.length(); idx++) {
-			tags.add(tagsJSON.getString(idx));
+		if (tagsJSON.length() > 0) {
+			for (int idx = 0; idx < tagsJSON.length(); idx++) {
+				tmp.add(tagsJSON.getString(idx));
+			}
+			setTags(tmp);
 		}
 	}
 	
@@ -109,8 +116,18 @@ public class WeatherAlert {
 	 *
 	 * @return the sender
 	 */
+	@NonNull
 	public String getSender() {
 		return sender;
+	}
+	
+	/**
+	 * Sets sender.
+	 *
+	 * @param sender the sender to set
+	 */
+	public void setSender(@NonNull String sender) {
+		this.sender = sender;
 	}
 	
 	/**
@@ -118,29 +135,61 @@ public class WeatherAlert {
 	 *
 	 * @return the event
 	 */
+	@NonNull
 	public String getEvent() {
 		return event;
 	}
 	
 	/**
+	 * Sets event.
+	 *
+	 * @param event the event to set
+	 */
+	public void setEvent(@NonNull String event) {
+		this.event = event;
+	}
+	
+	/**
 	 * Gets start dt.
 	 *
-	 * @return the start dt
+	 * @return the start dt (in milliseconds)
 	 */
 	public long getStartDt() {
 		return startDt;
 	}
 	
 	/**
+	 * Sets start dt.
+	 *
+	 * @param startDt the start dt to set (in milliseconds)
+	 *                Must be positive or null
+	 */
+	public void setStartDt(long startDt) {
+		if (startDt < 0)
+			throw new IllegalArgumentException("startDt must be positive or null");
+		this.startDt = startDt;
+	}
+	
+	/**
 	 * Gets end dt.
 	 *
-	 * @return the end dt
+	 * @return the end dt (in milliseconds)
 	 */
 	public long getEndDt() {
 		return endDt;
 	}
 	
-	//  Setter
+	/**
+	 * Sets end dt.
+	 *
+	 * @param endDt the end dt to set (in milliseconds)
+	 *              Must be positive or null
+	 */
+	public void setEndDt(long endDt) {
+		if (endDt < 0)
+			throw new IllegalArgumentException("endDt must be positive or null");
+		this.endDt = endDt;
+	}
 	
 	/**
 	 * Gets description.
@@ -152,12 +201,59 @@ public class WeatherAlert {
 	}
 	
 	/**
-	 * Gets tags.
+	 * Sets description.
 	 *
-	 * @return the tags
+	 * @param description the description to set
+	 */
+	public void setDescription(@NonNull String description) {
+		this.description = description;
+	}
+	
+	/**
+	 * Gets tags list.
+	 *
+	 * @return the list of tags
 	 */
 	public List<String> getTags() {
 		return Collections.unmodifiableList(tags);
+	}
+	
+	/**
+	 * Sets tags list.
+	 *
+	 * @param tags the list of tags to set
+	 */
+	public void setTags(@NonNull List<String> tags) {
+		//	Remove all tags and add the new ones
+		this.tags.clear();
+		
+		for (String tag : tags) {
+			if (!addTag(tag)) {
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * Remove tag.
+	 *
+	 * @param tag the tag to remove
+	 * @return true if the tag was removed
+	 */
+	public boolean removeTag(@NonNull String tag) {
+		return tags.remove(tag);
+	}
+	
+	/**
+	 * Add tag.
+	 *
+	 * @param tag the tag to add
+	 * @return true if the tag was added
+	 */
+	public boolean addTag(@NonNull String tag) {
+		if (tags.contains(tag))
+			return false;
+		return tags.add(tag);
 	}
 	
 	/**
@@ -167,7 +263,15 @@ public class WeatherAlert {
 	 */
 	@NonNull
 	public WeatherAlert clone() {
-		return new WeatherAlert(this.sender, this.event, this.startDt, this.endDt, this.description, this.tags);
+		WeatherAlert clone = new WeatherAlert();
+		clone.setPlaceId(this.placeId);
+		clone.setSender(this.sender);
+		clone.setEvent(this.event);
+		clone.setStartDt(this.startDt);
+		clone.setEndDt(this.endDt);
+		clone.setDescription(this.description);
+		clone.tags = new ArrayList<>(this.tags);
+		return clone;
 	}
 	
 	/**

@@ -56,7 +56,7 @@ import fr.qgdev.openweather.repositories.places.dao.PropertiesDAO;
 import fr.qgdev.openweather.repositories.places.dao.WeatherAlertDAO;
 import fr.qgdev.openweather.utils.ParameterizedRunnable;
 
-@Database(version = 3,
+@Database(version = 4,
         entities = {Geolocation.class,
                 Properties.class,
                 AirQuality.class,
@@ -88,6 +88,12 @@ public abstract class PlaceDatabase extends RoomDatabase {
         }
     };
     
+    /**
+     * Piece of code used to migrate from version 2 to version 3
+     * - Renaming sunrise and sunset to sunriseDt and sunsetDt in current_weather table
+     * - Renaming sunrise and sunset to sunriseDt and sunsetDt in daily_weather_forecast table
+     * - Renaming moonrise and moonset to moonriseDt and moonsetDt in daily_weather_forecast table
+     */
     private static final Migration migration2_3 = new Migration(2, 3) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
@@ -101,12 +107,30 @@ public abstract class PlaceDatabase extends RoomDatabase {
         }
     };
     
+    /**
+     * Piece of code used to migrate from version 3 to version 4
+     * - Modifying weather_alerts table to pass existing column "sender" as a PRIMARY KEY
+     */
+    private static final Migration migration3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            // Rename old table
+            database.execSQL("ALTER TABLE weather_alerts RENAME TO weather_alerts_old");
+            // Create new table
+            database.execSQL("CREATE TABLE IF NOT EXISTS `weather_alerts` (`sender` TEXT NOT NULL, `event` TEXT NOT NULL, `startDt` INTEGER NOT NULL, `endDt` INTEGER NOT NULL, `description` TEXT, `tags` TEXT, `placeId` INTEGER NOT NULL, PRIMARY KEY(`placeId`, `sender`, `startDt`, `event`))");
+            // Copy the data
+            database.execSQL("INSERT INTO weather_alerts (sender, event, startDt, endDt, description, tags, placeId) SELECT sender, event, startDt, endDt, description, tags, placeId FROM weather_alerts_old");
+            // Remove old table
+            database.execSQL("DROP TABLE weather_alerts_old");
+        }
+    };
+    
     
     public static PlaceDatabase getDatabase(final Context context) {
         instance.compareAndSet(null,
                 Room.databaseBuilder(context.getApplicationContext(),
                                 PlaceDatabase.class, "appDB")
-                        .addMigrations(migration1_2, migration2_3)
+                        .addMigrations(migration1_2, migration2_3, migration3_4)
                         .build());
         
         return instance.get();
