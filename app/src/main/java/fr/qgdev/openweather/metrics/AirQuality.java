@@ -23,7 +23,6 @@ package fr.qgdev.openweather.metrics;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
-import androidx.room.PrimaryKey;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,10 +33,9 @@ import java.util.StringJoiner;
 /**
  * The type Air quality.
  */
-@Entity(tableName = "air_quality")
+@Entity(tableName = "air_quality",
+		  primaryKeys = {"placeId"})
 public class AirQuality {
-	
-	@PrimaryKey
 	private int placeId;
 	private int aqi;
 	private float co;
@@ -87,6 +85,9 @@ public class AirQuality {
 		setNh3(BigDecimal.valueOf(componentsJSON.getDouble("nh3")).floatValue());
 	}
 	
+	/*
+	  Getters and Setters
+	 */
 	
 	/**
 	 * Gets place id.
@@ -273,7 +274,6 @@ public class AirQuality {
 		if (pm10 < 0.0f) throw new IllegalArgumentException("PM10 must be positive");
 		this.pm10 = pm10;
 	}
-	
 	
 	/**
 	 * Gets the Ammonia concentration.
