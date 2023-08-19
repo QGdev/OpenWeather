@@ -372,8 +372,8 @@ public class DailyForecastGraphView extends ForecastView {
 	 * @param sideLength Length side of the drawn moon phase
 	 */
 	private void drawMoonPhase(@NonNull Canvas canvas, float moonPhase, @Px int x, @Px int y, @Px int sideLength) {
-		int middle = sideLength / 2;
-		int circleRadius = middle / 2 - 3;
+		float middle = sideLength / 2F;
+		float circleRadius = (middle / 2F) - 3;
 		
 		Bitmap moonBitmap = Bitmap.createBitmap(sideLength, sideLength, Bitmap.Config.ARGB_8888);
 		Canvas moonCanvas = new Canvas(moonBitmap);
@@ -384,20 +384,22 @@ public class DailyForecastGraphView extends ForecastView {
 		
 		//  No need to draw shadows part
 		if (moonPhase != 0.5F) {
-			int dX, startX, stopX;
+			int startX;
+			int stopX;
+			int dX;
 			float left = middle - circleRadius;
 			float right = middle + circleRadius;
 			float top2 = left;
 			float bottom2 = right;
 			
 			//  Delimitation between light and shadow parts
-			dX = circleRadius * 2;
+			dX = BigDecimal.valueOf(circleRadius * 2).intValue();
 			dX *= (moonPhase * 2) % 1;
 			
 			//  First half of the moon cycle
 			if (moonPhase < 0.5F) {
 				startX = dX;
-				stopX = (circleRadius * 2);
+				stopX = BigDecimal.valueOf(circleRadius * 2).intValue();
 				
 			}
 			//  Last half of the moon cycle
@@ -510,9 +512,9 @@ public class DailyForecastGraphView extends ForecastView {
 				  textY, secondColumn, dpToPx(5), this.secondaryPaint);
 		
 		canvas.drawText(formattingService.getFormattedDirectionInCardinalPoints(dailyWeatherForecast.getWindDirection()),
-				  left + quarterColumnWidth, textY2, this.primaryPaint);
+				  (float) left + quarterColumnWidth, textY2, this.primaryPaint);
 		canvas.drawText(formattingService.getFormattedDirectionInDegrees(dailyWeatherForecast.getWindDirection()),
-				  left + quarterColumnWidth, textY3, this.primaryPaint);
+				  (float) left + quarterColumnWidth, textY3, this.primaryPaint);
 		
 		drawWindDirectionIcon(canvas,
 				  dailyWeatherForecast.getWindDirection(),
@@ -569,7 +571,6 @@ public class DailyForecastGraphView extends ForecastView {
 		
 		int leftOfColumn = 0;
 		int halfOfColumnWidth = halfColumnWidth;
-		int quarterOfColumnWidth = quarterColumnWidth;
 		int sixthOfColumnWidth = sixthColumnWidth;
 		
 		drawStructureAndDate(canvas, dpToPx(15), dpToPx(35), dpToPx(125), dpToPx(230), dailyWeatherForecastList, timeZone);
@@ -590,7 +591,6 @@ public class DailyForecastGraphView extends ForecastView {
 			
 			leftOfColumn += columnWidth;
 			sixthOfColumnWidth += columnWidth;
-			quarterOfColumnWidth += columnWidth;
 			halfOfColumnWidth += columnWidth;
 		}
 		
