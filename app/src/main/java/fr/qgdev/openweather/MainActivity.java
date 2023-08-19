@@ -74,11 +74,12 @@ public class MainActivity extends AppCompatActivity {
 		//  If periodic update is enabled, we schedule a periodic work request
 		if (settingsManager.isPeriodicUpdateEnabled()) {
 			
-			//  Do some maths to know how many time there is until the next hour like is 12:50, the next given hour will be 13:00
-			//  Don't want the raw next hour but the exact next hour like 13:00, 14:00, 15:00, etc...
+			//  Do some maths to know how many time there is until the next quarter of an hour like is 12:50,
+			//  the next given hour will be 13:00 and the next quarter of an hour will be 13:15, etc...
+			//  Don't want the raw next hour but the exact next quarter of an hour like 13:00, 13:15, 13:30, etc...
 			long now = System.currentTimeMillis();
-			//  3600000 is 1 hour in milliseconds
-			long timeUntilNextHour = 3600000 - (now % 3600000);
+			//  Time until next quarter of an hour
+			long timeUntilNextQuarter = 900000 - (now % 900000);
 			
 			Constraints constraints = new Constraints.Builder()
 					  .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -88,11 +89,11 @@ public class MainActivity extends AppCompatActivity {
 			PeriodicWorkRequest periodicWorkRequest =
 					  new PeriodicWorkRequest.Builder(PeriodicUpdaterWorker.class, 15, TimeUnit.MINUTES, 5, TimeUnit.MINUTES)
 								 .setConstraints(constraints)
-								 .setInitialDelay(timeUntilNextHour + 60000, TimeUnit.MILLISECONDS)
+								 .setInitialDelay(timeUntilNextQuarter + 60000, TimeUnit.MILLISECONDS)
 								 .build();
 			
 			WorkManager.getInstance(this.getApplicationContext()).enqueueUniquePeriodicWork("PeriodicUpdaterWorker",
-					  ExistingPeriodicWorkPolicy.KEEP,
+					  ExistingPeriodicWorkPolicy.UPDATE,
 					  periodicWorkRequest);
 			
 			appRepository.getWidgetsManager().updateWidgets(context);
