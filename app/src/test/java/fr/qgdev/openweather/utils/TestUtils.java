@@ -96,4 +96,32 @@ public class TestUtils {
 			assertEquals(testValue, (long) getter.call());
 		}
 	}
+	
+	/**
+	 * Used to test a group of boolean values for a given setter and getter
+	 *
+	 * @param testValues the list of test values
+	 * @param setter     the setter
+	 * @param getter     the getter
+	 */
+	public static void testAssertEqualsBooleanValues(boolean[] testValues, ParameterizedRunnable<Boolean> setter, Callable<Boolean> getter) throws Exception {
+		for (boolean testValue : testValues) {
+			setter.run(testValue);
+			assertEquals(testValue, getter.call());
+		}
+	}
+	
+	/**
+	 * Used to test a group of short values for a given setter and getter
+	 *
+	 * @param testValues the list of test values
+	 * @param setter     the setter
+	 * @param getter     the getter
+	 */
+	public static void testAssertEqualsShortValues(short[] testValues, ParameterizedRunnable<Short> setter, Callable<Short> getter) throws Exception {
+		for (short testValue : testValues) {
+			setter.run(testValue);
+			assertEquals(testValue, (short) getter.call());
+		}
+	}
 }
