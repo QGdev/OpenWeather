@@ -26,10 +26,18 @@ import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.work.Constraints;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Duration;
+
+import fr.qgdev.openweather.repositories.PeriodicUpdaterWorker;
 import fr.qgdev.openweather.repositories.settings.SecuredPreferenceDataStore;
 
 /**
@@ -39,6 +47,7 @@ public final class WidgetsManager {
 	
 	private static final String FILE_NAME = "fr.qgdev.openweather_widget";
 	private static final String PREFIX_WIDGET = "widget_";
+	private static final String WORKER_TASK_NAME = "PeriodicUpdaterWorker";
 	private final SecuredPreferenceDataStore securedPreferenceDataStore;
 	
 	public WidgetsManager(@NonNull Context context) {
@@ -131,5 +140,36 @@ public final class WidgetsManager {
 		Intent updateIntent = new Intent("android.appwidget.action.APPWIDGET_UPDATE");
 		updateIntent.setPackage("fr.qgdev.openweather");
 		context.sendBroadcast(updateIntent, "fr.qgdev.openweather.permission.UPDATE_WIDGET");
+	}
+	
+	/**
+	 * Will remove scheduled work request that have been set by the app.
+	 *
+	 * @param context Use to get the WorkManager instance
+	 */
+	public void unscheduleWorkRequest(@NonNull Context context) {
+		WorkManager.getInstance(context).cancelUniqueWork(WORKER_TASK_NAME);
+	}
+	
+	/**
+	 * Will schedule a work request to update all places and widgets periodically.
+	 *
+	 * @param context Use to get the WorkManager instance
+	 */
+	public void scheduleWorkRequest(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate) {
+		Constraints constraints = new Constraints.Builder()
+				  .setRequiredNetworkType(NetworkType.CONNECTED)
+				  .setRequiresBatteryNotLow(true)
+				  .build();
+		
+		OneTimeWorkRequest oneTimeWorkRequest =
+				  new OneTimeWorkRequest.Builder(PeriodicUpdaterWorker.class)
+							 .setConstraints(constraints)
+							 .setInitialDelay(timeBeforeNextUpdate)
+							 .build();
+		
+		WorkManager.getInstance(context).enqueueUniqueWork(WORKER_TASK_NAME,
+				  ExistingWorkPolicy.REPLACE,
+				  oneTimeWorkRequest);
 	}
 }

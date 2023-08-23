@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.qgdev.openweather.repositories.weather.FetchCallback;
@@ -35,12 +36,16 @@ import fr.qgdev.openweather.repositories.weather.RequestStatus;
 public class PeriodicUpdaterWorker extends Worker {
 	
 	private static final String TAG = PeriodicUpdaterWorker.class.getSimpleName();
-	
+	private final Context mContext;
 	private final AppRepository mRepository;
 	
+	/**
+	 * PeriodicUpdaterWorker constructor
+	 */
 	public PeriodicUpdaterWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
 		super(context, workerParams);
-		mRepository = AppRepository.getInstance(context.getApplicationContext());
+		mContext = context.getApplicationContext();
+		mRepository = AppRepository.getInstance(mContext);
 	}
 	
 	/**
@@ -60,7 +65,8 @@ public class PeriodicUpdaterWorker extends Worker {
 		int numberOfPlaces = mRepository.countPlaces();
 		if (numberOfPlaces <= 0) return Result.success();
 		
-		Context context = getApplicationContext();
+		//  If periodic update is disabled, return success and no need to update widgets or data
+		if (!mRepository.getSettingsManager().isPeriodicUpdateEnabled()) return Result.success();
 		
 		AtomicInteger remainingPlaces = new AtomicInteger(numberOfPlaces);
 		AtomicInteger numberOfErrors = new AtomicInteger(0);
@@ -79,11 +85,21 @@ public class PeriodicUpdaterWorker extends Worker {
 		
 		//	Wait for all places to be updated in order to update widgets
 		while (remainingPlaces.compareAndSet(0, 0)) ;
-		mRepository.getWidgetsManager().updateWidgets(context);
+		mRepository.getWidgetsManager().updateWidgets(mContext);
 		
 		// In case of errors, return failure
 		// If every updates did fail, it will return failure
 		if (numberOfErrors.compareAndSet(numberOfPlaces, 0)) return Result.retry();
+		
+		
+		//  Do some maths to know how many time there is until the next quarter of an hour like is 12:50,
+		//  the next given hour will be 13:00 and the next quarter of an hour will be 13:15, etc...
+		//  Don't want the raw next hour but the exact next quarter of an hour like 13:00, 13:15, 13:30, etc...
+		long now = System.currentTimeMillis();
+		//  Time until next quarter of an hour
+		long timeUntilNextQuarter = 900000 - (now % 900000);
+		
+		mRepository.getWidgetsManager().scheduleWorkRequest(mContext, Duration.ofMillis(timeUntilNextQuarter));
 		
 		return Result.success();
 	}

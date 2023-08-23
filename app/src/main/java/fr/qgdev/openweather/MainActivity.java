@@ -27,19 +27,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
-import androidx.work.Constraints;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.NetworkType;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 import fr.qgdev.openweather.repositories.AppRepository;
-import fr.qgdev.openweather.repositories.PeriodicUpdaterWorker;
 import fr.qgdev.openweather.repositories.settings.SettingsManager;
+import fr.qgdev.openweather.widgets.WidgetsManager;
 
 /**
  * MainActivity
@@ -61,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 		Context context = getApplicationContext();
 		AppRepository appRepository = AppRepository.getInstance(context);
 		SettingsManager settingsManager = appRepository.getSettingsManager();
+		WidgetsManager widgetsManager = appRepository.getWidgetsManager();
 		
 		BottomNavigationView navView = findViewById(R.id.nav_view);
 		
@@ -81,25 +77,11 @@ public class MainActivity extends AppCompatActivity {
 			//  Time until next quarter of an hour
 			long timeUntilNextQuarter = 900000 - (now % 900000);
 			
-			Constraints constraints = new Constraints.Builder()
-					  .setRequiredNetworkType(NetworkType.CONNECTED)
-					  .setRequiresBatteryNotLow(true)
-					  .build();
-			
-			PeriodicWorkRequest periodicWorkRequest =
-					  new PeriodicWorkRequest.Builder(PeriodicUpdaterWorker.class, 15, TimeUnit.MINUTES, 5, TimeUnit.MINUTES)
-								 .setConstraints(constraints)
-								 .setInitialDelay(timeUntilNextQuarter + 60000, TimeUnit.MILLISECONDS)
-								 .build();
-			
-			WorkManager.getInstance(this.getApplicationContext()).enqueueUniquePeriodicWork("PeriodicUpdaterWorker",
-					  ExistingPeriodicWorkPolicy.UPDATE,
-					  periodicWorkRequest);
-			
-			appRepository.getWidgetsManager().updateWidgets(context);
+			widgetsManager.scheduleWorkRequest(context, Duration.ofMillis(timeUntilNextQuarter));
+			widgetsManager.updateWidgets(context);
 		} else {
 			//  Cancel all periodic work
-			WorkManager.getInstance(this.getApplicationContext()).cancelAllWork();
+			widgetsManager.unscheduleWorkRequest(context);
 		}
 	}
 }
