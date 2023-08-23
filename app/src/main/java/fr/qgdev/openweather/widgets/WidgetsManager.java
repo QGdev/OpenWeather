@@ -23,7 +23,6 @@ package fr.qgdev.openweather.widgets;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
@@ -77,8 +76,6 @@ public final class WidgetsManager {
 		
 		try {
 			json = widgetsSettings.toJsonString();
-			Log.d("WidgetsSettings", key);
-			Log.d("WidgetsSettings", json);
 		} catch (JSONException e) {
 			return false;
 		}
@@ -136,7 +133,7 @@ public final class WidgetsManager {
 	 *
 	 * @param context the context used to send the broadcast
 	 */
-	public void updateWidgets(Context context) {
+	public void updateWidgets(@NonNull Context context) {
 		Intent updateIntent = new Intent("android.appwidget.action.APPWIDGET_UPDATE");
 		updateIntent.setPackage("fr.qgdev.openweather");
 		context.sendBroadcast(updateIntent, "fr.qgdev.openweather.permission.UPDATE_WIDGET");
