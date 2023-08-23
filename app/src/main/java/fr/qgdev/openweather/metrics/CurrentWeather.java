@@ -104,20 +104,24 @@ public class CurrentWeather {
 	 * @param currentWeather the current weather json object from openweathermap
 	 */
 	public CurrentWeather(JSONObject currentWeather) throws JSONException {
-		//  Set the time
+		//	Set the time
+		// Check for overflows
+		long dt = currentWeather.getLong("dt");
+		if (dt > dt * 1000)
+			throw new IllegalArgumentException("dt is too big, overflow on long");
 		setDt(currentWeather.getLong("dt") * 1000);
 		
-		//    Weather descriptions
+		// Weather descriptions
 		JSONObject currentWeatherDescriptionsJSON = currentWeather.getJSONArray("weather").getJSONObject(0);    //  Get only the first station
 		setWeather(currentWeatherDescriptionsJSON.getString("main"));
 		setWeatherDescription(currentWeatherDescriptionsJSON.getString("description"));
 		setWeatherCode(currentWeatherDescriptionsJSON.getInt("id"));
 		
-		//    Temperatures
+		// Temperatures
 		setTemperature(BigDecimal.valueOf(currentWeather.getDouble("temp")).floatValue());
 		setTemperatureFeelsLike(BigDecimal.valueOf(currentWeather.getDouble("feels_like")).floatValue());
 		
-		//    Pressure, Humidity, dewPoint, uvIndex
+		// Pressure, Humidity, dewPoint, uvIndex
 		setPressure(currentWeather.getInt("pressure"));
 		setHumidity(currentWeather.getInt("humidity"));
 		setDewPoint(BigDecimal.valueOf(currentWeather.getDouble("dew_point")).floatValue());
@@ -128,35 +132,46 @@ public class CurrentWeather {
 			setUvIndex(0);
 		}
 		
-		//    Sky informations
+		// Sky informations
 		setCloudiness(currentWeather.getInt("clouds"));
 		setVisibility(currentWeather.getInt("visibility"));
+		
+		// Sunrise and Sunset
+		//	Check for overflows
+		long sunrise = currentWeather.getLong("sunrise");
+		long sunset = currentWeather.getLong("sunset");
+		
+		if (sunrise > sunrise * 1000)
+			throw new IllegalArgumentException("sunrise is too big, overflow on long");
+		if (sunset > sunset * 1000)
+			throw new IllegalArgumentException("sunset is too big, overflow on long");
+		
 		setSunriseDt(currentWeather.getLong("sunrise") * 1000);
 		setSunsetDt(currentWeather.getLong("sunset") * 1000);
 		
-		//    Wind informations
+		// Wind informations
 		setWindSpeed(BigDecimal.valueOf(currentWeather.getDouble("wind_speed")).floatValue());
 		
-		////  Enough wind for a viable wind direction information
+		////	Enough wind for a viable wind direction information
 		setWindDirectionReadable(currentWeather.has("wind_deg"));
 		if (isWindDirectionReadable()) {
 			setWindDirection(BigDecimal.valueOf(currentWeather.getInt("wind_deg")).shortValue());
 		}
-		////    Wind Gusts
+		////  Wind Gusts
 		if (currentWeather.has("wind_gust")) {
 			setWindGustSpeed(BigDecimal.valueOf(currentWeather.getDouble("wind_gust")).floatValue());
 		} else {
 			setWindGustSpeed(0);
 		}
 		
-		//  Precipitations
-		////    Rain
+		//	Precipitations
+		////	Rain
 		if (currentWeather.has("rain") && currentWeather.getJSONObject("rain").has("1h")) {
 			setRain(BigDecimal.valueOf(currentWeather.getJSONObject("rain").getDouble("1h")).floatValue());
 		} else {
 			setRain(0);
 		}
-		////    Snow
+		////	Snow
 		if (currentWeather.has("snow") && currentWeather.getJSONObject("snow").has("1h")) {
 			setSnow(BigDecimal.valueOf(currentWeather.getJSONObject("snow").getDouble("1h")).floatValue());
 		} else {
@@ -202,7 +217,7 @@ public class CurrentWeather {
 	 *           Must be positive or zero
 	 */
 	public void setDt(long dt) {
-		if (dt <= 0)
+		if (dt < 0)
 			throw new IllegalArgumentException("dt must be positive or null");
 		this.dt = dt;
 	}
@@ -220,8 +235,11 @@ public class CurrentWeather {
 	 * Sets weather.
 	 *
 	 * @param weather the weather
+	 *                Must not be null
 	 */
-	public void setWeather(@NonNull String weather) {
+	public void setWeather(String weather) {
+		if (weather == null)
+			throw new IllegalArgumentException("weather must not be null");
 		this.weather = weather;
 	}
 	
@@ -238,8 +256,11 @@ public class CurrentWeather {
 	 * Sets weather description.
 	 *
 	 * @param weatherDescription the weather description
+	 *                           Must not be null
 	 */
-	public void setWeatherDescription(@NonNull String weatherDescription) {
+	public void setWeatherDescription(String weatherDescription) {
+		if (weatherDescription == null)
+			throw new IllegalArgumentException("weatherDescription must not be null");
 		this.weatherDescription = weatherDescription;
 	}
 	
