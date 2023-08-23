@@ -40,7 +40,7 @@ public class PeriodicUpdaterWorker extends Worker {
 	
 	public PeriodicUpdaterWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
 		super(context, workerParams);
-		mRepository = new AppRepository(context);
+		mRepository = AppRepository.getInstance(context.getApplicationContext());
 	}
 	
 	/**

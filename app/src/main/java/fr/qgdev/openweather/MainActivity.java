@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 		
 		Context context = getApplicationContext();
-		AppRepository appRepository = new AppRepository(context);
+		AppRepository appRepository = AppRepository.getInstance(context);
 		SettingsManager settingsManager = appRepository.getSettingsManager();
 		
 		BottomNavigationView navView = findViewById(R.id.nav_view);

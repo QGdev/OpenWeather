@@ -20,14 +20,18 @@
 
 package fr.qgdev.openweather.repositories;
 
+import android.app.Application;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
 
 import fr.qgdev.openweather.repositories.places.Geolocation;
 import fr.qgdev.openweather.repositories.places.Place;
@@ -38,6 +42,7 @@ import fr.qgdev.openweather.repositories.weather.FetchCallback;
 import fr.qgdev.openweather.repositories.weather.FetchDataCallback;
 import fr.qgdev.openweather.repositories.weather.RequestStatus;
 import fr.qgdev.openweather.repositories.weather.WeatherService;
+import fr.qgdev.openweather.utils.ParameterizedRunnable;
 import fr.qgdev.openweather.widgets.WidgetsManager;
 
 /**
@@ -51,6 +56,7 @@ import fr.qgdev.openweather.widgets.WidgetsManager;
  */
 public class AppRepository {
 	
+	private static final AtomicReference<AppRepository> INSTANCE = new AtomicReference<>(null);
 	private final SettingsManager settingsManager;
 	private final WidgetsManager widgetsManager;
 	
@@ -65,9 +71,13 @@ public class AppRepository {
 	/**
 	 * Instantiates a new App repository.
 	 *
-	 * @param context the context
+	 * @param context the application context
+	 *                Must be the application context and not null
 	 */
-	public AppRepository(Context context) {
+	private AppRepository(@NonNull Context context) {
+		if (!(context instanceof Application))
+			throw new IllegalArgumentException("Context must be an application context");
+		
 		settingsManager = new SettingsManager(context);
 		widgetsManager = new WidgetsManager(context);
 		weatherService = new WeatherService(context, settingsManager);
@@ -78,6 +88,25 @@ public class AppRepository {
 		mPlaceDao = db.placeDAO();
 		
 		mutableLiveDataPlaces = (MutableLiveData<List<Place>>) placeDatabase.getAllPlacesLiveData();
+	}
+	
+	/**
+	 * Gets instance if exists or create a new one.
+	 *
+	 * @param context the application context
+	 *                Must be the application context and not null
+	 * @return the instance of AppRepository
+	 */
+	public static AppRepository getInstance(@NonNull Context context) {
+		if (!(context instanceof Application))
+			throw new IllegalArgumentException("Context must be an application context");
+		
+		if (INSTANCE.get() == null) {
+			synchronized (AppRepository.class) {
+				INSTANCE.compareAndSet(null, new AppRepository(context));
+			}
+		}
+		return INSTANCE.get();
 	}
 	
 	/**

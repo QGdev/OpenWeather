@@ -126,7 +126,7 @@ public class WidgetsConfigurationActivity extends Activity {
 		super.onCreate(icicle);
 		
 		final Context context = WidgetsConfigurationActivity.this;
-		final AppRepository repository = new AppRepository(context);
+		final AppRepository repository = AppRepository.getInstance(context.getApplicationContext());
 		
 		// Set the result to CANCELED.  This will cause the widget host to cancel
 		// out of the widget placement if the user presses the back button.

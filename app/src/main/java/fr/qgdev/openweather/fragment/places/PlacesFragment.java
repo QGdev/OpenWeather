@@ -121,7 +121,7 @@ public class PlacesFragment extends Fragment {
 		super.onAttach(context);
 		mContext = context;
 		vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-		appRepository = new AppRepository(mContext.getApplicationContext());
+		appRepository = AppRepository.getInstance(context.getApplicationContext());
 		placesViewModel = PlacesViewModelFactory.getInstance();
 		placeRecyclerViewAdapter = new PlaceRecyclerViewAdapter(mContext, placesViewModel, appRepository.getFormattingService());
 		
@@ -187,7 +187,6 @@ public class PlacesFragment extends Fragment {
 			
 			@Override
 			public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-				logger.info("GET_MOVEMENT_FLAGS");
 				//	If the holder is an other view type than COMPACT or if there is no items in the recyclerView, swipe and drag&drop are disabled
 				if (recyclerView.getChildCount() == 0 || viewHolder.getItemViewType() != 0) {
 					return makeMovementFlags(0, 0);
