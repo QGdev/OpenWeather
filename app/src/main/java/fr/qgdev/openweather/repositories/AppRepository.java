@@ -147,39 +147,86 @@ public class AppRepository {
 	/**
 	 * Insert a new place.
 	 *
-	 * @param place the place to insert
+	 * @param place    the place to insert
+	 * @param callback the callback to run after insert
 	 */
-	public synchronized void insert(Place place) {
+	public synchronized void insert(@NonNull Place place, @Nullable ParameterizedRunnable<Place> callback) {
 		placeDatabase.insertPlace(place, p -> {
 			List<Place> places = mutableLiveDataPlaces.getValue();
 			if (places == null) return;
 			
 			places.add(p);
 			mutableLiveDataPlaces.postValue(places);
+			
+			if (callback != null)
+				new Thread(() -> callback.run(place)).start();
+		});
+	}
+	
+	/**
+	 * Insert a new place.
+	 *
+	 * @param place    the place to insert
+	 * @param callback the callback to run after insert
+	 */
+	public synchronized void insert(@NonNull Place place, @Nullable Runnable callback) {
+		placeDatabase.insertPlace(place, p -> {
+			List<Place> places = mutableLiveDataPlaces.getValue();
+			if (places == null) return;
+			
+			places.add(p);
+			mutableLiveDataPlaces.postValue(places);
+			
+			if (callback != null)
+				new Thread(callback).start();
 		});
 	}
 	
 	/**
 	 * Delete an existing place.
 	 *
-	 * @param place the place to delete
+	 * @param place    the place to delete
+	 * @param callback the callback to run after delete
 	 */
-	public synchronized void delete(Place place) {
+	public synchronized void delete(@NonNull Place place, @Nullable ParameterizedRunnable<Place> callback) {
 		placeDatabase.deletePlace(place, position -> {
 			List<Place> places = mutableLiveDataPlaces.getValue();
 			if (places == null) return;
 			
 			places.remove(place);
 			mutableLiveDataPlaces.postValue(places);
+			
+			if (callback != null)
+				new Thread(() -> callback.run(place)).start();
+		});
+	}
+	
+	/**
+	 * Delete an existing place.
+	 *
+	 * @param place    the place to delete
+	 * @param callback the callback to run after delete
+	 */
+	public synchronized void delete(@NonNull Place place, @Nullable Runnable callback) {
+		placeDatabase.deletePlace(place, position -> {
+			List<Place> places = mutableLiveDataPlaces.getValue();
+			if (places == null) return;
+			
+			places.remove(place);
+			mutableLiveDataPlaces.postValue(places);
+			
+			if (callback != null)
+				new Thread(callback).start();
 		});
 	}
 	
 	/**
 	 * Update an existing place.
 	 *
-	 * @param place the place to update
+	 * @param place    the place to update
+	 * @param callback the callback to run after update
 	 */
-	public synchronized void update(Place place) {
+	public synchronized void update(@NonNull Place place, @Nullable ParameterizedRunnable<Place> callback) {
 		placeDatabase.updatePlace(place, (Place p) -> {
 			List<Place> places = mutableLiveDataPlaces.getValue();
 			if (places == null) return;
@@ -187,6 +234,29 @@ public class AppRepository {
 			
 			places.set(p.getProperties().getOrder(), p);
 			mutableLiveDataPlaces.postValue(places);
+			
+			if (callback != null)
+				new Thread(() -> callback.run(place)).start();
+		});
+	}
+	
+	/**
+	 * Update an existing place.
+	 *
+	 * @param place    the place to update
+	 * @param callback the callback to run after update
+	 */
+	public synchronized void update(@NonNull Place place, @Nullable Runnable callback) {
+		placeDatabase.updatePlace(place, (Place p) -> {
+			List<Place> places = mutableLiveDataPlaces.getValue();
+			if (places == null) return;
+			if (places.size() <= p.getProperties().getOrder()) return;
+			
+			places.set(p.getProperties().getOrder(), p);
+			mutableLiveDataPlaces.postValue(places);
+			
+			if (callback != null)
+				new Thread(callback).start();
 		});
 	}
 	
@@ -196,8 +266,8 @@ public class AppRepository {
 	 * @param crtOrder the crt order
 	 * @param newOrder the new order
 	 */
-	public void movePlace(int crtOrder, int newOrder) {
-		placeDatabase.movePlace(crtOrder, newOrder);
+	public synchronized void movePlace(int crtOrder, int newOrder, @Nullable Runnable callback) {
+		placeDatabase.movePlace(crtOrder, newOrder, callback);
 	}
 	
 	/**
@@ -208,7 +278,7 @@ public class AppRepository {
 	 * @param ids The list of ids of existing ids
 	 * @return A unique place id
 	 */
-	private int generatePlaceID(List<Integer> ids) {
+	private int generatePlaceID(@NonNull List<Integer> ids) {
 		Random r = new Random();
 		
 		int placeID = r.nextInt();
@@ -253,16 +323,14 @@ public class AppRepository {
 							return;
 						}
 						result.removeObserver(this);
-						PlaceDatabase.databaseWriteExecutor.execute(() -> insert(place));
-						fetchCallback.onSuccess(place);
+						insert(place, fetchCallback::onSuccess);
 					}
 				});
 			}
 			
 			@Override
 			public void onPartialSuccess(Place place, RequestStatus requestStatus) {
-				PlaceDatabase.databaseWriteExecutor.execute(() -> insert(place));
-				fetchCallback.onPartialSuccess(place, requestStatus);
+				insert(place, p -> fetchCallback.onPartialSuccess(p, requestStatus));
 			}
 			
 			@Override
@@ -295,14 +363,12 @@ public class AppRepository {
 		FetchDataCallback fetchDataCallback = new FetchDataCallback() {
 			@Override
 			public void onSuccess(Place place) {
-				PlaceDatabase.databaseWriteExecutor.execute(() -> update(place));
-				callback.onSuccess();
+				update(place, callback::onSuccess);
 			}
 			
 			@Override
 			public void onPartialSuccess(Place place, RequestStatus requestStatus) {
-				PlaceDatabase.databaseWriteExecutor.execute(() -> update(place));
-				callback.onSuccess();
+				update(place, callback::onSuccess);
 			}
 			
 			@Override
@@ -341,14 +407,12 @@ public class AppRepository {
 		FetchDataCallback fetchDataCallback = new FetchDataCallback() {
 			@Override
 			public void onSuccess(Place place) {
-				PlaceDatabase.databaseWriteExecutor.execute(() -> update(place));
-				callback.onSuccess();
+				update(place, callback::onSuccess);
 			}
 			
 			@Override
 			public void onPartialSuccess(Place place, RequestStatus requestStatus) {
-				PlaceDatabase.databaseWriteExecutor.execute(() -> update(place));
-				callback.onSuccess();
+				update(place, callback::onSuccess);
 			}
 			
 			@Override
@@ -379,7 +443,7 @@ public class AppRepository {
 	 *
 	 * @return the live data
 	 */
-	public LiveData<Integer> countPlacesLiceData() {
+	public LiveData<Integer> countPlacesLiveData() {
 		return mPlaceDao.getPlacesCountLiveData();
 	}
 	

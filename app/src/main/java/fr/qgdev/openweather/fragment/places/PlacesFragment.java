@@ -209,9 +209,10 @@ public class PlacesFragment extends Fragment {
 				int initialPos = viewHolder.getAbsoluteAdapterPosition();
 				int finalPos = target.getAbsoluteAdapterPosition();
 				
-				appRepository.movePlace(initialPos, finalPos);
+				appRepository.movePlace(initialPos,
+						  finalPos,
+						  null);
 				placeRecyclerViewAdapter.notifyItemMoved(initialPos, finalPos);
-				
 				return true;
 			}
 			
@@ -234,8 +235,8 @@ public class PlacesFragment extends Fragment {
 							  .setTitle(mContext.getString(R.string.dialog_confirmation_title_delete_place))
 							  .setMessage(String.format(mContext.getString(R.string.dialog_confirmation_message_delete_place), place.getGeolocation().getCity(), place.getGeolocation().getCountryCode()))
 							  .setPositiveButton(mContext.getString(R.string.dialog_confirmation_choice_yes), (dialogInterface, i) -> {
-								  appRepository.delete(place);
-								  placeRecyclerViewAdapter.notifyItemRemoved(index);
+								  appRepository.delete(place,
+											 () -> placeRecyclerViewAdapter.notifyItemRemoved(index));
 							  })
 							  .setNegativeButton(mContext.getString(R.string.dialog_confirmation_choice_no), (dialogInterface, i) -> placeRecyclerViewAdapter.notifyItemChanged(index))
 							  .setCancelable(false)
