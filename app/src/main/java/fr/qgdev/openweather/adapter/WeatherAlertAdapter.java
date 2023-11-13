@@ -137,7 +137,7 @@ public class WeatherAlertAdapter extends BaseAdapter {
      */
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-        view = inflater.inflate(R.layout.adapter_weather_alert, null);
+        if (view == null) view = inflater.inflate(R.layout.adapter_weather_alert, parent);
         WeatherAlert currentWeatherAlert = getItem(position);
         TimeZone timeZone = place.getProperties().getTimeZone();
         
