@@ -60,21 +60,25 @@ public abstract class ForecastView extends View {
 	protected Context context;
 	protected int width;
 	protected int height;
-	protected Bitmap temperaturesGraph, humidityGraph, pressureGraph, windSpeedsGraph, precipitationsGraph;
+	protected Bitmap temperaturesGraph;
+	protected Bitmap humidityGraph;
+	protected Bitmap pressureGraph;
+	protected Bitmap windSpeedsGraph;
+	protected Bitmap precipitationsGraph;
 	protected TimeZone timeZone;
-	protected Paint datePaint,
-			  structurePaint,
-			  primaryPaint,
-			  secondaryPaint,
-			  primaryGraphPaint,
-			  secondaryGraphPaint,
-			  tertiaryPaint,
-			  tertiaryGraphPaint,
-			  popBarGraphPaint,
-			  iconsPaint,
-			  sunIconPaint,
-			  moonLightIconPaint,
-			  moonShadowIconPaint;
+	protected Paint datePaint;
+	protected Paint structurePaint;
+	protected Paint primaryPaint;
+	protected Paint secondaryPaint;
+	protected Paint primaryGraphPaint;
+	protected Paint secondaryGraphPaint;
+	protected Paint tertiaryPaint;
+	protected Paint tertiaryGraphPaint;
+	protected Paint popBarGraphPaint;
+	protected Paint iconsPaint;
+	protected Paint sunIconPaint;
+	protected Paint moonLightIconPaint;
+	protected Paint moonShadowIconPaint;
 	
 	
 	/**
@@ -150,8 +154,8 @@ public abstract class ForecastView extends View {
 		Path secondCurvePath = new Path();
 		
 		//  Searching for max and min values in arrays
-		float minValue = firstCurveData[0],
-				  maxValue = firstCurveData[0];
+		float minValue = firstCurveData[0];
+		float maxValue = firstCurveData[0];
 		
 		for (int index = 0; index < firstCurveData.length; index++) {
 			if (firstCurveData[index] > maxValue) maxValue = firstCurveData[index];
@@ -266,13 +270,13 @@ public abstract class ForecastView extends View {
 	protected Bitmap generateBitmapPrecipitationsGraphPath(float[] rainData, float[] snowData, float[] popData, @Px int width, @Px int height, @NonNull Paint rainCurvePaint, @NonNull Paint snowCurvePaint, @NonNull Paint popCurvePaint) {
 		
 		//  Initializing graph paths
-		Path rainCurvePath = new Path(),
-				  snowCurvePath = new Path(),
-				  popCurvePath = new Path();
+		Path rainCurvePath = new Path();
+		Path snowCurvePath = new Path();
+		Path popCurvePath = new Path();
 		
 		//  Searching for max and min values in arrays
-		float minValue = rainData[0],
-				  maxValue = rainData[0];
+		float minValue = rainData[0];
+		float maxValue = rainData[0];
 		
 		for (int index = 0; index < rainData.length; index++) {
 			if (rainData[index] > maxValue) maxValue = rainData[index];
@@ -300,7 +304,7 @@ public abstract class ForecastView extends View {
 		float halfPopBarWidth = columnWidth / 6F;
 		//  To avoid curve trimming
 		float top = 4;
-		float bottom = height - 4;
+		float bottom = height - 4F;
 		float drawHeight = bottom - top;
 		
 		//  Clear each paths
@@ -621,8 +625,8 @@ public abstract class ForecastView extends View {
 		if (uvIndex != 0) {
 			float maxAngle = 6.28218F;
 			float deltaAngle = 0.392636F;
-			float startRadius = circleRadius + 8;
-			float stopRadius = middle - 1;
+			float startRadius = circleRadius + 8F;
+			float stopRadius = middle - 1F;
 			float cosAngle;
 			float sinAngle;
 			
