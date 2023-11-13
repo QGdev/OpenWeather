@@ -22,10 +22,12 @@
 package fr.qgdev.openweather.metrics;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static fr.qgdev.openweather.utils.TestUtils.testAssertEqualsFloatValues;
 import static fr.qgdev.openweather.utils.TestUtils.testAssertEqualsIntValues;
+import static fr.qgdev.openweather.utils.TestUtils.testAssertEqualsStringValues;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,7 +56,7 @@ public class AirQualityTest {
 	public void basicConstructor() {
 		AirQuality airQuality = new AirQuality();
 		
-		int placeId = airQuality.getPlaceId();
+		String placeId = airQuality.getPlaceId();
 		int aqi = airQuality.getAqi();
 		float co = airQuality.getCo();
 		float no = airQuality.getNo();
@@ -65,7 +67,7 @@ public class AirQualityTest {
 		float pm10 = airQuality.getPm10();
 		float nh3 = airQuality.getNh3();
 		
-		assertEquals(0, placeId);
+		assertNull(placeId);
 		assertTrue(0 < aqi && aqi < 6);
 		assertTrue(0 <= co);
 		assertTrue(0 <= no);
@@ -148,7 +150,7 @@ public class AirQualityTest {
 											
 											AirQuality airQuality = new AirQuality(json);
 											
-											assertEquals(0, airQuality.getPlaceId());
+											assertNull(airQuality.getPlaceId());
 											assertEquals(aqi, airQuality.getAqi());
 											assertEquals(co, airQuality.getCo(), 0.0f);
 											assertEquals(no, airQuality.getNo(), 0.0f);
@@ -218,40 +220,25 @@ public class AirQualityTest {
 	
 	/**
 	 * Test the placeId getter with all possibles values.
+	 * Test will pass only if the placeId value is the same as the returned value
+	 *
+	 * @throws Exception Throws an execution if the test is misconfigured
+	 */
+	@Test
+	public void getAndSetPlaceId() throws Exception {
+		String[] testValues = {"", "TeSt", "test", "TEST", "Test", "tEsT"};
+		
+		testAssertEqualsStringValues(testValues, id -> airQuality.setPlaceId(id), airQuality::getPlaceId);
+	}
+	
+	/**
+	 * Test the aqi getter and setter with all possibles values.
 	 * Test will pass only if the aqi value is the same as the returned value
 	 *
 	 * @throws Exception Throws an execution if the test is misconfigured
 	 */
 	@Test
-	public void getPlaceId() throws Exception {
-		int[] testValues = {Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE};
-		
-		testAssertEqualsIntValues(testValues, id -> airQuality.setPlaceId(id), airQuality::getPlaceId);
-	}
-	
-	
-	/**
-	 * Test the placeId setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the placeId value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setPlaceId() throws Exception {
-		int[] testValues = {Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE};
-		
-		testAssertEqualsIntValues(testValues, airQuality::setPlaceId, () -> airQuality.getPlaceId());
-	}
-	
-	/**
-	 * Test the aqi getter with all possibles values.
-	 * Test will pass only if the aqi value is the same as the returned value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void getAqi() throws Exception {
+	public void getAndSetAqi() throws Exception {
 		int[] testValues = {1, 2, 3, 4, 5};
 		
 		testAssertEqualsIntValues(testValues, aqi -> airQuality.setAqi(aqi), airQuality::getAqi);
@@ -274,27 +261,13 @@ public class AirQualityTest {
 	}
 	
 	/**
-	 * Test the aqi setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the aqi value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setAqi() throws Exception {
-		int[] testValues = {1, 2, 3, 4, 5};
-		
-		testAssertEqualsIntValues(testValues, airQuality::setAqi, () -> airQuality.getAqi());
-	}
-	
-	/**
-	 * Test the Co getter with all possibles values.
+	 * Test the Co getter and setter with all possibles values.
 	 * Test will pass only if the Co value is the same as the returned value
 	 *
 	 * @throws Exception Throws an execution if the test is misconfigured
 	 */
 	@Test
-	public void getCo() throws Exception {
+	public void getAndSetCo() throws Exception {
 		float[] testValues = {0, 1, Float.MAX_VALUE};
 		
 		testAssertEqualsFloatValues(testValues, co -> airQuality.setCo(co), airQuality::getCo, 0.0f);
@@ -317,27 +290,13 @@ public class AirQualityTest {
 	}
 	
 	/**
-	 * Test the Co setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the Co value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setCo() throws Exception {
-		float[] testValues = {0, 1, Float.MAX_VALUE};
-		
-		testAssertEqualsFloatValues(testValues, airQuality::setCo, () -> airQuality.getCo(), 0.0f);
-	}
-	
-	/**
-	 * Test the No getter with all possibles values.
+	 * Test the No getter and setter with all possibles values.
 	 * Test will pass only if the No value is the same as the returned value
 	 *
 	 * @throws Exception Throws an execution if the test is misconfigured
 	 */
 	@Test
-	public void getNo() throws Exception {
+	public void getAndSetNo() throws Exception {
 		float[] testValues = {0, 1, Float.MAX_VALUE};
 		
 		testAssertEqualsFloatValues(testValues, no -> airQuality.setNo(no), airQuality::getNo, 0.0f);
@@ -360,27 +319,13 @@ public class AirQualityTest {
 	}
 	
 	/**
-	 * Test the No setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the No value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setNo() throws Exception {
-		float[] testValues = {0, 1, Float.MAX_VALUE};
-		
-		testAssertEqualsFloatValues(testValues, airQuality::setNo, () -> airQuality.getNo(), 0.0f);
-	}
-	
-	/**
-	 * Test the No2 getter with all possibles values.
+	 * Test the No2 getter and setter with all possibles values.
 	 * Test will pass only if the No2 value is the same as the returned value
 	 *
 	 * @throws Exception Throws an execution if the test is misconfigured
 	 */
 	@Test
-	public void getNo2() throws Exception {
+	public void getAndSetNo2() throws Exception {
 		float[] testValues = {0, 1, Float.MAX_VALUE};
 		
 		testAssertEqualsFloatValues(testValues, no2 -> airQuality.setNo2(no2), airQuality::getNo2, 0.0f);
@@ -403,27 +348,13 @@ public class AirQualityTest {
 	}
 	
 	/**
-	 * Test the No2 setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the No2 value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setNo2() throws Exception {
-		float[] testValues = {0, 1, Float.MAX_VALUE};
-		
-		testAssertEqualsFloatValues(testValues, airQuality::setNo2, () -> airQuality.getNo2(), 0.0f);
-	}
-	
-	/**
-	 * Test the O3 getter with all possibles values.
+	 * Test the O3 getter and setter with all possibles values.
 	 * Test will pass only if the O3 value is the same as the returned value
 	 *
 	 * @throws Exception Throws an execution if the test is misconfigured
 	 */
 	@Test
-	public void getO3() throws Exception {
+	public void getAndSetO3() throws Exception {
 		float[] testValues = {0, 1, Float.MAX_VALUE};
 		
 		testAssertEqualsFloatValues(testValues, o3 -> airQuality.setO3(o3), airQuality::getO3, 0.0f);
@@ -446,27 +377,13 @@ public class AirQualityTest {
 	}
 	
 	/**
-	 * Test the O3 setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the O3 value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setO3() throws Exception {
-		float[] testValues = {0, 1, Float.MAX_VALUE};
-		
-		testAssertEqualsFloatValues(testValues, airQuality::setO3, () -> airQuality.getO3(), 0.0f);
-	}
-	
-	/**
-	 * Test the So2 getter with all possibles values.
+	 * Test the So2 getter and setter with all possibles values.
 	 * Test will pass only if the So2 value is the same as the returned value
 	 *
 	 * @throws Exception Throws an execution if the test is misconfigured
 	 */
 	@Test
-	public void getSo2() throws Exception {
+	public void getAndSetSo2() throws Exception {
 		float[] testValues = {0, 1, Float.MAX_VALUE};
 		
 		testAssertEqualsFloatValues(testValues, so2 -> airQuality.setSo2(so2), airQuality::getSo2, 0.0f);
@@ -489,27 +406,13 @@ public class AirQualityTest {
 	}
 	
 	/**
-	 * Test the So2 setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the So2 value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setSo2() throws Exception {
-		float[] testValues = {0, 1, Float.MAX_VALUE};
-		
-		testAssertEqualsFloatValues(testValues, airQuality::setSo2, () -> airQuality.getSo2(), 0.0f);
-	}
-	
-	/**
-	 * Test the Pm2.5 getter with all possibles values.
+	 * Test the Pm2.5 getter and setter with all possibles values.
 	 * Test will pass only if the Pm2.5 value is the same as the returned value
 	 *
 	 * @throws Exception Throws an execution if the test is misconfigured
 	 */
 	@Test
-	public void getPm2_5() throws Exception {
+	public void getAndSetPm2_5() throws Exception {
 		float[] testValues = {0, 1, Float.MAX_VALUE};
 		
 		testAssertEqualsFloatValues(testValues, pm2_5 -> airQuality.setPm2_5(pm2_5), airQuality::getPm2_5, 0.0f);
@@ -532,27 +435,13 @@ public class AirQualityTest {
 	}
 	
 	/**
-	 * Test the Pm2.5 setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the Pm2.5 value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setPm2_5() throws Exception {
-		float[] testValues = {0, 1, Float.MAX_VALUE};
-		
-		testAssertEqualsFloatValues(testValues, airQuality::setPm2_5, () -> airQuality.getPm2_5(), 0.0f);
-	}
-	
-	/**
-	 * Test the Pm10 getter with all possibles values.
+	 * Test the Pm10 getter and setter with all possibles values.
 	 * Test will pass only if the Pm10 value is the same as the returned value
 	 *
 	 * @throws Exception Throws an execution if the test is misconfigured
 	 */
 	@Test
-	public void getPm10() throws Exception {
+	public void getAndSetPm10() throws Exception {
 		float[] testValues = {0, 1, Float.MAX_VALUE};
 		
 		testAssertEqualsFloatValues(testValues, pm10 -> airQuality.setPm10(pm10), airQuality::getPm10, 0.0f);
@@ -575,27 +464,13 @@ public class AirQualityTest {
 	}
 	
 	/**
-	 * Test the Pm10 setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the Pm10 value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setPm10() throws Exception {
-		float[] testValues = {0, 1, Float.MAX_VALUE};
-		
-		testAssertEqualsFloatValues(testValues, airQuality::setPm10, () -> airQuality.getPm10(), 0.0f);
-	}
-	
-	/**
-	 * Test the Nh3 getter with all possibles values.
+	 * Test the Nh3 getter and setter with all possibles values.
 	 * Test will pass only if the Nh3 value is the same as the returned value
 	 *
 	 * @throws Exception Throws an execution if the test is misconfigured
 	 */
 	@Test
-	public void getNh3() throws Exception {
+	public void getAndSetNh3() throws Exception {
 		float[] testValues = {0, 1, Float.MAX_VALUE};
 		
 		testAssertEqualsFloatValues(testValues, nh3 -> airQuality.setNh3(nh3), airQuality::getNh3, 0.0f);
@@ -615,19 +490,5 @@ public class AirQualityTest {
 			assertThrows(IllegalArgumentException.class, () -> airQuality.setNh3(testValue));
 			assertEquals(expected, airQuality.getNh3(), 0.0f);
 		}
-	}
-	
-	/**
-	 * Test the Nh3 setter with all possibles values.
-	 * Test will pass only if for each values no exception is thrown
-	 * and if the Nh3 value is the same as the input value
-	 *
-	 * @throws Exception Throws an execution if the test is misconfigured
-	 */
-	@Test
-	public void setNh3() throws Exception {
-		float[] testValues = {0, 1, Float.MAX_VALUE};
-		
-		testAssertEqualsFloatValues(testValues, airQuality::setNh3, () -> airQuality.getNh3(), 0.0f);
 	}
 }

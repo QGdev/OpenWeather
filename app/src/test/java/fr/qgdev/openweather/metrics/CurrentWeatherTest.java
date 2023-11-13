@@ -22,6 +22,7 @@
 package fr.qgdev.openweather.metrics;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static fr.qgdev.openweather.utils.TestUtils.testAssertEqualsBooleanValues;
@@ -58,7 +59,7 @@ public class CurrentWeatherTest {
 	public void basicConstructor() {
 		CurrentWeather currentWeather = new CurrentWeather();
 		
-		int placeId = currentWeather.getPlaceId();
+		String placeId = currentWeather.getPlaceId();
 		long dt = currentWeather.getDt();
 		String weather = currentWeather.getWeather();
 		String weatherDescription = currentWeather.getWeatherDescription();
@@ -81,7 +82,7 @@ public class CurrentWeatherTest {
 		float rain = currentWeather.getRain();
 		float snow = currentWeather.getSnow();
 		
-		assertEquals(0, placeId);
+		assertNull(placeId);
 		assertTrue(dt >= 0);
 		assertEquals("", weather);
 		assertEquals("", weatherDescription);
@@ -317,9 +318,9 @@ public class CurrentWeatherTest {
 	 */
 	@Test
 	public void getAndSetPlaceIdTest() throws Exception {
-		int[] testValues = {Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE};
+		String[] testValues = {"", "TeSt", "test", "TEST", "Test", "tEsT"};
 		
-		testAssertEqualsIntValues(testValues, id -> currentWeather.setPlaceId(id), currentWeather::getPlaceId);
+		testAssertEqualsStringValues(testValues, id -> currentWeather.setPlaceId(id), currentWeather::getPlaceId);
 	}
 	
 	/**
