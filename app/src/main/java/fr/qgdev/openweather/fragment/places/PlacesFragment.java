@@ -48,7 +48,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter;
@@ -64,7 +63,6 @@ import fr.qgdev.openweather.repositories.weather.RequestStatus;
 public class PlacesFragment extends Fragment {
 	
 	private static final String TAG = PlacesFragment.class.getSimpleName();
-	private final Logger logger = Logger.getLogger(TAG);
 	
 	private Context mContext;
 	
@@ -171,7 +169,11 @@ public class PlacesFragment extends Fragment {
 				appRepository.updateAllPlaces(fetchUpdateCallback);
 				placesViewModel.dataHasBeenUpdated();
 			} else {
-				placeRecyclerViewAdapter.notifyDataSetChanged();
+				//	When the data has already been updated, we just notify the adapter that the data has changed
+				// View must be updated on the UI thread
+				requireActivity().runOnUiThread(() -> {
+					placeRecyclerViewAdapter.notifyDataSetChanged();
+				});
 			}
 			
 			setExistingPlacesViewState(container);
@@ -208,9 +210,7 @@ public class PlacesFragment extends Fragment {
 				int initialPos = viewHolder.getAbsoluteAdapterPosition();
 				int finalPos = target.getAbsoluteAdapterPosition();
 				
-				appRepository.movePlace(initialPos,
-						  finalPos,
-						  null);
+				appRepository.movePlace(initialPos, finalPos, null);
 				placeRecyclerViewAdapter.notifyItemMoved(initialPos, finalPos);
 				return true;
 			}
@@ -225,19 +225,31 @@ public class PlacesFragment extends Fragment {
 						vibrator.vibrate(VibrationEffect.createOneShot(100, 25));
 					}
 					
+					// Check if the index is still valid,
+					// if not, it means that the user has swiped to delete a place and then
 					if (index >= placesViewModel.getPlaces().size()) {
 						placeRecyclerViewAdapter.notifyItemRemoved(index);
 						return;
 					}
+					
+					//	Show a confirmation dialog to the user
+					//	For each views, the notification action must be run on the UI thread
 					Place place = placesViewModel.getPlaces().get(index);
 					new AlertDialog.Builder(mContext)
 							  .setTitle(mContext.getString(R.string.dialog_confirmation_title_delete_place))
 							  .setMessage(String.format(mContext.getString(R.string.dialog_confirmation_message_delete_place), place.getGeolocation().getCity(), place.getGeolocation().getCountryCode()))
 							  .setPositiveButton(mContext.getString(R.string.dialog_confirmation_choice_yes), (dialogInterface, i) -> {
-								  appRepository.delete(place,
-											 () -> placeRecyclerViewAdapter.notifyItemRemoved(index));
+								  appRepository.delete(place, () -> {
+									  requireActivity().runOnUiThread(() -> {
+										  placeRecyclerViewAdapter.notifyItemRemoved(index);
+									  });
+								  });
 							  })
-							  .setNegativeButton(mContext.getString(R.string.dialog_confirmation_choice_no), (dialogInterface, i) -> placeRecyclerViewAdapter.notifyItemChanged(index))
+							  .setNegativeButton(mContext.getString(R.string.dialog_confirmation_choice_no), (dialogInterface, i) -> {
+								  requireActivity().runOnUiThread(() -> {
+									  placeRecyclerViewAdapter.notifyItemChanged(index);
+								  });
+							  })
 							  .setCancelable(false)
 							  .show();
 				}
