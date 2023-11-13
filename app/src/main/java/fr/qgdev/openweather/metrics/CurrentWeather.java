@@ -70,7 +70,7 @@ public class CurrentWeather {
 	 * Instantiates a new Current weather.
 	 */
 	public CurrentWeather() {
-		this.placeId = null;
+		this.placeId = "";
 		this.dt = 0;
 		
 		this.weather = "";

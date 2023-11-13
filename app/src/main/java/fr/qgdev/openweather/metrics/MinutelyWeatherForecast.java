@@ -41,6 +41,7 @@ public class MinutelyWeatherForecast {
 	
 	@Ignore
 	public MinutelyWeatherForecast() {
+		this.placeId = "";
 		this.dt = 0;
 		this.precipitation = 0;
 	}

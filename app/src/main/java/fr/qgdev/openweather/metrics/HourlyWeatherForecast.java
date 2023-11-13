@@ -61,7 +61,7 @@ public class HourlyWeatherForecast {
 	private float snow;
 	
 	public HourlyWeatherForecast() {
-		this.placeId = null;
+		this.placeId = "";
 		this.dt = 0;
 		
 		this.weather = "";

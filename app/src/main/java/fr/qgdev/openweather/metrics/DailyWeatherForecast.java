@@ -78,7 +78,7 @@ public class DailyWeatherForecast {
 	 * Instantiates a new Daily weather forecast.
 	 */
 	public DailyWeatherForecast() {
-		this.placeId = null;
+		this.placeId = "";
 		this.dt = 0;
 		
 		this.weather = "";

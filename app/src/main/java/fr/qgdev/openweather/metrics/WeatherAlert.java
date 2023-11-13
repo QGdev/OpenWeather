@@ -54,7 +54,7 @@ public class WeatherAlert {
 	 * Instantiates a new Weather alert.
 	 */
 	public WeatherAlert() {
-		this.placeId = null;
+		this.placeId = "";
 		this.sender = "";
 		this.event = "";
 		this.startDt = 0;

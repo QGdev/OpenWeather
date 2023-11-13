@@ -52,7 +52,7 @@ public class AirQuality {
 	 * Instantiates a new Air quality.
 	 */
 	public AirQuality() {
-		this.placeId = null;
+		this.placeId = "";
 		this.aqi = 1;
 		this.co = 0;
 		this.no = 0;
