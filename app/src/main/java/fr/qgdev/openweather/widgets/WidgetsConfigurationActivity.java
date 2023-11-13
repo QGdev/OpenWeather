@@ -89,7 +89,7 @@ public class WidgetsConfigurationActivity extends Activity {
 	 * @param binding    The binding to use to update the activity
 	 */
 	private static void updateWidgetPreview(@NonNull Context context, @NonNull WidgetType widgetType, String placeId, @NonNull AppRepository repository, @NonNull WidgetConfigurationBinding binding) {
-		repository.getPlaceFromPlaceIdLiveData(placeId).observeForever(new Observer<Place>() {
+		repository.getPlaceFromPlaceIdLiveData(placeId).observeForever(new Observer<>() {
 			@Override
 			public void onChanged(Place place) {
 				if (place == null) return;
@@ -146,7 +146,7 @@ public class WidgetsConfigurationActivity extends Activity {
 		// Get size of the widget like width and height
 		Bundle options = AppWidgetManager.getInstance(context).getAppWidgetOptions(mAppWidgetId);
 		List<SizeF> sizes = options.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
-		if (sizes == null || sizes.size() == 0) {
+		if (sizes == null || sizes.isEmpty()) {
 			finish();
 			return;
 		}
@@ -221,7 +221,7 @@ public class WidgetsConfigurationActivity extends Activity {
 				// Set the spinner to the current place if possible
 				if (widgetsSettings != null) {
 					for (int i = 0; i < placeIds.length; i++) {
-						if (placeIds[i] == widgetsSettings.getPlaceId()) {
+						if (placeIds[i].equals(widgetsSettings.getPlaceId())) {
 							binding.placeSpinner.setSelection(i);
 							break;
 						}
