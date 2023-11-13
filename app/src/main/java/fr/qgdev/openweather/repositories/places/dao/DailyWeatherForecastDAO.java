@@ -34,11 +34,11 @@ import fr.qgdev.openweather.metrics.DailyWeatherForecast;
 @Dao
 public interface DailyWeatherForecastDAO {
 	
-	@Query("SELECT * FROM daily_weather_forecast WHERE placeId = :id ORDER BY dt ASC")
-	List<DailyWeatherForecast> getFromPlaceID(int id);
+	@Query("SELECT * FROM daily_weather_forecasts WHERE placeId = :id ORDER BY dt ASC")
+	List<DailyWeatherForecast> getFromPlaceID(String id);
 	
-	@Query("DELETE FROM daily_weather_forecast WHERE placeId = :id")
-	void deleteFromPlaceID(int id);
+	@Query("DELETE FROM daily_weather_forecasts WHERE placeId = :id")
+	void deleteFromPlaceID(String id);
 	
 	@Insert(onConflict = OnConflictStrategy.ABORT)
 	void insert(DailyWeatherForecast dailyWeatherForecast);

@@ -60,7 +60,7 @@ public class WeatherService {
     
     
     @WorkerThread
-    public void searchAndBuildPlace(int placeID, @NonNull String city, @NonNull String countryCode, @NonNull FetchDataCallback callback) {
+    public void searchAndBuildPlace(String placeID, @NonNull String city, @NonNull String countryCode, @NonNull FetchDataCallback callback) {
         
         //  Setting up important variables and objects for weather data request
         String url = String.format(context.getString(R.string.url_owm_properties_name),
@@ -73,7 +73,7 @@ public class WeatherService {
     }
     
     @WorkerThread
-    public void searchAndBuildPlace(int placeID, @NonNull Coordinates coordinates, @NonNull FetchDataCallback callback) {
+    public void searchAndBuildPlace(String placeID, @NonNull Coordinates coordinates, @NonNull FetchDataCallback callback) {
         
         //  Setting up important variables and objects for weather data request
         String url = String.format(context.getString(R.string.url_owm_properties_coordinates),
@@ -85,7 +85,7 @@ public class WeatherService {
         searchAndBuildPlace(placeID, url, callback);
     }
     
-    private void searchAndBuildPlace(int placeID, @NonNull String url, @NonNull FetchDataCallback callback) {
+    private void searchAndBuildPlace(String placeID, @NonNull String url, @NonNull FetchDataCallback callback) {
         //  Before launching request, we must have to verify that if the device is connected to a network
         //  The device is connected to an INTERNET capable network
         if (this.deviceIsConnected()) {

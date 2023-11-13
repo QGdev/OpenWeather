@@ -33,10 +33,10 @@ import fr.qgdev.openweather.metrics.AirQuality;
 public interface AirQualityDAO {
     
     @Query("SELECT * FROM air_quality WHERE placeId = :id")
-    AirQuality getFromPlaceID(int id);
+    AirQuality getFromPlaceID(String id);
     
     @Query("DELETE FROM air_quality WHERE placeId = :id")
-    void deleteFromPlaceID(int id);
+    void deleteFromPlaceID(String id);
     
     @Insert(onConflict = OnConflictStrategy.ABORT)
     void insert(AirQuality airQuality);

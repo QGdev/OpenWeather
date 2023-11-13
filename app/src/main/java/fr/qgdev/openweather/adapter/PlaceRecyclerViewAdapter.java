@@ -555,7 +555,7 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		 * @param place The place
 		 */
 		private void setListeners(@NonNull Context context, @NonNull FormattingService formattingService, @NonNull PlaceRecyclerViewAdapter placeRecyclerViewAdapter, @NonNull PlacesViewModel placesViewModel, @NonNull Place place) {
-			Integer placeID = place.getProperties().getPlaceId();
+			String placeID = place.getProperties().getPlaceId();
 			ViewType viewType = placesViewModel.getPlaceViewType(placeID);
 			
 			//  Set listener for the whole place card item

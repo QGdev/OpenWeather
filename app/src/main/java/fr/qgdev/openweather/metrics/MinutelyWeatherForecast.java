@@ -34,7 +34,8 @@ import java.util.StringJoiner;
 		  primaryKeys = {"placeId", "dt"})
 
 public class MinutelyWeatherForecast {
-	private int placeId;
+	@NonNull
+	private String placeId;
 	private long dt;
 	private float precipitation;
 	
@@ -44,7 +45,7 @@ public class MinutelyWeatherForecast {
 		this.precipitation = 0;
 	}
 	
-	public MinutelyWeatherForecast(int placeId, long dt, float precipitation) {
+	public MinutelyWeatherForecast(String placeId, long dt, float precipitation) {
 		this.placeId = placeId;
 		this.dt = dt;
 		this.precipitation = precipitation;
@@ -57,11 +58,11 @@ public class MinutelyWeatherForecast {
 	}
 	
 	//	Getter
-	public int getPlaceId() {
+	public String getPlaceId() {
 		return placeId;
 	}
 	
-	public void setPlaceId(int placeId) {
+	public void setPlaceId(String placeId) {
 		this.placeId = placeId;
 	}
 	

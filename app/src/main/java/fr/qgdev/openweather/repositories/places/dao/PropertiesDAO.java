@@ -39,20 +39,20 @@ public interface PropertiesDAO {
 	
 	@Transaction
 	@Query("SELECT placeId FROM properties ORDER BY `order` ASC")
-	List<Integer> getAllIDs();
+	List<String> getAllIDs();
 	
 	@Transaction
 	@Query("SELECT * FROM properties ORDER BY `order` ASC")
 	List<Properties> getProperties();
 	
 	@Query("SELECT placeId FROM properties WHERE `order` = :order")
-	int getIDFromPlaceOrder(int order);
+	String getIDFromPlaceOrder(int order);
 	
 	@Query("SELECT * FROM properties WHERE placeId = :placeID")
-	Properties getFromPlaceId(int placeID);
+	Properties getFromPlaceId(String placeID);
 	
 	@Query("UPDATE properties SET `order` = :newOrder WHERE placeId = :placeID")
-	void updateOrderFromPlaceID(int placeID, int newOrder);
+	void updateOrderFromPlaceID(String placeID, int newOrder);
 	
 	@Query("UPDATE properties SET `order` = `order` - 1 WHERE `order` >= :crtOrder AND `order` <= :newOrder")
 	void updatePlaceOrdersMvEnd(int crtOrder, int newOrder);
@@ -64,7 +64,7 @@ public interface PropertiesDAO {
 	void updatePlaceOrdersAfterDeletion(int order);
 	
 	@Query("DELETE FROM properties WHERE placeId = :id")
-	void deleteFromPlaceID(int id);
+	void deleteFromPlaceID(String id);
 	
 	@Insert
 	void insert(Properties properties);

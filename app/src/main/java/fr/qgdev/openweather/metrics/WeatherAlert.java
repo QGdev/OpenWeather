@@ -43,18 +43,18 @@ public class WeatherAlert {
 	private String sender;
 	@NonNull
 	private String event;
-	@NonNull
 	private long startDt;
 	private long endDt;
 	private String description;
 	private List<String> tags;
-	private int placeId;
+	@NonNull
+	private String placeId;
 	
 	/**
 	 * Instantiates a new Weather alert.
 	 */
 	public WeatherAlert() {
-		this.placeId = 0;
+		this.placeId = null;
 		this.sender = "";
 		this.event = "";
 		this.startDt = 0;
@@ -71,7 +71,7 @@ public class WeatherAlert {
 	 */
 	@Ignore
 	public WeatherAlert(JSONObject weatherAlert) throws JSONException {
-		this.placeId = 0;
+		this.placeId = null;
 		
 		this.sender = weatherAlert.getString("sender_name");
 		this.event = weatherAlert.getString("event");
@@ -98,7 +98,7 @@ public class WeatherAlert {
 	 *
 	 * @return the place id
 	 */
-	public int getPlaceId() {
+	public String getPlaceId() {
 		return placeId;
 	}
 	
@@ -107,7 +107,7 @@ public class WeatherAlert {
 	 *
 	 * @param placeId the place id
 	 */
-	public void setPlaceId(int placeId) {
+	public void setPlaceId(String placeId) {
 		this.placeId = placeId;
 	}
 	

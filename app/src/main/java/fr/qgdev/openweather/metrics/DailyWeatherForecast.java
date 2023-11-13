@@ -29,11 +29,12 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.StringJoiner;
 
-@Entity(tableName = "daily_weather_forecast",
+@Entity(tableName = "daily_weather_forecasts",
 		  primaryKeys = {"placeId", "dt"})
 
 public class DailyWeatherForecast {
-	private int placeId;
+	@NonNull
+	private String placeId;
 	private long dt;
 	
 	private String weather;
@@ -77,7 +78,7 @@ public class DailyWeatherForecast {
 	 * Instantiates a new Daily weather forecast.
 	 */
 	public DailyWeatherForecast() {
-		this.placeId = 0;
+		this.placeId = null;
 		this.dt = 0;
 		
 		this.weather = "";
@@ -201,7 +202,7 @@ public class DailyWeatherForecast {
 	 *
 	 * @return the place id
 	 */
-	public int getPlaceId() {
+	public String getPlaceId() {
 		return placeId;
 	}
 	
@@ -210,7 +211,7 @@ public class DailyWeatherForecast {
 	 *
 	 * @param placeId the place id
 	 */
-	public void setPlaceId(int placeId) {
+	public void setPlaceId(String placeId) {
 		this.placeId = placeId;
 	}
 	

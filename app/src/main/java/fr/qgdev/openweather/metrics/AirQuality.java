@@ -36,7 +36,8 @@ import java.util.StringJoiner;
 @Entity(tableName = "air_quality",
 		  primaryKeys = {"placeId"})
 public class AirQuality {
-	private int placeId;
+	@NonNull
+	private String placeId;
 	private int aqi;
 	private float co;
 	private float no;
@@ -51,7 +52,7 @@ public class AirQuality {
 	 * Instantiates a new Air quality.
 	 */
 	public AirQuality() {
-		this.placeId = 0;
+		this.placeId = null;
 		this.aqi = 1;
 		this.co = 0;
 		this.no = 0;
@@ -94,7 +95,7 @@ public class AirQuality {
 	 *
 	 * @return the place id
 	 */
-	public int getPlaceId() {
+	public String getPlaceId() {
 		return placeId;
 	}
 	
@@ -103,7 +104,7 @@ public class AirQuality {
 	 *
 	 * @param placeId the place id
 	 */
-	public void setPlaceId(int placeId) {
+	public void setPlaceId(String placeId) {
 		this.placeId = placeId;
 	}
 	

@@ -30,7 +30,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import java.util.List;
-import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
 import fr.qgdev.openweather.repositories.places.Geolocation;
@@ -160,7 +160,7 @@ public class AppRepository {
 	 * @param placeId the place id
 	 * @return the place live data
 	 */
-	public LiveData<Place> getPlaceFromPlaceIdLiveData(int placeId) {
+	public LiveData<Place> getPlaceFromPlaceIdLiveData(String placeId) {
 		return placeDatabase.getPlaceFromPlaceIdLiveData(placeId);
 	}
 	
@@ -187,6 +187,7 @@ public class AppRepository {
 			places.add(p);
 			mutableLiveDataPlaces.postValue(places);
 			
+			//	Run the callback in a new thread to avoid blocking Room thread
 			if (callback != null)
 				new Thread(() -> callback.run(place)).start();
 		});
@@ -206,6 +207,7 @@ public class AppRepository {
 			places.add(p);
 			mutableLiveDataPlaces.postValue(places);
 			
+			//	Run the callback in a new thread to avoid blocking Room thread
 			if (callback != null)
 				new Thread(callback).start();
 		});
@@ -225,6 +227,7 @@ public class AppRepository {
 			places.remove(place);
 			mutableLiveDataPlaces.postValue(places);
 			
+			//	Run the callback in a new thread to avoid blocking Room thread
 			if (callback != null)
 				new Thread(() -> callback.run(place)).start();
 		});
@@ -244,6 +247,7 @@ public class AppRepository {
 			places.remove(place);
 			mutableLiveDataPlaces.postValue(places);
 			
+			//	Run the callback in a new thread to avoid blocking Room thread
 			if (callback != null)
 				new Thread(callback).start();
 		});
@@ -264,6 +268,7 @@ public class AppRepository {
 			places.set(p.getProperties().getOrder(), p);
 			mutableLiveDataPlaces.postValue(places);
 			
+			//	Run the callback in a new thread to avoid blocking Room thread
 			if (callback != null)
 				new Thread(() -> callback.run(place)).start();
 		});
@@ -284,6 +289,7 @@ public class AppRepository {
 			places.set(p.getProperties().getOrder(), p);
 			mutableLiveDataPlaces.postValue(places);
 			
+			//	Run the callback in a new thread to avoid blocking Room thread
 			if (callback != null)
 				new Thread(callback).start();
 		});
@@ -307,15 +313,12 @@ public class AppRepository {
 	 * @param ids The list of ids of existing ids
 	 * @return A unique place id
 	 */
-	private int generatePlaceID(@NonNull List<Integer> ids) {
-		Random r = new Random();
-		
-		int placeID = r.nextInt();
+	private String generatePlaceID(@NonNull List<String> ids) {
+		String placeID = UUID.randomUUID().toString();
 		int attempts = 0;
 		
-		while ((ids.contains(placeID) || placeID == 0) && attempts < 5) {
-			if (r.nextBoolean() && placeID < Integer.MIN_VALUE + 10) placeID -= r.nextInt(10);
-			else placeID += r.nextInt(10);
+		while (ids.contains(placeID) && attempts < 5) {
+			placeID = UUID.randomUUID().toString();
 			attempts++;
 		}
 		
@@ -369,9 +372,9 @@ public class AppRepository {
 		};
 		
 		Runnable runnable = () -> {
-			List<Integer> ids = placeDatabase.propertiesDAO().getAllIDs();
+			List<String> ids = placeDatabase.propertiesDAO().getAllIDs();
 			
-			int placeID = generatePlaceID(ids);
+			String placeID = generatePlaceID(ids);
 			
 			if (ids.contains(placeID)) {
 				fetchCallback.onError(RequestStatus.UNKNOWN_ERROR);

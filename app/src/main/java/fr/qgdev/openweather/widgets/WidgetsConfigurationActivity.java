@@ -54,7 +54,7 @@ import fr.qgdev.openweather.widgets.WidgetsBinder.WidgetType;
  */
 public class WidgetsConfigurationActivity extends Activity {
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
-	private int[] placeIds;
+	private String[] placeIds;
 	private WidgetConfigurationBinding binding;
 	
 	/**
@@ -88,7 +88,7 @@ public class WidgetsConfigurationActivity extends Activity {
 	 * @param repository The repository to use to get the place
 	 * @param binding    The binding to use to update the activity
 	 */
-	private static void updateWidgetPreview(@NonNull Context context, @NonNull WidgetType widgetType, int placeId, @NonNull AppRepository repository, @NonNull WidgetConfigurationBinding binding) {
+	private static void updateWidgetPreview(@NonNull Context context, @NonNull WidgetType widgetType, String placeId, @NonNull AppRepository repository, @NonNull WidgetConfigurationBinding binding) {
 		repository.getPlaceFromPlaceIdLiveData(placeId).observeForever(new Observer<Place>() {
 			@Override
 			public void onChanged(Place place) {
@@ -204,7 +204,7 @@ public class WidgetsConfigurationActivity extends Activity {
 				
 				// Build data for spinner
 				String[] placesNames = new String[listings.size()];
-				placeIds = new int[listings.size()];
+				placeIds = new String[listings.size()];
 				
 				for (int i = 0; i < listings.size(); i++) {
 					placesNames[i] = String.format(repository.getSettingsManager().getDefaultLocale(),
@@ -251,7 +251,7 @@ public class WidgetsConfigurationActivity extends Activity {
 				
 				// Setup confirm button
 				binding.confirmButton.setOnClickListener(v -> {
-					int placeId = placeIds[binding.placeSpinner.getSelectedItemPosition()];
+					String placeId = placeIds[binding.placeSpinner.getSelectedItemPosition()];
 					repository.getWidgetsManager().saveWidgetSettings(new WidgetsSettings(placeId, mAppWidgetId));
 					
 					// It is the responsibility of the configuration activity to update the app widget

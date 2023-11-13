@@ -33,7 +33,7 @@ import org.json.JSONObject;
  */
 public class WidgetsSettings {
 	
-	private final int placeId;
+	private final String placeId;
 	private final int widgetId;
 	
 	/**
@@ -42,8 +42,8 @@ public class WidgetsSettings {
 	 * @param placeId  The id of the place
 	 * @param widgetId The id of the widget
 	 */
-	public WidgetsSettings(int placeId, int widgetId) {
-		if (placeId == 0) throw new IllegalArgumentException("placeId must be different from 0");
+	public WidgetsSettings(String placeId, int widgetId) {
+		if (placeId == null) throw new IllegalArgumentException("placeId must not be null");
 		if (widgetId == INVALID_APPWIDGET_ID)
 			throw new IllegalArgumentException("widgetId must be a valid widget id");
 		
@@ -58,7 +58,7 @@ public class WidgetsSettings {
 	 * @return The widget settings
 	 */
 	public static WidgetsSettings fromJson(@NonNull JSONObject json) throws JSONException {
-		return new WidgetsSettings(json.getInt("placeId"),
+		return new WidgetsSettings(json.getString("placeId"),
 				  json.getInt("widgetId"));
 	}
 	
@@ -67,7 +67,7 @@ public class WidgetsSettings {
 	 *
 	 * @return The place id
 	 */
-	public int getPlaceId() {
+	public String getPlaceId() {
 		return placeId;
 	}
 	
@@ -139,8 +139,8 @@ public class WidgetsSettings {
 	 */
 	@Override
 	public int hashCode() {
-		int result = placeId;
-		result = 31 * result + widgetId;
-		return result;
+		String result = placeId;
+		result += widgetId;
+		return result.hashCode();
 	}
 }

@@ -33,7 +33,8 @@ import java.util.StringJoiner;
 		  primaryKeys = {"placeId", "dt"})
 
 public class HourlyWeatherForecast {
-	private int placeId;
+	@NonNull
+	private String placeId;
 	private long dt;
 	
 	private String weather;
@@ -60,6 +61,7 @@ public class HourlyWeatherForecast {
 	private float snow;
 	
 	public HourlyWeatherForecast() {
+		this.placeId = null;
 		this.dt = 0;
 		
 		this.weather = "";
@@ -136,12 +138,12 @@ public class HourlyWeatherForecast {
 	}
 	
 	//  Getter
-	public int getPlaceId() {
+	public String getPlaceId() {
 		return placeId;
 	}
 	
 	//  Setter
-	public void setPlaceId(int placeId) {
+	public void setPlaceId(String placeId) {
 		this.placeId = placeId;
 	}
 	

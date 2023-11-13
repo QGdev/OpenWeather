@@ -35,10 +35,10 @@ import fr.qgdev.openweather.metrics.MinutelyWeatherForecast;
 public interface MinutelyWeatherForecastDAO {
 	
 	@Query("SELECT * FROM minutely_weather_forecasts WHERE placeId = :id ORDER BY dt ASC")
-	List<MinutelyWeatherForecast> getFromPlaceID(int id);
+	List<MinutelyWeatherForecast> getFromPlaceID(String id);
 	
 	@Query("DELETE FROM minutely_weather_forecasts WHERE placeId = :id")
-	void deleteFromPlaceID(int id);
+	void deleteFromPlaceID(String id);
 	
 	@Insert(onConflict = OnConflictStrategy.ABORT)
 	void insert(MinutelyWeatherForecast minutelyWeatherForecast);

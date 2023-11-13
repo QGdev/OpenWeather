@@ -77,7 +77,7 @@ public class Place {
 	}
 	
 	@Ignore
-	public Place(int placeID, @NonNull JSONObject placeJSONObject) throws JSONException {
+	public Place(String placeID, @NonNull JSONObject placeJSONObject) throws JSONException {
 		
 		this.currentWeather = null;
 		this.airQuality = null;
@@ -120,7 +120,7 @@ public class Place {
 	}
 	
 	@Ignore
-	public Place(int placeID, int placeOrder, JSONObject placeJSON) throws JSONException {
+	public Place(String placeID, int placeOrder, JSONObject placeJSON) throws JSONException {
 		
 		this.currentWeather = null;
 		this.airQuality = null;

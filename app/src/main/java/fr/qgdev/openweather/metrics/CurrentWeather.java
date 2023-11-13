@@ -34,7 +34,9 @@ import java.util.StringJoiner;
 		  primaryKeys = {"placeId"})
 
 public class CurrentWeather {
-	private int placeId;
+	
+	@NonNull
+	private String placeId;
 	
 	private long dt;
 	
@@ -68,7 +70,7 @@ public class CurrentWeather {
 	 * Instantiates a new Current weather.
 	 */
 	public CurrentWeather() {
-		this.placeId = 0;
+		this.placeId = null;
 		this.dt = 0;
 		
 		this.weather = "";
@@ -188,7 +190,7 @@ public class CurrentWeather {
 	 *
 	 * @return the place id
 	 */
-	public int getPlaceId() {
+	public String getPlaceId() {
 		return placeId;
 	}
 	
@@ -197,7 +199,7 @@ public class CurrentWeather {
 	 *
 	 * @param placeId the place id
 	 */
-	public void setPlaceId(int placeId) {
+	public void setPlaceId(String placeId) {
 		this.placeId = placeId;
 	}
 	

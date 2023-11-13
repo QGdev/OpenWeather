@@ -168,8 +168,8 @@ public class WidgetsProvider extends AppWidgetProvider {
 		WidgetsSettings widgetsSettings = repository.getWidgetsManager().loadWidgetSettings(appWidgetId, null);
 		if (widgetsSettings == null) return;   // Invalid widgetsSettings or not found
 		
-		int placeId = widgetsSettings.getPlaceId();
-		if (placeId == 0) return;   // Invalid placeId
+		String placeId = widgetsSettings.getPlaceId();
+		if (placeId == null) return;   // Invalid placeId
 		
 		// Get the place data from the placeId
 		repository.getPlaceFromPlaceIdLiveData(placeId).observeForever(place -> {

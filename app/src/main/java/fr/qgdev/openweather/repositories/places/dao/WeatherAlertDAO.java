@@ -35,10 +35,10 @@ import fr.qgdev.openweather.metrics.WeatherAlert;
 public interface WeatherAlertDAO {
 	
 	@Query("SELECT * FROM weather_alerts WHERE placeId = :id ORDER BY startDt ASC")
-	List<WeatherAlert> getFromPlaceID(int id);
+	List<WeatherAlert> getFromPlaceID(String id);
 	
 	@Query("DELETE FROM weather_alerts WHERE placeId = :id")
-	void deleteFromPlaceID(int id);
+	void deleteFromPlaceID(String id);
 	
 	@Insert(onConflict = OnConflictStrategy.ABORT)
 	void insert(WeatherAlert weatherAlert);

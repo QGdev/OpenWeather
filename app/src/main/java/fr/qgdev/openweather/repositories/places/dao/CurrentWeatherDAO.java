@@ -31,19 +31,19 @@ import fr.qgdev.openweather.metrics.CurrentWeather;
 
 @Dao
 public interface CurrentWeatherDAO {
-    
-    @Query("SELECT * FROM current_weather WHERE placeId = :id")
-    CurrentWeather getFromPlaceID(int id);
-    
-    @Query("DELETE FROM current_weather WHERE placeId = :id")
-    void deleteFromPlaceID(int id);
-    
-    @Insert(onConflict = OnConflictStrategy.ABORT)
-    void insert(CurrentWeather currentWeather);
-    
-    @Delete
-    void delete(CurrentWeather currentWeather);
-    
-    @Update()
-    void update(CurrentWeather currentWeather);
+	
+	@Query("SELECT * FROM current_weather WHERE placeId = :id")
+	CurrentWeather getFromPlaceID(String id);
+	
+	@Query("DELETE FROM current_weather WHERE placeId = :id")
+	void deleteFromPlaceID(String id);
+	
+	@Insert(onConflict = OnConflictStrategy.ABORT)
+	void insert(CurrentWeather currentWeather);
+	
+	@Delete
+	void delete(CurrentWeather currentWeather);
+	
+	@Update()
+	void update(CurrentWeather currentWeather);
 }

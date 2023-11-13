@@ -31,7 +31,8 @@ import java.util.StringJoiner;
 		  primaryKeys = {"placeId"})
 public class Geolocation {
 	
-	private final int placeId;
+	@NonNull
+	private final String placeId;
 	private String city;
 	private String countryCode;
 	
@@ -39,19 +40,19 @@ public class Geolocation {
 	private Coordinates coordinates;
 	
 	@Ignore
-	public Geolocation(int placeId, @NonNull Coordinates coordinates) {
+	public Geolocation(String placeId, @NonNull Coordinates coordinates) {
 		this.placeId = placeId;
 		this.coordinates = coordinates;
 	}
 	
-	public Geolocation(int placeId, @NonNull String city, @NonNull String countryCode, @NonNull Coordinates coordinates) {
+	public Geolocation(String placeId, @NonNull String city, @NonNull String countryCode, @NonNull Coordinates coordinates) {
 		this.placeId = placeId;
 		this.city = city;
 		this.countryCode = countryCode;
 		this.coordinates = coordinates;
 	}
 	
-	public int getPlaceId() {
+	public String getPlaceId() {
 		return this.placeId;
 	}
 	

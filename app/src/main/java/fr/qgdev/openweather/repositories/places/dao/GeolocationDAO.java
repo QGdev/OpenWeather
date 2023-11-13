@@ -36,13 +36,13 @@ import fr.qgdev.openweather.repositories.places.Geolocation;
 public interface GeolocationDAO {
 	
 	@Query("SELECT * FROM geolocation WHERE placeId = :id")
-	Geolocation getFromPlaceID(int id);
+	Geolocation getFromPlaceID(String id);
 	
 	@Query("SELECT * FROM geolocation WHERE city LIKE :city AND countryCode = :countryCode")
 	LiveData<List<Geolocation>> getSimilarPlaces(String city, String countryCode);
 	
 	@Query("DELETE FROM geolocation WHERE placeId = :id")
-	void deleteFromPlaceID(int id);
+	void deleteFromPlaceID(String id);
 	
 	@Insert(onConflict = OnConflictStrategy.ABORT)
 	void insert(Geolocation geolocation);

@@ -34,8 +34,9 @@ public class Properties {
 	
 	private final long creationTime;
 	private final int timeOffset;
+	@NonNull
 	@PrimaryKey(autoGenerate = false)
-	private final int placeId;
+	private final String placeId;
 	private long lastSuccessfulWeatherUpdateTime;
 	private long lastSuccessfulAirQualityUpdateTime;
 	private long lastWeatherUpdateAttemptTime;
@@ -44,7 +45,7 @@ public class Properties {
 	private long lastAvailableAirQualityDataTime;
 	private int order;
 	
-	public Properties(long lastSuccessfulWeatherUpdateTime, long lastSuccessfulAirQualityUpdateTime, long lastWeatherUpdateAttemptTime, long lastAirQualityUpdateAttemptTime, long creationTime, long lastAvailableWeatherDataTime, long lastAvailableAirQualityDataTime, int timeOffset, int order, int placeId) {
+	public Properties(long lastSuccessfulWeatherUpdateTime, long lastSuccessfulAirQualityUpdateTime, long lastWeatherUpdateAttemptTime, long lastAirQualityUpdateAttemptTime, long creationTime, long lastAvailableWeatherDataTime, long lastAvailableAirQualityDataTime, int timeOffset, int order, String placeId) {
 		
 		if (lastSuccessfulWeatherUpdateTime < 0)
 			throw new IllegalArgumentException("lastSuccessfulWeatherUpdateTime must be positive or null !");
@@ -78,7 +79,7 @@ public class Properties {
 	}
 	
 	@Ignore
-	public Properties(long creationTime, int timeOffset, int order, int placeId) {
+	public Properties(long creationTime, int timeOffset, int order, String placeId) {
 		if (creationTime < 0)
 			throw new IllegalArgumentException("creationTime must be positive or null !");
 		
@@ -186,7 +187,7 @@ public class Properties {
 		this.order = order;
 	}
 	
-	public int getPlaceId() {
+	public String getPlaceId() {
 		return placeId;
 	}
 	

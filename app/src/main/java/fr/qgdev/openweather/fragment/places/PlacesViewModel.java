@@ -37,7 +37,7 @@ import fr.qgdev.openweather.repositories.places.Place;
 public class PlacesViewModel extends ViewModel {
 	
 	private final MutableLiveData<List<Place>> places;
-	private final HashMap<Integer, PlaceRecyclerViewAdapter.ViewType> placesViewType;
+	private final HashMap<String, PlaceRecyclerViewAdapter.ViewType> placesViewType;
 	private boolean dataHasAlreadyBeenUpdated;
 	
 	
@@ -98,10 +98,10 @@ public class PlacesViewModel extends ViewModel {
 		//		Remove old ViewStates from removed places
 		//		Add new ViewStates from added places
 		if (!placesViewType.isEmpty()) {
-			List<Integer> placeIds = placeList.stream().map(place -> place.getProperties().getPlaceId()).collect(Collectors.toList());
-			Integer[] contained = placesViewType.keySet().toArray(new Integer[0]);
+			List<String> placeIds = placeList.stream().map(place -> place.getProperties().getPlaceId()).collect(Collectors.toList());
+			String[] contained = placesViewType.keySet().toArray(new String[0]);
 			
-			for (Integer element : contained) {
+			for (String element : contained) {
 				if (!placeIds.contains(element)) {
 					placesViewType.remove(element);
 				}
@@ -124,7 +124,7 @@ public class PlacesViewModel extends ViewModel {
 	 * @param placeID the place id
 	 * @return the place view type
 	 */
-	public PlaceRecyclerViewAdapter.ViewType getPlaceViewType(Integer placeID) {
+	public PlaceRecyclerViewAdapter.ViewType getPlaceViewType(String placeID) {
 		return placesViewType.getOrDefault(placeID, PlaceRecyclerViewAdapter.ViewType.UNDEFINED);
 	}
 	
@@ -136,7 +136,7 @@ public class PlacesViewModel extends ViewModel {
 	 */
 	public PlaceRecyclerViewAdapter.ViewType getPlaceViewTypeFromPosition(Integer position) {
 		if (places.getValue() == null) return null;
-		int placeID = places.getValue().get(position).getProperties().getPlaceId();
+		String placeID = places.getValue().get(position).getProperties().getPlaceId();
 		return placesViewType.getOrDefault(placeID, PlaceRecyclerViewAdapter.ViewType.UNDEFINED);
 	}
 	
@@ -146,7 +146,7 @@ public class PlacesViewModel extends ViewModel {
 	 * @param placeID     the place id
 	 * @param newViewType the new view type
 	 */
-	public void setPlaceViewType(Integer placeID, PlaceRecyclerViewAdapter.ViewType newViewType) {
+	public void setPlaceViewType(String placeID, PlaceRecyclerViewAdapter.ViewType newViewType) {
 		if (placesViewType.getOrDefault(placeID, null) == null) {
 			placesViewType.put(placeID, newViewType);
 		} else {
