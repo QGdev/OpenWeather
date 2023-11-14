@@ -180,7 +180,7 @@ public class WidgetsConfigurationActivity extends Activity {
 		binding.confirmButton.setEnabled(false);
 		
 		// Setup spinner
-		ArrayAdapter adapter = new ArrayAdapter(context, R.layout.dialog_country_list_item, new ArrayList<String>() {
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.dialog_country_list_item, new ArrayList<String>() {
 		});
 		binding.placeSpinner.setAdapter(adapter);
 		
