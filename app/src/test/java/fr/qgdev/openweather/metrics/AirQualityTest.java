@@ -67,7 +67,7 @@ public class AirQualityTest {
 		float pm10 = airQuality.getPm10();
 		float nh3 = airQuality.getNh3();
 		
-		assertNull(placeId);
+		assertEquals("", placeId);
 		assertTrue(0 < aqi && aqi < 6);
 		assertTrue(0 <= co);
 		assertTrue(0 <= no);

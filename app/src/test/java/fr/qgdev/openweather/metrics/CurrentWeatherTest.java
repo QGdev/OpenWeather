@@ -22,7 +22,6 @@
 package fr.qgdev.openweather.metrics;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static fr.qgdev.openweather.utils.TestUtils.testAssertEqualsBooleanValues;
@@ -82,7 +81,7 @@ public class CurrentWeatherTest {
 		float rain = currentWeather.getRain();
 		float snow = currentWeather.getSnow();
 		
-		assertNull(placeId);
+		assertEquals("", placeId);
 		assertTrue(dt >= 0);
 		assertEquals("", weather);
 		assertEquals("", weatherDescription);
