@@ -44,6 +44,7 @@ import fr.qgdev.openweather.R;
  * </p>
  *
  * @author Quentin GOMES DOS REIS
+ * @version 1
  * @see View
  */
 public class AqiBarView extends View {
