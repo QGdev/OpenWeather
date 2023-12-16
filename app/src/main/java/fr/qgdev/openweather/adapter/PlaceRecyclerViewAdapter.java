@@ -231,10 +231,27 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 		
 		private final int viewTypeID;
 		
+		/**
+		 * ViewType(int id)
+		 * <p>
+		 * ViewType constructor
+		 * </p>
+		 *
+		 * @param id The id of the view type
+		 */
 		ViewType(int id) {
 			viewTypeID = id;
 		}
 		
+		/**
+		 * fromInt(int id)
+		 * <p>
+		 * Will return the ViewType corresponding to the given id
+		 * </p>
+		 *
+		 * @param id The id of the view type
+		 * @return Will return the ViewType corresponding to the given id
+		 */
 		public static ViewType fromInt(int id) {
 			for (ViewType type : ViewType.values()) {
 				if (type.viewTypeID == id) return type;
@@ -242,6 +259,15 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			return UNDEFINED;
 		}
 		
+		/**
+		 * fromBinaryFoldersState(boolean[] state)
+		 * <p>
+		 * Will return the ViewType corresponding to the given binary state of the folders
+		 * </p>
+		 *
+		 * @param state The binary state of the folders
+		 * @return Will return the ViewType corresponding to the given binary state of the folders
+		 */
 		public static ViewType fromBinaryFoldersState(boolean[] state) {
 			// Check for impossible states
 			if (!state[0] && (state[1] || state[2] || state[3]))
@@ -255,6 +281,14 @@ public class PlaceRecyclerViewAdapter extends RecyclerView.Adapter<PlaceRecycler
 			return ViewType.fromInt(stateID);
 		}
 		
+		/**
+		 * toInt()
+		 * <p>
+		 * Will return the id of the view type
+		 * </p>
+		 *
+		 * @return Will return the id of the view type
+		 */
 		public int toInt() {
 			return this.viewTypeID;
 		}
