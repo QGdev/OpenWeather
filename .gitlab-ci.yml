@@ -1,4 +1,4 @@
-# Derivated from Gitlab original template for Android CI/CD
+# Derivative from Gitlab original template for Android CI/CD
 # Adapted in order to work with Gradle 8 which work with JDK 17
 image: debian:latest
 
@@ -14,11 +14,11 @@ variables:
 
   # ANDROID_COMPILE_SDK is the version of Android you're compiling with.
   # It should match compileSdkVersion.
-  ANDROID_COMPILE_SDK: "32"
+  ANDROID_COMPILE_SDK: "34"
 
   # ANDROID_BUILD_TOOLS is the version of the Android build tools you are using.
   # It should match buildToolsVersion.
-  ANDROID_BUILD_TOOLS: "32.0.0"
+  ANDROID_BUILD_TOOLS: "34.0.0"
 
   # It's what version of the command line tools we're going to download from the official site.
   # Official Site-> https://developer.android.com/studio/index.html
