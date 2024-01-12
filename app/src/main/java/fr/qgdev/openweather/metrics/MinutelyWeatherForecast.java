@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -30,9 +30,18 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.StringJoiner;
 
+/**
+ * MinutelyWeatherForecast
+ * <p>
+ *    A data holder class for Minutely Weather Forecast data.
+ *    Unlike other weather data, it's only holds the precipitation.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 @Entity(tableName = "minutely_weather_forecasts",
 		  primaryKeys = {"placeId", "dt"})
-
 public class MinutelyWeatherForecast {
 	@NonNull
 	private String placeId;

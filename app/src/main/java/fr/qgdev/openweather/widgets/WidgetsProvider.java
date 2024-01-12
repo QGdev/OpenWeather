@@ -1,6 +1,6 @@
 
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -48,8 +48,15 @@ import fr.qgdev.openweather.repositories.places.Place;
 import fr.qgdev.openweather.widgets.WidgetsBinder.WidgetType;
 
 /**
- * Implementation of App Widget functionality.
- * App Widget Configuration implemented in {@link WidgetsConfigurationActivity WidgetStandardPlaceInfoConfigureActivity}
+ * WidgetsProvider
+ * <p>
+ * 	Used to provide widgets to the system and update them.
+ * 	Uses a WidgetsBinder to bind the data to the widget layout and a FormattingService to format the data.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see AppWidgetProvider
  */
 public class WidgetsProvider extends AppWidgetProvider {
 	
@@ -112,7 +119,8 @@ public class WidgetsProvider extends AppWidgetProvider {
 				
 				// Instruct the widget manager to update the widget
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-					appWidgetManager.updateAppWidget(appWidgetId, new RemoteViews(views));
+					RemoteViews remoteViews = new RemoteViews(views);
+					appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 				} else {
 					appWidgetManager.updateAppWidget(appWidgetId, views.get(sizes.get(0)));
 				}
@@ -194,7 +202,6 @@ public class WidgetsProvider extends AppWidgetProvider {
 				remoteViews = bindWidget(context, widgetType, place, repository.getFormattingService());
 			}
 			appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
-			
 		});
 	}
 	
@@ -207,7 +214,7 @@ public class WidgetsProvider extends AppWidgetProvider {
 	 */
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-		AppRepository repository = AppRepository.getInstance(context.getApplicationContext());
+		AppRepository repository = AppRepository.getInstance(context);
 		
 		// There may be multiple widgets active, so update all of them
 		for (int appWidgetId : appWidgetIds) {
@@ -242,7 +249,7 @@ public class WidgetsProvider extends AppWidgetProvider {
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		super.onDeleted(context, appWidgetIds);
-		AppRepository repository = AppRepository.getInstance(context.getApplicationContext());
+		AppRepository repository = AppRepository.getInstance(context);
 		
 		// When the user deletes the widget, delete the preference associated with it.
 		for (int appWidgetId : appWidgetIds) {

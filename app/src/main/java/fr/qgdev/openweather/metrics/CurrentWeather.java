@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -29,10 +29,19 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.StringJoiner;
 
-
+/**
+ * CurrentWeather
+ * <p>
+ *    A data holder class for Current Weather data
+ *    It contains the weather description, the temperature, the pressure, the humidity,
+ *    the wind speed, etc.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 @Entity(tableName = "current_weather",
 		  primaryKeys = {"placeId"})
-
 public class CurrentWeather {
 	
 	@NonNull

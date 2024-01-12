@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -20,6 +20,19 @@
 
 package fr.qgdev.openweather.utils;
 
+/**
+ * ParameterizedCallable
+ * <p>
+ *    A Callable with a parameter.
+ *    Used to call a method with a parameter in a lambda.
+ * </p>
+ *
+ * @param <I> The input type
+ * @param <O> The output type
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public interface ParameterizedCallable<I, O> {
 	O call(I input);
 }

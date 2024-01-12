@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -29,6 +29,17 @@ import java.util.Locale;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
+/**
+ * Properties
+ * <p>
+ *    A data holder class for Properties data.
+ *    It's used to store the properties of a place.
+ *    Like everything related to the last update, the creation time, the time offset and the order.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 @Entity(tableName = "properties")
 public class Properties {
 	

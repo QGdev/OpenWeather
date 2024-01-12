@@ -1,6 +1,6 @@
 
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -35,21 +35,43 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicReference;
 
 import fr.qgdev.openweather.repositories.PeriodicUpdaterWorker;
 import fr.qgdev.openweather.repositories.settings.SecuredPreferenceDataStore;
 
 /**
- * Manage widgets settings storage
+ * WidgetsManager
+ * <p>
+ * 	A class to manage widgets settings.
+ * 	Uses a SecuredPreferenceDataStore to store widgets settings.
+ * 	Also uses a WorkManager to schedule a work request to update all places and widgets periodically.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
  */
 public final class WidgetsManager {
 	
 	private static final String FILE_NAME = "fr.qgdev.openweather_widget";
 	private static final String PREFIX_WIDGET = "widget_";
 	private static final String WORKER_TASK_NAME = "PeriodicUpdaterWorker";
+	private static final AtomicReference<WidgetsManager> instance = new AtomicReference<>(null);
 	private final SecuredPreferenceDataStore securedPreferenceDataStore;
 	
-	public WidgetsManager(@NonNull Context context) {
+	
+	public static WidgetsManager getInstance(@NonNull Context context) {
+		Context applicationContext = context.getApplicationContext();
+		
+		if (instance.get() == null) {
+			synchronized (WidgetsManager.class) {
+				instance.compareAndSet(null, new WidgetsManager(applicationContext));
+			}
+		}
+		return instance.get();
+	}
+	
+	private WidgetsManager(@NonNull Context context) {
 		this.securedPreferenceDataStore = new SecuredPreferenceDataStore(context,
 				  FILE_NAME);
 	}

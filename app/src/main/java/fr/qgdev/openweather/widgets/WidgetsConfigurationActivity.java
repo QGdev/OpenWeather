@@ -1,6 +1,6 @@
 
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -50,7 +50,16 @@ import fr.qgdev.openweather.repositories.places.Place;
 import fr.qgdev.openweather.widgets.WidgetsBinder.WidgetType;
 
 /**
- * The configuration screen for the {@link WidgetsProvider WidgetStandardPlaceInfo} AppWidget.
+ * WidgetsConfigurationActivity
+ * <p>
+ * 	An activity to configure a widget.
+ * 	Will show a spinner with all places registered in the app.
+ * 	The user will be able to select a place and confirm.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Activity
  */
 public class WidgetsConfigurationActivity extends Activity {
 	private int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;

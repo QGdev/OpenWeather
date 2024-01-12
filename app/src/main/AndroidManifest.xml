@@ -31,7 +31,6 @@
         android:fullBackupOnly="false"
         android:usesCleartextTraffic="false">
 
-
         <receiver
             android:name=".widgets.WidgetsProvider"
             android:enabled="@bool/widgets_enabled"

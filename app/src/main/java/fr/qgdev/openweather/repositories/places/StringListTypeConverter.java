@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -28,6 +28,16 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.List;
 
+/**
+ * StringListTypeConverter
+ * <p>
+ *    A class to convert a list of string to a string and vice versa.
+ *    It's used to store a list of string in the database.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public class StringListTypeConverter {
 	
 	private StringListTypeConverter() {

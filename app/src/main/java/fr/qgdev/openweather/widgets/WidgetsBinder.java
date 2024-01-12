@@ -1,6 +1,6 @@
 
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -43,7 +43,14 @@ import fr.qgdev.openweather.repositories.FormattingService;
 import fr.qgdev.openweather.repositories.places.Place;
 
 /**
- * Bind a widget to a place depending on the widget type
+ * WidgetsBinder
+ * <p>
+ * 	Used to bind data to a widget layout.
+ * 	The binding will be done according to the widget type.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
  */
 public class WidgetsBinder {
 	

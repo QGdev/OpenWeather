@@ -1,6 +1,6 @@
 
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -29,7 +29,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Manage widgets settings
+ * WidgetsSettings
+ * <p>
+ * 	Used to as a data holder for widgets settings.
+ * 	Contains the place id and the widget id.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
  */
 public class WidgetsSettings {
 	

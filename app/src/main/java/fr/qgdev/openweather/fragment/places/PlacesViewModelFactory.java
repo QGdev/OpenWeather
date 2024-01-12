@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -26,13 +26,23 @@ import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
- * The type Places view model factory.
+ * PlacesViewModelFactory
+ * <p>
+ *    Factory for the PlacesViewModel
+ *    It's a singleton
+ *    It's used to get the same instance of the PlacesViewModel
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see androidx.lifecycle.ViewModelProvider.Factory
  */
 public class PlacesViewModelFactory implements ViewModelProvider.Factory {
     
     private static final AtomicReference<PlacesViewModel> factory = new AtomicReference<>(null);
     
     private PlacesViewModelFactory() {
+        super();
     }
     
     /**
@@ -41,7 +51,11 @@ public class PlacesViewModelFactory implements ViewModelProvider.Factory {
      * @return the instance
      */
     public static PlacesViewModel getInstance() {
-        factory.compareAndSet(null, new PlacesViewModel());
+        if (factory.get() == null) {
+            synchronized (PlacesViewModelFactory.class) {
+                factory.compareAndSet(null, new PlacesViewModel());
+            }
+        }
         return factory.get();
     }
 }

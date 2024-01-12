@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -37,7 +37,7 @@ import fr.qgdev.openweather.repositories.settings.SecuredPreferenceDataStore;
 /**
  * CustomPreferenceFragment
  * <p>
- * Custom Preference Fragment to add a bottom padding to the recycler view
+ * 	Custom Preference Fragment to add a bottom padding to the recycler view
  * </p>
  *
  * @author Quentin GOMES DOS REIS

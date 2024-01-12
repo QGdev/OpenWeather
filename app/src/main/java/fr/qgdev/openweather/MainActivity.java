@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -39,7 +39,9 @@ import fr.qgdev.openweather.widgets.WidgetsManager;
 /**
  * MainActivity
  * <p>
- * Main Activity
+ * 	The main activity of the application.
+ * 	Contains a navigation bar to navigate between the live data, the forecasts and the settings.
+ * 	Also schedules a periodic work request to update the widgets.
  * </p>
  *
  * @author Quentin GOMES DOS REIS

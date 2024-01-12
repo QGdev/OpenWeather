@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -34,7 +34,15 @@ import java.util.List;
 import java.util.StringJoiner;
 
 /**
- * The type Weather alert.
+ * WeatherAlert
+ * <p>
+ *    A data holder class for Weather Alert data.
+ *    It contains the sender, the event, the start date, the end date, the description and the tags.
+ *    It's used to warn the user about weather events.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
  */
 @Entity(tableName = "weather_alerts",
 		  primaryKeys = {"placeId", "sender", "startDt", "event"})

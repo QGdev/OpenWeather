@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -38,7 +38,8 @@ import fr.qgdev.openweather.dialog.AboutAppDialog;
 /**
  * SettingsFragment
  * <p>
- * Settings Fragment
+ *   Fragment to display the settings of the application and the about us button
+ *   It's the main fragment of the settings activity
  * </p>
  *
  * @author Quentin GOMES DOS REIS
@@ -50,7 +51,13 @@ public class SettingsFragment extends Fragment {
     /**
      * onCreateView()
      * <p>
-     * Override the default onCreateView method to add a bottom padding to the recycler view
+     *  Override the default onCreateView method to add a bottom padding to the recycler view
+     * </p>
+     *
+     * @param inflater LayoutInflater to inflate the layout
+     * @param container ViewGroup that contains the fragment
+     * @param savedInstanceState Bundle to save the state of the fragment
+     * @return The inflated view of the fragment
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,

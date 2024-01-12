@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -31,6 +31,16 @@ import java.util.List;
 
 import fr.qgdev.openweather.metrics.WeatherAlert;
 
+/**
+ * WeatherAlertDAO
+ * <p>
+ *    DAO for the WeatherAlert class.
+ *    It's used to access the database.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 @Dao
 public interface WeatherAlertDAO {
 	

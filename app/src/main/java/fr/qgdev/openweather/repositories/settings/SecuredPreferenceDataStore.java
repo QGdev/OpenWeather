@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -30,7 +30,18 @@ import androidx.security.crypto.MasterKeys;
 
 import java.util.Set;
 
-
+/**
+ * SecuredPreferenceDataStore
+ * <p>
+ *    A class to store data in a secure way.
+ *    It uses the AndroidX Security library to encrypt the data.
+ *    It's used to store the settings of the application.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see PreferenceDataStore
+ */
 public final class SecuredPreferenceDataStore extends PreferenceDataStore {
 	private final SharedPreferences sharedPreferences;
 	

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -41,9 +41,9 @@ import fr.qgdev.openweather.R;
  * and how to interpret the data.
  * </p>
  *
- * @version 1.0.0
+ * @author Quentin GOMES DOS REIS
+ * @version 1
  * @see androidx.fragment.app.DialogFragment
- * @since 0.9.3
  */
 public class AirQualityInfoDialog extends DialogFragment {
 	

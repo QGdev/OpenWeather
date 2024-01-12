@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -29,6 +29,16 @@ import androidx.room.Update;
 
 import fr.qgdev.openweather.metrics.CurrentWeather;
 
+/**
+ * CurrentWeatherDAO
+ * <p>
+ *    DAO for the CurrentWeather class.
+ *    It's used to access the database.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 @Dao
 public interface CurrentWeatherDAO {
 	

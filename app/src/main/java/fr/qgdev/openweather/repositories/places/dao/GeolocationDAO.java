@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -32,6 +32,16 @@ import java.util.List;
 
 import fr.qgdev.openweather.repositories.places.Geolocation;
 
+/**
+ * GeolocationDAO
+ * <p>
+ *    DAO for the Geolocation class.
+ *    It's used to access the database.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 @Dao
 public interface GeolocationDAO {
 	

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -22,17 +22,31 @@ package fr.qgdev.openweather.repositories;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicReference;
 
 import fr.qgdev.openweather.R;
 import fr.qgdev.openweather.repositories.settings.SettingsManager;
 
+/**
+ * FormattingService
+ * <p>
+ *    A service to format any data according to the user settings.
+ *    It also provides some conversion methods to convert data.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public class FormattingService {
 	
+	private static final AtomicReference<FormattingService> instance = new AtomicReference<>(null);
 	private final Context context;
 	private final SettingsManager settingsManager;
 	
@@ -73,7 +87,18 @@ public class FormattingService {
 	private SimpleDateFormat dayMonthFormat;
 	private SimpleDateFormat fullTimeHourFormat;
 	
-	public FormattingService(Context context, SettingsManager settingsManager) {
+	public static FormattingService getInstance(@NonNull Context context) {
+		Context applicationContext = context.getApplicationContext();
+		if (instance.get() == null) {
+			synchronized (FormattingService.class) {
+				instance.compareAndSet(null,
+						  new FormattingService(applicationContext, SettingsManager.getInstance(applicationContext)));
+			}
+		}
+		return instance.get();
+	}
+	
+	private FormattingService(Context context, SettingsManager settingsManager) {
 		this.context = context;
 		this.settingsManager = settingsManager;
 		update();

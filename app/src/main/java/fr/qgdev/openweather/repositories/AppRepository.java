@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -20,7 +20,6 @@
 
 package fr.qgdev.openweather.repositories;
 
-import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
@@ -47,16 +46,18 @@ import fr.qgdev.openweather.widgets.WidgetsManager;
 
 /**
  * AppRepository class
- *
  * <p>
- * AppRepository is the main structure of the app.
- * It contains all the services and the database.
- * Will handle the link between storage and Web data.
+ * 	AppRepository is the main structure of the app.
+ * 	It contains all the services and the database.
+ *	 	Will handle the link between storage and Web data.
  * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
  */
 public class AppRepository {
 	
-	private static final AtomicReference<AppRepository> INSTANCE = new AtomicReference<>(null);
+	private static final AtomicReference<AppRepository> instance = new AtomicReference<>(null);
 	private final SettingsManager settingsManager;
 	private final WidgetsManager widgetsManager;
 	
@@ -75,13 +76,11 @@ public class AppRepository {
 	 *                Must be the application context and not null
 	 */
 	private AppRepository(@NonNull Context context) {
-		if (!(context instanceof Application))
-			throw new IllegalArgumentException("Context must be an application context");
 		
-		settingsManager = new SettingsManager(context);
-		widgetsManager = new WidgetsManager(context);
-		weatherService = new WeatherService(context, settingsManager);
-		formattingService = new FormattingService(context, settingsManager);
+		settingsManager = SettingsManager.getInstance(context);
+		formattingService = FormattingService.getInstance(context);
+		weatherService = WeatherService.getInstance(context);
+		widgetsManager = WidgetsManager.getInstance(context);
 		
 		PlaceDatabase db = PlaceDatabase.getDatabase(context);
 		placeDatabase = db;
@@ -98,15 +97,14 @@ public class AppRepository {
 	 * @return the instance of AppRepository
 	 */
 	public static AppRepository getInstance(@NonNull Context context) {
-		if (!(context instanceof Application))
-			throw new IllegalArgumentException("Context must be an application context");
+		Context applicationContext = context.getApplicationContext();
 		
-		if (INSTANCE.get() == null) {
+		if (instance.get() == null) {
 			synchronized (AppRepository.class) {
-				INSTANCE.compareAndSet(null, new AppRepository(context));
+				instance.compareAndSet(null, new AppRepository(applicationContext));
 			}
 		}
-		return INSTANCE.get();
+		return instance.get();
 	}
 	
 	/**

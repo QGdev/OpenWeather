@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -22,6 +22,19 @@ package fr.qgdev.openweather.repositories.weather;
 
 import fr.qgdev.openweather.repositories.places.Place;
 
+/**
+ * FetchDataCallback
+ * <p>
+ *     A callback to handle the result of the weather and air quality requests.
+ *     It can be a success, a partial success or an error.
+ *     A partial success means that the weather request was successful but not the air quality request.
+ *     An error means that the weather request failed.
+ *     A success means that both requests were successful.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public interface FetchDataCallback {
 	
 	/**

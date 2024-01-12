@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -30,7 +30,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import fr.qgdev.openweather.MainActivity;
 import fr.qgdev.openweather.R;
 
-
+/**
+ * SplashScreenActivity
+ * <p>
+ *    A splash screen to display the app logo.
+ *    It will be displayed for a short time before the main activity.
+ *    It is used to display the app logo and to load the app.
+ *    Might be deleted in the future.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see AppCompatActivity
+ */
 public class SplashScreenActivity extends AppCompatActivity {
     
     @Override

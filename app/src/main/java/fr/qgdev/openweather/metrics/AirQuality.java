@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -31,7 +31,14 @@ import java.math.BigDecimal;
 import java.util.StringJoiner;
 
 /**
- * The type Air quality.
+ * AirQuality
+ * <p>
+ *    A data holder class for Air Quality data
+ *    It contains the Air Quality Index and the concentration of different pollutants
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
  */
 @Entity(tableName = "air_quality",
 		  primaryKeys = {"placeId"})

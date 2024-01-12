@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -20,6 +20,16 @@
 
 package fr.qgdev.openweather.repositories.places;
 
+/**
+ * Coordinates
+ * <p>
+ *    A data holder class for Coordinates data.
+ *    It's used to store latitude and longitude of a place.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public class Coordinates {
 	private double latitude;
 	private double longitude;

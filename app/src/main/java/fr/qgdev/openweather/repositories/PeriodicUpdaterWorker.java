@@ -1,6 +1,6 @@
 
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -33,6 +33,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 import fr.qgdev.openweather.repositories.weather.FetchCallback;
 import fr.qgdev.openweather.repositories.weather.RequestStatus;
 
+/**
+ * PeriodicUpdaterWorker
+ * <p>
+ *    A worker to update all places and widgets periodically.
+ *    Did not use a PeriodicWorkRequest due to 15 minutes minimum interval.
+ *    Uses a OneTimeWorkRequest that will be rescheduled at the end of the work.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Worker
+ */
 public class PeriodicUpdaterWorker extends Worker {
 	
 	private static final String TAG = PeriodicUpdaterWorker.class.getSimpleName();

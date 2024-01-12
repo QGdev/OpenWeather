@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -58,7 +58,15 @@ import fr.qgdev.openweather.repositories.weather.FetchCallback;
 import fr.qgdev.openweather.repositories.weather.RequestStatus;
 
 /**
- * The type Places fragment.
+ * PlacesFragment
+ * <p>
+ *    Fragment to display all places
+ *    and manage them
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Fragment
  */
 public class PlacesFragment extends Fragment {
 	

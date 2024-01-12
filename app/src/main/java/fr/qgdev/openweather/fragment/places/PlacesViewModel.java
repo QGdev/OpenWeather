@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -32,7 +32,16 @@ import fr.qgdev.openweather.adapter.PlaceRecyclerViewAdapter;
 import fr.qgdev.openweather.repositories.places.Place;
 
 /**
- * The type Places view model.
+ * PlacesViewModel
+ * <p>
+ *    ViewModel for the places fragment
+ *    It contains the list of places and the view type of each place
+ *    It also contains a boolean to know if the data has already been updated or not.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see ViewModel
  */
 public class PlacesViewModel extends ViewModel {
 	

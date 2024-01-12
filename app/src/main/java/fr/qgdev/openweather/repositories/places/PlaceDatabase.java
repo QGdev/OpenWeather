@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -59,6 +59,18 @@ import fr.qgdev.openweather.repositories.places.dao.PropertiesDAO;
 import fr.qgdev.openweather.repositories.places.dao.WeatherAlertDAO;
 import fr.qgdev.openweather.utils.ParameterizedRunnable;
 
+/**
+ * PlaceDatabase
+ * <p>
+ *    The main class of the database.
+ *    Used to create the database and to get the DAOs.
+ *    Stores all the registered places by the user.
+ *    It's a singleton.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 @Database(version = 5,
 		  entities = {Geolocation.class,
 					 Properties.class,
@@ -227,13 +239,17 @@ public abstract class PlaceDatabase extends RoomDatabase {
 	 * @param context the context
 	 * @return the database instance
 	 */
-	public static PlaceDatabase getDatabase(final Context context) {
-		instance.compareAndSet(null,
-				  Room.databaseBuilder(context.getApplicationContext(),
-										PlaceDatabase.class, "appDB")
-							 .addMigrations(migration1_2, migration2_3, migration3_4, migration4_5)
-							 .build());
-		
+	public static PlaceDatabase getDatabase(@NonNull final Context context) {
+		if (instance.get() == null) {
+			synchronized (PlaceDatabase.class) {
+				instance.compareAndSet(null,
+						  Room.databaseBuilder(context.getApplicationContext(),
+												PlaceDatabase.class, "appDB")
+									 .addMigrations(migration1_2, migration2_3, migration3_4, migration4_5)
+									 .build());
+				
+			}
+		}
 		return instance.get();
 	}
 	

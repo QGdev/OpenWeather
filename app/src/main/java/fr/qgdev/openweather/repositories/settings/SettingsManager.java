@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -25,12 +25,37 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * SettingsManager
+ * <p>
+ *    A class to manage the settings of the application.
+ *    It uses the SecuredPreferenceDataStore to store and retrieve the settings.
+ *    It's a singleton.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public final class SettingsManager {
 	
+	private static final AtomicReference<SettingsManager> instance = new AtomicReference<>(null);
 	private final SecuredPreferenceDataStore securedPreferenceDataStore;
 	
-	public SettingsManager(@NonNull Context context) {
+	
+	public static SettingsManager getInstance(@NonNull Context context) {
+		Context applicationContext = context.getApplicationContext();
+		
+		if (instance.get() == null) {
+			synchronized (SettingsManager.class) {
+				instance.compareAndSet(null, new SettingsManager(applicationContext));
+			}
+		}
+		return instance.get();
+	}
+	
+	private SettingsManager(@NonNull Context context) {
 		securedPreferenceDataStore = new SecuredPreferenceDataStore(context,
 				  "fr.qgdev.openweather_preferences");
 	}

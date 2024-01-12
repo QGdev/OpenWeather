@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -29,9 +29,19 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.StringJoiner;
 
+/**
+ * DailyWeatherForecast
+ * <p>
+ *    A data holder class for daily weather forecast data.
+ *    It contains the weather, temperatures, environmental variables, sky, moon,
+ *    wind and precipitations.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 @Entity(tableName = "daily_weather_forecasts",
 		  primaryKeys = {"placeId", "dt"})
-
 public class DailyWeatherForecast {
 	@NonNull
 	private String placeId;

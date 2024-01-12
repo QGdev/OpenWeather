@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -20,6 +20,15 @@
 
 package fr.qgdev.openweather.repositories.settings;
 
+/**
+ * PressureSettings
+ * <p>
+ *    An enum to represent the pressure settings.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public enum PressureSettings {
 	HECTOPASCAL,
 	BAROMETRIC,

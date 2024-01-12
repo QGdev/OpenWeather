@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -20,6 +20,15 @@
 
 package fr.qgdev.openweather.repositories.weather;
 
+/**
+ * FetchCallback
+ * <p>
+ *    An interface to handle the weather data fetch.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public interface FetchCallback {
     void onSuccess();
     

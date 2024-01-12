@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -29,9 +29,19 @@ import org.json.JSONObject;
 import java.math.BigDecimal;
 import java.util.StringJoiner;
 
+/**
+ * HourlyWeatherForecast
+ * <p>
+ *    A data holder class for Hourly Weather Forecast data.
+ *    It contains the weather description, the temperature, the pressure, the humidity,
+ *    the wind speed, the wind direction, the probability of precipitation, the rain and the snow.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 @Entity(tableName = "hourly_weather_forecasts",
 		  primaryKeys = {"placeId", "dt"})
-
 public class HourlyWeatherForecast {
 	@NonNull
 	private String placeId;

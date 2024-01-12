@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019 - 2023
+ *  Copyright (c) 2019 - 2024
  *  QGdev - Quentin GOMES DOS REIS
  *
  *  This file is part of OpenWeather.
@@ -41,6 +41,17 @@ import fr.qgdev.openweather.metrics.HourlyWeatherForecast;
 import fr.qgdev.openweather.metrics.MinutelyWeatherForecast;
 import fr.qgdev.openweather.metrics.WeatherAlert;
 
+/**
+ * Place
+ * <p>
+ *    A data holder class for Place data.
+ *    It's used to store all weather data of a place.
+ *    It uses Geolocation class to store geographical data.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public class Place {
 	
 	@Embedded
