@@ -34,13 +34,14 @@ import androidx.annotation.NonNull;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.SimpleTimeZone;
 
 import fr.qgdev.openweather.R;
-import fr.qgdev.openweather.metrics.CurrentWeather;
-import fr.qgdev.openweather.metrics.DailyWeatherForecast;
-import fr.qgdev.openweather.metrics.HourlyWeatherForecast;
+import fr.qgdev.openweather.data.models.CurrentWeather;
+import fr.qgdev.openweather.data.models.DailyForecast;
+import fr.qgdev.openweather.data.models.HourlyForecast;
+import fr.qgdev.openweather.data.models.Place;
 import fr.qgdev.openweather.repositories.FormattingService;
-import fr.qgdev.openweather.repositories.places.Place;
 
 /**
  * WidgetsBinder
@@ -98,7 +99,7 @@ public class WidgetsBinder {
 		view.setTextViewText(R.id.city, place.getGeolocation().getCity());
 		
 		CurrentWeather currentWeather = place.getCurrentWeather();
-		DailyWeatherForecast currentDayWeather = place.getDailyWeatherForecast(0);
+		DailyForecast currentDayWeather = place.getDailyForecastList(0);
 		
 		view.setTextViewText(R.id.temperature_value,
 				  formattingService.getFloatFormattedTemperature(currentWeather.getTemperature(), NO_UNIT_NO_SPACE));
@@ -107,7 +108,7 @@ public class WidgetsBinder {
 		view.setTextViewText(R.id.temperature_min_value,
 				  formattingService.getIntFormattedTemperature(currentDayWeather.getTemperatureMinimum(), NO_UNIT_NO_SPACE));
 		
-		view.setImageViewResource(R.id.weather_icon, getWeatherIcon(currentWeather.getWeatherCode(), currentWeather.isDaytime()));
+		view.setImageViewResource(R.id.weather_icon, getWeatherIcon(currentWeather.getWeatherCode(), currentWeather.getSunrise() < currentDayWeather.getDt() && currentDayWeather.getDt() < currentWeather.getSunset()));
 		
 		// Set the first letter to capital
 		String weatherDescription = currentWeather.getWeatherDescription();
@@ -116,55 +117,53 @@ public class WidgetsBinder {
 		
 		// Search the next three hours until now to find the next three hours of forecast
 		int nextThreeHoursIndex = 1;
-		HourlyWeatherForecast[] hourlyWeatherForecasts = new HourlyWeatherForecast[4];
+		HourlyForecast[] hourlyForecasts = new HourlyForecast[4];
 		boolean[] isDaytime = {false, false, false, false};
 		
 		Calendar tmpCalendar = Calendar.getInstance();
-		tmpCalendar.setTimeInMillis(currentWeather.getSunriseDt());
+		tmpCalendar.setTimeInMillis(currentWeather.getSunrise());
 		int sunRiseHour = tmpCalendar.get(Calendar.HOUR_OF_DAY);
-		tmpCalendar.setTimeInMillis(currentWeather.getSunsetDt());
+		tmpCalendar.setTimeInMillis(currentWeather.getSunset());
 		int sunSetHour = tmpCalendar.get(Calendar.HOUR_OF_DAY);
 		
 		for (int i = 0; i < 4; i++) {
-			HourlyWeatherForecast hourlyWeatherForecast = place.getHourlyWeatherForecast(nextThreeHoursIndex++);
-			if (hourlyWeatherForecast == null)
+			HourlyForecast hourlyForecast = place.getHourlyForecastList(nextThreeHoursIndex++);
+			if (hourlyForecast == null)
 				throw new NullPointerException("Hourly weather forecast is null");
 			
-			hourlyWeatherForecasts[i] = hourlyWeatherForecast;
+			hourlyForecasts[i] = hourlyForecast;
 			
 			// Check if the current hour is daytime
-			tmpCalendar.setTimeInMillis(hourlyWeatherForecast.getDt());
+			tmpCalendar.setTimeInMillis(hourlyForecast.getDt());
 			int hour = tmpCalendar.get(Calendar.HOUR_OF_DAY);
 			isDaytime[i] = hour >= sunRiseHour && hour <= sunSetHour;
 		}
 		
 		// First hour
 		view.setTextViewText(R.id.forecast_1h_temperature_value,
-				  formattingService.getIntFormattedTemperature(hourlyWeatherForecasts[0].getTemperature(), NO_UNIT_NO_SPACE));
+				  formattingService.getIntFormattedTemperature(hourlyForecasts[0].getTemperature(), NO_UNIT_NO_SPACE));
 		view.setImageViewResource(R.id.forecast_1h_weather_icon,
-				  getWeatherIcon(hourlyWeatherForecasts[0].getWeatherCode(), isDaytime[0]));
+				  getWeatherIcon(hourlyForecasts[0].getWeatherCode(), isDaytime[0]));
 		view.setTextViewText(R.id.forecast_1h_time,
-				  formattingService.getFormattedShortHour(new Date(hourlyWeatherForecasts[0].getDt()),
-							 place.getProperties().getTimeZone()));
+				  formattingService.getFormattedShortHour(new Date(hourlyForecasts[0].getDt()),
+							 new SimpleTimeZone(place.getProperties().getTimeOffset(), null)));
 		
 		// Second hour
 		view.setTextViewText(R.id.forecast_2h_temperature_value,
-				  formattingService.getIntFormattedTemperature(hourlyWeatherForecasts[1].getTemperature(), NO_UNIT_NO_SPACE));
+				  formattingService.getIntFormattedTemperature(hourlyForecasts[1].getTemperature(), NO_UNIT_NO_SPACE));
 		view.setImageViewResource(R.id.forecast_2h_weather_icon,
-				  getWeatherIcon(hourlyWeatherForecasts[1].getWeatherCode(), isDaytime[1]));
+				  getWeatherIcon(hourlyForecasts[1].getWeatherCode(), isDaytime[1]));
 		view.setTextViewText(R.id.forecast_2h_time,
-				  formattingService.getFormattedShortHour(new Date(hourlyWeatherForecasts[1].getDt()),
-							 place.getProperties().getTimeZone()));
-		
+				  formattingService.getFormattedShortHour(new Date(hourlyForecasts[1].getDt()),
+							 new SimpleTimeZone(place.getProperties().getTimeOffset(), null)));
 		// Third hour
 		view.setTextViewText(R.id.forecast_3h_temperature_value,
-				  formattingService.getIntFormattedTemperature(hourlyWeatherForecasts[2].getTemperature(), NO_UNIT_NO_SPACE));
+				  formattingService.getIntFormattedTemperature(hourlyForecasts[2].getTemperature(), NO_UNIT_NO_SPACE));
 		view.setImageViewResource(R.id.forecast_3h_weather_icon,
-				  getWeatherIcon(hourlyWeatherForecasts[2].getWeatherCode(), isDaytime[2]));
+				  getWeatherIcon(hourlyForecasts[2].getWeatherCode(), isDaytime[2]));
 		view.setTextViewText(R.id.forecast_3h_time,
-				  formattingService.getFormattedShortHour(new Date(hourlyWeatherForecasts[2].getDt()),
-							 place.getProperties().getTimeZone()));
-		
+				  formattingService.getFormattedShortHour(new Date(hourlyForecasts[2].getDt()),
+							 new SimpleTimeZone(place.getProperties().getTimeOffset(), null)));
 		// Fourth hour
 		// Can be hidden if the widget is too small
 		if (!hasTheFourthHour) {
@@ -172,13 +171,12 @@ public class WidgetsBinder {
 			return view;
 		}
 		view.setTextViewText(R.id.forecast_4h_temperature_value,
-				  formattingService.getIntFormattedTemperature(hourlyWeatherForecasts[3].getTemperature(), NO_UNIT_NO_SPACE));
+				  formattingService.getIntFormattedTemperature(hourlyForecasts[3].getTemperature(), NO_UNIT_NO_SPACE));
 		view.setImageViewResource(R.id.forecast_4h_weather_icon,
-				  getWeatherIcon(hourlyWeatherForecasts[3].getWeatherCode(), isDaytime[3]));
+				  getWeatherIcon(hourlyForecasts[3].getWeatherCode(), isDaytime[3]));
 		view.setTextViewText(R.id.forecast_4h_time,
-				  formattingService.getFormattedShortHour(new Date(hourlyWeatherForecasts[3].getDt()),
-							 place.getProperties().getTimeZone()));
-		
+				  formattingService.getFormattedShortHour(new Date(hourlyForecasts[3].getDt()),
+							 new SimpleTimeZone(place.getProperties().getTimeOffset(), null)));
 		return view;
 	}
 	
@@ -200,7 +198,8 @@ public class WidgetsBinder {
 		view.setTextViewText(R.id.temperature_value,
 				  formattingService.getFloatFormattedTemperature(currentWeather.getTemperature(), NO_UNIT_NO_SPACE));
 		
-		view.setImageViewResource(R.id.weather_icon, getWeatherIcon(currentWeather.getWeatherCode(), currentWeather.isDaytime()));
+		view.setImageViewResource(R.id.weather_icon, getWeatherIcon(currentWeather.getWeatherCode(),
+				  currentWeather.getSunrise() < currentWeather.getDt() && currentWeather.getDt() < currentWeather.getSunset()));
 		
 		return view;
 	}

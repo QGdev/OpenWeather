@@ -21,7 +21,8 @@
 
 <resources>
 	<string name="title_places">Lieux</string>
-	<string name="title_temperature_feelslike">Resssenti</string>
+    <string name="description_places">Liste des lieux enregistrés</string>
+    <string name="title_temperature_feelslike">Resssenti</string>
 	<string name="title_humidity">Humiditée</string>
 	<string name="title_pressure">Pressure</string>
 	<string name="title_visibility">Visibilitée</string>
@@ -40,7 +41,8 @@
 	<string name="title_last_update">Dernière mise à jour disponible</string>
 	<string name="description_delete_icon">Supprimer le lieu</string>
 	<string name="title_settings">Paramètres</string>
-	<string name="title_settings_api_key">Clé d\'API</string>
+    <string name="description_settings">Paramètres de l\'application</string>
+    <string name="title_settings_api_key">Clé d\'API</string>
 	<string name="title_settings_units">Unités</string>
 	<string name="title_settings_units_temperature">Température</string>
 	<string name="title_settings_units_temperature_celsius">Celsius</string>
@@ -86,7 +88,7 @@
 	<string name="title_dialog_weather_alert">Alertes Météorologiques</string>
 	<string name="about_us">À propos</string>
 	<string name="dialog_exit_button">Quitter</string>
-	<string name="content_about_your_data_section">Les données sont uniquement stockées sur votre téléphone, à part vous, personne n\'y a accès.\nL\'application n\'envoie que certaines données à OpenWeatherMaps, ces données sont liées aux villes, la première fois, qu\'une ville est renseignée, nous envoyons la ville ainsi que son pays, une fois cette ville enregistrée, nous n\'enverons uniquement les coordonnées de cette ville.\n Il n\'y a aucun intermédiaire entre OpenWeatherMaps et l\'application, les données reçues sont directement traîtées sur l\'application.\nLa politique de confidentialité de OpenWeatherMaps est disponible ici: openweather.co.uk/privacy-policy</string>
+	<string name="content_about_your_data_section">Les données sont uniquement stockées sur votre téléphone, à part vous, personne n\'y a accès. L\'application n\'envoie que certaines données à OpenWeatherMaps, ces données sont liées aux villes, la première fois, qu\'une ville est renseignée, nous envoyons la ville ainsi que son pays, une fois cette ville enregistrée, nous n\'enverons uniquement les coordonnées de cette ville. Il n\'y a aucun intermédiaire entre OpenWeatherMaps et l\'application, les données reçues sont directement traîtées sur l\'application. La politique de confidentialité de OpenWeatherMaps est disponible ici: openweather.co.uk/privacy-policy</string>
 	<string name="title_about_the_developer_section">À propos du développeur</string>
 	<string name="title_about_your_data_section">À propos de vos données</string>
 	<string name="content_about_the_developer_section">Je suis un étudiant français en informatique, qui a eu une idée pendant le confinement et l\'a transformée en une application pour pratiquer le développement Java et Android.</string>
@@ -178,7 +180,7 @@
 
 	<string name="error_place_move">Une erreur est survenue lors du déplacement</string>
 	<string name="title_about_application_section">À propos de l\'application</string>
-	<string name="content_about_application_section">Cette application et son code source ont été placés sous la licence GPL-3.\nLe code source de mon applicetion est disponible ici: github.com/QGdev/OpenWeather.\nCela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
+	<string name="content_about_application_section">Cette application et son code source ont été placés sous la licence GPL-3. Le code source de mon applicetion est disponible ici: github.com/QGdev/OpenWeather. Cela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
     <string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
     <string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
     <string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
@@ -193,4 +195,16 @@
     <string name="title_settings_update_periodic">Mises à jour périodiques</string>
     <string name="summary_enabled_settings_update_periodic">Les données seront mises à jour en arrière-plan</string>
     <string name="summary_disabled_settings_update_periodic">Les données ne seront pas mises à jour en arrière-plan</string>
+    <string name="title_settings_update_period">Intervalle de mise à jour</string>
+    <string name="title_settings_update_period_1min">Toutes les minutes (DEBUG)</string>
+    <string name="title_settings_update_period_15min">Toutes les 15 minutes</string>
+    <string name="title_settings_update_period_30min">Toutes les 30 minutes</string>
+    <string name="title_settings_update_period_1h">Toutes les heures</string>
+    <string name="title_settings_update_period_2h">Toutes les 2 heures</string>
+    <string name="title_settings_update_period_3h">Toutes les 3 heures</string>
+    <string name="title_settings_update_period_6h">Toutes les 6 heures</string>
+    <string name="title_settings_update_period_12h">Toutes les 12 heures</string>
+    <string name="description_precipitations_1h">Volume des précipitations dans l\'heure</string>
+    <string name="title_dialog_about_app">À propos</string>
+    <string name="action_release_to_refresh">Relâcher pour rafraîchir</string>
 </resources>

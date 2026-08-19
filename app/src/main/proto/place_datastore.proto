@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "fr.qgdev.openweather.data.models";
+option java_multiple_files = true;
+
+import "place.proto";
+
+message PlaceStorage {
+  map<uint32, Place> places = 1;
+  map<int32, uint32> placeKeys = 2;
+
+  repeated uint32 orderedPlaceKeys = 3;
+
+  uint32 lastKeyUsed = 4;
+
+  int64 lastUpdateDt = 5;
+}

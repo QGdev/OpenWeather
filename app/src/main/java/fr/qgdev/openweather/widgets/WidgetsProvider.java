@@ -35,16 +35,14 @@ import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 import androidx.collection.ArrayMap;
-import androidx.lifecycle.Observer;
 
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 
-import fr.qgdev.openweather.repositories.AppRepository;
+import fr.qgdev.openweather.data.models.Place;
 import fr.qgdev.openweather.repositories.FormattingService;
-import fr.qgdev.openweather.repositories.places.Place;
 import fr.qgdev.openweather.widgets.WidgetsBinder.WidgetType;
 
 /**
@@ -97,8 +95,9 @@ public class WidgetsProvider extends AppWidgetProvider {
 	 * @param repository       the repository to get the data
 	 * @param appWidgetId      the widget id of the widget to update
 	 */
+	/*
 	protected static void updateAppWidget(@NonNull Context context, @NonNull AppWidgetManager appWidgetManager,
-													  @NonNull AppRepository repository, int appWidgetId) {
+													  @NonNull PlaceRepository repository, int appWidgetId) {
 		
 		// Get widgetsSettings
 		WidgetsSettings widgetsSettings = repository.getWidgetsManager().loadWidgetSettings(appWidgetId, null);
@@ -128,7 +127,7 @@ public class WidgetsProvider extends AppWidgetProvider {
 				repository.getPlaceFromPlaceIdLiveData(widgetsSettings.getPlaceId()).removeObserver(this);
 			}
 		});
-	}
+	}*/
 	
 	/**
 	 * Get the list of sizes available for the widget
@@ -164,6 +163,7 @@ public class WidgetsProvider extends AppWidgetProvider {
 	 * @param newOptions       The appWidgetId of the widget whose size changed.
 	 * @see AppWidgetManager#ACTION_APPWIDGET_OPTIONS_CHANGED
 	 */
+	/*
 	@Override
 	public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
 		super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
@@ -205,6 +205,8 @@ public class WidgetsProvider extends AppWidgetProvider {
 		});
 	}
 	
+	 */
+	
 	/**
 	 * Update the widget with the given data
 	 *
@@ -212,6 +214,7 @@ public class WidgetsProvider extends AppWidgetProvider {
 	 * @param appWidgetManager The widget manager
 	 * @param appWidgetIds     All the widget ids
 	 */
+	/*
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		AppRepository repository = AppRepository.getInstance(context);
@@ -221,6 +224,8 @@ public class WidgetsProvider extends AppWidgetProvider {
 			updateAppWidget(context, appWidgetManager, repository, appWidgetId);
 		}
 	}
+	
+	 */
 	
 	/**
 	 * Will handle receiving broadcast intents sent
@@ -246,6 +251,7 @@ public class WidgetsProvider extends AppWidgetProvider {
 	 * @param context      The context
 	 * @param appWidgetIds The app widget id
 	 */
+	/*
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
 		super.onDeleted(context, appWidgetIds);
@@ -256,4 +262,6 @@ public class WidgetsProvider extends AppWidgetProvider {
 			repository.getWidgetsManager().deleteWidgetSettings(appWidgetId);
 		}
 	}
+	
+	 */
 }

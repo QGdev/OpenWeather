@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option java_package = "fr.qgdev.openweather.data.models";
+option java_multiple_files = true;
+
+message DailyForecast {
+  int64 dt = 1;
+  string weather = 2;
+  string weatherDescription = 3;
+  int32 weatherCode = 4;
+  float temperatureMorning = 5;
+  float temperatureDay = 6;
+  float temperatureEvening = 7;
+  float temperatureNight = 8;
+  float temperatureMinimum = 9;
+  float temperatureMaximum = 10;
+  float temperatureMorningFeelsLike = 11;
+  float temperatureDayFeelsLike = 12;
+  float temperatureEveningFeelsLike = 13;
+  float temperatureNightFeelsLike = 14;
+  int32 pressure = 15;
+  int32 humidity = 16;
+  float dewPoint = 17;
+  int32 cloudiness = 18;
+  int64 sunriseDt = 19;
+  int64 sunsetDt = 20;
+  int32 uvIndex = 21;
+  int64 moonriseDt = 22;
+  int64 moonsetDt = 23;
+  float moonPhase = 24;
+  float windSpeed = 25;
+  float windGustSpeed = 26;
+  int32 windDirection = 27;
+  float pop = 28;
+  float rain = 29;
+  float snow = 30;
+}

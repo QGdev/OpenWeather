@@ -26,27 +26,14 @@ import static fr.qgdev.openweather.widgets.WidgetsBinder.bindWidget;
 import android.app.Activity;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.SizeF;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.Observer;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import fr.qgdev.openweather.R;
+import fr.qgdev.openweather.data.models.Place;
 import fr.qgdev.openweather.databinding.WidgetConfigurationBinding;
-import fr.qgdev.openweather.repositories.AppRepository;
 import fr.qgdev.openweather.repositories.FormattingService;
-import fr.qgdev.openweather.repositories.places.Geolocation;
-import fr.qgdev.openweather.repositories.places.Place;
 import fr.qgdev.openweather.widgets.WidgetsBinder.WidgetType;
 
 /**
@@ -97,6 +84,7 @@ public class WidgetsConfigurationActivity extends Activity {
 	 * @param repository The repository to use to get the place
 	 * @param binding    The binding to use to update the activity
 	 */
+	/*
 	private static void updateWidgetPreview(@NonNull Context context, @NonNull WidgetType widgetType, String placeId, @NonNull AppRepository repository, @NonNull WidgetConfigurationBinding binding) {
 		repository.getPlaceFromPlaceIdLiveData(placeId).observeForever(new Observer<>() {
 			@Override
@@ -125,11 +113,14 @@ public class WidgetsConfigurationActivity extends Activity {
 		});
 	}
 	
+	 */
+	
 	/**
 	 * Called when the activity is created
 	 *
 	 * @param icicle The saved instance state
 	 */
+	/*
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -154,10 +145,12 @@ public class WidgetsConfigurationActivity extends Activity {
 		
 		// Get size of the widget like width and height
 		Bundle options = AppWidgetManager.getInstance(context).getAppWidgetOptions(mAppWidgetId);
-		List<SizeF> sizes = options.getParcelableArrayList(AppWidgetManager.OPTION_APPWIDGET_SIZES);
-		if (sizes == null || sizes.isEmpty()) {
-			finish();
-			return;
+		Parcelable[] parcelables = options.getParcelableArray(AppWidgetManager.OPTION_APPWIDGET_SIZES);
+		List<SizeF> sizes = new ArrayList<>();
+		if (parcelables != null) {
+			for (Parcelable parcelable : parcelables) {
+				sizes.add((SizeF) parcelable);
+			}
 		}
 		
 		// Get minimal width and height
@@ -189,12 +182,12 @@ public class WidgetsConfigurationActivity extends Activity {
 		binding.confirmButton.setEnabled(false);
 		
 		// Setup spinner
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, R.layout.dialog_country_list_item, new ArrayList<String>() {
+		ArrayAdapter<String> adapter = new ArrayAdapter<>(context, R.layout.dialog_country_list_item, new ArrayList<String>() {
 		});
 		binding.placeSpinner.setAdapter(adapter);
 		
 		// Load places in the spinner
-		repository.getBasicListingLiveData().observeForever(new Observer<List<Geolocation>>() {
+		repository.getBasicListingLiveData().observeForever(new Observer<>() {
 			@Override
 			public void onChanged(List<Geolocation> listings) {
 				if (listings == null) return;
@@ -245,6 +238,7 @@ public class WidgetsConfigurationActivity extends Activity {
 					
 					@Override
 					public void onNothingSelected(AdapterView<?> parent) {
+						parent.setSelection(0);
 					}
 				});
 				
@@ -280,4 +274,5 @@ public class WidgetsConfigurationActivity extends Activity {
 			}
 		});
 	}
+	*/
 }

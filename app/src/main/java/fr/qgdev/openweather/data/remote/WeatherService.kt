@@ -1,0 +1,264 @@
+/*
+ *  Copyright (c) 2019 - 2025
+ *  QGdev - Quentin GOMES DOS REIS
+ *
+ *  This file is part of OpenWeather.
+ *
+ *  OpenWeather is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  OpenWeather is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
+ */
+
+package fr.qgdev.openweather.data.remote
+
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.util.Log
+import androidx.annotation.WorkerThread
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import fr.qgdev.openweather.R
+import fr.qgdev.openweather.data.models.Place
+import fr.qgdev.openweather.data.remote.mappers.AirQualityMapper
+import fr.qgdev.openweather.data.remote.mappers.PlaceDataMapper
+import fr.qgdev.openweather.data.settings.SettingsRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
+
+
+/**
+ * WeatherService
+ * <p>
+ * A class to manage the weather data requests.
+ * It uses the Volley library to make HTTP requests to the OpenWeatherMap API.
+ * It also uses the SettingsManager to get the API key and the default locale.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
+class WeatherService private constructor(
+    context: Context,
+    settingsRepository: SettingsRepository = SettingsRepository.getInstance(context)
+) {
+
+    private val urlOWMCoordinatesProperties: String
+    private val urlOWMPropertiesName: String
+    private val urlOWMWeatherData: String
+    private val urlOWMAirQualityData: String
+
+    private val context: Context
+    private val requestQueue: RequestQueue
+    private val settingsRepository: SettingsRepository
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+
+    companion object {
+        @Volatile
+        private var INSTANCE: WeatherService? = null
+
+        private val TAG: String? = WeatherService::class.simpleName
+
+        fun getInstance(
+            context: Context
+        ): WeatherService {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE = WeatherService(context)
+                return INSTANCE!!
+            }
+        }
+
+        fun getInstance(
+            application: Application,
+            settingsRepository: SettingsRepository
+        ): WeatherService {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE = WeatherService(application, settingsRepository)
+                return INSTANCE!!
+            }
+        }
+    }
+
+    init {
+        this.context = context.applicationContext
+        this.requestQueue = Volley.newRequestQueue(this.context)
+        this.settingsRepository = settingsRepository
+
+        this.urlOWMCoordinatesProperties = context.getString(R.string.url_owm_properties_coordinates)
+        this.urlOWMPropertiesName = context.getString(R.string.url_owm_properties_name)
+        this.urlOWMWeatherData = context.getString(R.string.url_owm_weather_data)
+        this.urlOWMAirQualityData = context.getString(R.string.url_owm_airquality_data)
+    }
+
+
+    private fun deviceIsConnected(): Boolean {
+        val connectivityManager: ConnectivityManager =
+            context.getSystemService(ConnectivityManager::class.java)
+        val network = connectivityManager.activeNetwork
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+
+        return networkCapabilities != null
+                && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+    }
+
+
+    @WorkerThread
+    suspend fun getPlaceDataOWM(place: Place, callback: FetchDataCallback) {
+        if (! this.deviceIsConnected()) {
+            callback.onError(RequestStatus.NOT_CONNECTED)
+            return
+        }
+
+        val url = String.format(
+            this.urlOWMWeatherData,
+            place.geolocation.coordinates.latitude,
+            place.geolocation.coordinates.longitude,
+            settingsRepository.getApiKey(),
+            settingsRepository.getDefaultLocale().language
+        )
+
+        val request = JsonObjectRequest(
+            Request.Method.GET, url, null,
+            { response: JSONObject? ->
+                try {
+                    //  Mapping the JSON response to the Place object
+                    val mappedPlaceBuilder = PlaceDataMapper.fromOWMToProtoBuilder(response!!)
+
+                    if (mappedPlaceBuilder == null) {
+                        serviceScope.launch {
+                            callback.onError(RequestStatus.UNKNOWN_ERROR)
+                        }
+                        return@JsonObjectRequest
+                    }
+
+                    //  Rebuild properties
+                    val currentTime = System.currentTimeMillis()
+                    val newPlace = place.toBuilder()
+                        .setCurrentWeather(mappedPlaceBuilder.currentWeather)
+                        .addAllMinutelyForecastList(mappedPlaceBuilder.minutelyForecastListList)
+                        .addAllHourlyForecastList(mappedPlaceBuilder.hourlyForecastListList)
+                        .addAllDailyForecastList(mappedPlaceBuilder.dailyForecastListList)
+                        .addAllWeatherAlertsList(mappedPlaceBuilder.weatherAlertsListList)
+
+                    val properties = place.properties
+                        .toBuilder()
+                        .setLastWeatherUpdateAttemptTime(currentTime)
+                        .setLastSuccessfulWeatherUpdateTime(currentTime)
+                        .build()
+
+                    newPlace
+                        .setProperties(properties)
+
+                    getAirQualityDataOWM(newPlace.build(), callback)
+                } catch (error: JSONException) {
+                    error.message?.let { Log.w(TAG, it) }
+                    serviceScope.launch {
+                        callback.onError(RequestStatus.UNKNOWN_ERROR)
+                    }
+                }
+            },
+            { error: VolleyError ->
+                serviceScope.launch {
+                    if (error.networkResponse == null) {
+                        callback.onError(RequestStatus.NO_ANSWER)
+                    } else {
+                        when (error.networkResponse.statusCode) {
+                            429 -> callback.onError(RequestStatus.TOO_MANY_REQUESTS)
+                            404 -> callback.onError(RequestStatus.NOT_FOUND)
+                            401 -> callback.onError(RequestStatus.AUTH_FAILED)
+                            else -> {
+                                error.message?.let { Log.w(TAG, it) }
+                                callback.onError(RequestStatus.UNKNOWN_ERROR)
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+        requestQueue.add(request)
+    }
+
+
+    @WorkerThread
+    private fun getAirQualityDataOWM(place: Place, callback: FetchDataCallback) {
+        //  Let's rebuild the above code snippet
+        if (! this.deviceIsConnected()) {
+            serviceScope.launch {
+                callback.onPartialSuccess(place, RequestStatus.NOT_CONNECTED)
+            }
+            return
+        }
+
+        val url = String.format(
+            urlOWMAirQualityData,
+            place.geolocation.coordinates.latitude,
+            place.geolocation.coordinates.longitude,
+            settingsRepository.getApiKey()
+        )
+
+        val request = JsonObjectRequest(
+            Request.Method.GET, url, null,
+            { response: JSONObject? ->
+                serviceScope.launch {
+                    try {
+                        //  Mapping the JSON response to the Place object
+                        val airQuality = AirQualityMapper.fromOWMToProto(response!!)
+                        val newPlace = place.toBuilder()
+                            .setAirQuality(airQuality)
+                            .setProperties(
+                                place.properties.toBuilder()
+                                    .setLastSuccessfulAirQualityUpdateTime(System.currentTimeMillis())
+                                    .setLastAirQualityUpdateAttemptTime(System.currentTimeMillis())
+                                    .build()
+                            )
+                            .build()
+                        callback.onSuccess(newPlace)
+                    } catch (error: JSONException) {
+                        error.message?.let { Log.w(TAG, it) }
+                        callback.onPartialSuccess(place, RequestStatus.UNKNOWN_ERROR)
+                    }
+                }
+
+            },
+            { error: VolleyError ->
+                serviceScope.launch {
+                    if (error.networkResponse == null) {
+                        callback.onPartialSuccess(place, RequestStatus.NO_ANSWER)
+                    } else {
+                        when (error.networkResponse.statusCode) {
+                            429 -> callback.onPartialSuccess(place, RequestStatus.TOO_MANY_REQUESTS)
+                            404 -> callback.onPartialSuccess(place, RequestStatus.NOT_FOUND)
+                            401 -> callback.onPartialSuccess(place, RequestStatus.AUTH_FAILED)
+                            else -> {
+                                error.message?.let { Log.w(TAG, it) }
+                                callback.onPartialSuccess(place, RequestStatus.UNKNOWN_ERROR)
+                            }
+                        }
+                    }
+                }
+            }
+        )
+
+        requestQueue.add(request)
+    }
+}

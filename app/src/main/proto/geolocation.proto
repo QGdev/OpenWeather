@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_package = "fr.qgdev.openweather.data.models";
+option java_multiple_files = true;
+
+import "coordinates.proto";
+
+message Geolocation {
+  optional string city = 1;
+  optional string countryCode = 2;
+  Coordinates coordinates = 3;
+}
