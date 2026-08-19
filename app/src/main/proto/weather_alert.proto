@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_package = "fr.qgdev.openweather.data.models";
+option java_multiple_files = true;
+
+message WeatherAlert {
+  string sender = 1;
+  string event = 2;
+  int64 startDt = 3;
+  int64 endDt = 4;
+  string description = 5;
+  repeated string tags = 6;
+}

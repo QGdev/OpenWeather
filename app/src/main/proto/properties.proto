@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option java_package = "fr.qgdev.openweather.data.models";
+option java_multiple_files = true;
+
+message Properties {
+  int64 lastSuccessfulWeatherUpdateTime = 1;
+  int64 lastSuccessfulAirQualityUpdateTime = 2;
+  int64 lastWeatherUpdateAttemptTime = 3;
+  int64 lastAirQualityUpdateAttemptTime = 4;
+  int64 creationTime = 5;
+  int64 lastAvailableWeatherDataTime = 6;
+  int64 lastAvailableAirQualityDataTime = 7;
+  int32 timeOffset = 8;
+}

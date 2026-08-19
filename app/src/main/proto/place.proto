@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_package = "fr.qgdev.openweather.data.models";
+option java_multiple_files = true;
+
+import "geolocation.proto";
+import "properties.proto";
+import "current_weather.proto";
+import "air_quality.proto";
+import "minutely_forecast.proto";
+import "hourly_forecast.proto";
+import "daily_forecast.proto";
+import "weather_alert.proto";
+
+message Place {
+  Geolocation geolocation = 1;
+  Properties properties = 2;
+  CurrentWeather currentWeather = 3;
+  optional AirQuality airQuality = 4;
+  repeated MinutelyForecast minutelyForecastList = 5;
+  repeated HourlyForecast hourlyForecastList = 6;
+  repeated DailyForecast dailyForecastList = 7;
+  repeated WeatherAlert weatherAlertsList = 8;
+}

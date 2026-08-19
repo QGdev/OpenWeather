@@ -48,6 +48,10 @@
 
     <style name="MaterialTheme.Dialog" parent="ThemeOverlay.Material3.Dialog">
         <item name="shapeAppearance">@style/ShapeAppearance.MaterialTheme.SmallComponent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
     </style>
 
     <style name="ShapeAppearance.MaterialTheme.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
