@@ -24,6 +24,7 @@
     <string name="until_date">Until</string>
     <string name="title_dialog_weather_alert">Weather alert</string>
 	<string name="title_places">Places</string>
+    <string name="description_places">List of the registered places</string>
     <string name="title_temperature_feelslike">Feels Like</string>
     <string name="title_humidity">Humidity</string>
     <string name="title_pressure">Pressure</string>
@@ -43,7 +44,8 @@
 	<string name="title_last_update">Last Update Available</string>
 	<string name="description_delete_icon">Delete the place</string>
 	<string name="title_settings">Settings</string>
-	<string name="title_settings_api_key">API key</string>
+    <string name="description_settings">Settings of the application</string>
+    <string name="title_settings_api_key">API key</string>
 	<string name="title_settings_units">Units</string>
 	<string name="title_settings_units_temperature">Temperature</string>
 	<string name="title_settings_units_temperature_celsius">Celsius</string>
@@ -86,7 +88,7 @@
 	<string name="title_forecast_daily">Daily Forecast</string>
 	<string name="about_us">About us</string>
 	<string name="dialog_exit_button">Exit</string>
-	<string name="content_about_your_data_section">The data is only stored on your phone, apart from you, no one has access to it.\nThe application only sends some data to openweathermap.org, this data is linked to cities, the first time a city is entered, we send the city as well as its country, after once this city is registered, we only send the city coordinates.\nThere is no intermediary between OpenWeatherMaps and the application, the data received is directly processed on the application.\nThe OpenWeatherMaps privacy policy is available here: openweather.co.uk/privacy-policy</string>
+	<string name="content_about_your_data_section">The data is only stored on your phone, apart from you, no one has access to it. The application only sends some data to openweathermap.org, this data is linked to cities, the first time a city is entered, we send the city as well as its country, after once this city is registered, we only send the city coordinates. There is no intermediary between OpenWeatherMaps and the application, the data received is directly processed on the application. The OpenWeatherMaps privacy policy is available here: openweather.co.uk/privacy-policy</string>
 	<string name="title_about_the_developer_section">About the developer</string>
 	<string name="title_about_your_data_section">About your data</string>
 	<string name="content_about_the_developer_section">I am French computer science student, who had an idea during lockdown and turned it into an application to practice Java and Android development.</string>
@@ -179,7 +181,7 @@
 
 	<string name="error_place_move">An error occurred while moving place</string>
 	<string name="title_about_application_section">About this app</string>
-	<string name="content_about_application_section">This application and its source code have been placed under the GPL-3.0 license.\nThe source code of the application is available on: github.com/QGdev/OpenWeather.\nThis does not include the OpenWeatherMap API or data, or even the FreePik graphics resources, which are licensed separately.</string>
+	<string name="content_about_application_section">This application and its source code have been placed under the GPL-3.0 license. The source code of the application is available on: github.com/QGdev/OpenWeather. This does not include the OpenWeatherMap API or data, or even the FreePik graphics resources, which are licensed separately.</string>
     <string name="error_storage_security">An error occurred while initializing the storage</string>
     <string name="error_no_api_key_registered">API key isn\'t registered, please go into settings and register one</string>
     <string name="error_api_key_incorrectly_formed">The registered API key must have 32 alphanumerical characters</string>
@@ -194,4 +196,19 @@
     <string name="title_settings_update_periodic">Periodic updates</string>
     <string name="summary_enabled_settings_update_periodic">Data will be updated in background</string>
     <string name="summary_disabled_settings_update_periodic">Data will not be updated in background</string>
+    <string name="title_settings_update_period">Update interval</string>
+    <string name="title_settings_update_period_1min">Every minute (DEBUG)</string>
+    <string name="title_settings_update_period_15min">Every 15 minutes</string>
+    <string name="title_settings_update_period_30min">Every 30 minutes</string>
+    <string name="title_settings_update_period_1h">Every hour</string>
+    <string name="title_settings_update_period_2h">Every 2 hours</string>
+    <string name="title_settings_update_period_3h">Every 3 hours</string>
+    <string name="title_settings_update_period_6h">Every 6 hours</string>
+    <string name="title_settings_update_period_12h">Every 12 hours</string>
+    <string name="description_precipitations_1h">Precipitations volumes in the previous hour</string>
+     <string name="title_dialog_about_app">About us</string>
+     <string name="action_release_to_refresh">Release to refresh</string>
+ 	<string name="error_place_query_too_short">Can\'t lookup for a place with a short name</string>
+	<string name="error_place_query_empty">No results</string>
+	<string name="error_no_results">No results</string>
 </resources>

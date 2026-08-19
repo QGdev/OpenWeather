@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_package = "fr.qgdev.openweather.data.models";
+option java_multiple_files = true;
+
+message AirQuality {
+  int32 aqi = 1;
+  float co = 2;
+  float no = 3;
+  float no2 = 4;
+  float o3 = 5;
+  float so2 = 6;
+  float pm2_5 = 7;
+  float pm10 = 8;
+  float nh3 = 9;
+}

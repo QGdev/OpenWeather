@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option java_package = "fr.qgdev.openweather.data.models";
+option java_multiple_files = true;
+
+message CurrentWeather {
+  int64 dt = 1;
+  string weather = 2;
+  string weatherDescription = 3;
+  int32 weatherCode = 4;
+  float temperature = 5;
+  float temperatureFeelsLike = 6;
+  int32 pressure = 7;
+  int32 humidity = 8;
+  float dewPoint = 9;
+  int32 cloudiness = 10;
+  int32 uvIndex = 11;
+  int32 visibility = 12;
+  int64 sunrise = 13;
+  int64 sunset = 14;
+  float windSpeed = 15;
+  float windGustSpeed = 16;
+  bool isWindDirectionReadable = 17;
+  int32 windDirection = 18;
+  float rain = 19;
+  float snow = 20;
+}

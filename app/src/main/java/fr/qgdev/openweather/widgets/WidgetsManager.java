@@ -27,7 +27,6 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.ExistingWorkPolicy;
-import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -37,8 +36,8 @@ import org.json.JSONObject;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicReference;
 
+import fr.qgdev.openweather.data.storage.SecuredPreferenceDataStore;
 import fr.qgdev.openweather.repositories.PeriodicUpdaterWorker;
-import fr.qgdev.openweather.repositories.settings.SecuredPreferenceDataStore;
 
 /**
  * WidgetsManager
@@ -167,7 +166,13 @@ public final class WidgetsManager {
 	 * @param context Use to get the WorkManager instance
 	 */
 	public void unscheduleWorkRequest(@NonNull Context context) {
-		WorkManager.getInstance(context).cancelUniqueWork(WORKER_TASK_NAME);
+		android.util.Log.d("WidgetsManager", "🛑 Cancelling work request: " + WORKER_TASK_NAME);
+		try {
+			WorkManager.getInstance(context).cancelUniqueWork(WORKER_TASK_NAME);
+			android.util.Log.d("WidgetsManager", "✅ Work request cancelled successfully");
+		} catch (Exception e) {
+			android.util.Log.e("WidgetsManager", "❌ Error cancelling work: " + e.getMessage(), e);
+		}
 	}
 	
 	/**
@@ -176,19 +181,32 @@ public final class WidgetsManager {
 	 * @param context Use to get the WorkManager instance
 	 */
 	public void scheduleWorkRequest(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate) {
-		Constraints constraints = new Constraints.Builder()
-				  .setRequiredNetworkType(NetworkType.CONNECTED)
-				  .setRequiresBatteryNotLow(true)
-				  .build();
+		android.util.Log.d("WidgetsManager", "📅 Scheduling work request: " + WORKER_TASK_NAME);
+		android.util.Log.d("WidgetsManager", "   - Delay: " + timeBeforeNextUpdate.toMillis() + "ms (" + (timeBeforeNextUpdate.toMillis() / 60000) + " min)");
 		
-		OneTimeWorkRequest oneTimeWorkRequest =
-				  new OneTimeWorkRequest.Builder(PeriodicUpdaterWorker.class)
-							 .setConstraints(constraints)
-							 .setInitialDelay(timeBeforeNextUpdate)
-							 .build();
-		
-		WorkManager.getInstance(context).enqueueUniqueWork(WORKER_TASK_NAME,
-				  ExistingWorkPolicy.REPLACE,
-				  oneTimeWorkRequest);
+		try {
+			Constraints constraints = new Constraints.Builder()
+					  //.setRequiredNetworkType(NetworkType.CONNECTED)
+					  .setRequiresBatteryNotLow(true)
+					  .build();
+			
+			android.util.Log.d("WidgetsManager", "   - Constraints: Network=CONNECTED, BatteryNotLow=true");
+			
+			OneTimeWorkRequest oneTimeWorkRequest =
+					  new OneTimeWorkRequest.Builder(PeriodicUpdaterWorker.class)
+								 .setConstraints(constraints)
+								 .setInitialDelay(timeBeforeNextUpdate)
+								 .build();
+			
+			android.util.Log.d("WidgetsManager", "   - Work request built with ID: " + oneTimeWorkRequest.getId());
+			
+			WorkManager.getInstance(context).enqueueUniqueWork(WORKER_TASK_NAME,
+					  ExistingWorkPolicy.REPLACE,
+					  oneTimeWorkRequest);
+			
+			android.util.Log.d("WidgetsManager", "✅ Work request scheduled successfully");
+		} catch (Exception e) {
+			android.util.Log.e("WidgetsManager", "❌ Error scheduling work: " + e.getMessage(), e);
+		}
 	}
 }

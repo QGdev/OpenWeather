@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "fr.qgdev.openweather.data.models";
+option java_multiple_files = true;
+
+message MinutelyForecast {
+  int64 dt = 1;
+  float precipitation = 2;
+}
