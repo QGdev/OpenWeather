@@ -29,9 +29,9 @@ package fr.qgdev.openweather.data.settings
  * @author Quentin GOMES DOS REIS
  * @version 1
  */
-enum class PressureSettings {
-    HECTOPASCAL,
-    BAROMETRIC,
-    POUNDS_SQUARE_INCH,
-    INCH_MERCURY
+enum class PressureSettings(override val wireValue: String) : StoredSetting {
+    HECTOPASCAL("hpa"),
+    BAROMETRIC("mbar"),
+    POUNDS_SQUARE_INCH("psi"),
+    INCH_MERCURY("inhg");
 }

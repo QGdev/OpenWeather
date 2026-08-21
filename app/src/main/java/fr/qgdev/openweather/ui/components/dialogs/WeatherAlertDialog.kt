@@ -26,7 +26,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.models.Place
-import fr.qgdev.openweather.toberemoved.adapter.WeatherAlertAdapter
+import fr.qgdev.openweather.ui.adapter.WeatherAlertAdapter
 import fr.qgdev.openweather.repositories.FormattingService
 
 /**

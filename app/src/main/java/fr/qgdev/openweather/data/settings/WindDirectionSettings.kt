@@ -28,7 +28,7 @@ package fr.qgdev.openweather.data.settings
  *
  * @version 1
  */
-enum class WindDirectionSettings {
-    ANGULAR,
-    CARDINAL_POINTS
+enum class WindDirectionSettings(override val wireValue: String) : StoredSetting {
+    ANGULAR("angular"),
+    CARDINAL_POINTS("cardinal");
 }

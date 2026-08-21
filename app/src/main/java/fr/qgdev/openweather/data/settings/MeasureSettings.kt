@@ -29,7 +29,7 @@ package fr.qgdev.openweather.data.settings
  * @author Quentin GOMES DOS REIS
  * @version 1
  */
-enum class MeasureSettings {
-    METRIC,
-    IMPERIAL
+enum class MeasureSettings(override val wireValue: String) : StoredSetting {
+    METRIC("metric"),
+    IMPERIAL("imperial");
 }
