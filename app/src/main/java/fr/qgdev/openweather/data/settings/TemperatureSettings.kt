@@ -29,8 +29,8 @@ package fr.qgdev.openweather.data.settings
  * @author Quentin GOMES DOS REIS
  * @version 1
  */
-enum class TemperatureSettings {
-    CELSIUS,
-    FAHRENHEIT,
-    KELVIN
+enum class TemperatureSettings(override val wireValue: String) : StoredSetting {
+    CELSIUS("celsius"),
+    FAHRENHEIT("fahrenheit"),
+    KELVIN("kelvin");
 }

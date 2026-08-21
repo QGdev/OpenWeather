@@ -72,6 +72,7 @@ import fr.qgdev.openweather.data.models.Geolocation
 import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.data.models.Properties
 import fr.qgdev.openweather.ui.components.dialogs.AirQualityInfoDialog
+import fr.qgdev.openweather.ui.components.dialogs.WeatherAlertDialog
 import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.ui.components.AirQualityIndexBar
 import fr.qgdev.openweather.ui.components.forecasts.DailyWeatherForecastsView
@@ -100,6 +101,14 @@ fun PlaceCardView(
     dailyForecastState: MutableState<Boolean> = remember { mutableStateOf(false) }
 ) {
     val fragmentManager = (LocalContext.current as? AppCompatActivity)?.supportFragmentManager
+
+    //  The alerts UI has not been ported to Compose yet, so this shows the existing View-based
+    //  dialog imperatively rather than through a dialogBoxOpened flag like AirQualityInfoDialog.
+    //  Both alert entry points below share it. See PORTING.md.
+    val context = LocalContext.current
+    val showWeatherAlerts = {
+        WeatherAlertDialog(context, place, formattingService).build()
+    }
 
     val gridColumns = integerResource(id = R.integer.env_variables_column_count)
     val colorFirstText = colorResource(id = R.color.colorFirstText)
@@ -515,7 +524,7 @@ fun PlaceCardView(
                             .size(45.dp)
                             .align(Alignment.BottomEnd)
                             .graphicsLayer { alpha = animatedReductionAlpha }
-                            .clickable { /* Show weather alert dialog */ },
+                            .clickable(onClick = showWeatherAlerts),
                         painter = painterResource(id = R.drawable.danger),
                         contentDescription = stringResource(id = R.string.description_weather_alert),
                         tint = colorIcons,
@@ -538,6 +547,7 @@ fun PlaceCardView(
                             iconResId = R.drawable.danger,
                             textResId = R.string.title_dialog_weather_alert,
                             descriptionResId = R.string.description_weather_alert,
+                            onClick = showWeatherAlerts
                         )
                     }
 

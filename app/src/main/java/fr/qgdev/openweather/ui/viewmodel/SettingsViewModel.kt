@@ -38,11 +38,25 @@ class SettingsViewModel(
     private val _settingsState = MutableStateFlow<Settings>(Settings())
     val settingsState: StateFlow<Settings?> = _settingsState.asStateFlow()
 
+    private val _formattingServiceState = MutableStateFlow(formattingService)
+
+    /**
+     * The formatter the UI should use, republished as a new instance whenever the settings change.
+     *
+     * Collect this rather than calling [FormattingService.getInstance]: the singleton is mutated in
+     * place, and Compose compares it by instance identity, so a screen holding the singleton never
+     * notices a unit change. See [FormattingService.snapshotFor].
+     */
+    val formattingServiceState: StateFlow<FormattingService> = _formattingServiceState.asStateFlow()
+
     init {
         viewModelScope.launch {
             settingsRepository.settingsFlow.collect { settings ->
                 _settingsState.value = settings
+                //  Still mutate the shared instance, because the widgets read it directly...
                 formattingService.update(settings)
+                //  ...and publish a fresh one for Compose, which needs a new identity to redraw.
+                _formattingServiceState.value = formattingService.snapshotFor(settings)
             }
         }
     }

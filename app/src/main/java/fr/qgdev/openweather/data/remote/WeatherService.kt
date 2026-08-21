@@ -42,6 +42,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
+import java.util.Locale
 
 
 /**
@@ -128,7 +129,11 @@ class WeatherService private constructor(
             return
         }
 
+        //  Locale.ROOT is required: the %f conversions below would otherwise use the device
+        //  locale, and a comma decimal separator (fr, de, es...) produces "lat=48,856614",
+        //  which is not a valid coordinate.
         val url = String.format(
+            Locale.ROOT,
             this.urlOWMWeatherData,
             place.geolocation.coordinates.latitude,
             place.geolocation.coordinates.longitude,
@@ -152,11 +157,24 @@ class WeatherService private constructor(
 
                     //  Rebuild properties
                     val currentTime = System.currentTimeMillis()
+
+                    //  Every forecast list is a timestamped snapshot, so each response replaces
+                    //  the stored one instead of extending it. addAll appends in protobuf, so
+                    //  without these clears the lists grow by a full response on every refresh.
+                    //  Clearing is unconditional on purpose: a stale entry is worse than a missing
+                    //  one here. One Call omits minutely for locations it does not cover and omits
+                    //  alerts when none are active, and in both cases the correct result is an
+                    //  empty list - an expired alert must disappear, and an hour-old minute-by-
+                    //  minute nowcast is misleading rather than merely old.
                     val newPlace = place.toBuilder()
                         .setCurrentWeather(mappedPlaceBuilder.currentWeather)
+                        .clearMinutelyForecastList()
                         .addAllMinutelyForecastList(mappedPlaceBuilder.minutelyForecastListList)
+                        .clearHourlyForecastList()
                         .addAllHourlyForecastList(mappedPlaceBuilder.hourlyForecastListList)
+                        .clearDailyForecastList()
                         .addAllDailyForecastList(mappedPlaceBuilder.dailyForecastListList)
+                        .clearWeatherAlertsList()
                         .addAllWeatherAlertsList(mappedPlaceBuilder.weatherAlertsListList)
 
                     val properties = place.properties
@@ -209,7 +227,9 @@ class WeatherService private constructor(
             return
         }
 
+        //  Locale.ROOT for the same reason as in getPlaceDataOWM above.
         val url = String.format(
+            Locale.ROOT,
             urlOWMAirQualityData,
             place.geolocation.coordinates.latitude,
             place.geolocation.coordinates.longitude,
