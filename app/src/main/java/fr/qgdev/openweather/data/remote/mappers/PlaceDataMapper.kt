@@ -42,10 +42,17 @@ open class PlaceDataMapper private constructor() : Mapper<Place> {
             tmpLastAvailableDataTime = crtWeatherJSON.getLong("dt")
             val tmpCurrentWeather = CurrentWeatherMapper.fromOWMToProto(crtWeatherJSON)
 
+            //  All four forecast arrays are optional here. One Call omits minutely for locations it
+            //  does not cover and omits alerts when none are active; hourly and daily are normally
+            //  always present, but a truncated response should degrade to an empty list rather than
+            //  throw. A missing "current" above is different - that response is unusable.
+            //  Note optJSONArray returns null rather than throwing, so it must be null-checked:
+            //  has(name) is not enough, since the value could be present but not an array.
+
             // Parse Minutely Weather Forecast
             val tmpMinutelyWeatherForecasts = mutableListOf<MinutelyForecast>()
-            if (jsonObject.has("minutely")) {
-                val minutelyWeatherJSON = jsonObject.optJSONArray("minutely")
+            val minutelyWeatherJSON = jsonObject.optJSONArray("minutely")
+            if (minutelyWeatherJSON != null) {
                 for (i in 0 until minutelyWeatherJSON.length()) {
                     val forecast = MinutelyForecastMapper.fromOWMToProto(minutelyWeatherJSON.getJSONObject(i))
                     tmpMinutelyWeatherForecasts.add(forecast)
@@ -54,24 +61,28 @@ open class PlaceDataMapper private constructor() : Mapper<Place> {
 
             // Parse Hourly Weather Forecast
             val tmpHourlyWeatherForecasts = mutableListOf<HourlyForecast>()
-            val hourlyWeatherJSON = jsonObject.getJSONArray("hourly")
-            for (i in 0 until hourlyWeatherJSON.length()) {
-                val forecast = HourlyForecastMapper.fromOWMToProto(hourlyWeatherJSON.getJSONObject(i))
-                tmpHourlyWeatherForecasts.add(forecast)
+            val hourlyWeatherJSON = jsonObject.optJSONArray("hourly")
+            if (hourlyWeatherJSON != null) {
+                for (i in 0 until hourlyWeatherJSON.length()) {
+                    val forecast = HourlyForecastMapper.fromOWMToProto(hourlyWeatherJSON.getJSONObject(i))
+                    tmpHourlyWeatherForecasts.add(forecast)
+                }
             }
 
             // Parse Daily Weather Forecast
             val tmpDailyWeatherForecasts = mutableListOf<DailyForecast>()
-            val dailyWeatherJSON = jsonObject.getJSONArray("daily")
-            for (i in 0 until dailyWeatherJSON.length()) {
-                val forecast = DailyForecastMapper.fromOWMToProto(dailyWeatherJSON.getJSONObject(i))
-                tmpDailyWeatherForecasts.add(forecast)
+            val dailyWeatherJSON = jsonObject.optJSONArray("daily")
+            if (dailyWeatherJSON != null) {
+                for (i in 0 until dailyWeatherJSON.length()) {
+                    val forecast = DailyForecastMapper.fromOWMToProto(dailyWeatherJSON.getJSONObject(i))
+                    tmpDailyWeatherForecasts.add(forecast)
+                }
             }
 
             // Parse Weather Alerts
             val tmpWeatherAlerts = mutableListOf<WeatherAlert>()
-            if (jsonObject.has("alerts")) {
-                val weatherAlertJSON = jsonObject.optJSONArray("alerts")
+            val weatherAlertJSON = jsonObject.optJSONArray("alerts")
+            if (weatherAlertJSON != null) {
                 for (i in 0 until weatherAlertJSON.length()) {
                     val alert = WeatherAlertMapper.fromOWMToProto(weatherAlertJSON.getJSONObject(i))
                     tmpWeatherAlerts.add(alert)

@@ -24,6 +24,7 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.util.Log
 import com.android.volley.Request
 import com.android.volley.RequestQueue
@@ -97,7 +98,10 @@ class PlaceSearchingService private constructor(
         }
 
 
-        val fullFilledURL = urlOSMPlaceSearching.replace("{search}", query)
+        //  The query goes straight into the query string, so it has to be percent-encoded.
+        //  Without this, anything containing a space, an accent or an & - "Saint-Étienne",
+        //  "New York" - produces a malformed URL.
+        val fullFilledURL = urlOSMPlaceSearching.replace("{search}", Uri.encode(query))
 
         val request = object : JsonArrayRequest(
             Request.Method.GET, fullFilledURL, null,
@@ -138,15 +142,20 @@ class PlaceSearchingService private constructor(
         requestQueue.add(request)
     }
 
+    //  Nominatim does not guarantee every field on every result, and this runs inside the Volley
+    //  success callback on the main thread, so a hard get* on a missing field would crash the app
+    //  rather than fail the search. Results without usable coordinates are skipped; a missing
+    //  country code still leaves a usable result.
     private fun parseLocationResponse(response: JSONArray): List<Geolocation> {
         val locations = mutableListOf<Geolocation>()
         for (i in 0 until response.length()) {
-            val result = response.getJSONObject(i)
-            val lat = result.getDouble("lat")
-            val lon = result.getDouble("lon")
-            val address = result.getJSONObject("address")
+            val result = response.optJSONObject(i) ?: continue
+            val lat = result.optDouble("lat", Double.NaN)
+            val lon = result.optDouble("lon", Double.NaN)
+            if (lat.isNaN() || lon.isNaN()) continue
+            val address = result.optJSONObject("address")
             val city = result.optString("name", "N/A")
-            val countryCode = address.getString("country_code")
+            val countryCode = address?.optString("country_code", "") ?: ""
             val coordinates = Coordinates.newBuilder()
                 .setLatitude(lat)
                 .setLongitude(lon)

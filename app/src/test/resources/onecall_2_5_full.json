@@ -1,0 +1,156 @@
+{
+  "lat": 48.8566,
+  "lon": 2.3522,
+  "timezone": "Europe/Paris",
+  "timezone_offset": 7200,
+  "current": {
+    "dt": 1700000000,
+    "sunrise": 1699948800,
+    "sunset": 1699984800,
+    "temp": 285.42,
+    "feels_like": 284.71,
+    "pressure": 1013,
+    "humidity": 81,
+    "dew_point": 282.31,
+    "uvi": 1.74,
+    "clouds": 75,
+    "visibility": 10000,
+    "wind_speed": 4.12,
+    "wind_deg": 230,
+    "wind_gust": 8.75,
+    "weather": [
+      {
+        "id": 500,
+        "main": "Rain",
+        "description": "légère pluie",
+        "icon": "10d"
+      }
+    ],
+    "rain": {
+      "1h": 0.42
+    }
+  },
+  "minutely": [
+    { "dt": 1700000040, "precipitation": 0.0 },
+    { "dt": 1700000100, "precipitation": 0.13 },
+    { "dt": 1700000160, "precipitation": 0.27 }
+  ],
+  "hourly": [
+    {
+      "dt": 1700002800,
+      "temp": 285.9,
+      "feels_like": 285.2,
+      "pressure": 1013,
+      "humidity": 79,
+      "dew_point": 282.4,
+      "uvi": 1.5,
+      "clouds": 70,
+      "visibility": 10000,
+      "wind_speed": 4.4,
+      "wind_deg": 233,
+      "wind_gust": 9.1,
+      "pop": 0.42,
+      "weather": [
+        { "id": 500, "main": "Rain", "description": "légère pluie", "icon": "10d" }
+      ],
+      "rain": { "1h": 0.31 }
+    },
+    {
+      "dt": 1700006400,
+      "temp": 286.3,
+      "feels_like": 285.6,
+      "pressure": 1012,
+      "humidity": 76,
+      "dew_point": 282.1,
+      "uvi": 1.1,
+      "clouds": 62,
+      "visibility": 10000,
+      "wind_speed": 4.8,
+      "wind_deg": 240,
+      "pop": 0.18,
+      "weather": [
+        { "id": 803, "main": "Clouds", "description": "nuageux", "icon": "04d" }
+      ]
+    }
+  ],
+  "daily": [
+    {
+      "dt": 1700046000,
+      "sunrise": 1700035200,
+      "sunset": 1700071200,
+      "moonrise": 1700040000,
+      "moonset": 1700078400,
+      "moon_phase": 0.25,
+      "temp": {
+        "day": 287.1,
+        "min": 283.4,
+        "max": 288.6,
+        "night": 284.2,
+        "eve": 286.0,
+        "morn": 283.9
+      },
+      "feels_like": {
+        "day": 286.4,
+        "night": 283.5,
+        "eve": 285.3,
+        "morn": 283.1
+      },
+      "pressure": 1012,
+      "humidity": 74,
+      "dew_point": 282.0,
+      "wind_speed": 5.2,
+      "wind_deg": 245,
+      "wind_gust": 11.3,
+      "weather": [
+        { "id": 500, "main": "Rain", "description": "légère pluie", "icon": "10d" }
+      ],
+      "clouds": 68,
+      "pop": 0.62,
+      "uvi": 2.1,
+      "rain": 1.84
+    },
+    {
+      "dt": 1700132400,
+      "sunrise": 1700121600,
+      "sunset": 1700157600,
+      "moonrise": 1700126400,
+      "moonset": 1700164800,
+      "moon_phase": 0.28,
+      "temp": {
+        "day": 284.9,
+        "min": 281.2,
+        "max": 285.7,
+        "night": 282.0,
+        "eve": 283.8,
+        "morn": 281.6
+      },
+      "feels_like": {
+        "day": 284.0,
+        "night": 281.1,
+        "eve": 283.0,
+        "morn": 280.9
+      },
+      "pressure": 1018,
+      "humidity": 66,
+      "dew_point": 279.4,
+      "wind_speed": 3.1,
+      "wind_deg": 190,
+      "weather": [
+        { "id": 800, "main": "Clear", "description": "ciel dégagé", "icon": "01d" }
+      ],
+      "clouds": 4,
+      "pop": 0.0,
+      "uvi": 2.4
+    }
+  ],
+  "alerts": [
+    {
+      "sender_name": "Météo-France",
+      "event": "Vent violent",
+      "start": 1700010000,
+      "end": 1700038800,
+      "description": "Des rafales de vent pouvant atteindre 100 km/h sont attendues.",
+      "tags": ["Wind"]
+    }
+  ]
+}

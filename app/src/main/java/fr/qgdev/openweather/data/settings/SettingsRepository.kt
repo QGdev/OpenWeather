@@ -21,6 +21,8 @@
 package fr.qgdev.openweather.data.settings
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
+import androidx.preference.PreferenceDataStore
 import fr.qgdev.openweather.data.storage.SecuredPreferenceDataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -51,9 +53,10 @@ import java.util.Locale
  * @constructor Creates a SettingsService instance. Should be accessed through `getInstance(context)`.
  * @param context The application context.
  */
-class SettingsRepository private constructor(context: Context) {
+class SettingsRepository private constructor(
+    private val securedPreferenceDataStore: PreferenceDataStore
+) {
 
-    private val securedPreferenceDataStore: SecuredPreferenceDataStore
     private val _settingsFlow: MutableStateFlow<Settings>
 
     val settingsFlow: StateFlow<Settings>
@@ -65,18 +68,25 @@ class SettingsRepository private constructor(context: Context) {
         @Synchronized
         fun getInstance(context: Context): SettingsRepository {
             return INSTANCE?: synchronized(this) {
-                INSTANCE = SettingsRepository(context)
+                INSTANCE = SettingsRepository(
+                    SecuredPreferenceDataStore(context, PREFERENCES_FILENAME)
+                )
                 return INSTANCE!!
             }
         }
+
+        /**
+         * Builds an instance over an arbitrary store, so the persistence round-trip can be
+         * exercised on the JVM without a Context or the Android keystore.
+         */
+        @VisibleForTesting
+        fun createForTest(preferenceDataStore: PreferenceDataStore): SettingsRepository =
+            SettingsRepository(preferenceDataStore)
+
+        private const val PREFERENCES_FILENAME = "fr.qgdev.openweather_preferences"
     }
 
     init {
-        securedPreferenceDataStore = SecuredPreferenceDataStore(
-            context,
-            "fr.qgdev.openweather_preferences"
-        )
-
         _settingsFlow = MutableStateFlow(
             Settings(
                 getTemperatureSetting(),
@@ -105,66 +115,56 @@ class SettingsRepository private constructor(context: Context) {
         UPDATE_PERIOD("conf_update_period")
     }
 
-    fun getTemperatureSetting(): TemperatureSettings {
-        return when (securedPreferenceDataStore.getString(PreferenceKey.TEMPERATURE_UNIT.key, "")) {
-            "fahrenheit" -> TemperatureSettings.FAHRENHEIT
-            "kelvin" -> TemperatureSettings.KELVIN
-            else -> TemperatureSettings.CELSIUS
-        }
-    }
+    /**
+     * Reads an enum setting by its stored [StoredSetting.wireValue].
+     *
+     * Every enum setting goes through this and [putEnum] so the read and write spellings cannot
+     * drift apart, which is the bug this replaced.
+     */
+    private inline fun <reified T> getEnum(key: PreferenceKey, default: T): T
+            where T : Enum<T>, T : StoredSetting =
+        storedSettingOf(securedPreferenceDataStore.getString(key.key, null), default)
+
+    private fun <T> putEnum(key: PreferenceKey, setting: T) where T : Enum<T>, T : StoredSetting =
+        securedPreferenceDataStore.putString(key.key, setting.wireValue)
+
+    fun getTemperatureSetting(): TemperatureSettings =
+        getEnum(PreferenceKey.TEMPERATURE_UNIT, TemperatureSettings.CELSIUS)
 
     fun setTemperatureSetting(setting: TemperatureSettings) {
-        securedPreferenceDataStore.putString(PreferenceKey.TEMPERATURE_UNIT.key, setting.name.lowercase())
+        putEnum(PreferenceKey.TEMPERATURE_UNIT, setting)
         _settingsFlow.value = _settingsFlow.value.copy(temperatureUnit = setting)
     }
 
-    fun getMeasureSetting(): MeasureSettings {
-        return when (securedPreferenceDataStore.getString(PreferenceKey.MEASURE_UNIT.key, "")) {
-            "imperial" -> MeasureSettings.IMPERIAL
-            else -> MeasureSettings.METRIC
-        }
-    }
+    fun getMeasureSetting(): MeasureSettings =
+        getEnum(PreferenceKey.MEASURE_UNIT, MeasureSettings.METRIC)
 
     fun setMeasureSetting(setting: MeasureSettings) {
-        securedPreferenceDataStore.putString(PreferenceKey.MEASURE_UNIT.key, setting.name.lowercase())
+        putEnum(PreferenceKey.MEASURE_UNIT, setting)
         _settingsFlow.value = _settingsFlow.value.copy(measureUnit = setting)
     }
 
-    fun getPressureSetting(): PressureSettings {
-        return when (securedPreferenceDataStore.getString(PreferenceKey.PRESSURE_UNIT.key, "")) {
-            "mbar" -> PressureSettings.BAROMETRIC
-            "psi" -> PressureSettings.POUNDS_SQUARE_INCH
-            "inhg" -> PressureSettings.INCH_MERCURY
-            else -> PressureSettings.HECTOPASCAL
-        }
-    }
+    fun getPressureSetting(): PressureSettings =
+        getEnum(PreferenceKey.PRESSURE_UNIT, PressureSettings.HECTOPASCAL)
 
     fun setPressureSetting(setting: PressureSettings) {
-        securedPreferenceDataStore.putString(PreferenceKey.PRESSURE_UNIT.key, setting.name.lowercase())
+        putEnum(PreferenceKey.PRESSURE_UNIT, setting)
         _settingsFlow.value = _settingsFlow.value.copy(pressureUnit = setting)
     }
 
-    fun getWindDirectionSetting(): WindDirectionSettings {
-        return when (securedPreferenceDataStore.getString(PreferenceKey.DIRECTION_UNIT.key, "")) {
-            "angular" -> WindDirectionSettings.ANGULAR
-            else -> WindDirectionSettings.CARDINAL_POINTS
-        }
-    }
+    fun getWindDirectionSetting(): WindDirectionSettings =
+        getEnum(PreferenceKey.DIRECTION_UNIT, WindDirectionSettings.CARDINAL_POINTS)
 
     fun setWindDirectionSetting(setting: WindDirectionSettings) {
-        securedPreferenceDataStore.putString(PreferenceKey.DIRECTION_UNIT.key, setting.name.lowercase())
+        putEnum(PreferenceKey.DIRECTION_UNIT, setting)
         _settingsFlow.value = _settingsFlow.value.copy(windDirectionUnit = setting)
     }
 
-    fun getTimeSetting(): TimeSettings {
-        return when (securedPreferenceDataStore.getString(PreferenceKey.TIME_FORMAT.key, "")) {
-            "12" -> TimeSettings.TWELVE_HOURS
-            else -> TimeSettings.TWENTY_FOUR_HOURS
-        }
-    }
+    fun getTimeSetting(): TimeSettings =
+        getEnum(PreferenceKey.TIME_FORMAT, TimeSettings.TWENTY_FOUR_HOURS)
 
     fun setTimeSetting(setting: TimeSettings) {
-        securedPreferenceDataStore.putString(PreferenceKey.TIME_FORMAT.key, setting.name.split("_").first())
+        putEnum(PreferenceKey.TIME_FORMAT, setting)
         _settingsFlow.value = _settingsFlow.value.copy(timeFormat = setting)
     }
 

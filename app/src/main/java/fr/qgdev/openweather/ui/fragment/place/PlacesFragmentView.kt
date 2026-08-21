@@ -122,6 +122,9 @@ fun PlacesScreenView(
     val data by placeViewModel.placesState.collectAsState()
     val isRefreshing by placeViewModel.isRefreshing.collectAsState(initial = false)
     val settings by settingsViewModel.settingsState.collectAsState()
+    //  Republished as a new instance on every settings change, which is what makes the cards
+    //  below redraw when a unit changes.
+    val formattingService by settingsViewModel.formattingServiceState.collectAsState()
     val isApiKeyRegistered = settings?.apiKey?.isNotEmpty() ?: false
     val isApiKeyValid = settings?.apiKey?.length == 32
 
@@ -152,6 +155,7 @@ fun PlacesScreenView(
                             ) {
                                 PlacesList(
                                     placeList = data!!,
+                                    formattingService = formattingService,
                                     isRefreshing = isRefreshing,
                                     onRefresh = { placeViewModel.refreshAllPlaces() },
                                     onDismiss = { place, _ ->
@@ -291,11 +295,15 @@ fun LoadPlacesScreen(
 @Composable
 private fun PlacesList(
     placeList: List<Place>,
+    formattingService: FormattingService,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
-    formattingService: FormattingService = FormattingService.getInstance(LocalContext.current),
     onDismiss: (Place, Int) -> Unit = { _, _ -> }
 ) {
+    //  formattingService is required rather than defaulted to FormattingService.getInstance().
+    //  Reaching for the singleton here pinned one instance for the lifetime of the screen, and
+    //  since Compose compares this unstable type by identity, changing a unit never redrew the
+    //  cards. It now comes from SettingsViewModel, which republishes a new instance per change.
     // Dialog géré ici, hors du composable de l'item :
     // évite toute réutilisation d'état après un Undo qui remettrait le dialog au premier plan.
     var pendingDeletePlace by remember { mutableStateOf<Place?>(null) }

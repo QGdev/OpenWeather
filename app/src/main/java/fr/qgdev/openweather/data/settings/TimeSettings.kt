@@ -29,7 +29,7 @@ package fr.qgdev.openweather.data.settings
  * @author Quentin GOMES DOS REIS
  * @version 1
  */
-enum class TimeSettings {
-    TWELVE_HOURS,
-    TWENTY_FOUR_HOURS
+enum class TimeSettings(override val wireValue: String) : StoredSetting {
+    TWELVE_HOURS("12"),
+    TWENTY_FOUR_HOURS("24");
 }

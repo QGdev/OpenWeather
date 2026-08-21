@@ -20,31 +20,367 @@
 
 package fr.qgdev.openweather.ui.components.dialogs
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.work.WorkManager
+import kotlin.coroutines.cancellation.CancellationException
+import fr.qgdev.openweather.data.models.AirQuality
+import fr.qgdev.openweather.data.models.CurrentWeather
+import fr.qgdev.openweather.data.models.DailyForecast
+import fr.qgdev.openweather.data.models.Geolocation
+import fr.qgdev.openweather.data.models.HourlyForecast
+import fr.qgdev.openweather.data.models.MinutelyForecast
+import fr.qgdev.openweather.data.models.Place
+import fr.qgdev.openweather.data.models.Properties
+import fr.qgdev.openweather.data.models.WeatherAlert
 import fr.qgdev.openweather.data.repositories.PlaceRepository
 import fr.qgdev.openweather.data.settings.SettingsRepository
 import fr.qgdev.openweather.ui.common.dialogs.FullScreenDialog
-import kotlinx.coroutines.withTimeoutOrNull
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+
+/*
+ * A browsable view of everything the app has stored, rather than a summary.
+ *
+ * The tree is built from the protobuf schema field by field: every field of every message is
+ * rendered, including ones left at their proto3 default, which is exactly what you need when the
+ * question is "why is this value zero". protobuf-javalite strips descriptors, so the field lists
+ * below are written out by hand - if a .proto gains a field, add it here too. Each message also
+ * carries a raw node showing the javalite toString(), which is a useful cross-check but only
+ * prints non-default fields.
+ *
+ * Children are produced lazily so expanding a place does not build 48 hourly entries until asked.
+ */
+
+// region Tree model
+
+private sealed interface DebugNode {
+    val id: String
+    val label: String
+}
+
+private data class DebugField(
+    override val id: String,
+    override val label: String,
+    val value: String
+) : DebugNode
+
+private data class DebugGroup(
+    override val id: String,
+    override val label: String,
+    val badge: String? = null,
+    val children: () -> List<DebugNode>
+) : DebugNode
+
+private data class FlatRow(val depth: Int, val node: DebugNode, val path: String)
+
+/** Walks the visible part of the tree into a flat list the LazyColumn can render. */
+private fun flatten(
+    nodes: List<DebugNode>,
+    expanded: Set<String>,
+    depth: Int = 0,
+    path: String = "",
+    out: MutableList<FlatRow> = mutableListOf()
+): MutableList<FlatRow> {
+    nodes.forEach { node ->
+        out.add(FlatRow(depth, node, path))
+        if (node is DebugGroup && node.id in expanded) {
+            val childPath = if (path.isEmpty()) node.label else "$path › ${node.label}"
+            flatten(node.children(), expanded, depth + 1, childPath, out)
+        }
+    }
+    return out
+}
+
+/** Walks the whole tree, expanded or not, collecting fields whose label or value matches. */
+private fun search(
+    nodes: List<DebugNode>,
+    query: String,
+    path: String = "",
+    out: MutableList<FlatRow> = mutableListOf()
+): MutableList<FlatRow> {
+    nodes.forEach { node ->
+        when (node) {
+            is DebugField ->
+                if (node.label.contains(query, true) || node.value.contains(query, true)) {
+                    out.add(FlatRow(0, node, path))
+                }
+
+            is DebugGroup -> {
+                val childPath = if (path.isEmpty()) node.label else "$path › ${node.label}"
+                search(node.children(), query, childPath, out)
+            }
+        }
+    }
+    return out
+}
+
+/** Renders the whole tree as indented text, for the copy-to-clipboard action. */
+private fun asText(nodes: List<DebugNode>, depth: Int = 0, sb: StringBuilder = StringBuilder()): String {
+    val pad = "  ".repeat(depth)
+    nodes.forEach { node ->
+        when (node) {
+            is DebugField -> sb.append(pad).append(node.label).append(": ").append(node.value).append('\n')
+            is DebugGroup -> {
+                sb.append(pad).append(node.label)
+                node.badge?.let { sb.append(" [").append(it).append(']') }
+                sb.append('\n')
+                asText(node.children(), depth + 1, sb)
+            }
+        }
+    }
+    return sb.toString()
+}
+
+// endregion
+
+// region Value formatting
+
+/** Unique work name enqueued by WidgetsManager. */
+private const val PERIODIC_WORK_NAME = "PeriodicUpdaterWorker"
+
+private val timestampFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
+    .apply { timeZone = TimeZone.getTimeZone("UTC") }
+
+/** Epoch milliseconds shown raw and decoded, because "0" and "unset" are different problems. */
+private fun ts(value: Long): String =
+    if (value <= 0L) "$value  (unset)"
+    else "$value  (${timestampFormat.format(Date(value))} UTC)"
+
+private fun field(id: String, label: String, value: Any?) = DebugField(id, label, value.toString())
+
+// endregion
+
+// region Per-message field lists - one entry per field in the .proto
+
+private fun geolocationNodes(id: String, g: Geolocation): List<DebugNode> = listOf(
+    field("$id.city", "city", g.city),
+    field("$id.countryCode", "countryCode", g.countryCode),
+    field("$id.latitude", "coordinates.latitude", g.coordinates.latitude),
+    field("$id.longitude", "coordinates.longitude", g.coordinates.longitude),
+    field("$id.hasCoordinates", "(hasCoordinates)", g.hasCoordinates())
+)
+
+private fun propertiesNodes(id: String, p: Properties): List<DebugNode> = listOf(
+    DebugField("$id.lswut", "lastSuccessfulWeatherUpdateTime", ts(p.lastSuccessfulWeatherUpdateTime)),
+    DebugField("$id.lsaqut", "lastSuccessfulAirQualityUpdateTime", ts(p.lastSuccessfulAirQualityUpdateTime)),
+    DebugField("$id.lwuat", "lastWeatherUpdateAttemptTime", ts(p.lastWeatherUpdateAttemptTime)),
+    DebugField("$id.laqiat", "lastAirQualityUpdateAttemptTime", ts(p.lastAirQualityUpdateAttemptTime)),
+    DebugField("$id.ct", "creationTime", ts(p.creationTime)),
+    DebugField("$id.lawdt", "lastAvailableWeatherDataTime", ts(p.lastAvailableWeatherDataTime)),
+    DebugField("$id.laaqdt", "lastAvailableAirQualityDataTime", ts(p.lastAvailableAirQualityDataTime)),
+    field("$id.tz", "timeOffset", "${p.timeOffset}  (never populated by PlaceDataMapper)")
+)
+
+private fun currentWeatherNodes(id: String, w: CurrentWeather): List<DebugNode> = listOf(
+    DebugField("$id.dt", "dt", ts(w.dt)),
+    field("$id.weather", "weather", w.weather),
+    field("$id.weatherDescription", "weatherDescription", w.weatherDescription),
+    field("$id.weatherCode", "weatherCode", w.weatherCode),
+    field("$id.temperature", "temperature", w.temperature),
+    field("$id.temperatureFeelsLike", "temperatureFeelsLike", w.temperatureFeelsLike),
+    field("$id.pressure", "pressure", w.pressure),
+    field("$id.humidity", "humidity", w.humidity),
+    field("$id.dewPoint", "dewPoint", w.dewPoint),
+    field("$id.cloudiness", "cloudiness", w.cloudiness),
+    field("$id.uvIndex", "uvIndex", w.uvIndex),
+    field("$id.visibility", "visibility", w.visibility),
+    DebugField("$id.sunrise", "sunrise", ts(w.sunrise)),
+    DebugField("$id.sunset", "sunset", ts(w.sunset)),
+    field("$id.windSpeed", "windSpeed", w.windSpeed),
+    field("$id.windGustSpeed", "windGustSpeed", w.windGustSpeed),
+    field("$id.isWindDirectionReadable", "isWindDirectionReadable", w.isWindDirectionReadable),
+    field("$id.windDirection", "windDirection", w.windDirection),
+    field("$id.rain", "rain", w.rain),
+    field("$id.snow", "snow", w.snow)
+)
+
+private fun airQualityNodes(id: String, a: AirQuality): List<DebugNode> = listOf(
+    field("$id.aqi", "aqi", a.aqi),
+    field("$id.co", "co", a.co),
+    field("$id.no", "no", a.no),
+    field("$id.no2", "no2", a.no2),
+    field("$id.o3", "o3", a.o3),
+    field("$id.so2", "so2", a.so2),
+    field("$id.pm25", "pm2_5", a.pm25),
+    field("$id.pm10", "pm10", a.pm10),
+    field("$id.nh3", "nh3", a.nh3)
+)
+
+private fun minutelyNodes(id: String, m: MinutelyForecast): List<DebugNode> = listOf(
+    DebugField("$id.dt", "dt", ts(m.dt)),
+    field("$id.precipitation", "precipitation", m.precipitation)
+)
+
+private fun hourlyNodes(id: String, h: HourlyForecast): List<DebugNode> = listOf(
+    DebugField("$id.dt", "dt", ts(h.dt)),
+    field("$id.weather", "weather", h.weather),
+    field("$id.weatherDescription", "weatherDescription", h.weatherDescription),
+    field("$id.weatherCode", "weatherCode", h.weatherCode),
+    field("$id.temperature", "temperature", h.temperature),
+    field("$id.temperatureFeelsLike", "temperatureFeelsLike", h.temperatureFeelsLike),
+    field("$id.pressure", "pressure", h.pressure),
+    field("$id.humidity", "humidity", h.humidity),
+    field("$id.dewPoint", "dewPoint", h.dewPoint),
+    field("$id.cloudiness", "cloudiness", h.cloudiness),
+    field("$id.visibility", "visibility", h.visibility),
+    field("$id.uvIndex", "uvIndex", h.uvIndex),
+    field("$id.windSpeed", "windSpeed", h.windSpeed),
+    field("$id.windGustSpeed", "windGustSpeed", h.windGustSpeed),
+    field("$id.windDirection", "windDirection", h.windDirection),
+    field("$id.pop", "pop", h.pop),
+    field("$id.rain", "rain", h.rain),
+    field("$id.snow", "snow", h.snow)
+)
+
+private fun dailyNodes(id: String, d: DailyForecast): List<DebugNode> = listOf(
+    DebugField("$id.dt", "dt", ts(d.dt)),
+    field("$id.weather", "weather", d.weather),
+    field("$id.weatherDescription", "weatherDescription", d.weatherDescription),
+    field("$id.weatherCode", "weatherCode", d.weatherCode),
+    field("$id.tMorning", "temperatureMorning", d.temperatureMorning),
+    field("$id.tDay", "temperatureDay", d.temperatureDay),
+    field("$id.tEvening", "temperatureEvening", d.temperatureEvening),
+    field("$id.tNight", "temperatureNight", d.temperatureNight),
+    field("$id.tMin", "temperatureMinimum", d.temperatureMinimum),
+    field("$id.tMax", "temperatureMaximum", d.temperatureMaximum),
+    field("$id.tMornFL", "temperatureMorningFeelsLike", d.temperatureMorningFeelsLike),
+    field("$id.tDayFL", "temperatureDayFeelsLike", d.temperatureDayFeelsLike),
+    field("$id.tEveFL", "temperatureEveningFeelsLike", d.temperatureEveningFeelsLike),
+    field("$id.tNightFL", "temperatureNightFeelsLike", d.temperatureNightFeelsLike),
+    field("$id.pressure", "pressure", d.pressure),
+    field("$id.humidity", "humidity", d.humidity),
+    field("$id.dewPoint", "dewPoint", d.dewPoint),
+    field("$id.cloudiness", "cloudiness", d.cloudiness),
+    DebugField("$id.sunriseDt", "sunriseDt", ts(d.sunriseDt)),
+    DebugField("$id.sunsetDt", "sunsetDt", ts(d.sunsetDt)),
+    field("$id.uvIndex", "uvIndex", d.uvIndex),
+    DebugField("$id.moonriseDt", "moonriseDt", ts(d.moonriseDt)),
+    DebugField("$id.moonsetDt", "moonsetDt", ts(d.moonsetDt)),
+    field("$id.moonPhase", "moonPhase", d.moonPhase),
+    field("$id.windSpeed", "windSpeed", d.windSpeed),
+    field("$id.windGustSpeed", "windGustSpeed", d.windGustSpeed),
+    field("$id.windDirection", "windDirection", d.windDirection),
+    field("$id.pop", "pop", d.pop),
+    field("$id.rain", "rain", d.rain),
+    field("$id.snow", "snow", d.snow)
+)
+
+private fun alertNodes(id: String, a: WeatherAlert): List<DebugNode> = listOf(
+    field("$id.sender", "sender", a.sender),
+    field("$id.event", "event", a.event),
+    DebugField("$id.startDt", "startDt", ts(a.startDt)),
+    DebugField("$id.endDt", "endDt", ts(a.endDt)),
+    field("$id.tags", "tags", a.tagsList.joinToString(", ").ifEmpty { "(none)" }),
+    field("$id.description", "description", a.description)
+)
+
+private fun placeNodes(id: String, place: Place): List<DebugNode> = buildList {
+    add(DebugGroup("$id.geo", "Geolocation") { geolocationNodes("$id.geo", place.geolocation) })
+    add(DebugGroup("$id.props", "Properties") { propertiesNodes("$id.props", place.properties) })
+    add(
+        DebugGroup(
+            "$id.cw", "Current weather",
+            badge = if (place.hasCurrentWeather()) null else "absent"
+        ) { currentWeatherNodes("$id.cw", place.currentWeather) }
+    )
+    add(
+        DebugGroup(
+            "$id.aq", "Air quality",
+            badge = if (place.hasAirQuality()) null else "absent"
+        ) { airQualityNodes("$id.aq", place.airQuality) }
+    )
+    add(
+        DebugGroup("$id.min", "Minutely forecast", "${place.minutelyForecastListCount}") {
+            place.minutelyForecastListList.mapIndexed { i, m ->
+                DebugGroup("$id.min.$i", "[$i]  ${timestampFormat.format(Date(m.dt))}") {
+                    minutelyNodes("$id.min.$i", m)
+                }
+            }
+        }
+    )
+    add(
+        DebugGroup("$id.hr", "Hourly forecast", "${place.hourlyForecastListCount}") {
+            place.hourlyForecastListList.mapIndexed { i, h ->
+                DebugGroup("$id.hr.$i", "[$i]  ${timestampFormat.format(Date(h.dt))}  ${h.weather}") {
+                    hourlyNodes("$id.hr.$i", h)
+                }
+            }
+        }
+    )
+    add(
+        DebugGroup("$id.day", "Daily forecast", "${place.dailyForecastListCount}") {
+            place.dailyForecastListList.mapIndexed { i, d ->
+                DebugGroup("$id.day.$i", "[$i]  ${timestampFormat.format(Date(d.dt))}  ${d.weather}") {
+                    dailyNodes("$id.day.$i", d)
+                }
+            }
+        }
+    )
+    add(
+        DebugGroup("$id.alerts", "Weather alerts", "${place.weatherAlertsListCount}") {
+            place.weatherAlertsListList.mapIndexed { i, a ->
+                DebugGroup("$id.alerts.$i", "[$i]  ${a.event}") { alertNodes("$id.alerts.$i", a) }
+            }
+        }
+    )
+    add(
+        DebugGroup("$id.raw", "Raw protobuf") {
+            listOf(
+                DebugField(
+                    "$id.raw.text",
+                    "toString()",
+                    "javalite omits fields left at their default, so this is a cross-check " +
+                            "rather than the full picture:\n\n${place}"
+                )
+            )
+        }
+    )
+}
+
+// endregion
 
 @Composable
 fun DebugDiagnosticDialog(
@@ -54,260 +390,255 @@ fun DebugDiagnosticDialog(
     val settingsRepository = remember { SettingsRepository.getInstance(context) }
     val placeRepository = remember { PlaceRepository.getInstance(context) }
 
-    val settingsState = settingsRepository.settingsFlow.collectAsState()
-    val placesState = placeRepository.placesFlow.collectAsState(initial = emptyList())
+    val settings by settingsRepository.settingsFlow.collectAsState()
+    val places by placeRepository.placesFlow.collectAsState(initial = emptyList())
 
-    val workStatusText = remember { mutableStateOf("Loading...") }
+    var expanded by remember { mutableStateOf(setOf<String>()) }
+    var query by remember { mutableStateOf("") }
 
+    //  The previous version of this dialog printed a fixed string telling you to go and check adb.
+    //  This reads the actual WorkInfo for the unique work WidgetsManager enqueues.
+    var workRows by remember { mutableStateOf(listOf<DebugNode>()) }
     LaunchedEffect(Unit) {
-        withTimeoutOrNull(2000) {
-            workStatusText.value = getWorkManagerStatus(context)
-        } ?: run {
-            workStatusText.value = "WorkManager status: Timeout (check logs)"
-        }
-    }
-
-    FullScreenDialog(
-        title = "🐛 Debug Diagnostic",
-        onDismissRequest = onDismissRequest,
-    ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 8.dp)
-        ) {
-            // Settings Section
-            item {
-                DebugSectionHeader(title = "⚙️ Settings")
-            }
-            item {
-                val settings = settingsState.value
-                val apiKey = settings.apiKey ?: "Not set"
-                val obfuscatedApiKey = if (apiKey.length > 4) {
-                    "*".repeat(apiKey.length - 4) + apiKey.takeLast(4)
-                } else {
-                    "*".repeat(apiKey.length)
-                }
-
-                DebugMonoText("""
-                    Temperature Unit: ${settings.temperatureUnit}
-                    Measure Unit: ${settings.measureUnit}
-                    Pressure Unit: ${settings.pressureUnit}
-                    Wind Direction Unit: ${settings.windDirectionUnit}
-                    Time Format: ${settings.timeFormat}
-                    API Key: $obfuscatedApiKey
-                    Periodic Update Enabled: ${settings.periodicUpdateEnabled}
-                    Update Period: ${settings.updatePeriod}
-                """.trimIndent())
-            }
-
-            item { HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp)) }
-
-            // WorkManager Section (Enhanced)
-            item {
-                DebugSectionHeader(title = "⏱️ WorkManager Status & Periodic Updates")
-            }
-            item {
-                val enhancedWorkStatus = arrayOf(
-                    workStatusText.value,
-                    "",
-                    "Periodic Update Configuration:",
-                    "   ├─ Enabled: ${settingsState.value.periodicUpdateEnabled}",
-                    "   ├─ Update Period: ${settingsState.value.updatePeriod}",
-                    "   ├─ Worker Name: PeriodicUpdaterWorker",
-                    "   ├─ Update Type: Periodic (runs in background)",
-                    "   └─ Constraint: Requires network")
-                DebugMonoText(enhancedWorkStatus.joinToString("\n"))
-            }
-
-            item { HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp)) }
-
-            // Statistics Section
-            item {
-                DebugSectionHeader(title = "📊 Statistics")
-            }
-            item {
-                val places = placesState.value
-                val statsText = """
-                    Total Places: ${places.size}
-                    Storage Status: ${if (places.isEmpty()) "Empty" else "Populated"}
-                """.trimIndent()
-                DebugMonoText(statsText)
-            }
-
-            item { HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp)) }
-
-            item { HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp)) }
-
-            // Raw Places Data Section (Enhanced)
-            item {
-                DebugSectionHeader(title = "🗺️ Stored Places Data (${placesState.value.size} places)")
-            }
-
-            items(placesState.value.size) { index ->
-                val place = placesState.value[index]
-                val coordinates = place.geolocation?.coordinates
-                val properties = place.properties
-                val city = place.geolocation?.city ?: "Unknown"
-                val country = place.geolocation?.countryCode ?: "Unknown"
-                
-                // Format timestamps to readable format
-                val lastWeatherUpdateStr = if (properties?.lastSuccessfulWeatherUpdateTime ?: 0L > 0) {
-                    formatTimestamp(properties?.lastSuccessfulWeatherUpdateTime ?: 0L)
-                } else {
-                    "Never"
-                }
-                
-                val lastAirQualityUpdateStr = if (properties?.lastSuccessfulAirQualityUpdateTime ?: 0L > 0) {
-                    formatTimestamp(properties?.lastSuccessfulAirQualityUpdateTime ?: 0L)
-                } else {
-                    "Never"
-                }
-                
-                val createdStr = if (properties?.creationTime ?: 0L > 0) {
-                    formatTimestamp(properties?.creationTime ?: 0L)
-                } else {
-                    "Unknown"
-                }
-                
-                DebugMonoText("""
-                    ════════════════════════════════════════
-                    🏙️  PLACE ${index + 1} - $city, $country
-                    ════════════════════════════════════════
-                    
-                    📍 GEOLOCATION
-                    ├─ Latitude: ${coordinates?.latitude ?: "N/A"}
-                    ├─ Longitude: ${coordinates?.longitude ?: "N/A"}
-                    ├─ City: $city
-                    └─ Country Code: $country
-                    
-                    🌦️  WEATHER DATA
-                    ├─ Has Current Weather: ${place.hasCurrentWeather()}
-                    ├─ Daily Forecasts: ${place.dailyForecastListCount} days
-                    ├─ Hourly Forecasts: ${place.hourlyForecastListCount} hours
-                    └─ Weather Alerts: ${place.weatherAlertsListCount}
-                    
-                    💨 AIR QUALITY DATA
-                    ├─ Has Air Quality: ${place.hasAirQuality()}
-                    ├─ Minutely Forecast: ${place.minutelyForecastListCount} data points
-                    └─ Last Update: $lastAirQualityUpdateStr
-                    
-                    ⏰ UPDATE STATUS & TIMESTAMPS
-                    ├─ Created: $createdStr
-                    ├─ Last Weather Update: $lastWeatherUpdateStr
-                    ├─ Last Weather Attempt: ${formatTimestamp(properties?.lastWeatherUpdateAttemptTime ?: 0L)}
-                    ├─ Last AQ Update: $lastAirQualityUpdateStr
-                    ├─ Last AQ Attempt: ${formatTimestamp(properties?.lastAirQualityUpdateAttemptTime ?: 0L)}
-                    └─ Time Zone Offset: ${properties?.timeOffset ?: 0} seconds
-                    
-                    📊 SUMMARY
-                    ├─ Total Data Points: ${
-                        (place.dailyForecastListCount + 
-                        place.hourlyForecastListCount + 
-                        place.minutelyForecastListCount + 
-                        place.weatherAlertsListCount)
+        //  Not runCatching: that would also swallow the CancellationException thrown when the
+        //  dialog is dismissed, and report closing the dialog as a WorkManager error.
+        try {
+            WorkManager.getInstance(context)
+                .getWorkInfosForUniqueWorkFlow(PERIODIC_WORK_NAME)
+                .collect { infos ->
+                    workRows = if (infos.isEmpty()) {
+                        listOf(field("work.none", "state", "no work enqueued under $PERIODIC_WORK_NAME"))
+                    } else {
+                        infos.flatMapIndexed { i, info ->
+                            listOf(
+                                field("work.$i.id", "[$i] id", info.id),
+                                field("work.$i.state", "[$i] state", info.state),
+                                field("work.$i.runAttempt", "[$i] runAttemptCount", info.runAttemptCount),
+                                field("work.$i.tags", "[$i] tags", info.tags.joinToString(", ")),
+                                field(
+                                    "work.$i.nextSchedule", "[$i] nextScheduleTimeMillis",
+                                    ts(info.nextScheduleTimeMillis)
+                                ),
+                                field("work.$i.stopReason", "[$i] stopReason", info.stopReason)
+                            )
+                        }
                     }
-                    ├─ Storage Status: Complete
-                    └─ Next Update: Based on periodic schedule
-                """.trimIndent())
-                
-                HorizontalDivider(
-                    modifier = Modifier
-                        .padding(vertical = 12.dp)
-                        .fillMaxWidth()
+                }
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (error: Exception) {
+            workRows = listOf(
+                field("work.error", "error", error.message ?: error::class.java.simpleName)
+            )
+        }
+    }
+
+    val tree: List<DebugNode> = buildList {
+        add(
+            DebugGroup("settings", "Settings") {
+                val key = settings.apiKey
+                listOf(
+                    field("settings.temperature", "temperatureUnit", settings.temperatureUnit),
+                    field("settings.measure", "measureUnit", settings.measureUnit),
+                    field("settings.pressure", "pressureUnit", settings.pressureUnit),
+                    field("settings.direction", "windDirectionUnit", settings.windDirectionUnit),
+                    field("settings.time", "timeFormat", settings.timeFormat),
+                    field("settings.locale", "defaultLocale", settings.defaultLocale),
+                    field(
+                        "settings.apiKey", "apiKey",
+                        when {
+                            key.isNullOrEmpty() -> "(not set)"
+                            key.length > 4 -> "*".repeat(key.length - 4) + key.takeLast(4) +
+                                    "  (${key.length} chars)"
+
+                            else -> "*".repeat(key.length) + "  (${key.length} chars)"
+                        }
+                    ),
+                    field("settings.periodic", "periodicUpdateEnabled", settings.periodicUpdateEnabled),
+                    field("settings.period", "updatePeriod", settings.updatePeriod)
                 )
             }
-
-            item {
-                Text(
-                    text = "End of diagnostic data",
-                    modifier = Modifier.padding(16.dp),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline
+        )
+        add(DebugGroup("work", "Background work") { workRows })
+        add(
+            DebugGroup("storage", "Storage", "${places.size}") {
+                listOf(
+                    field("storage.count", "places", places.size),
+                    field(
+                        "storage.dataPoints", "total forecast entries",
+                        places.sumOf {
+                            it.minutelyForecastListCount + it.hourlyForecastListCount +
+                                    it.dailyForecastListCount + it.weatherAlertsListCount
+                        }
+                    ),
+                    field("storage.file", "datastore file", "placeStorage.pb")
                 )
+            }
+        )
+        places.forEachIndexed { index, place ->
+            val city = place.geolocation.city.ifEmpty { "?" }
+            val country = place.geolocation.countryCode.ifEmpty { "?" }
+            add(DebugGroup("place.$index", "$city, $country") { placeNodes("place.$index", place) })
+        }
+    }
+
+    val rows = remember(tree, expanded, query) {
+        if (query.isBlank()) flatten(tree, expanded) else search(tree, query.trim())
+    }
+
+    FullScreenDialog(title = "Stored data", onDismissRequest = onDismissRequest) {
+        Column(modifier = Modifier.fillMaxSize()) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    label = { Text("Filter fields", fontSize = 12.sp) },
+                    trailingIcon = {
+                        if (query.isNotEmpty()) {
+                            IconButton(onClick = { query = "" }) {
+                                Icon(Icons.Filled.Close, contentDescription = "Clear filter")
+                            }
+                        }
+                    }
+                )
+                TextButton(onClick = {
+                    expanded = if (expanded.isEmpty()) {
+                        //  One level: expanding everything would materialise every hourly entry.
+                        tree.filterIsInstance<DebugGroup>().map { it.id }.toSet()
+                    } else {
+                        emptySet()
+                    }
+                }) { Text(if (expanded.isEmpty()) "Expand" else "Collapse") }
+                TextButton(onClick = { copyToClipboard(context, asText(tree)) }) { Text("Copy") }
+            }
+
+            if (rows.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        if (query.isBlank()) "No data stored" else "No field matches \"$query\"",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(rows, key = { "${it.path}|${it.node.id}" }) { row ->
+                        when (val node = row.node) {
+                            is DebugGroup -> GroupRow(
+                                depth = row.depth,
+                                label = node.label,
+                                badge = node.badge,
+                                isExpanded = node.id in expanded,
+                                onToggle = {
+                                    expanded = if (node.id in expanded) expanded - node.id
+                                    else expanded + node.id
+                                }
+                            )
+
+                            is DebugField -> FieldRow(
+                                depth = row.depth,
+                                label = node.label,
+                                value = node.value,
+                                path = if (query.isBlank()) null else row.path
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-private fun DebugSectionHeader(title: String) {
-    Text(
-        text = title,
-        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.primary
-    )
-}
-
-@Composable
-private fun DebugMonoText(text: String) {
-    Text(
-        text = text,
+private fun GroupRow(
+    depth: Int,
+    label: String,
+    badge: String?,
+    isExpanded: Boolean,
+    onToggle: () -> Unit
+) {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(4.dp)
+            .clickable(onClick = onToggle)
+            .padding(start = (8 + depth * 14).dp, end = 8.dp, top = 6.dp, bottom = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = if (isExpanded) Icons.Filled.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = if (isExpanded) "Collapse" else "Expand",
+            modifier = Modifier.size(18.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = label,
+            modifier = Modifier.padding(start = 4.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+        badge?.let {
+            Text(
+                text = "  $it",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline
             )
-            .padding(8.dp),
-        style = MaterialTheme.typography.bodySmall.copy(
-            fontFamily = FontFamily.Monospace,
-            fontSize = 10.sp
-        ),
-        color = MaterialTheme.colorScheme.onSurface
-    )
-}
-
-/**
- * Formats a timestamp (in milliseconds) to a human-readable string.
- * Returns "N/A" if timestamp is 0 or invalid.
- */
-private fun formatTimestamp(timestampMs: Long): String {
-    return if (timestampMs <= 0) {
-        "N/A"
-    } else {
-        try {
-            val date = java.util.Date(timestampMs)
-            val format = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
-            format.format(date)
-        } catch (e: Exception) {
-            "Invalid (${timestampMs}ms)"
         }
     }
 }
 
-/**
- * Retrieves WorkManager status synchronously for debugging.
- * This is a simple implementation that checks the periodic updater worker.
- */
-private fun getWorkManagerStatus(context: Context): String {
-    return try {
-        val workManager = androidx.work.WorkManager.getInstance(context)
-        val workInfosLiveData = workManager.getWorkInfosForUniqueWorkLiveData("PeriodicUpdaterWorker")
-
-        // Since this is sync context, we can't use LiveData observers properly
-        // Return a status that WorkManagerDebugger would show
-        "WorkManager Instance: Active\nWorker Name: PeriodicUpdaterWorker\nStatus: Check WorkManager via adb for details\nRun: adb shell am dump w | grep PeriodicUpdaterWorker"
-    } catch (e: Exception) {
-        "WorkManager Status: Error - ${e.message}"
+@Composable
+private fun FieldRow(depth: Int, label: String, value: String, path: String?) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = (26 + depth * 14).dp, end = 8.dp, top = 2.dp, bottom = 2.dp)
+    ) {
+        path?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.outline,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        SelectionContainer {
+            Row(verticalAlignment = Alignment.Top) {
+                Text(
+                    text = label,
+                    modifier = Modifier.width(150.dp),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.outline
+                )
+                Text(
+                    text = value,
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(
+                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            shape = RoundedCornerShape(3.dp)
+                        )
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                    fontFamily = FontFamily.Monospace,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
     }
 }
 
-@Preview
-@Composable
-fun DebugDiagnosticDialogPreview() {
-    DebugDiagnosticDialog(
-        onDismissRequest = {}
-    )
+private fun copyToClipboard(context: Context, text: String) {
+    val clipboard = context.getSystemService(ClipboardManager::class.java)
+    clipboard?.setPrimaryClip(ClipData.newPlainText("OpenWeather debug data", text))
 }
-
-
-
-
-
-
-
-
-
-

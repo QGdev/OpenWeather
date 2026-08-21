@@ -288,6 +288,24 @@ class FormattingService private constructor(
         timeDateFormatInit(settings.timeFormat)
     }
 
+    /**
+     * Returns a **new** instance configured for [settings], leaving this one untouched.
+     *
+     * This exists because [update] mutates in place, which Compose cannot observe. The compiler
+     * infers this class as unstable - it has 29 mutable fields - and under strong skipping an
+     * unstable parameter is compared by instance identity. A singleton mutated in place therefore
+     * always compares equal, so `PlaceCardView` is skipped and keeps rendering the old units until
+     * something else forces it to recompose.
+     *
+     * Handing the UI a different instance per settings change makes that comparison fail, which is
+     * what makes a unit change redraw immediately.
+     *
+     * The mutating [update] methods stay for the View-based widgets, which read the singleton
+     * through `AppRepository.getFormattingService()` and are frozen.
+     */
+    fun snapshotFor(settings: Settings): FormattingService =
+        FormattingService(context, null).also { it.update(settings) }
+
     // endregion
 
     // region Public conversion methods
