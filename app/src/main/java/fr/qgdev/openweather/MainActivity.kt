@@ -22,6 +22,7 @@ package fr.qgdev.openweather
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -54,7 +55,9 @@ import fr.qgdev.openweather.ui.fragment.place.PlacesScreenView
 import fr.qgdev.openweather.ui.fragment.settings.SettingsScreenView
 import fr.qgdev.openweather.ui.theme.AppTheme
 import fr.qgdev.openweather.ui.viewmodel.PlaceViewModel
+import fr.qgdev.openweather.ui.viewmodel.PlaceViewModelFactory
 import fr.qgdev.openweather.ui.viewmodel.SettingsViewModel
+import fr.qgdev.openweather.ui.viewmodel.SettingsViewModelFactory
 import fr.qgdev.openweather.widgets.WidgetsManager
 import kotlinx.coroutines.launch
 
@@ -78,8 +81,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var formattingService: FormattingService
 
-    private lateinit var placeViewModel: PlaceViewModel
-    private lateinit var settingsViewModel: SettingsViewModel
+    //  Obtained through the ViewModelStore rather than constructed. Building them in onCreate gave
+    //  a brand new instance on every configuration change, so a rotation discarded the collected
+    //  places and settings and left the previous viewModelScope uncleared - losing exactly the
+    //  state a ViewModel exists to preserve.
+    private val placeViewModel: PlaceViewModel by viewModels {
+        PlaceViewModelFactory(applicationContext)
+    }
+    private val settingsViewModel: SettingsViewModel by viewModels {
+        SettingsViewModelFactory(applicationContext)
+    }
 
     override fun onCreate(
         savedInstanceState: Bundle?
@@ -94,11 +105,6 @@ class MainActivity : AppCompatActivity() {
         formattingService = FormattingService.getInstance(applicationContext)
 
         android.util.Log.d("MainActivity", "✅ [onCreate] All repositories initialized")
-
-        placeViewModel = PlaceViewModel(placeRepository)
-        settingsViewModel = SettingsViewModel(settingsRepository, formattingService)
-
-        android.util.Log.d("MainActivity", "✅ [onCreate] All ViewModels initialized")
 
         // Check initial settings state
         val initialSettings = settingsRepository.settingsFlow.value

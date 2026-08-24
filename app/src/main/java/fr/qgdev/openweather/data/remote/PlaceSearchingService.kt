@@ -54,12 +54,13 @@ class PlaceSearchingService private constructor(
 
         private val TAG: String? = PlaceSearchingService::class.simpleName
 
+        //  See WeatherService.getInstance: the second null check inside the lock is what stops two
+        //  threads each building a service, and with it a second Volley RequestQueue.
         fun getInstance(
             context: Context
         ): PlaceSearchingService {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE = PlaceSearchingService(context)
-                return INSTANCE!!
+                INSTANCE ?: PlaceSearchingService(context).also { INSTANCE = it }
             }
         }
     }

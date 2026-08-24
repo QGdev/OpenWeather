@@ -44,6 +44,20 @@ import kotlinx.coroutines.flow.single
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 
+/** Outcome of an attempt to store a place. */
+enum class AddPlaceResult {
+    ADDED,
+
+    /** A place with the same geolocation is already stored. */
+    ALREADY_PRESENT,
+
+    /** The storage already holds [MAX_PLACES] places. */
+    STORAGE_FULL
+}
+
+/** Upper bound on stored places; ids are allocated modulo this value. */
+private const val MAX_PLACES = 100
+
 class PlaceRepository private constructor(context: Context) {
     private val weatherService = WeatherService.getInstance(context)
     private val placeSearchingService = PlaceSearchingService.getInstance(context)
@@ -73,30 +87,32 @@ class PlaceRepository private constructor(context: Context) {
         }
     }
 
+    //  first(), not single(): DataStore's flow never completes, so single() waits forever for a
+    //  completion that never arrives. Neither of these was called, so the hang was latent.
     suspend fun isPlaceStorageEmpty(): Boolean {
-        return dataStore.data.single().placesCount == 0
+        return dataStore.data.first().placesCount == 0
     }
 
     suspend fun isPlaceStorageFull(): Boolean {
-        return dataStore.data.single().placesCount >= 100
+        return dataStore.data.first().placesCount >= MAX_PLACES
     }
 
-    private suspend fun getNextPlaceId(): Int? {
-        val placeStorage = dataStore.data.first()
-
-        if (placeStorage.placesCount >= 100) {
-            return null // Or Result.failure(...) for a Result-based approach
+    /**
+     * The next free slot, or null when storage is full.
+     *
+     * Deliberately an extension on the storage rather than a suspending read of its own, so callers
+     * resolve it *inside* an [DataStore.updateData] block. Reading the storage, returning an id and
+     * then opening a transaction let two concurrent adds pick the same id, and the second silently
+     * overwrote the first.
+     */
+    private fun PlaceStorage.nextFreeId(): Int? =
+        if (placesCount >= MAX_PLACES) null
+        else (0 until MAX_PLACES).firstNotNullOfOrNull { offset ->
+            ((lastKeyUsed + 1 + offset) % MAX_PLACES).takeIf { !placesMap.containsKey(it) }
         }
 
-        return (0..99).firstNotNullOfOrNull { offset ->
-            val nextPlaceId = (placeStorage.lastKeyUsed + 1 + offset) % 100
-            if (!placeStorage.placesMap.containsKey(nextPlaceId)) {
-                nextPlaceId
-            } else {
-                null
-            }
-        }
-    }
+    private fun PlaceStorage.holds(geolocation: Geolocation): Boolean =
+        placesMap.values.any { it.geolocation == geolocation }
 
     private suspend fun retrievePlaceKey(place: Place): Int {
         val placeStorage = dataStore.data.first()
@@ -109,49 +125,86 @@ class PlaceRepository private constructor(context: Context) {
         return -1
     }
 
-    suspend fun addPlace(place: Place) {
-        val nextPlaceId = getNextPlaceId()
-        if (nextPlaceId == null) {
-            Log.w("PlaceRepository", "PlaceStorage is full")
-            return
-        }
-
-        //  Update place creation time to now, since we are adding it now
-        val placeProperties = place.properties.toBuilder()
-            .setCreationTime(System.currentTimeMillis())
-            .build()
-
-        val placeWithCreationTime = place.toBuilder()
-            .setProperties(placeProperties).build()
+    /**
+     * Stores [place], at [index] in the display order when given and at the end otherwise.
+     *
+     * One function rather than two so the creation-time stamp cannot go missing from one of them,
+     * which is what left restored places with `creationTime = 0`.
+     *
+     * Everything happens inside the [DataStore.updateData] block: the duplicate check, the slot
+     * search and the write. updateData is serialised per store and retries on conflict, so two
+     * concurrent adds can no longer read the same state and choose the same id.
+     */
+    suspend fun addPlaceAt(index: Int?, place: Place): AddPlaceResult {
+        var result = AddPlaceResult.ADDED
 
         dataStore.updateData { placeStorage ->
-            placeStorage.toBuilder()
-                .putPlaces(nextPlaceId, placeWithCreationTime)
-                .putPlaceKeys(place.geolocation.hashCode(), nextPlaceId)
-                .setLastKeyUsed(nextPlaceId)
-                .addOrderedPlaceKeys(nextPlaceId)
-                .build()
-        }
-    }
-
-    suspend fun addPlaceAt(index: Int, place: Place) {
-        val nextPlaceId = getNextPlaceId()
-        if (nextPlaceId == null) {
-            Log.w("PlaceRepository", "PlaceStorage is full")
-            return
-        }
-        dataStore.updateData { placeStorage ->
-            val orderedKeys = placeStorage.orderedPlaceKeysList.toMutableList()
-            if (index >= 0 && index <= orderedKeys.size) {
-                orderedKeys.add(index, nextPlaceId)
-            } else {
-                orderedKeys.add(nextPlaceId)
+            if (placeStorage.holds(place.geolocation)) {
+                result = AddPlaceResult.ALREADY_PRESENT
+                return@updateData placeStorage
             }
 
+            val placeId = placeStorage.nextFreeId()
+            if (placeId == null) {
+                result = AddPlaceResult.STORAGE_FULL
+                return@updateData placeStorage
+            }
+
+            result = AddPlaceResult.ADDED
+
+            //  Stamped here rather than by the caller, so it is recorded when the place is really
+            //  stored and not when the fetch that produced it started.
+            val stampedPlace = place.toBuilder()
+                .setProperties(
+                    place.properties.toBuilder()
+                        .setCreationTime(System.currentTimeMillis())
+                )
+                .build()
+
+            val orderedKeys = placeStorage.orderedPlaceKeysList.toMutableList()
+            if (index != null && index in 0..orderedKeys.size) {
+                orderedKeys.add(index, placeId)
+            } else {
+                orderedKeys.add(placeId)
+            }
+
+            //  placeKeys is not written: nothing reads it - retrievePlaceKey scans the places map
+            //  instead - and keying it on Geolocation.hashCode() would collide silently.
             placeStorage.toBuilder()
-                .putPlaces(nextPlaceId, place)
-                .putPlaceKeys(place.geolocation.hashCode(), nextPlaceId)
-                .setLastKeyUsed(nextPlaceId)
+                .putPlaces(placeId, stampedPlace)
+                .setLastKeyUsed(placeId)
+                .clearOrderedPlaceKeys()
+                .addAllOrderedPlaceKeys(orderedKeys)
+                .build()
+        }
+
+        if (result != AddPlaceResult.ADDED) {
+            Log.w("PlaceRepository", "Place not added: $result")
+        }
+        return result
+    }
+
+    suspend fun addPlace(place: Place): AddPlaceResult = addPlaceAt(null, place)
+
+    /**
+     * Moves the place at [fromIndex] to [toIndex] in the display order.
+     *
+     * Only the ordered key list is rewritten; the places themselves are untouched. Indices outside
+     * the list are ignored rather than throwing, because they can arrive from a drag that races a
+     * concurrent delete.
+     */
+    suspend fun movePlace(fromIndex: Int, toIndex: Int) {
+        if (fromIndex == toIndex) return
+
+        dataStore.updateData { placeStorage ->
+            val orderedKeys = placeStorage.orderedPlaceKeysList.toMutableList()
+            if (fromIndex !in orderedKeys.indices || toIndex !in orderedKeys.indices) {
+                return@updateData placeStorage
+            }
+
+            orderedKeys.add(toIndex, orderedKeys.removeAt(fromIndex))
+
+            placeStorage.toBuilder()
                 .clearOrderedPlaceKeys()
                 .addAllOrderedPlaceKeys(orderedKeys)
                 .build()
@@ -348,15 +401,24 @@ class PlaceRepository private constructor(context: Context) {
             .setGeolocation(placeGeolocation)
             .buildPartial()
 
+        //  A refused add is reported to the caller rather than swallowed. Adding a city that was
+        //  already in the list used to appear to succeed while storing nothing, and the dialog
+        //  closed as if it had worked.
         val innerCallback = object : FetchDataCallback {
             override suspend fun onSuccess(place: Place) {
-                addPlace(place)
-                callback.onSuccess(place)
+                when (addPlace(place)) {
+                    AddPlaceResult.ADDED -> callback.onSuccess(place)
+                    AddPlaceResult.ALREADY_PRESENT -> callback.onError(RequestStatus.ALREADY_PRESENT)
+                    AddPlaceResult.STORAGE_FULL -> callback.onError(RequestStatus.UNKNOWN_ERROR)
+                }
             }
 
             override suspend fun onPartialSuccess(place: Place, requestStatus: RequestStatus) {
-                addPlace(place)
-                callback.onPartialSuccess(place, requestStatus)
+                when (addPlace(place)) {
+                    AddPlaceResult.ADDED -> callback.onPartialSuccess(place, requestStatus)
+                    AddPlaceResult.ALREADY_PRESENT -> callback.onError(RequestStatus.ALREADY_PRESENT)
+                    AddPlaceResult.STORAGE_FULL -> callback.onError(RequestStatus.UNKNOWN_ERROR)
+                }
             }
 
             override suspend fun onError(status: RequestStatus) {

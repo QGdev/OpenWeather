@@ -83,6 +83,18 @@ class PlaceViewModel(
         }
     }
 
+    /**
+     * Persists a drag-to-reorder.
+     *
+     * The list reorders optimistically while the finger is down; this is called once on drop, so a
+     * single move is written rather than one per crossed item.
+     */
+    fun movePlace(fromIndex: Int, toIndex: Int) {
+        viewModelScope.launch {
+            placeRepository.movePlace(fromIndex, toIndex)
+        }
+    }
+
     fun fetchAndAddNewPlaceFromWeb(
         placeGeolocation: Geolocation,
         callback: FetchDataCallback
