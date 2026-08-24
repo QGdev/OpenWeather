@@ -64,6 +64,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.models.Coordinates
 import fr.qgdev.openweather.data.models.Geolocation
@@ -74,6 +75,7 @@ import fr.qgdev.openweather.data.remote.FetchDataCallback
 import fr.qgdev.openweather.data.remote.RequestStatus
 import fr.qgdev.openweather.ui.common.dialogs.FullScreenDialog
 import fr.qgdev.openweather.ui.viewmodel.PlaceViewModel
+import fr.qgdev.openweather.ui.viewmodel.PlaceViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -267,7 +269,7 @@ private enum class ErrorType {
 @Composable
 fun AddPlaceDialogPreview() {
     AddPlaceDialog(
-        placeViewModel = PlaceViewModel(PlaceRepository.getInstance(LocalContext.current)),
+        placeViewModel = viewModel(factory = PlaceViewModelFactory(LocalContext.current)),
         onDismissRequest = {}
     )
 }

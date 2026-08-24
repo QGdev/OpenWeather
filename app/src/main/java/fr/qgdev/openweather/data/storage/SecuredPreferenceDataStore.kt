@@ -28,6 +28,37 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
 /**
+ * Opens [open], and if that fails once, calls [discardCorruptedState] and tries a single further
+ * time.
+ *
+ * Extracted from [SecuredPreferenceDataStore] so the recovery policy can be tested without a
+ * Context or the Android keystore.
+ *
+ * Deliberately only one retry: if opening still fails after the stored state has been discarded,
+ * the problem is not corruption and retrying again would loop. In that case the second failure is
+ * thrown with the first attached as a suppressed exception, so both causes survive - the previous
+ * implementation threw a bare `RuntimeException("Unable to initialize a secure environment")` and
+ * discarded the real one, which made the failure impossible to diagnose from a crash report.
+ */
+internal fun <T> openWithOneRecoveryAttempt(
+    open: () -> T,
+    discardCorruptedState: () -> Unit
+): T =
+    try {
+        open()
+    } catch (firstAttempt: Exception) {
+        discardCorruptedState()
+        try {
+            open()
+        } catch (secondAttempt: Exception) {
+            throw IllegalStateException(
+                "Unable to open the encrypted preferences, even after discarding them",
+                secondAttempt.apply { addSuppressed(firstAttempt) }
+            )
+        }
+    }
+
+/**
  * SecuredPreferenceDataStore
  *
  * A class to store data in a secure way.
@@ -42,20 +73,29 @@ class SecuredPreferenceDataStore(context: Context, filename: String) : Preferenc
     private val sharedPreferences: SharedPreferences
 
     init {
-        try {
-            val masterKey = MasterKey.Builder(context)
-                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-                .build()
-            sharedPreferences = EncryptedSharedPreferences.create(
-                context,
-                filename,
-                masterKey,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
-        } catch (e: Exception) {
-            throw RuntimeException("Unable to initialize a secure environment")
-        }
+        //  Opening these preferences can fail when the master key is no longer usable - after a
+        //  device-to-device restore, or on OEM keystore implementations that drop keys. The stored
+        //  file then cannot be decrypted, and every later launch fails the same way, so the app is
+        //  permanently broken until its data is cleared by hand.
+        //
+        //  Discarding the file and recreating it recovers from that: the user loses their saved
+        //  settings and has to re-enter the API key, which is a far better outcome than an app
+        //  that cannot start.
+        sharedPreferences = openWithOneRecoveryAttempt(
+            open = {
+                val masterKey = MasterKey.Builder(context)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+                EncryptedSharedPreferences.create(
+                    context,
+                    filename,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+            },
+            discardCorruptedState = { context.deleteSharedPreferences(filename) }
+        )
     }
 
     fun registerOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
