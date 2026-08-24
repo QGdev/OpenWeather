@@ -85,6 +85,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.models.AirQuality
 import fr.qgdev.openweather.data.models.Coordinates
@@ -99,7 +100,9 @@ import fr.qgdev.openweather.ui.components.dialogs.AddPlaceDialog
 import fr.qgdev.openweather.ui.place.PlaceCardView
 import fr.qgdev.openweather.ui.theme.AppTheme
 import fr.qgdev.openweather.ui.viewmodel.PlaceViewModel
+import fr.qgdev.openweather.ui.viewmodel.PlaceViewModelFactory
 import fr.qgdev.openweather.ui.viewmodel.SettingsViewModel
+import fr.qgdev.openweather.ui.viewmodel.SettingsViewModelFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -717,12 +720,11 @@ fun PlacesScreenPreview() {
         places.add(place)
     }
 
+    //  viewModel(factory = ...) rather than constructing directly: a ViewModel built inside a
+    //  composable is rebuilt on every recomposition and never reaches the ViewModelStore.
     PlacesScreenView(
-        placeViewModel = PlaceViewModel(PlaceRepository.getInstance(LocalContext.current)),
-        settingsViewModel = SettingsViewModel(
-            settingsRepository = SettingsRepository.getInstance(LocalContext.current),
-            formattingService = FormattingService.getInstance(LocalContext.current)
-        )
+        placeViewModel = viewModel(factory = PlaceViewModelFactory(LocalContext.current)),
+        settingsViewModel = viewModel(factory = SettingsViewModelFactory(LocalContext.current))
     )
 }
 

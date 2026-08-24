@@ -78,12 +78,14 @@ class WeatherService private constructor(
 
         private val TAG: String? = WeatherService::class.simpleName
 
+        //  The null check is repeated inside the lock on purpose. Without it two threads that both
+        //  see a null INSTANCE each construct a service, and the second overwrites the first -
+        //  leaving two Volley RequestQueues alive, with callers holding whichever they got.
         fun getInstance(
             context: Context
         ): WeatherService {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE = WeatherService(context)
-                return INSTANCE!!
+                INSTANCE ?: WeatherService(context).also { INSTANCE = it }
             }
         }
 
@@ -92,8 +94,7 @@ class WeatherService private constructor(
             settingsRepository: SettingsRepository
         ): WeatherService {
             return INSTANCE ?: synchronized(this) {
-                INSTANCE = WeatherService(application, settingsRepository)
-                return INSTANCE!!
+                INSTANCE ?: WeatherService(application, settingsRepository).also { INSTANCE = it }
             }
         }
     }

@@ -65,13 +65,13 @@ class SettingsRepository private constructor(
         @Volatile
         private var INSTANCE: SettingsRepository? = null
 
-        @Synchronized
+        //  The second null check inside the lock is what makes this safe. @Synchronized on the
+        //  method was masking its absence, at the cost of locking every single call.
         fun getInstance(context: Context): SettingsRepository {
-            return INSTANCE?: synchronized(this) {
-                INSTANCE = SettingsRepository(
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: SettingsRepository(
                     SecuredPreferenceDataStore(context, PREFERENCES_FILENAME)
-                )
-                return INSTANCE!!
+                ).also { INSTANCE = it }
             }
         }
 
