@@ -21,7 +21,43 @@
 package fr.qgdev.openweather.ui.utils
 
 import fr.qgdev.openweather.R
+import fr.qgdev.openweather.data.models.CurrentWeather
+import java.util.Locale
 
+
+/**
+ * True when the observation was taken between sunrise and sunset.
+ *
+ * The card used to test `sunset < dt && sunrise > dt`, which asks for an instant that is both after
+ * today's sunset and before today's sunrise - never true - so the collapsed card always drew the
+ * night icon, a moon at midday included.
+ */
+fun CurrentWeather.isDaytime(): Boolean = dt in sunrise..sunset
+
+/**
+ * Turns OpenWeatherMap's probability of precipitation into a percentage.
+ *
+ * `pop` is a fraction between 0 and 1, but it was handed straight to the integer percentage
+ * formatter, which truncates: every hour and every day read "0 %", and only a certain forecast
+ * would have read "1 %".
+ */
+fun Float.toPercentage(): Float = this * 100f
+
+/**
+ * The country's name in the user's language, from an ISO 3166-1 alpha-2 code.
+ *
+ * Nominatim returns the code in lower case ("fr"), which is what the app displayed. When the code is
+ * not one the platform knows, its upper-case form is the best remaining answer - the code is checked
+ * against the ISO list first, because the JDK answers an unknown region with a translated
+ * "Unknown Region" rather than with the code it was given.
+ */
+fun countryNameFromCode(countryCode: String): String {
+    if (countryCode.isBlank()) return ""
+    val upperCased = countryCode.uppercase(Locale.ROOT)
+    if (upperCased !in Locale.getISOCountries()) return upperCased
+    val name = Locale.Builder().setRegion(upperCased).build().getDisplayCountry(Locale.getDefault())
+    return name.ifBlank { upperCased }
+}
 
 /**
  * Get the drawable resource id from the weather code

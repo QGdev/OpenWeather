@@ -23,8 +23,12 @@ import androidx.collection.MutableObjectList
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -56,6 +60,8 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -70,10 +76,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -81,9 +87,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.viewmodel.compose.viewModel
 import fr.qgdev.openweather.R
@@ -96,6 +107,8 @@ import fr.qgdev.openweather.data.models.Properties
 import fr.qgdev.openweather.data.repositories.PlaceRepository
 import fr.qgdev.openweather.data.settings.SettingsRepository
 import fr.qgdev.openweather.repositories.FormattingService
+import fr.qgdev.openweather.ui.common.components.dragToReorder
+import fr.qgdev.openweather.ui.common.components.rememberDragToReorderState
 import fr.qgdev.openweather.ui.components.dialogs.AddPlaceDialog
 import fr.qgdev.openweather.ui.place.PlaceCardView
 import fr.qgdev.openweather.ui.theme.AppTheme
@@ -161,6 +174,9 @@ fun PlacesScreenView(
                                     formattingService = formattingService,
                                     isRefreshing = isRefreshing,
                                     onRefresh = { placeViewModel.refreshAllPlaces() },
+                                    onMovePlace = { from, to ->
+                                        placeViewModel.movePlace(from, to)
+                                    },
                                     onDismiss = { place, _ ->
                                         placeViewModel.deletePlace(place)
                                         scope.launch {
@@ -301,7 +317,8 @@ private fun PlacesList(
     formattingService: FormattingService,
     isRefreshing: Boolean = false,
     onRefresh: () -> Unit = {},
-    onDismiss: (Place, Int) -> Unit = { _, _ -> }
+    onDismiss: (Place, Int) -> Unit = { _, _ -> },
+    onMovePlace: (from: Int, to: Int) -> Unit = { _, _ -> }
 ) {
     //  formattingService is required rather than defaulted to FormattingService.getInstance().
     //  Reaching for the singleton here pinned one instance for the lifetime of the screen, and
@@ -315,87 +332,22 @@ private fun PlacesList(
 
     // État pour la LazyColumn
     val lazyListState = rememberLazyListState()
+
+    //  The list reorders in memory while the finger is down and is persisted once on drop, so a
+    //  drag across ten rows is one storage write rather than ten. Keyed on placeList so an update
+    //  arriving from the repository - a refresh, a delete - replaces this copy rather than being
+    //  overwritten by it.
+    var orderedPlaces by remember(placeList) { mutableStateOf(placeList) }
+
+    val reorderState = rememberDragToReorderState(
+        lazyListState = lazyListState,
+        itemCount = orderedPlaces.size,
+        onMove = { from, to ->
+            orderedPlaces = orderedPlaces.toMutableList().apply { add(to, removeAt(from)) }
+        },
+        onMoveCompleted = onMovePlace
+    )
     
-    // Track si on a déclenché le refresh avec ce geste spécifique
-    var refreshTriggeredInThisGesture by remember { mutableStateOf(false) }
-    var displayedDragY by remember { mutableStateOf(0f) }
-    var hasPassedThreshold by remember { mutableStateOf(false) }  // Track si on a passé le seuil
-    val pullThreshold = 80f  // Seuil pour afficher "Relâcher pour rafraîchir"
-
-    // Réinitialiser quand le refresh est terminé
-    LaunchedEffect(isRefreshing) {
-        if (!isRefreshing) {
-            refreshTriggeredInThisGesture = false
-            displayedDragY = 0f
-            hasPassedThreshold = false
-        }
-    }
-
-    // Créer un NestedScrollConnection pour détecter le pull-down sans bloquer la LazyColumn
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            private var cumulativeDragY = 0f
-            
-             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                  // Vérifier si on est au sommet (index 0 et offset 0)
-                  val isAtTop = lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset == 0
-                  
-                  if (isAtTop) {
-                      // Si l'utilisateur scroll vers le haut, réinitialiser le compteur
-                      if (available.y < 0) {
-                          cumulativeDragY = 0f
-                          displayedDragY = 0f
-                          hasPassedThreshold = false
-                          return Offset.Zero
-                      }
-                      
-                      // Si l'utilisateur scroll vers le bas (available.y > 0)
-                      if (available.y > 0) {
-                          cumulativeDragY += available.y
-                          displayedDragY = cumulativeDragY  // Mettre à jour la position visuelle
-                          
-                          // Vérifier si on a passé le seuil
-                          if (cumulativeDragY > pullThreshold) {
-                              hasPassedThreshold = true
-                          }
-                          
-                          // Consommer le scroll au top pour montrer l'effet de pull
-                          return available
-                      }
-                  } else {
-                      // Si on n'est pas au top, réinitialiser le compteur
-                      cumulativeDragY = 0f
-                      displayedDragY = 0f
-                      hasPassedThreshold = false
-                  }
-                  
-                  return Offset.Zero
-              }
-
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource
-            ): Offset {
-                // Détecter le relâchement : quand available est proche de 0 et qu'on était en pull
-                if (displayedDragY > 0) {
-                    // Détecter la fin du geste (scroll qui décélère)
-                    if (available.y <= 0 && source == NestedScrollSource.Fling) {
-                        // L'utilisateur a relâché
-                        if (hasPassedThreshold && !isRefreshing && !refreshTriggeredInThisGesture) {
-                            // Déclencher le refresh seulement si le seuil a été passé
-                            refreshTriggeredInThisGesture = true
-                            onRefresh()
-                        }
-                        // Réinitialiser le drag
-                        displayedDragY = 0f
-                    }
-                }
-                
-                return Offset.Zero
-            }
-        }
-    }
 
     pendingDeletePlace?.let { place ->
         AlertDialog(
@@ -442,75 +394,140 @@ private fun PlacesList(
         )
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
+    //  PullToRefreshBox replaces roughly eighty lines of hand-rolled NestedScrollConnection that
+    //  tracked cumulative drag, threshold crossing and gesture release by hand. It ships in
+    //  material3, so this adds no dependency, and it frees the vertical drag gesture for the
+    //  reordering below - the custom connection consumed scroll at the top of the list, which is
+    //  exactly where a drag to reorder starts.
+    //
+    //  The drop-shaped indicator is kept rather than falling back to the Material default, driven
+    //  by the state's distanceFraction instead of a hand-tracked pixel offset.
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    //  PullToRefreshBox holds the indicator extended for the whole refresh and only animates
+    //  distanceFraction back to zero once isRefreshing clears. Without this latch the drop would
+    //  reappear for that retraction and be seen draining from full to empty after the refresh had
+    //  already finished - the pull replayed backwards.
+    //
+    //  Armed when a refresh starts, disarmed once the indicator has actually come to rest, so the
+    //  drop is only ever drawn for a pull the user is making.
+    var retractingAfterRefresh by remember { mutableStateOf(false) }
+    LaunchedEffect(isRefreshing, pullToRefreshState.distanceFraction) {
+        when {
+            isRefreshing -> retractingAfterRefresh = true
+            pullToRefreshState.distanceFraction == 0f -> retractingAfterRefresh = false
+        }
+    }
+
+    PullToRefreshBox(
+        modifier = Modifier.fillMaxSize(),
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+        state = pullToRefreshState,
+        indicator = {
+            if (!isRefreshing && !retractingAfterRefresh && pullToRefreshState.distanceFraction > 0f) {
+                Box(
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    contentAlignment = Alignment.Center
+                ) {
+                    PullToRefreshDropIndicator(
+                        displayedDragY = pullToRefreshState.distanceFraction * PULL_THRESHOLD_PX,
+                        pullThreshold = PULL_THRESHOLD_PX,
+                        showReleaseText = pullToRefreshState.distanceFraction >= 1f
+                    )
+                }
+            }
+            if (isRefreshing) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .width(48.dp)
+                            .height(48.dp),
+                        strokeWidth = 4.dp
+                    )
+                }
+            }
+        }
     ) {
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .nestedScroll(nestedScrollConnection),
+            modifier = Modifier.fillMaxSize(),
             state = lazyListState
         ) {
-            itemsIndexed(items = placeList, key = { index, _ -> index }) { index, place ->
-                SwipeablePlaceItem(
-                    place = place,
-                    formattingService = formattingService,
-                    onSwipedPastThreshold = { resetCallback ->
-                        pendingDeletePlace = place
-                        pendingDeleteIndex = index
-                        pendingResetCallback = resetCallback
-                    }
-                )
+            //  Keyed on the place, not its position. With the index as the key, deleting or moving
+            //  a row renumbers every row below it, so Compose sees "everything changed" instead of
+            //  "one item moved" - which loses per-item state (the expanded card, the swipe offset)
+            //  to whichever row inherits the number, and makes reordering impossible to animate.
+            //
+            //  geolocation is unique now that addPlaceAt refuses a place already held, but it is
+            //  flattened to a String: Lazy list keys have to survive being saved to a Bundle, and
+            //  a protobuf message does not. Passing the message itself compiles and then throws
+            //  when the list state is saved.
+            itemsIndexed(
+                items = orderedPlaces,
+                key = { _, place -> place.stableKey }
+            ) { index, place ->
+                val isDragging = reorderState.draggingItemIndex == index
+                Box(
+                    modifier = Modifier
+                        //  Neighbours slide to their new position instead of jumping. Not applied
+                        //  to the dragged row itself: that one is positioned by the finger through
+                        //  translationY below, and a placement animation would fight it.
+                        .then(
+                            if (isDragging) Modifier
+                            else Modifier.animateItem(
+                                placementSpec = spring(
+                                    stiffness = Spring.StiffnessMediumLow,
+                                    visibilityThreshold = IntOffset.VisibilityThreshold
+                                )
+                            )
+                        )
+                        //  Lifted above its neighbours so it is drawn over them while travelling.
+                        .zIndex(if (isDragging) 1f else 0f)
+                        .graphicsLayer {
+                            translationY = if (isDragging) reorderState.draggingItemOffset else 0f
+                            //  A slight lift, so it reads as picked up rather than stuck.
+                            scaleX = if (isDragging) 1.02f else 1f
+                            scaleY = if (isDragging) 1.02f else 1f
+                            shadowElevation = if (isDragging) 12f else 0f
+                        }
+                        .dragToReorder(reorderState, index)
+                ) {
+                    SwipeablePlaceItem(
+                        place = place,
+                        formattingService = formattingService,
+                        onSwipedPastThreshold = { resetCallback ->
+                            pendingDeletePlace = place
+                            pendingDeleteIndex = index
+                            pendingResetCallback = resetCallback
+                        }
+                    )
+                }
             }
             item {
                 Spacer(modifier = Modifier.height(96.dp))
             }
         }
-
-        // Indicateur de pull progressif avec texte en forme de goutte
-        if (!isRefreshing && displayedDragY > 0) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopCenter),
-                contentAlignment = Alignment.Center
-            ) {
-                PullToRefreshDropIndicator(
-                    displayedDragY = displayedDragY,
-                    pullThreshold = pullThreshold,
-                    showReleaseText = displayedDragY >= pullThreshold
-                )
-            }
-        }
-
-        // Indicateur de refresh en haut de la liste (pendant le refresh)
-        if (isRefreshing) {
-            val infiniteTransition = rememberInfiniteTransition(label = "refresh")
-            val rotation by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 360f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(1500, easing = LinearEasing),
-                    repeatMode = RepeatMode.Restart
-                ),
-                label = "rotation"
-            )
-
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 16.dp)
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .width(48.dp)
-                        .height(48.dp)
-                        .rotate(rotation),
-                    strokeWidth = 4.dp
-                )
-            }
-        }
     }
 }
+
+/** Drag distance, in pixels, at which the indicator switches to "release to refresh". */
+private const val PULL_THRESHOLD_PX = 80f
+
+/**
+ * A stable, Bundle-saveable identity for a place, for use as a Lazy list key.
+ *
+ * Coordinates alone would almost always do, but the duplicate check in `PlaceRepository.addPlaceAt`
+ * compares the whole geolocation, so this matches it exactly - otherwise two places the repository
+ * considers distinct could collide here and Compose would reuse one row's state for the other.
+ */
+private val Place.stableKey: String
+    get() = with(geolocation) {
+        "$city|$countryCode|${coordinates.latitude}|${coordinates.longitude}"
+    }
 
 @Composable
 private fun PullToRefreshDropIndicator(
@@ -519,51 +536,87 @@ private fun PullToRefreshDropIndicator(
     showReleaseText: Boolean
 ) {
     val progress = (displayedDragY / pullThreshold).coerceIn(0f, 1f)
-    val dropScale = (0.55f + progress * 0.45f)
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val dropFillColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.92f)
+    val outline = MaterialTheme.colorScheme.primary
+    val fill = MaterialTheme.colorScheme.primary.copy(alpha = 0.85f)
 
-    Box(
-        modifier = Modifier
-            .height((132 * dropScale).dp),
-        contentAlignment = Alignment.Center
+    //  The drop settles to full size once the threshold is reached, so the moment it is ready to
+    //  release is felt as much as read.
+    val scale by animateFloatAsState(
+        targetValue = if (showReleaseText) 1f else 0.7f + progress * 0.25f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "dropScale"
+    )
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(top = 12.dp)
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val w = size.width
-            val h = size.height
-            val path = androidx.compose.ui.graphics.Path().apply {
-                lineTo(0f, h)
-                lineTo(w, h)
-                lineTo(w, 0f)
-                lineTo(0f, 0f)
+        Canvas(
+            modifier = Modifier
+                .width(30.dp)
+                .height(38.dp)
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                    transformOrigin = TransformOrigin(0.5f, 0f)
+                }
+        ) {
+            //  A teardrop: apex at the top, circular bowl at the bottom, the sides curving between
+            //  the two. The previous version drew a full-width rectangle, which is why pulling the
+            //  list painted a slab across the screen.
+            val radius = size.width / 2f
+            val centreX = size.width / 2f
+            val centreY = size.height - radius
+
+            val drop = Path().apply {
+                moveTo(centreX, 0f)
+                cubicTo(
+                    centreX + radius * 0.6f, radius * 0.75f,
+                    centreX + radius, centreY - radius * 0.75f,
+                    centreX + radius, centreY
+                )
+                arcTo(
+                    rect = Rect(
+                        left = centreX - radius,
+                        top = centreY - radius,
+                        right = centreX + radius,
+                        bottom = centreY + radius
+                    ),
+                    startAngleDegrees = 0f,
+                    sweepAngleDegrees = 180f,
+                    forceMoveTo = false
+                )
+                cubicTo(
+                    centreX - radius, centreY - radius * 0.75f,
+                    centreX - radius * 0.6f, radius * 0.75f,
+                    centreX, 0f
+                )
                 close()
             }
-            drawPath(
-                path = path,
-                color = dropFillColor
-            )
-        }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            if (showReleaseText) {
-                Text(
-                    text = stringResource(R.string.action_release_to_refresh),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = primaryColor,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(bottom = 8.dp)
+
+            //  Water rising inside the outline as the pull deepens.
+            clipPath(drop) {
+                drawRect(
+                    color = fill,
+                    topLeft = Offset(0f, size.height * (1f - progress)),
+                    size = Size(size.width, size.height * progress)
                 )
             }
 
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .width((22 + progress * 16).dp)
-                    .height((22 + progress * 16).dp),
-                strokeWidth = 2.2.dp,
-                progress = { progress.coerceAtLeast(0.05f) },
-                color = primaryColor,
-                trackColor = primaryColor.copy(alpha = 0.22f)
+            drawPath(
+                path = drop,
+                color = outline,
+                style = Stroke(width = 2.dp.toPx())
+            )
+        }
+
+        if (showReleaseText) {
+            Text(
+                text = stringResource(R.string.action_release_to_refresh),
+                style = MaterialTheme.typography.labelSmall,
+                color = outline,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(top = 6.dp)
             )
         }
     }
