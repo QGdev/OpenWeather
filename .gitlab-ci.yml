@@ -1,6 +1,6 @@
 # Derivative from Gitlab original template for Android CI/CD
-# Adapted in order to work with Gradle 8 which work with JDK 17
-image: debian:latest
+# Adapted in order to work with Gradle 9 on JDK 21, app/build.gradle.kts targeting Java 17
+image: eclipse-temurin:21-jdk
 
 # Enable cache to speed up the CI process
 cache:
@@ -14,24 +14,24 @@ variables:
 
   # ANDROID_COMPILE_SDK is the version of Android you're compiling with.
   # It should match compileSdkVersion.
-  ANDROID_COMPILE_SDK: "34"
+  ANDROID_COMPILE_SDK: "37.0"
 
   # ANDROID_BUILD_TOOLS is the version of the Android build tools you are using.
   # It should match buildToolsVersion.
-  ANDROID_BUILD_TOOLS: "34.0.0"
+  ANDROID_BUILD_TOOLS: "37.0.0"
 
   # It's what version of the command line tools we're going to download from the official site.
   # Official Site-> https://developer.android.com/studio/index.html
   # There, look down below at the cli tools only, sdk tools package is of format:
   #        commandlinetools-os_type-ANDROID_SDK_TOOLS_latest.zip
   # when the script was last modified for latest compileSdkVersion, it was which is written down below
-  ANDROID_SDK_TOOLS: "9477386"
+  ANDROID_SDK_TOOLS: "16111833"
 
 
 # Packages installation before running script
 before_script:
   - apt-get --quiet update --yes
-  - apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1 openjdk-17-jdk
+  - apt-get --quiet install --yes wget unzip lib32stdc++6 lib32z1
   
   # Setup path as android_home for moving/exporting the downloaded sdk into it
   - export ANDROID_HOME="${PWD}/android-home"
@@ -61,11 +61,8 @@ before_script:
 
   - export PATH=$PATH:${ANDROID_HOME}/cmdline-tools/bin/
 
-  # use yes to accept all licenses
-  - yes | sdkmanager --sdk_root=${ANDROID_HOME} --licenses 1> /dev/null || true
-  - sdkmanager --sdk_root=${ANDROID_HOME} "platforms;android-${ANDROID_COMPILE_SDK}"
-  - sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools"
-  - sdkmanager --sdk_root=${ANDROID_HOME} "build-tools;${ANDROID_BUILD_TOOLS}"
+  # android sdk accepts the licenses itself, sdkmanager being deprecated since command-line tools 23.0
+  - android --no-metrics --sdk=${ANDROID_HOME} sdk install "platforms/android-${ANDROID_COMPILE_SDK}" "platform-tools" "build-tools/${ANDROID_BUILD_TOOLS}"
 
   # Not necessary, but just for surity
   #- chmod +x ./gradlew
@@ -78,12 +75,18 @@ lintDebug:
   script:
     - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint 
 
-# Make Project
-assembleDebug:
+# Make Project, debug and release
+assemble:
   interruptible: true
   stage: build
   script:
-    - ./gradlew assembleDebug
+    # RELEASE_* variables are protected, so only protected branches get a release signed with the official key
+    - >
+      if [ -n "$RELEASE_KEYSTORE_BASE64" ]; then
+        echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > "$CI_PROJECT_DIR/release.jks";
+        export RELEASE_KEYSTORE_FILE="$CI_PROJECT_DIR/release.jks";
+      fi
+    - ./gradlew assembleDebug assembleRelease
   artifacts:
     paths:
       - app/build/outputs/
