@@ -89,9 +89,15 @@ open class PlaceDataMapper private constructor() : Mapper<Place> {
                 }
             }
 
+            //  One Call reports the place's UTC offset in seconds; timeOffset is consumed by
+            //  SimpleTimeZone, which takes milliseconds. Converting here keeps every read site
+            //  correct. Until this was populated, every place time rendered as UTC.
+            val tmpTimeOffsetMillis = jsonObject.optInt("timezone_offset", 0) * 1000
+
             val properties = Properties.newBuilder()
                 .setLastWeatherUpdateAttemptTime(tmpLastUpdateAttemptTime)
                 .setLastAvailableWeatherDataTime(tmpLastAvailableDataTime)
+                .setTimeOffset(tmpTimeOffsetMillis)
                 .build()
 
             return Place.newBuilder()

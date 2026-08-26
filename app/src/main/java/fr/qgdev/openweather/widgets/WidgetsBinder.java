@@ -108,7 +108,11 @@ public class WidgetsBinder {
 		view.setTextViewText(R.id.temperature_min_value,
 				  formattingService.getIntFormattedTemperature(currentDayWeather.getTemperatureMinimum(), NO_UNIT_NO_SPACE));
 		
-		view.setImageViewResource(R.id.weather_icon, getWeatherIcon(currentWeather.getWeatherCode(), currentWeather.getSunrise() < currentDayWeather.getDt() && currentDayWeather.getDt() < currentWeather.getSunset()));
+		// The observation's own timestamp decides day or night. This used to compare against the
+		// daily forecast's timestamp, which marks the start of the day, so the icon flipped on
+		// the day boundary rather than at sunrise and sunset.
+		view.setImageViewResource(R.id.weather_icon, getWeatherIcon(currentWeather.getWeatherCode(),
+				  currentWeather.getSunrise() <= currentWeather.getDt() && currentWeather.getDt() <= currentWeather.getSunset()));
 		
 		// Set the first letter to capital
 		String weatherDescription = currentWeather.getWeatherDescription();

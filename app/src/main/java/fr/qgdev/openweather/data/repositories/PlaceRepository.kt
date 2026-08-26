@@ -111,14 +111,26 @@ class PlaceRepository private constructor(context: Context) {
             ((lastKeyUsed + 1 + offset) % MAX_PLACES).takeIf { !placesMap.containsKey(it) }
         }
 
+    /**
+     * Whether two search results or stored places are the same location.
+     *
+     * Compares what identifies a place - its name, its country and its coordinates - rather than
+     * the whole message. The region arrived later and is absent from everything stored before it,
+     * so comparing the message itself would let the same city be added twice.
+     */
+    private fun Geolocation.sameLocationAs(other: Geolocation): Boolean =
+        city == other.city &&
+                countryCode == other.countryCode &&
+                coordinates == other.coordinates
+
     private fun PlaceStorage.holds(geolocation: Geolocation): Boolean =
-        placesMap.values.any { it.geolocation == geolocation }
+        placesMap.values.any { it.geolocation.sameLocationAs(geolocation) }
 
     private suspend fun retrievePlaceKey(place: Place): Int {
         val placeStorage = dataStore.data.first()
         for (placeKey in placeStorage.orderedPlaceKeysList) {
             val storedPlace = placeStorage.getPlacesOrDefault(placeKey, null)
-            if (storedPlace != null && storedPlace.geolocation == place.geolocation) {
+            if (storedPlace != null && storedPlace.geolocation.sameLocationAs(place.geolocation)) {
                 return placeKey
             }
         }
