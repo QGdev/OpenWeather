@@ -86,7 +86,9 @@ import fr.qgdev.openweather.ui.common.components.ItemWithIconAndTitle
 import fr.qgdev.openweather.ui.common.components.Rect
 import fr.qgdev.openweather.ui.common.components.TitleWithIcon
 import fr.qgdev.openweather.ui.theme.AppTheme
+import fr.qgdev.openweather.ui.utils.countryNameFromCode
 import fr.qgdev.openweather.ui.utils.getDrawableResIdFromWeatherCode
+import fr.qgdev.openweather.ui.utils.isDaytime
 import java.util.Date
 import java.util.SimpleTimeZone
 
@@ -102,12 +104,17 @@ fun PlaceCardView(
 ) {
     val fragmentManager = (LocalContext.current as? AppCompatActivity)?.supportFragmentManager
 
-    //  The alerts UI has not been ported to Compose yet, so this shows the existing View-based
-    //  dialog imperatively rather than through a dialogBoxOpened flag like AirQualityInfoDialog.
-    //  Both alert entry points below share it. See PORTING.md.
-    val context = LocalContext.current
-    val showWeatherAlerts = {
-        WeatherAlertDialog(context, place, formattingService).build()
+    //  Shared by both alert entry points: the icon on the collapsed card and the button on the
+    //  expanded one.
+    val weatherAlertDialogOpened = remember { mutableStateOf(false) }
+    val showWeatherAlerts = { weatherAlertDialogOpened.value = true }
+
+    if (weatherAlertDialogOpened.value) {
+        WeatherAlertDialog(
+            place = place,
+            formattingService = formattingService,
+            onDismissRequest = { weatherAlertDialogOpened.value = false }
+        )
     }
 
     val gridColumns = integerResource(id = R.integer.env_variables_column_count)
@@ -141,7 +148,7 @@ fun PlaceCardView(
 
     val weatherIconId = getDrawableResIdFromWeatherCode(
         currentWeather.weatherCode,
-        currentWeather.sunset < currentWeather.dt && currentWeather.sunrise > currentWeather.dt
+        currentWeather.isDaytime()
     )
 
     val backgroundColor =
@@ -358,7 +365,7 @@ fun PlaceCardView(
                         maxLines = 4
                     )
                     Text(
-                        text = geolocation.countryCode,
+                        text = countryNameFromCode(geolocation.countryCode),
                         color = colorSecondaryText,
                         fontSize = 14.sp
                     )

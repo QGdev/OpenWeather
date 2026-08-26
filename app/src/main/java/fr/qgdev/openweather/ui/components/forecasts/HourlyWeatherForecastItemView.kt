@@ -49,6 +49,7 @@ import fr.qgdev.openweather.ui.components.forecasts.components.SmoothTwoLinesGra
 import fr.qgdev.openweather.ui.components.forecasts.components.UvIndicator
 import fr.qgdev.openweather.ui.components.forecasts.components.WindDirectionIndicator
 import fr.qgdev.openweather.ui.utils.getDrawableResIdFromWeatherCode
+import fr.qgdev.openweather.ui.utils.toPercentage
 import java.util.Date
 import java.util.TimeZone
 
@@ -358,7 +359,7 @@ fun HourlyWeatherForecastItemView(
             Text(
                 modifier = modifier,
                 text = formattingService.getIntFormattedPercentage(
-                    data.hourlyWeatherForecast.pop,
+                    data.hourlyWeatherForecast.pop.toPercentage(),
                     FormattingSpec.UNIT_AND_SPACE),
                 style = typography.titleSmall
             )
@@ -370,7 +371,7 @@ fun HourlyWeatherForecastItemView(
             ) {
                 BarGraphChart(
                     modifier = Modifier.fillMaxSize(),
-                    values = floatArrayOf(data.hourlyWeatherForecast.pop),
+                    values = floatArrayOf(data.hourlyWeatherForecast.pop.toPercentage()),
                     color = Color.Yellow,
                     max = 100f,
                     min = 0f,

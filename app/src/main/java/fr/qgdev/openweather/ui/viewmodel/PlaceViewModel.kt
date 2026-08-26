@@ -109,9 +109,15 @@ class PlaceViewModel(
     }
 
     fun refreshAllPlaces() {
+        //  Set before launching, not inside it. Inside, the flag only flips once the coroutine is
+        //  dispatched - a frame or more after the gesture is released - and in that gap the
+        //  pull-to-refresh indicator has already begun animating back to rest, so the drop is seen
+        //  rolling back before the spinner replaces it.
+        if (_isRefreshing.value) return
+        _isRefreshing.value = true
+
         viewModelScope.launch {
             try {
-                _isRefreshing.value = true
                 placeRepository.updateAllPlacesFromWeb()
             } finally {
                 _isRefreshing.value = false

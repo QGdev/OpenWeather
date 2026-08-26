@@ -57,6 +57,7 @@ import fr.qgdev.openweather.ui.components.forecasts.components.SmoothTwoLinesGra
 import fr.qgdev.openweather.ui.components.forecasts.components.UvIndicator
 import fr.qgdev.openweather.ui.components.forecasts.components.WindDirectionIndicator
 import fr.qgdev.openweather.ui.utils.getDrawableResIdFromWeatherCode
+import fr.qgdev.openweather.ui.utils.toPercentage
 import java.util.Date
 import java.util.TimeZone
 
@@ -461,7 +462,7 @@ fun DailyWeatherForecastItemView(
             }
             IconWithText(
                 iconResId = R.drawable.umbrella_material,
-                text = formattingService.getIntFormattedPercentage(forecast.pop, FormattingSpec.UNIT_AND_SPACE),
+                text = formattingService.getIntFormattedPercentage(forecast.pop.toPercentage(), FormattingSpec.UNIT_AND_SPACE),
                 modifier = itemMod,
                 tint = secondaryColor
             )

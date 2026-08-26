@@ -157,6 +157,14 @@ class PlaceSearchingService private constructor(
             val address = result.optJSONObject("address")
             val city = result.optString("name", "N/A")
             val countryCode = address?.optString("country_code", "") ?: ""
+            //  Nominatim names the administrative area differently by country: a French region is
+            //  "state", an English county is "county", and some results carry only "region". The
+            //  first one present is the one a reader would use to tell two same-named cities apart.
+            val region = listOf("state", "region", "county")
+                .firstNotNullOfOrNull { key ->
+                    address?.optString(key, "")?.takeIf { it.isNotEmpty() }
+                }
+                .orEmpty()
             val coordinates = Coordinates.newBuilder()
                 .setLatitude(lat)
                 .setLongitude(lon)
@@ -164,6 +172,7 @@ class PlaceSearchingService private constructor(
             val geolocation = Geolocation.newBuilder()
                 .setCity(city)
                 .setCountryCode(countryCode)
+                .setRegion(region)
                 .setCoordinates(coordinates)
                 .build()
             locations.add(geolocation)

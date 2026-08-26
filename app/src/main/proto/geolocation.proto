@@ -9,4 +9,9 @@ message Geolocation {
   optional string city = 1;
   optional string countryCode = 2;
   Coordinates coordinates = 3;
+  //  Administrative area from the place search, e.g. "Pays de la Loire". Several cities share a
+  //  name within one country, and coordinates alone do not tell them apart for a reader.
+  //  Deliberately excluded from the identity comparison in PlaceRepository: places stored before
+  //  this field existed carry no region, and comparing it would make them look like new places.
+  optional string region = 4;
 }
