@@ -74,6 +74,8 @@
 	<string name="dialog_confirmation_message_delete_place"><![CDATA[Supprimer %s, %s ?]]></string>
 	<string name="dialog_confirmation_choice_yes">Oui, supprimez-le</string>
 	<string name="dialog_confirmation_choice_no">Non, gardez-le</string>
+	<string name="place_deleted"><![CDATA[%s, %s supprimée]]></string>
+	<string name="action_undo">Annuler</string>
 	<string name="title_precipitations_1h">Précipitations - 1h</string>
 	<string name="title_precipitation_rain">Pluie :</string>
 	<string name="title_precipitation_snow">Neige :</string>
@@ -207,4 +209,7 @@
     <string name="description_precipitations_1h">Volume des précipitations dans l\'heure</string>
     <string name="title_dialog_about_app">À propos</string>
     <string name="action_release_to_refresh">Relâcher pour rafraîchir</string>
+    <string name="error_place_query_too_short">Impossible de rechercher un lieu avec un nom aussi court</string>
+    <string name="error_place_query_empty">Aucun résultat</string>
+    <string name="error_no_results">Aucun résultat</string>
 </resources>
