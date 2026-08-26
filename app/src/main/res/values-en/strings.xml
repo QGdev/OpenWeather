@@ -77,6 +77,8 @@
 	<string name="dialog_confirmation_message_delete_place"><![CDATA[Delete %s, %s ?]]></string>
 	<string name="dialog_confirmation_choice_yes">Yes, delete it</string>
 	<string name="dialog_confirmation_choice_no">No, keep it</string>
+	<string name="place_deleted"><![CDATA[%s, %s deleted]]></string>
+	<string name="action_undo">Undo</string>
 	<string name="title_precipitations_1h">Precipitations - 1h</string>
 	<string name="title_precipitation_rain">Rain :</string>
 	<string name="title_precipitation_snow">Snow :</string>
