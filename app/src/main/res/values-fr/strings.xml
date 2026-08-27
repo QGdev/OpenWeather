@@ -22,9 +22,9 @@
 <resources>
 	<string name="title_places">Lieux</string>
     <string name="description_places">Liste des lieux enregistrés</string>
-    <string name="title_temperature_feelslike">Resssenti</string>
-	<string name="title_humidity">Humiditée</string>
-	<string name="title_pressure">Pressure</string>
+    <string name="title_temperature_feelslike">Ressentie</string>
+	<string name="title_humidity">Humidité</string>
+	<string name="title_pressure">Pression</string>
 	<string name="title_visibility">Visibilitée</string>
 	<string name="title_wind_information">Vents</string>
 	<string name="title_sky_information">Ciel</string>
@@ -207,4 +207,17 @@
     <string name="description_precipitations_1h">Volume des précipitations dans l\'heure</string>
     <string name="title_dialog_about_app">À propos</string>
     <string name="action_release_to_refresh">Relâcher pour rafraîchir</string>
+	<string name="label_wind">Vent</string>
+	<string name="action_retry">Réessayer</string>
+	<string name="status_update_failed_values_from">Mise à jour échouée · valeurs de %1$s</string>
+	<string name="status_downloading_forecast">Téléchargement des prévisions…</string>
+	<plurals name="badge_alerts">
+		<item quantity="one">%1$d ALERTE</item>
+		<item quantity="other">%1$d ALERTES</item>
+	</plurals>
+	<plurals name="status_refresh_failed">
+		<item quantity="one">Échec · %1$d lieu</item>
+		<item quantity="other">Échec · %1$d lieux</item>
+	</plurals>
+	<string name="status_refresh_up_to_date">À jour · %1$s</string>
 </resources>

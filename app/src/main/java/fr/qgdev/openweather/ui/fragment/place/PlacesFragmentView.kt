@@ -110,7 +110,20 @@ import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.ui.common.components.dragToReorder
 import fr.qgdev.openweather.ui.common.components.rememberDragToReorderState
 import fr.qgdev.openweather.ui.components.dialogs.AddPlaceDialog
-import fr.qgdev.openweather.ui.place.PlaceCardView
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.text.font.FontWeight
+import kotlinx.coroutines.delay
+import androidx.annotation.StringRes
+import fr.qgdev.openweather.data.remote.RequestStatus
+import fr.qgdev.openweather.ui.place.PendingPlaceCard
+import fr.qgdev.openweather.ui.place.PlaceSkyCard
+import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
+import fr.qgdev.openweather.ui.viewmodel.RefreshOutcome
+import fr.qgdev.openweather.ui.viewmodel.identityKey
+import java.util.Date
+import java.util.TimeZone
 import fr.qgdev.openweather.ui.theme.AppTheme
 import fr.qgdev.openweather.ui.viewmodel.PlaceViewModel
 import fr.qgdev.openweather.ui.viewmodel.PlaceViewModelFactory
@@ -133,10 +146,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun PlacesScreenView(
     placeViewModel: PlaceViewModel,
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel,
+    onOpenPlace: (Place) -> Unit = {}
 ) {
     val data by placeViewModel.placesState.collectAsState()
     val isRefreshing by placeViewModel.isRefreshing.collectAsState(initial = false)
+    val refreshOutcome by placeViewModel.lastRefreshOutcome.collectAsState()
+    val pendingPlaceName by placeViewModel.pendingPlaceName.collectAsState()
+    val addPlaceFailure by placeViewModel.addPlaceFailure.collectAsState()
     val settings by settingsViewModel.settingsState.collectAsState()
     //  Republished as a new instance on every settings change, which is what makes the cards
     //  below redraw when a unit changes.
@@ -146,6 +163,7 @@ fun PlacesScreenView(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
 
     val deletedLabel = stringResource(R.string.place_deleted)
     val undoLabel = stringResource(R.string.action_undo)
@@ -172,12 +190,17 @@ fun PlacesScreenView(
                                 PlacesList(
                                     placeList = data!!,
                                     formattingService = formattingService,
+                                    lazyListState = lazyListState,
                                     isRefreshing = isRefreshing,
+                                    refreshOutcome = refreshOutcome,
+                                    pendingPlaceName = pendingPlaceName,
+                                    onRefreshOutcomeShown = { placeViewModel.acknowledgeRefreshOutcome() },
+                                    onOpenPlace = onOpenPlace,
                                     onRefresh = { placeViewModel.refreshAllPlaces() },
                                     onMovePlace = { from, to ->
                                         placeViewModel.movePlace(from, to)
                                     },
-                                    onDismiss = { place, _ ->
+                                    onDismiss = { place, index ->
                                         placeViewModel.deletePlace(place)
                                         scope.launch {
                                             val result = snackbarHostState.showSnackbar(
@@ -186,7 +209,10 @@ fun PlacesScreenView(
                                                 duration = SnackbarDuration.Long
                                             )
                                             if (result == SnackbarResult.ActionPerformed) {
-                                                placeViewModel.addPlace(place)
+                                                //  Restored where it was, not appended: addPlace put the
+                                                //  place back at the end of the list, so undoing a delete
+                                                //  silently reordered the list.
+                                                placeViewModel.restorePlace(place, index)
                                             }
                                         }
                                     }
@@ -199,6 +225,10 @@ fun PlacesScreenView(
                             .padding(32.dp)
                             .align(Alignment.BottomEnd),
                         placeViewModel = placeViewModel,
+                        //  Labelled while the list is at rest, icon-only once scrolled: the label
+                        //  says what the button does, but it should not sit over the cards being read.
+                        expanded = lazyListState.firstVisibleItemIndex == 0 &&
+                                lazyListState.firstVisibleItemScrollOffset == 0
                     )
                 } else {
                     InvalidApiKeyMessage(
@@ -213,6 +243,16 @@ fun PlacesScreenView(
                         .align(Alignment.Center)
                         .padding(16.dp)
                 )
+            }
+
+            //  A first download that fails leaves nothing behind - no half-built card in the list -
+            //  so the failure has to be said out loud or the place would simply never appear.
+            val addFailureMessage = addPlaceFailure?.let { stringResource(addPlaceErrorRes(it)) }
+            LaunchedEffect(addPlaceFailure) {
+                if (addFailureMessage != null) {
+                    snackbarHostState.showSnackbar(addFailureMessage)
+                    placeViewModel.acknowledgeAddPlaceFailure()
+                }
             }
 
             SnackbarHost(
@@ -266,22 +306,29 @@ private fun NoPlacesRegisteredMessage(
 private fun AddPlaceFloatingActionButton(
     modifier: Modifier = Modifier,
     placeViewModel: PlaceViewModel,
+    expanded: Boolean = true,
     onClick: () -> Unit = {},
 ) {
     val addPlaceDialogOpened = remember { mutableStateOf(false) }
+    val palette = LocalWeatherPalette.current
 
-    FloatingActionButton(
+    ExtendedFloatingActionButton(
         modifier = modifier,
+        expanded = expanded,
+        containerColor = palette.accent,
+        contentColor = palette.onAccent,
         onClick = {
             onClick()
             addPlaceDialogOpened.value = true
         },
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = stringResource(id = R.string.title_dialog_add_place)
-        )
-    }
+        icon = {
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = stringResource(id = R.string.title_dialog_add_place)
+            )
+        },
+        text = { Text(text = stringResource(id = R.string.title_dialog_add_place)) }
+    )
 
     if (addPlaceDialogOpened.value) {
         AddPlaceDialog(
@@ -315,7 +362,12 @@ fun LoadPlacesScreen(
 private fun PlacesList(
     placeList: List<Place>,
     formattingService: FormattingService,
+    lazyListState: LazyListState = rememberLazyListState(),
     isRefreshing: Boolean = false,
+    refreshOutcome: RefreshOutcome? = null,
+    pendingPlaceName: String? = null,
+    onRefreshOutcomeShown: () -> Unit = {},
+    onOpenPlace: (Place) -> Unit = {},
     onRefresh: () -> Unit = {},
     onDismiss: (Place, Int) -> Unit = { _, _ -> },
     onMovePlace: (from: Int, to: Int) -> Unit = { _, _ -> }
@@ -330,9 +382,6 @@ private fun PlacesList(
     var pendingDeleteIndex by remember { mutableStateOf(-1) }
     var pendingResetCallback by remember { mutableStateOf<(() -> Unit)?>(null) }
 
-    // État pour la LazyColumn
-    val lazyListState = rememberLazyListState()
-
     //  The list reorders in memory while the finger is down and is persisted once on drop, so a
     //  drag across ten rows is one storage write rather than ten. Keyed on placeList so an update
     //  arriving from the repository - a refresh, a delete - replaces this copy rather than being
@@ -342,6 +391,8 @@ private fun PlacesList(
     val reorderState = rememberDragToReorderState(
         lazyListState = lazyListState,
         itemCount = orderedPlaces.size,
+        //  The title and the refresh outcome occupy the first lazy item, so the cards start at 1.
+        leadingItemCount = 1,
         onMove = { from, to ->
             orderedPlaces = orderedPlaces.toMutableList().apply { add(to, removeAt(from)) }
         },
@@ -466,9 +517,12 @@ private fun PlacesList(
             //  flattened to a String: Lazy list keys have to survive being saved to a Bundle, and
             //  a protobuf message does not. Passing the message itself compiles and then throws
             //  when the list state is saved.
+            item(key = "header") {
+                PlacesHeader(refreshOutcome = refreshOutcome, onOutcomeShown = onRefreshOutcomeShown)
+            }
             itemsIndexed(
                 items = orderedPlaces,
-                key = { _, place -> place.stableKey }
+                key = { _, place -> place.identityKey }
             ) { index, place ->
                 val isDragging = reorderState.draggingItemIndex == index
                 Box(
@@ -499,11 +553,21 @@ private fun PlacesList(
                     SwipeablePlaceItem(
                         place = place,
                         formattingService = formattingService,
+                        hero = index == 0,
+                        onClick = { onOpenPlace(place) },
                         onSwipedPastThreshold = { resetCallback ->
                             pendingDeletePlace = place
                             pendingDeleteIndex = index
                             pendingResetCallback = resetCallback
                         }
+                    )
+                }
+            }
+            if (pendingPlaceName != null) {
+                item(key = "pending") {
+                    PendingPlaceCard(
+                        cityName = pendingPlaceName,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
                     )
                 }
             }
@@ -514,20 +578,79 @@ private fun PlacesList(
     }
 }
 
-/** Drag distance, in pixels, at which the indicator switches to "release to refresh". */
-private const val PULL_THRESHOLD_PX = 80f
+/**
+ * The screen's title, and the one line reporting how the last refresh went.
+ *
+ * A refresh used to end in silence: the indicator retracted whether four places had been updated or
+ * none. The outcome is announced and then cleared, so it reads as the result of the gesture just
+ * made rather than as a permanent state.
+ */
+@Composable
+private fun PlacesHeader(
+    refreshOutcome: RefreshOutcome?,
+    onOutcomeShown: () -> Unit
+) {
+    val palette = LocalWeatherPalette.current
+    val formattingService = FormattingService.getInstance(LocalContext.current)
+
+    Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 12.dp)) {
+        Text(
+            text = stringResource(R.string.title_places),
+            color = palette.textPrimary,
+            fontSize = 26.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+
+        if (refreshOutcome != null) {
+            val finishedAt = formattingService.getFormattedTime(
+                Date(refreshOutcome.finishedAt),
+                TimeZone.getDefault()
+            )
+            PlacesBanner(
+                modifier = Modifier.padding(top = 12.dp),
+                text = if (refreshOutcome.failed > 0) {
+                    pluralStringResource(
+                        R.plurals.status_refresh_failed,
+                        refreshOutcome.failed,
+                        refreshOutcome.failed
+                    )
+                } else {
+                    stringResource(R.string.status_refresh_up_to_date, finishedAt)
+                },
+                accent = if (refreshOutcome.failed > 0) palette.orange else palette.green
+            )
+
+            //  Shown, then gone: the banner reports a gesture, it is not a state of the list.
+            LaunchedEffect(refreshOutcome) {
+                delay(OUTCOME_VISIBLE_MILLIS)
+                onOutcomeShown()
+            }
+        }
+    }
+}
 
 /**
- * A stable, Bundle-saveable identity for a place, for use as a Lazy list key.
+ * What to tell the user when a request fails.
  *
- * Coordinates alone would almost always do, but the duplicate check in `PlaceRepository.addPlaceAt`
- * compares the whole geolocation, so this matches it exactly - otherwise two places the repository
- * considers distinct could collide here and Compose would reuse one row's state for the other.
+ * Shared by the add dialog and the list, so the same failure never gets two different wordings.
  */
-private val Place.stableKey: String
-    get() = with(geolocation) {
-        "$city|$countryCode|${coordinates.latitude}|${coordinates.longitude}"
-    }
+@StringRes
+internal fun addPlaceErrorRes(status: RequestStatus): Int = when (status) {
+    RequestStatus.TOO_SHORT -> R.string.error_place_query_too_short
+    RequestStatus.NOT_FOUND -> R.string.error_no_results
+    RequestStatus.ALREADY_PRESENT -> R.string.error_place_already_added
+    RequestStatus.NOT_CONNECTED -> R.string.error_device_not_connected
+    RequestStatus.NO_ANSWER,
+    RequestStatus.AUTH_FAILED,
+    RequestStatus.TOO_MANY_REQUESTS -> R.string.error_server_unreachable
+    RequestStatus.UNKNOWN_ERROR -> R.string.error_unknown_error
+}
+
+/** How long the refresh outcome stays on screen before clearing itself. */
+private const val OUTCOME_VISIBLE_MILLIS = 4000L
+
+/** Drag distance, in pixels, at which the indicator switches to "release to refresh". */
+private const val PULL_THRESHOLD_PX = 80f
 
 @Composable
 private fun PullToRefreshDropIndicator(
@@ -640,6 +763,8 @@ fun PullToRefreshDropIndicatorPreview() {
 private fun SwipeablePlaceItem(
     place: Place,
     formattingService: FormattingService,
+    hero: Boolean = false,
+    onClick: () -> Unit = {},
     onSwipedPastThreshold: ((resetCallback: () -> Unit) -> Unit)
 ) {
     val scope = rememberCoroutineScope()
@@ -690,10 +815,14 @@ private fun SwipeablePlaceItem(
             }
         }
     ) {
-        PlaceCardView(
+        PlaceSkyCard(
             place = place,
             formattingService = formattingService,
-            modifier = Modifier.fillMaxWidth()
+            hero = hero,
+            onClick = onClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 5.dp)
         )
     }
 }
