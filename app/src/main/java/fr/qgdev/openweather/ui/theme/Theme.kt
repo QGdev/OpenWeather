@@ -30,6 +30,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -351,8 +352,14 @@ fun AppTheme (
         else -> lightScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content
-    )
+    //  The redesign's own colours ride alongside the Material scheme: skies and state colours carry
+    //  meaning and must not follow the wallpaper, everything else still does. See WeatherPalette.
+    val weatherPalette = if (darkTheme) DarkWeatherPalette else LightWeatherPalette
+
+    CompositionLocalProvider(LocalWeatherPalette provides weatherPalette) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            content = content
+        )
+    }
 }

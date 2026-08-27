@@ -213,4 +213,15 @@
  	<string name="error_place_query_too_short">Can\'t lookup for a place with a short name</string>
 	<string name="error_place_query_empty">No results</string>
 	<string name="error_no_results">No results</string>
+    <string name="label_wind">Wind</string>
+    <string name="status_downloading_forecast">Downloading the forecast…</string>
+    <plurals name="badge_alerts">
+        <item quantity="one">%1$d ALERT</item>
+        <item quantity="other">%1$d ALERTS</item>
+    </plurals>
+    <plurals name="status_refresh_failed">
+        <item quantity="one">Failed · %1$d place</item>
+        <item quantity="other">Failed · %1$d places</item>
+    </plurals>
+    <string name="status_refresh_up_to_date">Up to date · %1$s</string>
 </resources>
