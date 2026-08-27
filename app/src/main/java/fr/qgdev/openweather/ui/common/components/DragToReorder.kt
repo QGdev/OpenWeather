@@ -73,9 +73,26 @@ class DragToReorderState internal constructor(
     /** Size of the reorderable region. Rows beyond it - trailing spacers - are not valid targets. */
     internal var reorderableItemCount: Int = 0
 
+    /**
+     * How many lazy items sit before the first reorderable row - a header, for instance.
+     *
+     * The indices this class reports are positions in the data, while `LazyListItemInfo.index` is a
+     * position in the list, and the two only coincide when the rows start at the top. Without this,
+     * adding a header above the list silently made every drag target the row before the intended
+     * one.
+     */
+    internal var leadingItemCount: Int = 0
+
+    /** The lazy item index a data index sits at. */
+    private fun Int.toItemIndex(): Int = this + leadingItemCount
+
+    /** The data index a lazy item index refers to, or null when that item is not a reorderable row. */
+    private fun LazyListItemInfo.toDataIndex(): Int? =
+        (index - leadingItemCount).takeIf { it in 0 until reorderableItemCount }
+
     private val draggingItemLayoutInfo: LazyListItemInfo?
         get() = lazyListState.layoutInfo.visibleItemsInfo
-            .firstOrNull { it.index == draggingItemIndex }
+            .firstOrNull { it.index == draggingItemIndex?.toItemIndex() }
 
     internal fun onDragStart(index: Int) {
         if (index !in 0 until reorderableItemCount) return
@@ -100,22 +117,24 @@ class DragToReorderState internal constructor(
         //  begins to overlap it, and with tall cards that reads as the list snapping about under
         //  the finger. Requiring the midpoint means the swap lands where the eye expects it.
         val target = lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { item ->
-            if (item.index == currentIndex || item.index !in 0 until reorderableItemCount) {
+            val dataIndex = item.toDataIndex()
+            if (dataIndex == null || dataIndex == currentIndex) {
                 false
             } else {
                 val itemCentre = item.offset + item.size / 2f
-                if (item.index > currentIndex) middleOffset > itemCentre
+                if (dataIndex > currentIndex) middleOffset > itemCentre
                 else middleOffset < itemCentre
             }
         }
 
-        if (target != null) {
-            onMove(currentIndex, target.index)
+        val targetIndex = target?.toDataIndex()
+        if (target != null && targetIndex != null) {
+            onMove(currentIndex, targetIndex)
             //  The rows swap underneath, so the dragged row is now where the target was. Its
             //  resting position moved with it, so the visual offset has to be reduced by the same
             //  amount or the row would jump.
             draggingItemOffset += draggingItem.offset - target.offset
-            draggingItemIndex = target.index
+            draggingItemIndex = targetIndex
         } else {
             autoScrollIfNearEdge(startOffset, endOffset)
         }
@@ -159,6 +178,7 @@ class DragToReorderState internal constructor(
 /**
  * @param lazyListState the state of the list being reordered
  * @param itemCount number of reorderable rows; rows at or beyond this index cannot be dragged to
+ * @param leadingItemCount lazy items shown before the first reorderable row, such as a header
  * @param onMove called per crossed row, to reorder in-memory state
  * @param onMoveCompleted called once on drop with the original and final index, to persist
  */
@@ -166,6 +186,7 @@ class DragToReorderState internal constructor(
 fun rememberDragToReorderState(
     lazyListState: LazyListState,
     itemCount: Int,
+    leadingItemCount: Int = 0,
     onMove: (from: Int, to: Int) -> Unit,
     onMoveCompleted: (from: Int, to: Int) -> Unit
 ): DragToReorderState {
@@ -188,6 +209,7 @@ fun rememberDragToReorderState(
         )
     }
     state.reorderableItemCount = itemCount
+    state.leadingItemCount = leadingItemCount
     return state
 }
 

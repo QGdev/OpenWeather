@@ -44,6 +44,21 @@ import kotlinx.coroutines.flow.single
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 
+/**
+ * A place's identity, stable across refreshes and reorderings.
+ *
+ * Matches the duplicate check in `PlaceRepository`, which compares name, country and coordinates.
+ * The region is deliberately left out of both: it arrived later, and places stored before it exists
+ * carry none. The country code is upper-cased, as a place found by a search and the same place
+ * stored by another version do not always spell it the same way.
+ */
+val Geolocation.identityKey: String
+    get() = "$city|${countryCode.uppercase()}|${coordinates.latitude}|${coordinates.longitude}"
+
+/** The same identity, reached through the place that holds it. */
+val Place.identityKey: String
+    get() = geolocation.identityKey
+
 /** Outcome of an attempt to store a place. */
 enum class AddPlaceResult {
     ADDED,

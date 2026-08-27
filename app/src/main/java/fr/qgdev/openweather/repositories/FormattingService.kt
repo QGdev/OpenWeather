@@ -308,6 +308,28 @@ class FormattingService private constructor(
 
     // endregion
 
+    // region Unit labels
+
+    //  The redesign prints a value and its unit in two different sizes, so it needs the unit on its
+    //  own rather than glued to the number by the format specifiers below.
+
+    /** The temperature unit as displayed, degree sign included: "°C", "°F", "°K". */
+    val temperatureUnitLabel: String get() = "°$temperatureUnitSymbol"
+
+    /** "km/h" or "mph". */
+    val speedUnitLabel: String get() = speedUnitSymbol
+
+    /** "km" or "mi". */
+    val distanceUnitLabel: String get() = distanceUnitSymbol
+
+    /** "mm" or "in". */
+    val shortDistanceUnitLabel: String get() = shortDistanceUnitSymbol
+
+    /** "hPa", "mBar", "psi" or "inHg". */
+    val pressureUnitLabel: String get() = pressureUnitSymbol
+
+    // endregion
+
     // region Public conversion methods
 
     fun convertTemperature(temperature: Float): Float = temperatureConversion(temperature)
