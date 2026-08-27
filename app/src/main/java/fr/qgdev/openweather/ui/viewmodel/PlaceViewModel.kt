@@ -26,6 +26,7 @@ import fr.qgdev.openweather.data.models.Geolocation
 import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.data.remote.FetchCallback
 import fr.qgdev.openweather.data.remote.FetchDataCallback
+import fr.qgdev.openweather.data.remote.RequestStatus
 import fr.qgdev.openweather.data.repositories.PlaceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,6 +43,24 @@ class PlaceViewModel(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
+    //  The place being downloaded after a search, so the list can show it arriving.
+    private val _pendingPlaceName = MutableStateFlow<String?>(null)
+    val pendingPlaceName: StateFlow<String?> = _pendingPlaceName.asStateFlow()
+
+    private val _addPlaceFailure = MutableStateFlow<RequestStatus?>(null)
+    val addPlaceFailure: StateFlow<RequestStatus?> = _addPlaceFailure.asStateFlow()
+
+    //  A refresh used to end in silence whatever happened: updateAllPlacesFromWeb already counted
+    //  its successes and failures, and refreshAllPlaces threw the pair away. A place whose update
+    //  failed kept showing its old values with nothing to say so.
+    private val _lastRefreshOutcome = MutableStateFlow<RefreshOutcome?>(null)
+    val lastRefreshOutcome: StateFlow<RefreshOutcome?> = _lastRefreshOutcome.asStateFlow()
+
+    /** Clears the outcome once the UI has shown it. */
+    fun acknowledgeRefreshOutcome() {
+        _lastRefreshOutcome.value = null
+    }
+
     init {
         viewModelScope.launch {
             placeRepository.placesFlow.collect { places ->
@@ -56,12 +75,6 @@ class PlaceViewModel(
     ) {
         viewModelScope.launch {
             placeRepository.fetchLocationDetails(query, callback)
-        }
-    }
-
-    fun addPlace(place: Place) {
-        viewModelScope.launch {
-            placeRepository.addPlace(place)
         }
     }
 
@@ -104,6 +117,41 @@ class PlaceViewModel(
         }
     }
 
+    /**
+     * Adds a place chosen from a search, showing it as pending until its forecast arrives.
+     *
+     * The dialog closes on the choice, because waiting inside it would hold the user in a modal for
+     * a network round trip. That used to mean the choice vanished with nothing to show for it: the
+     * place appeared only once its download finished, and never at all when the download failed.
+     * The list now carries a pending card, and a failure is reported rather than swallowed.
+     */
+    fun addPlaceFromSearch(placeGeolocation: Geolocation) {
+        _pendingPlaceName.value = placeGeolocation.city
+
+        viewModelScope.launch {
+            placeRepository.fetchAndAddNewPlaceFromWeb(placeGeolocation, object : FetchDataCallback {
+                override suspend fun onSuccess(place: Place) {
+                    _pendingPlaceName.value = null
+                }
+
+                //  The weather arrived and only the air quality did not: the place is usable, and
+                //  the card will say what is missing.
+                override suspend fun onPartialSuccess(place: Place, requestStatus: RequestStatus) {
+                    _pendingPlaceName.value = null
+                }
+
+                override suspend fun onError(requestStatus: RequestStatus) {
+                    _pendingPlaceName.value = null
+                    _addPlaceFailure.value = requestStatus
+                }
+            })
+        }
+    }
+
+    fun acknowledgeAddPlaceFailure() {
+        _addPlaceFailure.value = null
+    }
+
     fun thereIsNoPlaceRegistered(): Boolean {
         return _placesState.value?.isEmpty() ?: false
     }
@@ -118,10 +166,27 @@ class PlaceViewModel(
 
         viewModelScope.launch {
             try {
-                placeRepository.updateAllPlacesFromWeb()
+                val (succeeded, failed) = placeRepository.updateAllPlacesFromWeb()
+                _lastRefreshOutcome.value = RefreshOutcome(
+                    succeeded = succeeded,
+                    failed = failed,
+                    finishedAt = System.currentTimeMillis()
+                )
             } finally {
                 _isRefreshing.value = false
             }
         }
     }
 }
+
+/**
+ * How the last refresh went, for the UI to report.
+ *
+ * [failed] counts places whose weather could not be fetched at all. A place whose weather arrived
+ * but whose air quality did not counts as succeeded: it has something new to show.
+ */
+data class RefreshOutcome(
+    val succeeded: Int,
+    val failed: Int,
+    val finishedAt: Long
+)
