@@ -108,15 +108,6 @@ class PlaceViewModel(
         }
     }
 
-    fun fetchAndAddNewPlaceFromWeb(
-        placeGeolocation: Geolocation,
-        callback: FetchDataCallback
-    ) {
-        viewModelScope.launch {
-            placeRepository.fetchAndAddNewPlaceFromWeb(placeGeolocation, callback)
-        }
-    }
-
     /**
      * Adds a place chosen from a search, showing it as pending until its forecast arrives.
      *
