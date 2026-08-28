@@ -225,4 +225,28 @@
 		<item quantity="other">Échec · %1$d lieux</item>
 	</plurals>
 	<string name="status_refresh_up_to_date">À jour · %1$s</string>
+	<plurals name="status_active_alerts">
+		<item quantity="one">%1$d alerte active</item>
+		<item quantity="other">%1$d alertes actives</item>
+	</plurals>
+	<string name="label_results_count">%1$d RÉSULTATS</string>
+	<string name="label_cities_only">villes uniquement</string>
+	<string name="label_already_added">déjà ajouté</string>
+	<string name="action_search">Chercher</string>
+	<string name="hint_search_city">Ville</string>
+	<string name="info_same_name_cities">Plusieurs villes peuvent porter le même nom. La région et les coordonnées les distinguent.</string>
+	<string name="error_places_full">Liste pleine : %1$d lieux au maximum.</string>
+	<string name="alert_status_ongoing">EN COURS</string>
+	<string name="alert_status_starting_at">À PARTIR DE %1$s</string>
+	<string name="alert_status_ended">TERMINÉE</string>
+	<string name="alert_remaining">encore %1$s</string>
+	<string name="alert_local_time">heure locale de %1$s</string>
+	<string name="action_read_full_text">Lire le texte complet</string>
+	<string name="action_collapse_text">Replier</string>
+	<string name="alert_severity_red">ROUGE</string>
+	<string name="alert_severity_orange">ORANGE</string>
+	<string name="alert_severity_yellow">JAUNE</string>
+	<string name="alert_subtitle">%1$s · %2$s</string>
+	<string name="duration_hours_minutes">%1$d h %2$02d</string>
+	<string name="duration_minutes">%1$d min</string>
 </resources>

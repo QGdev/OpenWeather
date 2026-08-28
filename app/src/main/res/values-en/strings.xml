@@ -226,4 +226,28 @@
         <item quantity="other">Failed · %1$d places</item>
     </plurals>
     <string name="status_refresh_up_to_date">Up to date · %1$s</string>
+    <plurals name="status_active_alerts">
+        <item quantity="one">%1$d active alert</item>
+        <item quantity="other">%1$d active alerts</item>
+    </plurals>
+    <string name="label_results_count">%1$d RESULTS</string>
+    <string name="label_cities_only">cities only</string>
+    <string name="label_already_added">already added</string>
+    <string name="action_search">Search</string>
+    <string name="hint_search_city">City</string>
+    <string name="info_same_name_cities">Several cities can share a name. The region and the coordinates tell them apart.</string>
+    <string name="error_places_full">List full: %1$d places at most.</string>
+    <string name="alert_status_ongoing">ONGOING</string>
+    <string name="alert_status_starting_at">FROM %1$s</string>
+    <string name="alert_status_ended">ENDED</string>
+    <string name="alert_remaining">%1$s left</string>
+    <string name="alert_local_time">local time in %1$s</string>
+    <string name="action_read_full_text">Read the full text</string>
+    <string name="action_collapse_text">Collapse</string>
+    <string name="alert_severity_red">RED</string>
+    <string name="alert_severity_orange">ORANGE</string>
+    <string name="alert_severity_yellow">YELLOW</string>
+    <string name="alert_subtitle">%1$s · %2$s</string>
+    <string name="duration_hours_minutes">%1$dh %2$02d</string>
+    <string name="duration_minutes">%1$d min</string>
 </resources>
