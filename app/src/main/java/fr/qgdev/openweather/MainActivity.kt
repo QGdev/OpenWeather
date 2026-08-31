@@ -53,6 +53,15 @@ import fr.qgdev.openweather.data.settings.SettingsRepository
 import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.ui.fragment.place.PlacesScreenView
 import fr.qgdev.openweather.ui.fragment.settings.SettingsScreenView
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import fr.qgdev.openweather.ui.components.dialogs.AirQualityInfoDialog
+import fr.qgdev.openweather.ui.components.dialogs.WeatherAlertDialog
+import fr.qgdev.openweather.ui.place.detail.PlaceDetailScreen
 import fr.qgdev.openweather.ui.theme.AppTheme
 import fr.qgdev.openweather.ui.viewmodel.PlaceViewModel
 import fr.qgdev.openweather.ui.viewmodel.PlaceViewModelFactory
@@ -214,6 +223,52 @@ class MainActivity : AppCompatActivity() {
         MainScreen()
     }
 
+    /**
+     * The detail screen, with the dialogs it can open.
+     *
+     * The place is re-read from the list on every change, so a refresh landing while the screen is
+     * open updates it. If the place goes away - deleted from the list, or the process restored
+     * without a selection - the screen steps back rather than showing an empty shell.
+     */
+    @Composable
+    fun PlaceDetailRoute(
+        placeViewModel: PlaceViewModel,
+        settingsViewModel: SettingsViewModel,
+        onBack: () -> Unit
+    ) {
+        val place by placeViewModel.selectedPlace.collectAsState()
+        val formattingService by settingsViewModel.formattingServiceState.collectAsState()
+        var alertsOpened by remember { mutableStateOf(false) }
+        var airQualityOpened by remember { mutableStateOf(false) }
+
+        val shownPlace = place
+        if (shownPlace == null) {
+            LaunchedEffect(Unit) { onBack() }
+            return
+        }
+
+        AppTheme {
+            PlaceDetailScreen(
+                place = shownPlace,
+                formattingService = formattingService,
+                onBack = onBack,
+                onOpenAlerts = { alertsOpened = true },
+                onOpenAirQuality = { airQualityOpened = true }
+            )
+        }
+
+        if (alertsOpened) {
+            WeatherAlertDialog(
+                place = shownPlace,
+                formattingService = formattingService,
+                onDismissRequest = { alertsOpened = false }
+            )
+        }
+        if (airQualityOpened) {
+            AirQualityInfoDialog(onDismissRequest = { airQualityOpened = false })
+        }
+    }
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     fun MainScreen() {
@@ -223,10 +278,16 @@ class MainActivity : AppCompatActivity() {
             Screen.Settings
         )
 
+        val navBackStackEntry = navController.currentBackStackEntryAsState().value
+        val onDetailScreen = navBackStackEntry?.destination?.route == PLACE_DETAIL_ROUTE
+
         Scaffold(
             modifier = Modifier
                 .fillMaxSize(),
             bottomBar = {
+                //  The detail screen is stacked on top of Places rather than being a destination of
+                //  its own, so the tabs step aside while it is open.
+                if (onDetailScreen) return@Scaffold
                 NavigationBar (
 
                 ) {
@@ -265,7 +326,21 @@ class MainActivity : AppCompatActivity() {
                 composable(Screen.Places.route) {
                     PlacesScreenView(
                         placeViewModel = placeViewModel,
-                        settingsViewModel = settingsViewModel
+                        settingsViewModel = settingsViewModel,
+                        onOpenPlace = { place ->
+                            placeViewModel.selectPlace(place)
+                            navController.navigate(PLACE_DETAIL_ROUTE)
+                        }
+                    )
+                }
+                composable(PLACE_DETAIL_ROUTE) {
+                    PlaceDetailRoute(
+                        placeViewModel = placeViewModel,
+                        settingsViewModel = settingsViewModel,
+                        onBack = {
+                            placeViewModel.clearSelectedPlace()
+                            navController.popBackStack()
+                        }
                     )
                 }
                 composable(Screen.Settings.route) {
@@ -278,3 +353,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
+/** The place detail screen, stacked over the Places tab. */
+private const val PLACE_DETAIL_ROUTE = "place_detail"
