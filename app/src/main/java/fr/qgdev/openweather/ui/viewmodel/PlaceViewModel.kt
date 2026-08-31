@@ -20,6 +20,7 @@
 
 package fr.qgdev.openweather.ui.viewmodel
 
+import fr.qgdev.openweather.data.repositories.identityKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fr.qgdev.openweather.data.models.Geolocation
@@ -29,6 +30,9 @@ import fr.qgdev.openweather.data.remote.FetchDataCallback
 import fr.qgdev.openweather.data.remote.RequestStatus
 import fr.qgdev.openweather.data.repositories.PlaceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -59,6 +63,28 @@ class PlaceViewModel(
     /** Clears the outcome once the UI has shown it. */
     fun acknowledgeRefreshOutcome() {
         _lastRefreshOutcome.value = null
+    }
+
+    //  Which place the detail screen is showing, held as the place's own identity rather than its
+    //  position: the list can be reordered or refreshed while the detail screen is open, and an
+    //  index would then point at a different city.
+    private val _selectedPlaceKey = MutableStateFlow<String?>(null)
+
+    /**
+     * The selected place, re-read from the list on every update, so the detail screen follows a
+     * refresh instead of showing the snapshot taken when it opened.
+     */
+    val selectedPlace: StateFlow<Place?> =
+        combine(_placesState, _selectedPlaceKey) { places, key ->
+            if (key == null) null else places?.firstOrNull { it.identityKey == key }
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    fun selectPlace(place: Place) {
+        _selectedPlaceKey.value = place.identityKey
+    }
+
+    fun clearSelectedPlace() {
+        _selectedPlaceKey.value = null
     }
 
     init {
