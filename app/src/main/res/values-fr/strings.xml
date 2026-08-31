@@ -225,10 +225,53 @@
 		<item quantity="other">Échec · %1$d lieux</item>
 	</plurals>
 	<string name="status_refresh_up_to_date">À jour · %1$s</string>
+	<string name="title_next_hour">Prochaine heure</string>
+	<string name="nowcast_dry">Aucune précipitation attendue dans l\'heure.</string>
+	<string name="nowcast_falling_now">Précipitations en cours.</string>
+	<plurals name="nowcast_starting_in">
+		<item quantity="one">Précipitations dans %1$d minute.</item>
+		<item quantity="other">Précipitations dans %1$d minutes.</item>
+	</plurals>
+	<string name="nowcast_unavailable">Prévision à la minute non disponible pour %1$s.</string>
+	<string name="label_now">maintenant</string>
+	<string name="label_nowcast_total">cumul</string>
+	<string name="label_nowcast_peak">pic</string>
+	<string name="label_selected_hour">heure sélectionnée</string>
+	<string name="label_dominant_pollutant">dominant %1$s</string>
+	<string name="action_details">Détail</string>
+	<string name="label_hours_count">%1$d h</string>
+	<string name="label_common_scale">échelle commune %1$s → %2$s</string>
 	<plurals name="status_active_alerts">
 		<item quantity="one">%1$d alerte active</item>
 		<item quantity="other">%1$d alertes actives</item>
 	</plurals>
+	<string name="group_temperatures">Températures</string>
+	<string name="group_atmosphere">Atmosphère</string>
+	<string name="group_wind">Vent</string>
+	<string name="group_precipitations">Précipitations</string>
+	<string name="group_sun_and_moon">Soleil et lune</string>
+	<string name="label_probability">Probabilité</string>
+	<string name="label_dew_point">Point de rosée</string>
+	<string name="label_uv_index">Indice UV</string>
+	<string name="label_moon_phase">Phase lunaire</string>
+	<string name="label_morning">Matin</string>
+	<string name="label_real">réelle</string>
+	<string name="description_back">Retour</string>
+	<string name="title_moonrise">Lever de lune</string>
+	<string name="title_moonset">Coucher de lune</string>
+	<string name="uv_level_low">Faible</string>
+	<string name="uv_level_moderate">Modéré</string>
+	<string name="uv_level_high">Élevé</string>
+	<string name="uv_level_very_high">Très élevé</string>
+	<string name="uv_level_extreme">Extrême</string>
+	<string name="moon_phase_new">Nouvelle lune</string>
+	<string name="moon_phase_waxing_crescent">Premier croissant</string>
+	<string name="moon_phase_first_quarter">Premier quartier</string>
+	<string name="moon_phase_waxing_gibbous">Gibbeuse croissante</string>
+	<string name="moon_phase_full">Pleine lune</string>
+	<string name="moon_phase_waning_gibbous">Gibbeuse décroissante</string>
+	<string name="moon_phase_last_quarter">Dernier quartier</string>
+	<string name="moon_phase_waning_crescent">Dernier croissant</string>
 	<string name="label_results_count">%1$d RÉSULTATS</string>
 	<string name="label_cities_only">villes uniquement</string>
 	<string name="label_already_added">déjà ajouté</string>
@@ -249,4 +292,8 @@
 	<string name="alert_subtitle">%1$s · %2$s</string>
 	<string name="duration_hours_minutes">%1$d h %2$02d</string>
 	<string name="duration_minutes">%1$d min</string>
+	<string name="title_dialog_understand_index">Comprendre l\'indice</string>
+	<string name="aqi_explainer_heading">L\'indice de 1 à 5</string>
+	<string name="aqi_explainer_body">L\'indice global retenu est celui du polluant le plus défavorable. Il ne moyenne pas les six mesures : une seule valeur élevée suffit à faire monter l\'indice.</string>
+	<string name="aqi_scales_note">Concentrations en µg/m³. Seuils de niveau OpenWeatherMap · Air Pollution API. Les bornes indiquées séparent les niveaux 1 à 5.</string>
 </resources>

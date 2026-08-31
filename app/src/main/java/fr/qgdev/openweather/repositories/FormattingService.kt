@@ -377,6 +377,16 @@ class FormattingService private constructor(
         )
     }
 
+    /**
+     * Formats a temperature that has already been converted to the user's unit.
+     *
+     * The graph plots converted values, so it needs them printed without converting a second time.
+     * Going through [getFloatFormattedTemperature] and parsing the result back would depend on the
+     * locale's decimal separator.
+     */
+    fun formatConvertedTemperature(temperature: Float): String =
+        String.format(defaultLocale, temperatureFormatSpecifierFloat, temperature, "", "")
+
     fun getFloatFormattedTemperature(temperature: Float, formattingSpec: FormattingSpec): String {
         return String.format(
             defaultLocale,
