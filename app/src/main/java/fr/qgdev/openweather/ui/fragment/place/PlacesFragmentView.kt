@@ -553,7 +553,6 @@ private fun PlacesList(
                     SwipeablePlaceItem(
                         place = place,
                         formattingService = formattingService,
-                        hero = index == 0,
                         onClick = { onOpenPlace(place) },
                         onSwipedPastThreshold = { resetCallback ->
                             pendingDeletePlace = place
@@ -763,7 +762,6 @@ fun PullToRefreshDropIndicatorPreview() {
 private fun SwipeablePlaceItem(
     place: Place,
     formattingService: FormattingService,
-    hero: Boolean = false,
     onClick: () -> Unit = {},
     onSwipedPastThreshold: ((resetCallback: () -> Unit) -> Unit)
 ) {
@@ -818,7 +816,6 @@ private fun SwipeablePlaceItem(
         PlaceSkyCard(
             place = place,
             formattingService = formattingService,
-            hero = hero,
             onClick = onClick,
             modifier = Modifier
                 .fillMaxWidth()

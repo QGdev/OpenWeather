@@ -344,8 +344,12 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
                 composable(Screen.Settings.route) {
+                    //  The places give the unit choices a real value to convert, and the update
+                    //  interval its daily call count.
+                    val places by placeViewModel.placesState.collectAsState()
                     SettingsScreenView(
-                        settingsRepository = settingsRepository
+                        settingsRepository = settingsRepository,
+                        places = places
                     )
                 }
 

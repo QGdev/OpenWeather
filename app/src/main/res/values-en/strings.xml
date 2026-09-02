@@ -90,7 +90,7 @@
 	<string name="title_forecast_daily">Daily Forecast</string>
 	<string name="about_us">About us</string>
 	<string name="dialog_exit_button">Exit</string>
-	<string name="content_about_your_data_section">The data is only stored on your phone, apart from you, no one has access to it. The application only sends some data to openweathermap.org, this data is linked to cities, the first time a city is entered, we send the city as well as its country, after once this city is registered, we only send the city coordinates. There is no intermediary between OpenWeatherMaps and the application, the data received is directly processed on the application. The OpenWeatherMaps privacy policy is available here: openweather.co.uk/privacy-policy</string>
+	<string name="content_about_your_data_section">No account, no tracking, no usage analytics. Your places and settings stay on this device. Only two things leave the phone: a place\'s coordinates, sent to OpenWeatherMap with your API key and language to get its weather, and the text you type in the search, sent to OpenStreetMap Nominatim.</string>
 	<string name="title_about_the_developer_section">About the developer</string>
 	<string name="title_about_your_data_section">About your data</string>
 	<string name="content_about_the_developer_section">I am French computer science student, who had an idea during lockdown and turned it into an application to practice Java and Android development.</string>
@@ -295,4 +295,23 @@
     <string name="aqi_explainer_heading">The index, 1 to 5</string>
     <string name="aqi_explainer_body">The overall index is the worst of the six pollutants, not their average: one high reading is enough to raise it.</string>
     <string name="aqi_scales_note">Concentrations in µg/m³. Level thresholds from the OpenWeatherMap Air Pollution API. The bounds shown separate levels 1 to 5.</string>
+
+    <!-- Settings (redesign) -->
+    <string name="summary_settings_units_measure">wind, visibility, precipitation</string>
+    <string name="status_api_key_valid">valid</string>
+    <string name="status_api_key_incomplete">incomplete</string>
+    <string name="settings_api_key_length">%1$d / %2$d characters</string>
+    <string name="settings_api_key_saved_at">saved at %1$s</string>
+    <string name="description_show_api_key">Show the API key</string>
+    <string name="description_hide_api_key">Hide the API key</string>
+    <plurals name="settings_place_count">
+        <item quantity="one">%1$d place</item>
+        <item quantity="other">%1$d places</item>
+    </plurals>
+    <string name="settings_call_budget">about %1$s calls per day. The free plan allows %2$s.</string>
+    <string name="action_about_source_code">Source code</string>
+    <string name="action_about_license">License</string>
+    <string name="about_license_badge">GPLv3 · free software</string>
+    <string name="splash_tagline">Free weather, no account, no tracking</string>
+    <string name="splash_attribution">OpenWeatherMap data (ODbL · CC BY-SA 4.0) · OpenStreetMap Nominatim search</string>
 </resources>
