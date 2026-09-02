@@ -88,7 +88,7 @@
 	<string name="title_dialog_weather_alert">Alertes Météorologiques</string>
 	<string name="about_us">À propos</string>
 	<string name="dialog_exit_button">Quitter</string>
-	<string name="content_about_your_data_section">Les données sont uniquement stockées sur votre téléphone, à part vous, personne n\'y a accès. L\'application n\'envoie que certaines données à OpenWeatherMaps, ces données sont liées aux villes, la première fois, qu\'une ville est renseignée, nous envoyons la ville ainsi que son pays, une fois cette ville enregistrée, nous n\'enverons uniquement les coordonnées de cette ville. Il n\'y a aucun intermédiaire entre OpenWeatherMaps et l\'application, les données reçues sont directement traîtées sur l\'application. La politique de confidentialité de OpenWeatherMaps est disponible ici: openweather.co.uk/privacy-policy</string>
+	<string name="content_about_your_data_section">Aucun compte, aucun pistage, aucune analyse d\'usage. Vos lieux et vos réglages restent sur l\'appareil. Deux informations seulement quittent le téléphone : les coordonnées d\'un lieu, envoyées à OpenWeatherMap avec votre clé d\'API et votre langue pour obtenir sa météo, et le texte que vous tapez dans la recherche, envoyé à OpenStreetMap Nominatim.</string>
 	<string name="title_about_the_developer_section">À propos du développeur</string>
 	<string name="title_about_your_data_section">À propos de vos données</string>
 	<string name="content_about_the_developer_section">Je suis un étudiant français en informatique, qui a eu une idée pendant le confinement et l\'a transformée en une application pour pratiquer le développement Java et Android.</string>
@@ -291,4 +291,23 @@
 	<string name="aqi_explainer_heading">L\'indice de 1 à 5</string>
 	<string name="aqi_explainer_body">L\'indice global retenu est celui du polluant le plus défavorable. Il ne moyenne pas les six mesures : une seule valeur élevée suffit à faire monter l\'indice.</string>
 	<string name="aqi_scales_note">Concentrations en µg/m³. Seuils de niveau OpenWeatherMap · Air Pollution API. Les bornes indiquées séparent les niveaux 1 à 5.</string>
+
+	<!-- Settings (redesign) -->
+	<string name="summary_settings_units_measure">vent, visibilité, précipitations</string>
+	<string name="status_api_key_valid">valide</string>
+	<string name="status_api_key_incomplete">incomplète</string>
+	<string name="settings_api_key_length">%1$d / %2$d caractères</string>
+	<string name="settings_api_key_saved_at">enregistrée à %1$s</string>
+	<string name="description_show_api_key">Afficher la clé d\'API</string>
+	<string name="description_hide_api_key">Masquer la clé d\'API</string>
+	<plurals name="settings_place_count">
+		<item quantity="one">%1$d lieu</item>
+		<item quantity="other">%1$d lieux</item>
+	</plurals>
+	<string name="settings_call_budget">environ %1$s appels par jour. L\'offre gratuite en autorise %2$s.</string>
+	<string name="action_about_source_code">Code source</string>
+	<string name="action_about_license">Licence</string>
+	<string name="about_license_badge">GPLv3 · logiciel libre</string>
+	<string name="splash_tagline">Météo libre, sans compte, sans pistage</string>
+	<string name="splash_attribution">Données OpenWeatherMap (ODbL · CC BY-SA 4.0) · Recherche OpenStreetMap Nominatim</string>
 </resources>

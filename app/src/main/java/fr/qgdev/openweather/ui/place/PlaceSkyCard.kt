@@ -53,8 +53,7 @@ import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.repositories.FormattingService.FormattingSpec
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
-import fr.qgdev.openweather.ui.theme.conditionFamily
-import fr.qgdev.openweather.ui.theme.sky
+import fr.qgdev.openweather.ui.theme.conditionSky
 import fr.qgdev.openweather.ui.utils.countryNameFromCode
 import fr.qgdev.openweather.ui.utils.getDrawableResIdFromWeatherCode
 import fr.qgdev.openweather.ui.utils.isDaytime
@@ -85,8 +84,11 @@ fun PlaceSkyCard(
 ) {
     val palette = LocalWeatherPalette.current
     val currentWeather = place.currentWeather
-    val family = conditionFamily(currentWeather.weatherCode, currentWeather.isDaytime())
-    val sky = family.sky()
+    val sky = conditionSky(
+        currentWeather.weatherCode,
+        currentWeather.isDaytime(),
+        currentWeather.cloudiness
+    )
 
     val alertCount = place.weatherAlertsListCount
     val today = place.dailyForecastListList.firstOrNull()
