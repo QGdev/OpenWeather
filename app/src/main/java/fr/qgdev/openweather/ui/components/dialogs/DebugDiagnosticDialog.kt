@@ -24,6 +24,21 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
+import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,14 +55,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -486,47 +496,89 @@ fun DebugDiagnosticDialog(
         if (query.isBlank()) flatten(tree, expanded) else search(tree, query.trim())
     }
 
+    val palette = LocalWeatherPalette.current
+
     FullScreenDialog(title = "Stored data", onDismissRequest = onDismissRequest) {
         Column(modifier = Modifier.fillMaxSize()) {
+            Text(
+                text = "development tool",
+                color = palette.textQuiet,
+                fontSize = 11.sp,
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
+
+            //  The filter field, drawn like the redesign's other inputs rather than as a Material
+            //  outlined field: a dev tool still sits inside the app.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(14.dp))
+                    .border(1.dp, palette.outlineStrong, RoundedCornerShape(14.dp))
+                    .padding(start = 14.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = null,
+                    tint = palette.textQuiet,
+                    modifier = Modifier.size(16.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 10.dp, top = 12.dp, bottom = 12.dp)
+                ) {
+                    if (query.isEmpty()) {
+                        Text("Filter fields", color = palette.textQuiet, fontSize = 12.5.sp, fontFamily = FontFamily.Monospace)
+                    }
+                    BasicTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            color = palette.textPrimary,
+                            fontSize = 12.5.sp,
+                            fontFamily = FontFamily.Monospace
+                        ),
+                        cursorBrush = SolidColor(palette.accent),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                if (query.isNotEmpty()) {
+                    IconButton(onClick = { query = "" }) {
+                        Icon(Icons.Filled.Close, contentDescription = "Clear filter", tint = palette.textQuiet)
+                    }
+                }
+            }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                    .padding(top = 11.dp, bottom = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(7.dp)
             ) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    label = { Text("Filter fields", fontSize = 12.sp) },
-                    trailingIcon = {
-                        if (query.isNotEmpty()) {
-                            IconButton(onClick = { query = "" }) {
-                                Icon(Icons.Filled.Close, contentDescription = "Clear filter")
-                            }
-                        }
-                    }
+                //  One level: expanding everything would materialise every hourly entry.
+                ToolChip("Expand") { expanded = tree.filterIsInstance<DebugGroup>().map { it.id }.toSet() }
+                ToolChip("Collapse all") { expanded = emptySet() }
+                ToolChip("Copy") { copyToClipboard(context, asText(tree)) }
+                Text(
+                    //  Without a count, an empty-looking filter cannot be told from a slow one.
+                    text = if (query.isBlank()) "" else "${rows.size} match" + if (rows.size == 1) "" else "es",
+                    color = palette.textQuiet,
+                    fontSize = 10.5.sp,
+                    fontFamily = FontFamily.Monospace,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(1f)
                 )
-                TextButton(onClick = {
-                    expanded = if (expanded.isEmpty()) {
-                        //  One level: expanding everything would materialise every hourly entry.
-                        tree.filterIsInstance<DebugGroup>().map { it.id }.toSet()
-                    } else {
-                        emptySet()
-                    }
-                }) { Text(if (expanded.isEmpty()) "Expand" else "Collapse") }
-                TextButton(onClick = { copyToClipboard(context, asText(tree)) }) { Text("Copy") }
             }
 
             if (rows.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(
                         if (query.isBlank()) "No data stored" else "No field matches \"$query\"",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.outline
+                        fontSize = 12.5.sp,
+                        color = palette.textQuiet
                     )
                 }
             } else {
@@ -548,13 +600,37 @@ fun DebugDiagnosticDialog(
                                 depth = row.depth,
                                 label = node.label,
                                 value = node.value,
-                                path = if (query.isBlank()) null else row.path
+                                path = if (query.isBlank()) null else row.path,
+                                query = query.trim()
                             )
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ToolChip(text: String, onClick: () -> Unit) {
+    val palette = LocalWeatherPalette.current
+    Text(
+        text = text,
+        color = palette.textPrimary,
+        fontSize = 11.sp,
+        modifier = Modifier
+            .clip(CircleShape)
+            .border(1.dp, palette.outlineStrong, CircleShape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 11.dp, vertical = 5.dp)
+    )
+}
+
+/** The rail a nested row hangs from, one per level, so depth reads without counting indents. */
+private fun Modifier.depthRails(depth: Int, color: Color): Modifier = drawBehind {
+    for (level in 0 until depth) {
+        val x = (4 + level * 21).dp.toPx()
+        drawLine(color, Offset(x, 0f), Offset(x, size.height), strokeWidth = 1.dp.toPx())
     }
 }
 
@@ -566,47 +642,62 @@ private fun GroupRow(
     isExpanded: Boolean,
     onToggle: () -> Unit
 ) {
+    val palette = LocalWeatherPalette.current
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .depthRails(depth, palette.outline)
             .clickable(onClick = onToggle)
-            .padding(start = (8 + depth * 14).dp, end = 8.dp, top = 6.dp, bottom = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(start = (depth * 21).dp, top = 9.dp, bottom = 9.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Icon(
-            imageVector = if (isExpanded) Icons.Filled.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowRight,
-            contentDescription = if (isExpanded) "Collapse" else "Expand",
-            modifier = Modifier.size(18.dp),
-            tint = MaterialTheme.colorScheme.primary
+        Text(
+            text = if (isExpanded) "⌄" else "›",
+            color = if (isExpanded) palette.accent else palette.textQuiet,
+            fontFamily = FontFamily.Monospace,
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.width(9.dp)
         )
         Text(
             text = label,
-            modifier = Modifier.padding(start = 4.dp),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.primary
+            color = when {
+                isExpanded -> palette.textPrimary
+                depth == 0 -> palette.textMuted
+                else -> palette.textQuiet
+            },
+            fontFamily = FontFamily.Monospace,
+            fontSize = 12.sp,
+            modifier = Modifier.weight(1f)
         )
         badge?.let {
-            Text(
-                text = "  $it",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline
-            )
+            Text(text = it, color = palette.textQuiet, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
         }
     }
 }
 
+/**
+ * A stored value, raw: 287.05 K stays 287.05, not 13.9 °C - this inspects storage, not the UI.
+ * While filtering, the matched text is highlighted, since on a deep tree the row alone does not
+ * say why it was kept.
+ */
 @Composable
-private fun FieldRow(depth: Int, label: String, value: String, path: String?) {
+private fun FieldRow(depth: Int, label: String, value: String, path: String?, query: String) {
+    val palette = LocalWeatherPalette.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = (26 + depth * 14).dp, end = 8.dp, top = 2.dp, bottom = 2.dp)
+            .depthRails(depth, palette.accent.copy(alpha = 0.3f))
+            .padding(start = (depth * 21 + 17).dp, top = 7.dp, bottom = 7.dp)
     ) {
         path?.let {
             Text(
                 text = it,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.outline,
+                color = palette.textQuiet,
+                fontSize = 10.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -614,26 +705,43 @@ private fun FieldRow(depth: Int, label: String, value: String, path: String?) {
         SelectionContainer {
             Row(verticalAlignment = Alignment.Top) {
                 Text(
-                    text = label,
-                    modifier = Modifier.width(150.dp),
+                    text = highlighted(label, query),
+                    modifier = Modifier.weight(1f),
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.outline
+                    fontSize = 11.5.sp,
+                    color = palette.textQuiet
                 )
                 Text(
-                    text = value,
+                    text = highlighted(value, query),
                     modifier = Modifier
                         .weight(1f)
-                        .background(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(3.dp)
-                        )
-                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                        .padding(start = 8.dp),
                     fontFamily = FontFamily.Monospace,
-                    fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurface
+                    fontSize = 11.5.sp,
+                    color = palette.textPrimary,
+                    textAlign = TextAlign.End
                 )
             }
+        }
+    }
+}
+
+/** [text] with every case-insensitive occurrence of [query] marked. */
+@Composable
+private fun highlighted(text: String, query: String): AnnotatedString {
+    val palette = LocalWeatherPalette.current
+    if (query.isEmpty()) return AnnotatedString(text)
+
+    return buildAnnotatedString {
+        append(text)
+        var index = text.indexOf(query, ignoreCase = true)
+        while (index >= 0) {
+            addStyle(
+                SpanStyle(background = palette.accent.copy(alpha = 0.28f), color = palette.textPrimary),
+                index,
+                index + query.length
+            )
+            index = text.indexOf(query, index + query.length, ignoreCase = true)
         }
     }
 }

@@ -59,8 +59,7 @@ import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.repositories.FormattingService.FormattingSpec
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
-import fr.qgdev.openweather.ui.theme.conditionFamily
-import fr.qgdev.openweather.ui.theme.sky
+import fr.qgdev.openweather.ui.theme.conditionSky
 import fr.qgdev.openweather.ui.utils.countryNameFromCode
 import fr.qgdev.openweather.ui.utils.getDrawableResIdFromWeatherCode
 import fr.qgdev.openweather.ui.utils.isDaytime
@@ -167,7 +166,7 @@ private fun DetailHeader(
 ) {
     val palette = LocalWeatherPalette.current
     val currentWeather = place.currentWeather
-    val sky = conditionFamily(currentWeather.weatherCode, currentWeather.isDaytime()).sky()
+    val sky = conditionSky(currentWeather.weatherCode, currentWeather.isDaytime(), currentWeather.cloudiness)
     val today = place.dailyForecastListList.firstOrNull()
 
     Box(modifier = Modifier.background(sky.wash)) {
