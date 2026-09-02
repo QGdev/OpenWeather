@@ -61,8 +61,7 @@ import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.repositories.FormattingService.FormattingSpec
 import fr.qgdev.openweather.ui.components.forecasts.components.MoonPhaseIndicator
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
-import fr.qgdev.openweather.ui.theme.conditionFamily
-import fr.qgdev.openweather.ui.theme.sky
+import fr.qgdev.openweather.ui.theme.conditionSky
 import fr.qgdev.openweather.ui.utils.getDrawableResIdFromWeatherCode
 import fr.qgdev.openweather.ui.utils.toPercentage
 import java.util.Date
@@ -145,7 +144,7 @@ private fun HourChip(
     onClick: () -> Unit
 ) {
     val palette = LocalWeatherPalette.current
-    val sky = conditionFamily(forecast.weatherCode, isDaytime).sky()
+    val sky = conditionSky(forecast.weatherCode, isDaytime, forecast.cloudiness)
     val probability = forecast.pop.toPercentage()
 
     Column(
@@ -329,7 +328,7 @@ private fun DayRow(
     onClick: () -> Unit
 ) {
     val palette = LocalWeatherPalette.current
-    val sky = conditionFamily(day.weatherCode, true).sky()
+    val sky = conditionSky(day.weatherCode, true, day.cloudiness)
     val span = (warmest - coldest).takeIf { it > 0f } ?: 1f
 
     Column(
