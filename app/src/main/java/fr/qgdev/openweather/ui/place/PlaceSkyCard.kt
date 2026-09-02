@@ -53,8 +53,7 @@ import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.repositories.FormattingService.FormattingSpec
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
-import fr.qgdev.openweather.ui.theme.conditionFamily
-import fr.qgdev.openweather.ui.theme.sky
+import fr.qgdev.openweather.ui.theme.conditionSky
 import fr.qgdev.openweather.ui.utils.countryNameFromCode
 import fr.qgdev.openweather.ui.utils.getDrawableResIdFromWeatherCode
 import fr.qgdev.openweather.ui.utils.isDaytime
@@ -65,9 +64,9 @@ import java.util.TimeZone
  * A place, as a card carrying its own sky.
  *
  * Replaces the card that expanded in place. Tapping it now opens the place's own screen, so the
- * card only has to answer "what is it like there, right now" - the hero is simply the same card at
- * a larger size, not a different one, because a list where the first entry shows the weather and
- * the rest show a single number reads as two unrelated things.
+ * card only has to answer "what is it like there, right now" - and every entry of the list is that
+ * same card, because a list where the first entry shows the weather and the rest show a single
+ * number reads as two unrelated things.
  *
  * Values older than [STALE_AFTER_MILLIS] are labelled rather than silently shown as current.
  */
@@ -76,13 +75,15 @@ fun PlaceSkyCard(
     place: Place,
     formattingService: FormattingService,
     modifier: Modifier = Modifier,
-    hero: Boolean = false,
     onClick: () -> Unit = {}
 ) {
     val palette = LocalWeatherPalette.current
     val currentWeather = place.currentWeather
-    val family = conditionFamily(currentWeather.weatherCode, currentWeather.isDaytime())
-    val sky = family.sky()
+    val sky = conditionSky(
+        currentWeather.weatherCode,
+        currentWeather.isDaytime(),
+        currentWeather.cloudiness
+    )
 
     val alertCount = place.weatherAlertsListCount
     val today = place.dailyForecastListList.firstOrNull()
@@ -97,9 +98,9 @@ fun PlaceSkyCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(if (hero) 24.dp else 22.dp))
+            .clip(RoundedCornerShape(22.dp))
             .background(sky.wash)
-            .border(1.dp, sky.border, RoundedCornerShape(if (hero) 24.dp else 22.dp))
+            .border(1.dp, sky.border, RoundedCornerShape(22.dp))
             .clickable(onClick = onClick)
     ) {
         Box {
@@ -108,12 +109,12 @@ fun PlaceSkyCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .offset(x = 60.dp, y = (-70).dp)
-                    .size(if (hero) 200.dp else 170.dp)
+                    .size(170.dp)
                     .clip(CircleShape)
                     .background(sky.haloBrush)
             )
 
-            Column(modifier = Modifier.padding(if (hero) 18.dp else 16.dp)) {
+            Column(modifier = Modifier.padding(16.dp)) {
                 Row(verticalAlignment = Alignment.Top) {
                     Column(modifier = Modifier.weight(1f)) {
                         Row(
@@ -123,7 +124,7 @@ fun PlaceSkyCard(
                             Text(
                                 text = place.geolocation.city,
                                 color = palette.textPrimary,
-                                fontSize = if (hero) 19.sp else 16.sp,
+                                fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -134,7 +135,7 @@ fun PlaceSkyCard(
                         Text(
                             text = conditionLine(place),
                             color = palette.textSecondary,
-                            fontSize = if (hero) 11.5.sp else 11.sp,
+                            fontSize = 11.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -145,7 +146,7 @@ fun PlaceSkyCard(
                 }
 
                 Row(
-                    modifier = Modifier.padding(top = if (hero) 16.dp else 12.dp),
+                    modifier = Modifier.padding(top = 12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
@@ -157,7 +158,7 @@ fun PlaceSkyCard(
                             )
                         ),
                         contentDescription = currentWeather.weatherDescription,
-                        modifier = Modifier.size(if (hero) 62.dp else 48.dp)
+                        modifier = Modifier.size(48.dp)
                     )
                     Temperature(
                         formatted = formattingService.getFloatFormattedTemperature(
@@ -165,9 +166,9 @@ fun PlaceSkyCard(
                             FormattingSpec.NO_UNIT_NO_SPACE
                         ),
                         unit = formattingService.temperatureUnitLabel,
-                        wholeSize = if (hero) 44.sp else 31.sp,
-                        decimalSize = if (hero) 20.sp else 15.sp,
-                        unitSize = if (hero) 14.sp else 11.5.sp
+                        wholeSize = 31.sp,
+                        decimalSize = 15.sp,
+                        unitSize = 11.5.sp
                     )
                     if (today != null) {
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -177,7 +178,7 @@ fun PlaceSkyCard(
                                     today.temperatureMaximum, FormattingSpec.NO_UNIT_NO_SPACE
                                 ),
                                 color = palette.textPrimary,
-                                fontSize = if (hero) 13.sp else 12.sp
+                                fontSize = 12.sp
                             )
                             ExtremeTemperature(
                                 iconRes = R.drawable.temperature_minimum_material,
@@ -185,7 +186,7 @@ fun PlaceSkyCard(
                                     today.temperatureMinimum, FormattingSpec.NO_UNIT_NO_SPACE
                                 ),
                                 color = palette.textSecondary,
-                                fontSize = if (hero) 13.sp else 12.sp
+                                fontSize = 12.sp
                             )
                         }
                     }
@@ -194,7 +195,7 @@ fun PlaceSkyCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = if (hero) 16.dp else 13.dp),
+                        .padding(top = 13.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Measure(
@@ -202,22 +203,19 @@ fun PlaceSkyCard(
                         value = formattingService.getFloatFormattedTemperature(
                             currentWeather.temperatureFeelsLike, FormattingSpec.NO_UNIT_NO_SPACE
                         ),
-                        unit = "",
-                        hero = hero
+                        unit = ""
                     )
                     Measure(
                         label = stringResource(R.string.title_humidity),
                         value = currentWeather.humidity.toString(),
-                        unit = "%",
-                        hero = hero
+                        unit = "%"
                     )
                     Measure(
                         label = stringResource(R.string.title_pressure),
                         value = formattingService.getFormattedPressure(
                             currentWeather.pressure.toFloat(), FormattingSpec.NO_UNIT_NO_SPACE
                         ),
-                        unit = formattingService.pressureUnitLabel,
-                        hero = hero
+                        unit = formattingService.pressureUnitLabel
                     )
                     Measure(
                         label = stringResource(R.string.label_wind),
@@ -227,8 +225,7 @@ fun PlaceSkyCard(
                         unit = formattingService.getFormattedDirection(
                             currentWeather.windDirection,
                             currentWeather.isWindDirectionReadable
-                        ),
-                        hero = hero
+                        )
                     )
                 }
             }
@@ -385,26 +382,26 @@ private fun ExtremeTemperature(
 }
 
 @Composable
-private fun Measure(label: String, value: String, unit: String, hero: Boolean) {
+private fun Measure(label: String, value: String, unit: String) {
     val palette = LocalWeatherPalette.current
     Column {
         Text(
             text = label,
             color = palette.textSecondary,
-            fontSize = if (hero) 10.5.sp else 10.sp,
+            fontSize = 10.sp,
             maxLines = 1
         )
         Row(verticalAlignment = Alignment.Bottom) {
             Text(
                 text = value,
                 color = palette.textPrimary,
-                fontSize = if (hero) 15.sp else 13.5.sp
+                fontSize = 13.5.sp
             )
             if (unit.isNotEmpty()) {
                 Text(
                     text = unit,
                     color = palette.textSecondary,
-                    fontSize = if (hero) 11.sp else 10.sp,
+                    fontSize = 10.sp,
                     modifier = Modifier.padding(start = 2.dp)
                 )
             }

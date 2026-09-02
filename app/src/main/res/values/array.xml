@@ -525,15 +525,17 @@
     </string-array>
 
     <string-array name="attribution_title">
-        <item>"Weather data and Forecasts"</item>
-        <item>"API OpenWeatherMaps"</item>
+        <item>"Weather data and forecasts"</item>
+        <item>"OpenWeatherMap API"</item>
+        <item>"Place search"</item>
         <item>"Icons"</item>
     </string-array>
 
     <string-array name="attribution_content">
-        <item>"Weather data and forecasts are acquired through openweathermap.org, they are licensed under ODbL"</item>
-        <item>"Use of openweathermap.org APIs is licensed under CC BY-SA 4.O"</item>
-        <item>"Icons made by freepik.com from flaticon.com "</item>
+        <item>"OpenWeatherMap · ODbL"</item>
+        <item>"CC BY-SA 4.0"</item>
+        <item>"OpenStreetMap Nominatim · ODbL"</item>
+        <item>"freepik.com · flaticon.com"</item>
     </string-array>
 
     <string-array name="time_format">
