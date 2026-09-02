@@ -553,7 +553,6 @@ private fun PlacesList(
                     SwipeablePlaceItem(
                         place = place,
                         formattingService = formattingService,
-                        hero = index == 0,
                         onClick = { onOpenPlace(place) },
                         onSwipedPastThreshold = { resetCallback ->
                             pendingDeletePlace = place

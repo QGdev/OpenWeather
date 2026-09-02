@@ -26,6 +26,7 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 
 /**
  * The six skies every entry is painted with.
@@ -36,6 +37,8 @@ import androidx.compose.ui.graphics.Color
  *
  * Night is a family of its own only for a clear sky - a clear night is indigo where a clear midday
  * is amber. A cloudy night stays with the clouds: its hue is already cold and dark.
+ *
+ * Between clear and overcast, the sky is not picked but mixed: see [conditionSky].
  */
 enum class ConditionFamily {
     SUN, CLOUD, RAIN, STORM, SNOW, NIGHT
@@ -84,6 +87,15 @@ data class Sky(
         colors = listOf(halo, Color.Transparent)
     )
 
+    /** This sky moved [fraction] of the way towards [other], colour by colour. */
+    fun mix(other: Sky, fraction: Float): Sky = Sky(
+        start = lerp(start, other.start, fraction),
+        middle = lerp(middle, other.middle, fraction),
+        end = lerp(end, other.end, fraction),
+        halo = lerp(halo, other.halo, fraction),
+        border = lerp(border, other.border, fraction),
+        icon = lerp(icon, other.icon, fraction)
+    )
 }
 
 private val DarkSkies = mapOf(
@@ -152,3 +164,31 @@ fun ConditionFamily.sky(): Sky = sky(LocalWeatherPalette.current.isDark)
 fun ConditionFamily.sky(isDark: Boolean): Sky =
     (if (isDark) DarkSkies else LightSkies).getValue(this)
 
+/**
+ * The sky an entry is painted with, graded by cloud cover when clouds are the whole story.
+ *
+ * Codes 800 to 804 only say how much of the sky is covered, and used to split into two skies: clear,
+ * or the overcast one for everything from a few clouds up. A sky 15 % covered then looked exactly
+ * like one 100 % covered. For those codes the clear sky of the moment (sun by day, night otherwise)
+ * is now mixed towards the overcast one by [cloudiness], the measured cover in percent, so every
+ * step between the two reads differently.
+ *
+ * Rain, storms, snow and the fog family keep their own sky: there the precipitation or the
+ * visibility is the condition, not the cover.
+ */
+fun conditionSky(weatherCode: Int, isDaytime: Boolean, cloudiness: Int, isDark: Boolean): Sky {
+    if (weatherCode !in 800..804) return conditionFamily(weatherCode, isDaytime).sky(isDark)
+
+    val clear = (if (isDaytime) ConditionFamily.SUN else ConditionFamily.NIGHT).sky(isDark)
+    val overcast = ConditionFamily.CLOUD.sky(isDark).let {
+        //  The overcast glow is sunlight through the clouds; after dark it would be a sun at 5 a.m.
+        if (isDaytime) it else it.copy(halo = clear.halo)
+    }
+    return clear.mix(overcast, cloudiness.coerceIn(0, 100) / 100f)
+}
+
+/** [conditionSky], in the theme currently in force. */
+@Composable
+@ReadOnlyComposable
+fun conditionSky(weatherCode: Int, isDaytime: Boolean, cloudiness: Int): Sky =
+    conditionSky(weatherCode, isDaytime, cloudiness, LocalWeatherPalette.current.isDark)

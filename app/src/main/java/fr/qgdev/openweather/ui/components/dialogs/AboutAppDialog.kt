@@ -21,31 +21,56 @@
 package fr.qgdev.openweather.ui.components.dialogs
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import fr.qgdev.openweather.BuildConfig
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.ui.common.dialogs.FullScreenDialog
+import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
 
+private const val SOURCE_CODE_URL = "https://github.com/QGdev/OpenWeather"
+private const val LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.html"
+
+/**
+ * About the app, in the order the redesign gives it: what happens to your data first, since it is
+ * the product's argument, then the developer, the thanks, and the attributions as one card per
+ * source so each obligation can be checked at a glance.
+ *
+ * A long press on the logo still opens the stored data tool. It stays unannounced: it is a
+ * development tool, not a feature.
+ */
 @Composable
 fun AboutAppDialog(
     onDismissRequest: () -> Unit = {},
@@ -59,6 +84,9 @@ fun AboutAppDialog(
         return
     }
 
+    val palette = LocalWeatherPalette.current
+    val uriHandler = LocalUriHandler.current
+
     FullScreenDialog(
         title = stringResource(R.string.title_dialog_about_app),
         onDismissRequest = onDismissRequest,
@@ -66,64 +94,47 @@ fun AboutAppDialog(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
-            //  Logo section
-            //  Icon, appName and version section
-            val appLogoModifier = Modifier
-                .size(150.dp)
-                .padding(10.dp)
-                .align(Alignment.CenterHorizontally)
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onLongPress = {
-                            onDebugModeToggle(true)
-                        }
-                    )
-                }
+            IdentityCard(onLogoLongPress = { onDebugModeToggle(true) })
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val displayedVersion =
-                    "%s (%d)".format(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
-                Image(
-                    painter = painterResource(id = R.drawable.ic_logo_small),
-                    contentDescription = stringResource(id = R.string.app_name),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.surfaceTint),
-                    modifier = appLogoModifier
-                )
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    style = MaterialTheme.typography.headlineMedium,
-                )
-                Text(
-                    text = displayedVersion,
-                    style = MaterialTheme.typography.bodyMedium
+            Section(
+                title = stringResource(R.string.title_about_your_data_section),
+                body = stringResource(R.string.content_about_your_data_section)
+            )
+            Section(
+                title = stringResource(R.string.title_about_the_developer_section),
+                body = stringResource(R.string.content_about_the_developer_section)
+            )
+            Section(
+                title = stringResource(R.string.title_about_thanks_section),
+                body = stringResource(R.string.content_about_thanks_section)
+            )
+
+            Column {
+                SectionTitle(stringResource(R.string.title_about_attributions_section))
+                AttributionCards(
+                    titleList = stringArrayResource(id = R.array.attribution_title).toList(),
+                    contentList = stringArrayResource(id = R.array.attribution_content).toList()
                 )
             }
 
-            //  Developer section
-            SectionTitle(text = stringResource(id = R.string.title_about_the_developer_section))
-            SectionContent(text = stringResource(id = R.string.content_about_the_developer_section))
-            //  Thanks section
-            SectionTitle(text = stringResource(id = R.string.title_about_thanks_section))
-            SectionContent(text = stringResource(id = R.string.content_about_thanks_section))
-            //  Data section
-            SectionTitle(text = stringResource(id = R.string.title_about_your_data_section))
-            SectionContent(text = stringResource(id = R.string.content_about_your_data_section))
-            //  Application section
-            SectionTitle(text = stringResource(id = R.string.title_about_application_section))
-            SectionContent(text = stringResource(id = R.string.content_about_application_section))
-
-            //  Attribution section
-            SectionTitle(text = stringResource(id = R.string.title_about_attributions_section))
-            AttributionSection(
-                titleList = stringArrayResource(id = R.array.attribution_title).toList(),
-                contentList = stringArrayResource(id = R.array.attribution_content).toList()
-            )
+            Row(
+                modifier = Modifier.padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(9.dp)
+            ) {
+                LinkButton(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.action_about_source_code),
+                    onClick = { uriHandler.openUri(SOURCE_CODE_URL) }
+                )
+                LinkButton(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(R.string.action_about_license),
+                    onClick = { uriHandler.openUri(LICENSE_URL) }
+                )
+            }
         }
     }
 }
@@ -136,60 +147,135 @@ fun AboutAppDialogPreview() {
     )
 }
 
+/** Logo, name, version and licence, on the same night gradient as the splash screen. */
 @Composable
-private fun SectionTitle(modifier: Modifier = Modifier, text: String) {
+private fun IdentityCard(onLogoLongPress: () -> Unit) {
+    val palette = LocalWeatherPalette.current
+    val shape = RoundedCornerShape(22.dp)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(
+                Brush.linearGradient(
+                    listOf(palette.accent.copy(alpha = 0.16f), palette.screen.copy(alpha = 0f))
+                )
+            )
+            .border(1.dp, palette.outline, shape)
+            .padding(22.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_logo_small),
+            contentDescription = stringResource(id = R.string.app_name),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.surfaceTint),
+            modifier = Modifier
+                .size(56.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures(onLongPress = { onLogoLongPress() })
+                }
+        )
+        Column {
+            Text(
+                text = stringResource(id = R.string.app_name),
+                color = palette.textPrimary,
+                fontSize = 19.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = "%s (%d)".format(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
+                color = palette.textQuiet,
+                fontSize = 11.5.sp,
+                fontFamily = FontFamily.Monospace,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+            Text(
+                text = stringResource(R.string.about_license_badge),
+                color = palette.textMuted,
+                fontSize = 10.5.sp,
+                modifier = Modifier
+                    .padding(top = 9.dp)
+                    .border(1.dp, palette.outlineStrong, CircleShape)
+                    .padding(horizontal = 9.dp, vertical = 3.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun SectionTitle(text: String) {
     Text(
-        modifier = modifier.padding(top = 8.dp, bottom = 8.dp),
         text = text,
-        style = MaterialTheme.typography.titleLarge,
+        color = LocalWeatherPalette.current.textPrimary,
+        fontSize = 13.sp,
+        fontWeight = FontWeight.SemiBold
     )
 }
 
 @Composable
-private fun SectionContent(modifier: Modifier = Modifier, text: String) {
-    Text(
-        modifier = modifier.padding(8.dp, bottom = 0.dp),
-        text = text,
-        style = MaterialTheme.typography.bodyMedium,
-        textAlign = TextAlign.Justify,
-    )
+private fun Section(title: String, body: String) {
+    Column {
+        SectionTitle(title)
+        Text(
+            text = body,
+            color = LocalWeatherPalette.current.textMuted,
+            fontSize = 12.5.sp,
+            lineHeight = 19.sp,
+            modifier = Modifier.padding(top = 7.dp)
+        )
+    }
 }
 
 @Composable
-private fun SectionSubTitle(modifier: Modifier = Modifier, text: String) {
-    Text(
-        modifier = modifier.padding(top = 16.dp),
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-    )
-}
-
-@Composable
-private fun SectionSubContent(modifier: Modifier = Modifier, text: String) {
-    Text(
-        modifier = modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
-        text = text,
-        style = MaterialTheme.typography.bodyMedium,
-        textAlign = TextAlign.Justify,
-    )
-}
-
-@Composable
-private fun AttributionSection(
+private fun AttributionCards(
     titleList: List<String>,
     contentList: List<String>
 ) {
-    val modifier = Modifier.padding(start = 8.dp)
-    Column {
-        for (i in titleList.indices) {
-            SectionSubTitle(
-                modifier = modifier,
-                text = titleList[i]
-            )
-            SectionSubContent(
-                modifier = modifier,
-                text = contentList[i]
-            )
+    val palette = LocalWeatherPalette.current
+    val shape = RoundedCornerShape(14.dp)
+
+    Column(
+        modifier = Modifier.padding(top = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        titleList.zip(contentList).forEach { (title, content) ->
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, palette.outline, shape)
+                    .padding(horizontal = 14.dp, vertical = 13.dp)
+            ) {
+                Text(
+                    text = title,
+                    color = palette.textPrimary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = content,
+                    color = palette.textQuiet,
+                    fontSize = 11.5.sp,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun LinkButton(modifier: Modifier = Modifier, text: String, onClick: () -> Unit) {
+    val palette = LocalWeatherPalette.current
+
+    Box(
+        modifier = modifier
+            .clip(CircleShape)
+            .border(1.dp, palette.outlineStrong, CircleShape)
+            .clickable(onClick = onClick)
+            .padding(11.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text = text, color = palette.textPrimary, fontSize = 12.5.sp)
     }
 }
