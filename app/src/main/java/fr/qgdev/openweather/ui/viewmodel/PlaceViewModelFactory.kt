@@ -24,12 +24,17 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import fr.qgdev.openweather.data.repositories.PlaceRepository
+import fr.qgdev.openweather.widgets.WidgetsManager
 
 class PlaceViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PlaceViewModel::class.java)) {
             val placeRepository = PlaceRepository.getInstance(context)
-            return PlaceViewModel(placeRepository) as T
+            //  The application context: the view model outlives the activity that created it.
+            val applicationContext = context.applicationContext
+            return PlaceViewModel(placeRepository) {
+                WidgetsManager.getInstance(applicationContext).updateWidgets(applicationContext)
+            } as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

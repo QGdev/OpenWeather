@@ -294,7 +294,7 @@ private fun WeatherAlertSection(
             text = stringResource(
                 if (expanded) R.string.action_collapse_text else R.string.action_read_full_text
             ),
-            color = palette.accent,
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 11.5.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier
