@@ -55,6 +55,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -540,7 +541,7 @@ fun DebugDiagnosticDialog(
                             fontSize = 12.5.sp,
                             fontFamily = FontFamily.Monospace
                         ),
-                        cursorBrush = SolidColor(palette.accent),
+                        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -655,7 +656,7 @@ private fun GroupRow(
     ) {
         Text(
             text = if (isExpanded) "⌄" else "›",
-            color = if (isExpanded) palette.accent else palette.textQuiet,
+            color = if (isExpanded) MaterialTheme.colorScheme.primary else palette.textQuiet,
             fontFamily = FontFamily.Monospace,
             fontSize = 12.sp,
             textAlign = TextAlign.Center,
@@ -690,7 +691,7 @@ private fun FieldRow(depth: Int, label: String, value: String, path: String?, qu
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .depthRails(depth, palette.accent.copy(alpha = 0.3f))
+            .depthRails(depth, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
             .padding(start = (depth * 21 + 17).dp, top = 7.dp, bottom = 7.dp)
     ) {
         path?.let {
@@ -737,7 +738,7 @@ private fun highlighted(text: String, query: String): AnnotatedString {
         var index = text.indexOf(query, ignoreCase = true)
         while (index >= 0) {
             addStyle(
-                SpanStyle(background = palette.accent.copy(alpha = 0.28f), color = palette.textPrimary),
+                SpanStyle(background = MaterialTheme.colorScheme.primary.copy(alpha = 0.28f), color = palette.textPrimary),
                 index,
                 index + query.length
             )

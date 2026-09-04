@@ -42,6 +42,8 @@ public class WidgetsSettings {
 	
 	private final String placeId;
 	private final int widgetId;
+	private final int backgroundTransparency;
+	private final boolean showDetails;
 	
 	/**
 	 * Create a new widget settings
@@ -50,12 +52,28 @@ public class WidgetsSettings {
 	 * @param widgetId The id of the widget
 	 */
 	public WidgetsSettings(String placeId, int widgetId) {
+		this(placeId, widgetId, 0, true);
+	}
+	
+	/**
+	 * Create a new widget settings
+	 *
+	 * @param placeId                The id of the place
+	 * @param widgetId               The id of the widget
+	 * @param backgroundTransparency How transparent the widget's sky is, from 0 (opaque) to 100
+	 * @param showDetails            Whether a one-row widget may show more than the temperature
+	 */
+	public WidgetsSettings(String placeId, int widgetId, int backgroundTransparency, boolean showDetails) {
 		if (placeId == null) throw new IllegalArgumentException("placeId must not be null");
 		if (widgetId == INVALID_APPWIDGET_ID)
 			throw new IllegalArgumentException("widgetId must be a valid widget id");
+		if (backgroundTransparency < 0 || backgroundTransparency > 100)
+			throw new IllegalArgumentException("backgroundTransparency must be between 0 and 100");
 		
 		this.placeId = placeId;
 		this.widgetId = widgetId;
+		this.backgroundTransparency = backgroundTransparency;
+		this.showDetails = showDetails;
 	}
 	
 	/**
@@ -65,8 +83,12 @@ public class WidgetsSettings {
 	 * @return The widget settings
 	 */
 	public static WidgetsSettings fromJson(@NonNull JSONObject json) throws JSONException {
+		// Settings saved before these options existed have none: they were opaque, and showed
+		// details, the default.
 		return new WidgetsSettings(json.getString("placeId"),
-				  json.getInt("widgetId"));
+				  json.getInt("widgetId"),
+				  json.optInt("backgroundTransparency", 0),
+				  json.optBoolean("showDetails", true));
 	}
 	
 	/**
@@ -88,6 +110,24 @@ public class WidgetsSettings {
 	}
 	
 	/**
+	 * Get how transparent the widget's sky is
+	 *
+	 * @return The transparency, from 0 (opaque) to 100 (invisible)
+	 */
+	public int getBackgroundTransparency() {
+		return backgroundTransparency;
+	}
+	
+	/**
+	 * Whether a one-row widget may show more than the temperature when it has the room
+	 *
+	 * @return True to show the place, the range and the next hours as the width allows
+	 */
+	public boolean getShowDetails() {
+		return showDetails;
+	}
+	
+	/**
 	 * Converts the widget settings to a string
 	 *
 	 * @return The widget settings as a string
@@ -98,6 +138,8 @@ public class WidgetsSettings {
 		return "WidgetsSettings{" +
 				  "placeId=" + placeId +
 				  ", widgetId=" + widgetId +
+				  ", backgroundTransparency=" + backgroundTransparency +
+				  ", showDetails=" + showDetails +
 				  '}';
 	}
 	
@@ -110,6 +152,8 @@ public class WidgetsSettings {
 		JSONObject json = new JSONObject();
 		json.put("placeId", placeId);
 		json.put("widgetId", widgetId);
+		json.put("backgroundTransparency", backgroundTransparency);
+		json.put("showDetails", showDetails);
 		
 		return json;
 	}
@@ -135,7 +179,11 @@ public class WidgetsSettings {
 		
 		WidgetsSettings that = (WidgetsSettings) o;
 		
-		if (placeId != that.placeId) return false;
+		// Compared by value: != on two Strings compares references, so a settings object read
+		// back from storage never matched the one that was saved.
+		if (!placeId.equals(that.placeId)) return false;
+		if (backgroundTransparency != that.backgroundTransparency) return false;
+		if (showDetails != that.showDetails) return false;
 		return widgetId == that.widgetId;
 	}
 	
@@ -148,6 +196,8 @@ public class WidgetsSettings {
 	public int hashCode() {
 		String result = placeId;
 		result += widgetId;
+		result += backgroundTransparency;
+		result += showDetails;
 		return result.hashCode();
 	}
 }

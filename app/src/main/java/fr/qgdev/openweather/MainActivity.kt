@@ -34,6 +34,8 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,6 +65,12 @@ import fr.qgdev.openweather.ui.components.dialogs.AirQualityInfoDialog
 import fr.qgdev.openweather.ui.components.dialogs.WeatherAlertDialog
 import fr.qgdev.openweather.ui.place.detail.PlaceDetailScreen
 import fr.qgdev.openweather.ui.theme.AppTheme
+import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import fr.qgdev.openweather.ui.viewmodel.PlaceViewModel
 import fr.qgdev.openweather.ui.viewmodel.PlaceViewModelFactory
 import fr.qgdev.openweather.ui.viewmodel.SettingsViewModel
@@ -288,8 +296,16 @@ class MainActivity : AppCompatActivity() {
                 //  The detail screen is stacked on top of Places rather than being a destination of
                 //  its own, so the tabs step aside while it is open.
                 if (onDetailScreen) return@Scaffold
-                NavigationBar (
-
+                //  The bar sits on the screen's own ground under a hairline, as in the redesign,
+                //  rather than on Material's tinted surface. The selected tab is marked by colour
+                //  alone, in the system accent: no pill behind the icon.
+                val palette = LocalWeatherPalette.current
+                NavigationBar(
+                    modifier = Modifier.drawBehind {
+                        drawLine(palette.outline, Offset.Zero, Offset(size.width, 0f), 1.dp.toPx())
+                    },
+                    containerColor = palette.screen,
+                    tonalElevation = 0.dp
                 ) {
                     val navBackStackEntry = navController.currentBackStackEntryAsState().value
                     val currentDestination = navBackStackEntry?.destination
@@ -302,8 +318,20 @@ class MainActivity : AppCompatActivity() {
                                     contentDescription = stringResource(screen.description)
                                 )
                             },
-                            label = { Text(stringResource(screen.title)) },
+                            label = {
+                                Text(
+                                    text = stringResource(screen.title),
+                                    fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+                                )
+                            },
                             selected = currentDestination?.route == screen.route,
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                unselectedIconColor = palette.textQuiet,
+                                unselectedTextColor = palette.textQuiet,
+                                indicatorColor = Color.Transparent
+                            ),
                             onClick = {
                                 navController.navigate(screen.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
