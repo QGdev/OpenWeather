@@ -72,9 +72,4 @@ class SettingsViewModel(
     fun isPeriodicUpdateEnabled(): Boolean {
         return settingsState.value?.periodicUpdateEnabled ?: false
     }
-
-
-    fun getFormattingService(): FormattingService {
-        return formattingService
-    }
 }
