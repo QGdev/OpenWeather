@@ -48,7 +48,7 @@
         <activity
             android:name=".widgets.WidgetsConfigurationActivity"
             android:enabled="@bool/widgets_enabled"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/MaterialTheme.WidgetConfig" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />

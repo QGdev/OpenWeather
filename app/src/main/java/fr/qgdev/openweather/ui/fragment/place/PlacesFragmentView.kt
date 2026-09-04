@@ -315,8 +315,8 @@ private fun AddPlaceFloatingActionButton(
     ExtendedFloatingActionButton(
         modifier = modifier,
         expanded = expanded,
-        containerColor = palette.accent,
-        contentColor = palette.onAccent,
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
         onClick = {
             onClick()
             addPlaceDialogOpened.value = true

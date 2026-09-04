@@ -38,7 +38,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class PlaceViewModel(
-    private val placeRepository: PlaceRepository
+    private val placeRepository: PlaceRepository,
+    //  Called once a refresh has written its results. The widgets are otherwise redrawn only by
+    //  the background job, so a pull-to-refresh left them behind the app until its next run.
+    private val onPlacesRefreshed: () -> Unit = {}
     ) : ViewModel() {
 
     private val _placesState = MutableStateFlow<List<Place>?>(null)
@@ -189,6 +192,7 @@ class PlaceViewModel(
                     failed = failed,
                     finishedAt = System.currentTimeMillis()
                 )
+                onPlacesRefreshed()
             } finally {
                 _isRefreshing.value = false
             }

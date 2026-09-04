@@ -55,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.lifecycle.lifecycleScope
 import fr.qgdev.openweather.MainActivity
@@ -199,7 +200,7 @@ private fun SplashScreen(progress: Float) {
                         .fillMaxWidth(progress)
                         .height(3.dp)
                         .clip(RoundedCornerShape(2.dp))
-                        .background(palette.accent)
+                        .background(MaterialTheme.colorScheme.primary)
                 )
             }
         }

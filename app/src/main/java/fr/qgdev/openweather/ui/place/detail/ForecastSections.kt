@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -154,7 +155,7 @@ private fun HourChip(
             .background(sky.wash)
             .border(
                 width = 1.dp,
-                color = if (selected) palette.accent else sky.border,
+                color = if (selected) MaterialTheme.colorScheme.primary else sky.border,
                 shape = RoundedCornerShape(14.dp)
             )
             .clickable(onClick = onClick)
@@ -338,7 +339,7 @@ private fun DayRow(
             .background(sky.wash)
             .border(
                 width = 1.dp,
-                color = if (expanded) palette.accent else sky.border,
+                color = if (expanded) MaterialTheme.colorScheme.primary else sky.border,
                 shape = RoundedCornerShape(14.dp)
             )
             .clickable(onClick = onClick)

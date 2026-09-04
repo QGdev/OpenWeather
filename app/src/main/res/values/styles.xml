@@ -105,4 +105,26 @@
 		<item name="android:windowBackground">@android:color/transparent</item>
 		<item name="android:windowShowWallpaper">true</item>
 	</style>
+
+	<!--
+	  Text on the widgets' condition skies. The colours are the dark palette's; WidgetsBinder sets
+	  the light palette's when the system is in light mode.
+	-->
+	<style name="Widget.OpenWeather.Sky.Value" parent="">
+		<item name="android:textColor">#F5F8FB</item>
+	</style>
+
+	<style name="Widget.OpenWeather.Sky.Secondary" parent="">
+		<item name="android:textColor">#A3B0BF</item>
+	</style>
+
+	<style name="Widget.OpenWeather.Sky.Label" parent="">
+		<item name="android:textColor">#7A879A</item>
+		<item name="android:textSize">10sp</item>
+	</style>
+
+	<style name="Widget.OpenWeather.Sky.Divider" parent="">
+		<item name="android:background">#1AFFFFFF</item>
+		<item name="android:importantForAccessibility">no</item>
+	</style>
 </resources>
