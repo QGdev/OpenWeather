@@ -310,4 +310,20 @@
 	<string name="about_license_badge">GPLv3 · logiciel libre</string>
 	<string name="splash_tagline">Météo libre, sans compte, sans pistage</string>
 	<string name="splash_attribution">Données OpenWeatherMap (ODbL · CC BY-SA 4.0) · Recherche OpenStreetMap Nominatim</string>
+	<string name="widget_values_from">données de %1$s</string>
+	<string name="widget_preview">Aperçu</string>
+	<string name="widget_preview_on_wallpaper">votre fond d\'écran</string>
+	<string name="widget_size_medium">Moyen</string>
+	<string name="widget_size_large">Grand</string>
+	<string name="widget_size_small">Petit</string>
+	<string name="widget_resize_note">La taille définitive se règle en redimensionnant le widget sur l\'écran d\'accueil.</string>
+	<string name="widget_readability_warning">Au-delà de %1$d %%, le texte devient difficile à lire sur ce fond d\'écran.</string>
+	<string name="widget_transparency">Transparence du fond</string>
+	<string name="widget_transparency_opaque">opaque</string>
+	<string name="widget_transparency_invisible">invisible</string>
+	<string name="widget_choose_city">Choisir la ville</string>
+	<string name="widget_no_data">pas de données</string>
+	<string name="action_confirm">Valider</string>
+	<string name="widget_details">Détails sur une ligne</string>
+	<string name="widget_details_summary">Sur une seule ligne, affiche aussi le lieu, les extrêmes du jour et les prochaines heures selon la largeur.</string>
 </resources>
