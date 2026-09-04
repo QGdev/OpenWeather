@@ -36,6 +36,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -142,7 +143,7 @@ fun AddPlaceDialog(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .background(palette.accent)
+                        .background(MaterialTheme.colorScheme.primary)
                         .clickable(enabled = !searching) { search() }
                         .padding(horizontal = 16.dp, vertical = 12.dp)
                 ) {
@@ -150,12 +151,12 @@ fun AddPlaceDialog(
                         CircularProgressIndicator(
                             modifier = Modifier.size(16.dp),
                             strokeWidth = 2.dp,
-                            color = palette.onAccent
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     } else {
                         Text(
                             text = stringResource(R.string.action_search),
-                            color = palette.onAccent,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 12.5.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -262,12 +263,12 @@ private fun SearchResultRow(
             modifier = Modifier
                 .size(34.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(palette.accent.copy(alpha = 0.14f)),
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = geolocation.countryCode.uppercase(),
-                color = palette.accent,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold
             )

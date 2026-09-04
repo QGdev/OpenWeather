@@ -316,4 +316,20 @@
     <string name="about_license_badge">GPLv3 · free software</string>
     <string name="splash_tagline">Free weather, no account, no tracking</string>
     <string name="splash_attribution">OpenWeatherMap data (ODbL · CC BY-SA 4.0) · OpenStreetMap Nominatim search</string>
+    <string name="widget_values_from">data from %1$s</string>
+    <string name="widget_preview">Preview</string>
+    <string name="widget_preview_on_wallpaper">your wallpaper</string>
+    <string name="widget_size_medium">Medium</string>
+    <string name="widget_size_large">Large</string>
+    <string name="widget_size_small">Small</string>
+    <string name="widget_resize_note">The final size is set by resizing the widget on the home screen.</string>
+    <string name="widget_readability_warning">Above %1$d %%, the text becomes hard to read on this wallpaper.</string>
+    <string name="widget_transparency">Background transparency</string>
+    <string name="widget_transparency_opaque">opaque</string>
+    <string name="widget_transparency_invisible">invisible</string>
+    <string name="widget_choose_city">Choose the city</string>
+    <string name="widget_no_data">no data</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="widget_details">One-row details</string>
+    <string name="widget_details_summary">On a single row, also shows the place, today\'s range and the next hours as the width allows.</string>
 </resources>

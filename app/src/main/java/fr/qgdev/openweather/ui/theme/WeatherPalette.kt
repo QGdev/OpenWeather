@@ -49,7 +49,12 @@ data class WeatherPalette(
     val textMuted: Color,
     val textQuiet: Color,
 
-    /** Primary action: the add button, links, the pull-to-refresh indicator. */
+    /**
+     * The redesign's blue, for what is drawn in it because of what it shows: precipitation, the
+     * temperature range, the tint of the splash and About backgrounds. Controls - buttons, links,
+     * selections, progress - take `MaterialTheme.colorScheme.primary` instead, which follows the
+     * system accent.
+     */
     val accent: Color,
     val onAccent: Color,
 

@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -260,8 +261,8 @@ fun PendingPlaceCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(22.dp))
-            .background(palette.accent.copy(alpha = 0.07f))
-            .border(1.dp, palette.accent.copy(alpha = 0.34f), RoundedCornerShape(22.dp))
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.07f))
+            .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.34f), RoundedCornerShape(22.dp))
             .padding(horizontal = 16.dp, vertical = 15.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -275,14 +276,14 @@ fun PendingPlaceCard(
             )
             Text(
                 text = stringResource(R.string.status_downloading_forecast),
-                color = palette.accent,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 11.sp
             )
         }
         androidx.compose.material3.CircularProgressIndicator(
             modifier = Modifier.size(22.dp),
             strokeWidth = 2.dp,
-            color = palette.accent
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
