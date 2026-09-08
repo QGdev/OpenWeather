@@ -117,6 +117,18 @@ fun PlaceDetailScreen(
             )
         }
 
+        //  Right after the next hour: whether the air is fit to go out in is read before the
+        //  forecasts, not scrolled to past them.
+        if (place.hasAirQuality()) {
+            item(key = "air") {
+                AirQualitySummaryCard(
+                    airQuality = place.airQuality,
+                    onClick = onOpenAirQuality,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                )
+            }
+        }
+
         item(key = "hourly") {
             HourlySection(
                 place = place,
@@ -133,16 +145,6 @@ fun PlaceDetailScreen(
                 timeZone = timeZone,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
             )
-        }
-
-        if (place.hasAirQuality()) {
-            item(key = "air") {
-                AirQualitySummaryCard(
-                    airQuality = place.airQuality,
-                    onClick = onOpenAirQuality,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
-                )
-            }
         }
 
         item(key = "bottom-spacer") {

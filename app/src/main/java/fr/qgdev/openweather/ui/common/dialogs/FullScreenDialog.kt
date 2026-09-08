@@ -54,6 +54,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.ui.theme.AppTheme
+import fr.qgdev.openweather.ui.theme.readableOn
+import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.material3.surfaceColorAtElevation
+
+private val DIALOG_ELEVATION = 10.dp
 
 @Composable
 fun FullScreenDialog(
@@ -78,8 +84,8 @@ fun FullScreenDialog(
                     .mandatorySystemGesturesPadding(),
                 color = MaterialTheme.colorScheme.surface,
                 shape = MaterialTheme.shapes.extraLarge,
-                shadowElevation = 10.dp,
-                tonalElevation = 10.dp,
+                shadowElevation = DIALOG_ELEVATION,
+                tonalElevation = DIALOG_ELEVATION,
                 border = BorderStroke(
                     0.1.dp,
                     MaterialTheme.colorScheme.outlineVariant)
@@ -120,7 +126,15 @@ fun FullScreenDialog(
                         color = MaterialTheme.colorScheme.surface,
                         shape = MaterialTheme.shapes.large,
                     ) {
-                        content()
+                        //  The palette's faintest texts are tuned for the screens' black or near-white
+                        //  ground; this surface is lighter, tinted by its elevation, and they fell under
+                        //  a readable contrast on it. They are adjusted to the surface actually drawn.
+                        val surface = MaterialTheme.colorScheme.surfaceColorAtElevation(DIALOG_ELEVATION)
+                        CompositionLocalProvider(
+                            LocalWeatherPalette provides LocalWeatherPalette.current.readableOn(surface)
+                        ) {
+                            content()
+                        }
                     }
                 }
             }
