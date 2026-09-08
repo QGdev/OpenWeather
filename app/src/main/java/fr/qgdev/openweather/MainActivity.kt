@@ -22,6 +22,7 @@ package fr.qgdev.openweather
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
@@ -61,6 +62,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import fr.qgdev.openweather.ui.components.dialogs.AirQualityDetailDialog
 import fr.qgdev.openweather.ui.components.dialogs.AirQualityInfoDialog
 import fr.qgdev.openweather.ui.components.dialogs.WeatherAlertDialog
 import fr.qgdev.openweather.ui.place.detail.PlaceDetailScreen
@@ -112,6 +114,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
+        //  The window is drawn edge to edge (enforced from Android 15), so the status bar has no
+        //  colour of its own; this picks dark or light icons to match the theme, without which
+        //  they stayed white and vanished on the light theme.
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         android.util.Log.d("MainActivity", "🚀 [onCreate] Starting MainActivity initialization...")
@@ -248,6 +254,7 @@ class MainActivity : AppCompatActivity() {
         val formattingService by settingsViewModel.formattingServiceState.collectAsState()
         var alertsOpened by remember { mutableStateOf(false) }
         var airQualityOpened by remember { mutableStateOf(false) }
+        var explainerOpened by remember { mutableStateOf(false) }
 
         val shownPlace = place
         if (shownPlace == null) {
@@ -272,8 +279,17 @@ class MainActivity : AppCompatActivity() {
                 onDismissRequest = { alertsOpened = false }
             )
         }
+        //  The card opens the measurements; "Understanding the index" opens over them, and closing
+        //  it comes back to them.
         if (airQualityOpened) {
-            AirQualityInfoDialog(onDismissRequest = { airQualityOpened = false })
+            AirQualityDetailDialog(
+                airQuality = shownPlace.airQuality,
+                onOpenExplainer = { explainerOpened = true },
+                onDismissRequest = { airQualityOpened = false }
+            )
+        }
+        if (explainerOpened) {
+            AirQualityInfoDialog(onDismissRequest = { explainerOpened = false })
         }
     }
 
@@ -292,6 +308,8 @@ class MainActivity : AppCompatActivity() {
         Scaffold(
             modifier = Modifier
                 .fillMaxSize(),
+            //  Shows behind the status bar: the screens' own ground, not Material's background.
+            containerColor = LocalWeatherPalette.current.screen,
             bottomBar = {
                 //  The detail screen is stacked on top of Places rather than being a destination of
                 //  its own, so the tabs step aside while it is open.

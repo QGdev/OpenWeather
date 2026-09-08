@@ -24,6 +24,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.SystemClock
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -94,6 +95,8 @@ class SplashScreenActivity : AppCompatActivity() {
     private var timeElapsed by mutableFloatStateOf(0f)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        //  Status bar icons matched to the theme, as in MainActivity.
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {

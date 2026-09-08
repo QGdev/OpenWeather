@@ -351,7 +351,9 @@ fun LoadPlacesScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = colorResource(id = R.color.colorBackground))
+                //  The redesign's ground, as on the other screens: the old colorBackground resource is
+                //  pure white in light mode, a shade apart from the bars around it.
+                .background(color = LocalWeatherPalette.current.screen)
         ) {
             content()
         }
