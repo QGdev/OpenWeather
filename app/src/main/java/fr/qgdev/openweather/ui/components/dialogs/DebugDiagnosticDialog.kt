@@ -39,6 +39,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
+import fr.qgdev.openweather.ui.theme.PlexMono
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -69,7 +70,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -530,7 +530,7 @@ fun DebugDiagnosticDialog(
                         .padding(start = 10.dp, top = 12.dp, bottom = 12.dp)
                 ) {
                     if (query.isEmpty()) {
-                        Text("Filter fields", color = palette.textQuiet, fontSize = 12.5.sp, fontFamily = FontFamily.Monospace)
+                        Text("Filter fields", color = palette.textQuiet, fontSize = 12.5.sp, fontFamily = PlexMono)
                     }
                     BasicTextField(
                         value = query,
@@ -539,7 +539,7 @@ fun DebugDiagnosticDialog(
                         textStyle = TextStyle(
                             color = palette.textPrimary,
                             fontSize = 12.5.sp,
-                            fontFamily = FontFamily.Monospace
+                            fontFamily = PlexMono
                         ),
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         modifier = Modifier.fillMaxWidth()
@@ -568,7 +568,7 @@ fun DebugDiagnosticDialog(
                     text = if (query.isBlank()) "" else "${rows.size} match" + if (rows.size == 1) "" else "es",
                     color = palette.textQuiet,
                     fontSize = 10.5.sp,
-                    fontFamily = FontFamily.Monospace,
+                    fontFamily = PlexMono,
                     textAlign = TextAlign.End,
                     modifier = Modifier.weight(1f)
                 )
@@ -657,7 +657,7 @@ private fun GroupRow(
         Text(
             text = if (isExpanded) "⌄" else "›",
             color = if (isExpanded) MaterialTheme.colorScheme.primary else palette.textQuiet,
-            fontFamily = FontFamily.Monospace,
+            fontFamily = PlexMono,
             fontSize = 12.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.width(9.dp)
@@ -669,12 +669,12 @@ private fun GroupRow(
                 depth == 0 -> palette.textMuted
                 else -> palette.textQuiet
             },
-            fontFamily = FontFamily.Monospace,
+            fontFamily = PlexMono,
             fontSize = 12.sp,
             modifier = Modifier.weight(1f)
         )
         badge?.let {
-            Text(text = it, color = palette.textQuiet, fontFamily = FontFamily.Monospace, fontSize = 12.sp)
+            Text(text = it, color = palette.textQuiet, fontFamily = PlexMono, fontSize = 12.sp)
         }
     }
 }
@@ -708,7 +708,7 @@ private fun FieldRow(depth: Int, label: String, value: String, path: String?, qu
                 Text(
                     text = highlighted(label, query),
                     modifier = Modifier.weight(1f),
-                    fontFamily = FontFamily.Monospace,
+                    fontFamily = PlexMono,
                     fontSize = 11.5.sp,
                     color = palette.textQuiet
                 )
@@ -717,7 +717,7 @@ private fun FieldRow(depth: Int, label: String, value: String, path: String?, qu
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 8.dp),
-                    fontFamily = FontFamily.Monospace,
+                    fontFamily = PlexMono,
                     fontSize = 11.5.sp,
                     color = palette.textPrimary,
                     textAlign = TextAlign.End

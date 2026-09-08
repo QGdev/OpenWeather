@@ -259,6 +259,7 @@
 		<item>"API OpenWeatherMap"</item>
 		<item>"Recherche de lieux"</item>
 		<item>"Icônes"</item>
+		<item>"Polices"</item>
 	</string-array>
 
 	<string-array name="attribution_content">
@@ -266,5 +267,6 @@
 		<item>"CC BY-SA 4.0"</item>
 		<item>"OpenStreetMap Nominatim · ODbL"</item>
 		<item>"freepik.com · flaticon.com"</item>
+		<item>"Figtree, IBM Plex Mono · SIL OFL 1.1"</item>
 	</string-array>
 </resources>
