@@ -65,7 +65,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
@@ -91,6 +90,7 @@ import fr.qgdev.openweather.ui.icons.VisibilityOff
 import fr.qgdev.openweather.ui.icons.VisibilityOn
 import fr.qgdev.openweather.ui.theme.AppTheme
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
+import fr.qgdev.openweather.ui.theme.PlexMono
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -498,7 +498,7 @@ fun ApiKeySetting(
                 singleLine = true,
                 textStyle = TextStyle(
                     color = palette.textMuted,
-                    fontFamily = FontFamily.Monospace,
+                    fontFamily = PlexMono,
                     fontSize = 13.sp,
                     letterSpacing = 1.56.sp
                 ),
@@ -531,7 +531,7 @@ fun ApiKeySetting(
                 text = stringResource(R.string.settings_api_key_length, apiKey.length, API_KEY_LENGTH),
                 color = palette.textQuiet,
                 fontSize = 11.sp,
-                fontFamily = FontFamily.Monospace,
+                fontFamily = PlexMono,
                 modifier = Modifier.weight(1f)
             )
             savedAt?.let {
@@ -769,7 +769,7 @@ private fun AboutAppEntry() {
                 text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                 color = palette.textQuiet,
                 fontSize = 11.sp,
-                fontFamily = FontFamily.Monospace,
+                fontFamily = PlexMono,
                 modifier = Modifier.padding(top = 3.dp)
             )
         }

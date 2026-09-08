@@ -63,8 +63,9 @@ import kotlin.math.roundToInt
  * rather than a curve, because the data is per-minute and discontinuous: a smoothed line would
  * invent values between the samples.
  *
- * Absent coverage is common outside supported regions, and the card then disappears entirely
- * instead of drawing a flat, falsely reassuring hour.
+ * The card only appears when precipitation is expected within the hour. A dry hour has nothing
+ * to say that the header does not already, and absent coverage - common outside supported
+ * regions - would otherwise draw a flat, falsely reassuring hour.
  */
 @Composable
 fun NowcastCard(
@@ -73,7 +74,7 @@ fun NowcastCard(
     timeZone: TimeZone,
     modifier: Modifier = Modifier
 ) {
-    if (minutely.isEmpty()) return
+    if (minutely.none { it.precipitation > 0f }) return
 
     val palette = LocalWeatherPalette.current
     val values = minutely.map { it.precipitation }
@@ -111,7 +112,6 @@ fun NowcastCard(
         Text(
             modifier = Modifier.padding(top = 6.dp),
             text = when {
-                firstWet < 0 -> stringResource(R.string.nowcast_dry)
                 firstWet == 0 -> stringResource(R.string.nowcast_falling_now)
                 else -> pluralStringResource(R.plurals.nowcast_starting_in, firstWet, firstWet)
             },

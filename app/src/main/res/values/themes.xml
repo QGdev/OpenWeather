@@ -34,4 +34,9 @@
         <!-- Apply padding to avoid the content of the widget colliding with the rounded corners -->
         <item name="appWidgetPadding">16dp</item>
     </style>
+
+    <!-- Android 11 has no system launch screen: only the window's ground needs to match. -->
+    <style name="SplashActivity" parent="MaterialTheme">
+        <item name="android:windowBackground">@color/splash_background</item>
+    </style>
 </resources>

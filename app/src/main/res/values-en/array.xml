@@ -6,6 +6,7 @@
         <item>"OpenWeatherMap API"</item>
         <item>"Place search"</item>
         <item>"Icons"</item>
+        <item>"Fonts"</item>
 	</string-array>
 
 	<string-array name="attribution_content">
@@ -13,5 +14,6 @@
         <item>"CC BY-SA 4.0"</item>
         <item>"OpenStreetMap Nominatim · ODbL"</item>
         <item>"freepik.com · flaticon.com"</item>
+        <item>"Figtree, IBM Plex Mono · SIL OFL 1.1"</item>
 	</string-array>
 </resources>

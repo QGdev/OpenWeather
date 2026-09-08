@@ -91,7 +91,7 @@
 	<string name="content_about_your_data_section">No account, no tracking, no usage analytics. Your places and settings stay on this device. Only two things leave the phone: a place\'s coordinates, sent to OpenWeatherMap with your API key and language to get its weather, and the text you type in the search, sent to OpenStreetMap Nominatim.</string>
 	<string name="title_about_the_developer_section">About the developer</string>
 	<string name="title_about_your_data_section">About your data</string>
-	<string name="content_about_the_developer_section">I am French computer science student, who had an idea during lockdown and turned it into an application to practice Java and Android development.</string>
+	<string name="content_about_the_developer_section">I was a computer science student when I wrote the first lines of OpenWeather, and I have since become a developer. If I keep the app going in my spare time, it is because it has remained my playground: a project I carry from start to finish, at my own pace, where I try what I do not get the chance to try elsewhere.</string>
 	<string name="error_device_not_connected">Cannot connect to internet, please verify your connection and try again</string>
 	<string name="icon_legend_data_time">Date and hour</string>
 	<string name="icon_legend_weather_condition">Weather conditions</string>
@@ -150,7 +150,7 @@
 	<string name="wind_direction_west">W</string>
 	<string name="wind_direction_westnorthwest">WNW</string>
 	<string name="title_about_thanks_section">Thanks</string>
-	<string name="content_about_thanks_section">I would like to say thank you to my best friend who tested the application in the very early stages of development and always had good ideas.</string>
+	<string name="content_about_thanks_section">Thanks to my best friend, who tested the app from its very first versions and never ran short of good ideas. And thanks to the open projects it could not exist without: OpenWeatherMap, OpenStreetMap and the Android community.</string>
 	<string name="title_settings_aqi_state">Air quality</string>
 	<string name="summary_enable_settings_aqi_state">"Air quality will be fetch and displayed "</string>
 	<string name="summary_disable_settings_aqi_state">Air quality will be ignored</string>
@@ -181,7 +181,7 @@
 
 	<string name="error_place_move">An error occurred while moving place</string>
 	<string name="title_about_application_section">About this app</string>
-	<string name="content_about_application_section">This application and its source code have been placed under the GPL-3.0 license. The source code of the application is available on: github.com/QGdev/OpenWeather. This does not include the OpenWeatherMap API or data, or even the FreePik graphics resources, which are licensed separately.</string>
+	<string name="content_about_application_section">OpenWeather was born during the COVID lockdown, from a simple idea: learning Android development by building something useful. First written in Java, it has since moved to Kotlin and Jetpack Compose, and gained widgets and a whole new interface along the way.\n\nIt shows no ads and does not track you: the app is free software, under the GPLv3, and its code is open to anyone who wants to read it or contribute.</string>
     <string name="error_storage_security">An error occurred while initializing the storage</string>
     <string name="error_no_api_key_registered">API key isn\'t registered, please go into settings and register one</string>
     <string name="error_api_key_incorrectly_formed">The registered API key must have 32 alphanumerical characters</string>
@@ -225,7 +225,6 @@
     </plurals>
     <string name="status_refresh_up_to_date">Up to date · %1$s</string>
     <string name="title_next_hour">Next hour</string>
-    <string name="nowcast_dry">No precipitation expected within the hour.</string>
     <string name="nowcast_falling_now">Precipitation falling now.</string>
     <plurals name="nowcast_starting_in">
         <item quantity="one">Precipitation in %1$d minute.</item>
@@ -330,4 +329,8 @@
     <string name="action_confirm">Confirm</string>
     <string name="widget_details">One-row details</string>
     <string name="widget_details_summary">On a single row, also shows the place, today\'s range and the next hours as the width allows.</string>
+    <string name="label_six_pollutants">SIX POLLUTANTS · µg/m³</string>
+    <string name="label_dominant_badge">DOMINANT</string>
+    <string name="label_level_short">lvl %1$d</string>
+    <string name="aqi_worst_not_average">The index is that of the worst pollutant, not the average of the six.</string>
 </resources>
