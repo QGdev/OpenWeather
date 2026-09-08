@@ -21,6 +21,7 @@
 
 package fr.qgdev.openweather.widgets
 
+import fr.qgdev.openweather.ui.theme.readableOn
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Bitmap
@@ -120,9 +121,14 @@ object WidgetsBinder {
     ): RemoteViews {
         val isDark = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
                 Configuration.UI_MODE_NIGHT_YES
-        val palette = if (isDark) DarkWeatherPalette else LightWeatherPalette
+        val basePalette = if (isDark) DarkWeatherPalette else LightWeatherPalette
         val current = place.currentWeather
         val sky = conditionSky(current.weatherCode, current.isDaytime(), current.cloudiness, isDark)
+        //  The secondary texts and labels are tuned for an opaque sky, and some already fell short
+        //  of a readable contrast there. They are adjusted to the ground actually under them: the
+        //  sky, and the wallpaper showing through it as it turns transparent.
+        val ground = widgetGround(sky, basePalette.textPrimary, dominantWallpaperColor(context), backgroundTransparency)
+        val palette = basePalette.readableOn(ground)
 
         val views = RemoteViews(context.packageName, widgetType.layout)
         views.setImageViewBitmap(R.id.sky, skyBitmap(sky, widgetType))

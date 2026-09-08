@@ -28,12 +28,15 @@
         <item name="appWidgetInnerRadius">@android:dimen/system_app_widget_inner_radius</item>
     </style>
 
-    <style name="SplashActivity" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowSplashScreenBackground">@color/colorBackground</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">@color/colorBackgroundTiles
-        </item>
-        <item name="android:windowSplashScreenAnimationDuration">1000</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/app_logo</item>
-        <item name="android:windowSplashScreenBrandingImage">@drawable/ic_logo_small</item>
+    <!--
+      The system shows its own launch screen before any activity on Android 12 and later, and it
+      cannot be turned off. It is made to look like the first frame of SplashScreenActivity - the
+      same ground, no icon - so the two read as one screen instead of a logo in a circle followed
+      by a second splash.
+    -->
+    <style name="SplashActivity" parent="MaterialTheme">
+        <item name="android:windowBackground">@color/splash_background</item>
+        <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_blank</item>
     </style>
 </resources>

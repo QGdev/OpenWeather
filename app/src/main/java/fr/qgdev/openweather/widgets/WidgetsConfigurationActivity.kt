@@ -20,9 +20,9 @@
 
 package fr.qgdev.openweather.widgets
 
-import android.app.WallpaperManager
+import fr.qgdev.openweather.ui.theme.contrast
+import fr.qgdev.openweather.ui.theme.MIN_TEXT_CONTRAST
 import android.appwidget.AppWidgetManager
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.SizeF
@@ -72,8 +72,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.clipPath
-import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
@@ -477,23 +475,10 @@ private fun rememberReadabilityThreshold(place: Place?, palette: WeatherPalette)
         val current = place?.currentWeather ?: return@remember null
         val sky = conditionSky(current.weatherCode, current.isDaytime(), current.cloudiness, palette.isDark)
         (0..100 step 5).firstOrNull { step ->
-            val ground = lerp(sky.middle, wallpaper, step / 100f)
-            contrast(palette.textPrimary, ground) < 4.5f
+            val ground = widgetGround(sky, palette.textPrimary, wallpaper, step)
+            contrast(palette.textPrimary, ground) < MIN_TEXT_CONTRAST
         }
     }
-}
-
-private fun dominantWallpaperColor(context: Context): Color? =
-    WallpaperManager.getInstance(context)
-        .getWallpaperColors(WallpaperManager.FLAG_SYSTEM)
-        ?.primaryColor
-        ?.toArgb()
-        ?.let { Color(it) }
-
-private fun contrast(a: Color, b: Color): Float {
-    val la = a.luminance() + 0.05f
-    val lb = b.luminance() + 0.05f
-    return maxOf(la, lb) / minOf(la, lb)
 }
 
 /** Whether a one-row widget may show more than its temperature when it has the room. */

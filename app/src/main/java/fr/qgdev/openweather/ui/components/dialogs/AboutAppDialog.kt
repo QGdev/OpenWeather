@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -50,7 +51,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,6 +59,7 @@ import fr.qgdev.openweather.BuildConfig
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.ui.common.dialogs.FullScreenDialog
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
+import fr.qgdev.openweather.ui.theme.PlexMono
 
 private const val SOURCE_CODE_URL = "https://github.com/QGdev/OpenWeather"
 private const val LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.html"
@@ -104,9 +105,10 @@ fun AboutAppDialog(
                 body = stringResource(R.string.content_about_your_data_section)
             )
             Section(
-                title = stringResource(R.string.title_about_the_developer_section),
-                body = stringResource(R.string.content_about_the_developer_section)
+                title = stringResource(R.string.title_about_application_section),
+                body = stringResource(R.string.content_about_application_section)
             )
+            DeveloperSection()
             Section(
                 title = stringResource(R.string.title_about_thanks_section),
                 body = stringResource(R.string.content_about_thanks_section)
@@ -167,10 +169,11 @@ private fun IdentityCard(onLogoLongPress: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        //  The app's own logo, in its colours. The developer's logo belongs to the developer's
+        //  section, not to the app's identity.
         Image(
-            painter = painterResource(id = R.drawable.ic_logo_small),
+            painter = painterResource(id = R.drawable.app_logo),
             contentDescription = stringResource(id = R.string.app_name),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.surfaceTint),
             modifier = Modifier
                 .size(56.dp)
                 .pointerInput(Unit) {
@@ -188,7 +191,7 @@ private fun IdentityCard(onLogoLongPress: () -> Unit) {
                 text = "%s (%d)".format(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
                 color = palette.textQuiet,
                 fontSize = 11.5.sp,
-                fontFamily = FontFamily.Monospace,
+                fontFamily = PlexMono,
                 modifier = Modifier.padding(top = 4.dp)
             )
             Text(
@@ -201,6 +204,35 @@ private fun IdentityCard(onLogoLongPress: () -> Unit) {
                     .padding(horizontal = 9.dp, vertical = 3.dp)
             )
         }
+    }
+}
+
+/**
+ * The developer's section, laid out like the others, with the QGDEV logo under its title as a
+ * signature.
+ */
+@Composable
+private fun DeveloperSection() {
+    val palette = LocalWeatherPalette.current
+
+    Column {
+        SectionTitle(stringResource(R.string.title_about_the_developer_section))
+        //  Drawn in black by its vector; tinted to the text so it holds on either theme.
+        Image(
+            painter = painterResource(id = R.drawable.ic_logo_small),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(palette.textPrimary),
+            modifier = Modifier
+                .padding(top = 9.dp)
+                .height(18.dp)
+        )
+        Text(
+            text = stringResource(R.string.content_about_the_developer_section),
+            color = palette.textMuted,
+            fontSize = 12.5.sp,
+            lineHeight = 19.sp,
+            modifier = Modifier.padding(top = 9.dp)
+        )
     }
 }
 

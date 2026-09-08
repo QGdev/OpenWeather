@@ -359,6 +359,7 @@ fun AppTheme (
     CompositionLocalProvider(LocalWeatherPalette provides weatherPalette) {
         MaterialTheme(
             colorScheme = colorScheme,
+            typography = AppTypography,
             content = content
         )
     }

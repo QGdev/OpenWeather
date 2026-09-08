@@ -93,7 +93,7 @@
 	<string name="content_about_your_data_section">Aucun compte, aucun pistage, aucune analyse d\'usage. Vos lieux et vos réglages restent sur l\'appareil. Deux informations seulement quittent le téléphone : les coordonnées d\'un lieu, envoyées à OpenWeatherMap avec votre clé d\'API et votre langue pour obtenir sa météo, et le texte que vous tapez dans la recherche, envoyé à OpenStreetMap Nominatim.</string>
 	<string name="title_about_the_developer_section">À propos du développeur</string>
 	<string name="title_about_your_data_section">À propos de vos données</string>
-	<string name="content_about_the_developer_section">Je suis un étudiant français en informatique, qui a eu une idée pendant le confinement et l\'a transformée en une application pour pratiquer le développement Java et Android.</string>
+	<string name="content_about_the_developer_section">Étudiant en informatique quand j\'ai écrit les premières lignes d\'OpenWeather, je suis devenu développeur depuis. Si je continue à faire vivre cette application sur mon temps libre, c\'est qu\'elle est restée mon terrain de jeu : un projet que je mène de bout en bout, à mon rythme, où j\'essaie ce que je n\'ai pas l\'occasion de faire ailleurs.</string>
 	<string name="error_device_not_connected">" Impossible de se connecter à Internet, veuillez vérifier votre connexion et réessayer"</string>
 	<string name="error_place_deletion">Une erreur est survenue lors de la suppression</string>
 	<string name="error_cannot_save_place_treatment">Impossible de sauvegarder la lieu à cause d\'une erreur de traitement</string>
@@ -151,8 +151,8 @@
 	<string name="wind_direction_westsouthwest">OSO</string>
 	<string name="wind_direction_west">O</string>
 	<string name="wind_direction_westnorthwest">ONO</string>
-	<string name="content_about_thanks_section">Je voudrais dire merci à mon meilleur ami qui a testé l\'application lors des toutes premières phases de développement et qui a toujours eu de bonnes idées.</string>
-	<string name="title_about_thanks_section">Remerciement</string>
+	<string name="content_about_thanks_section">Merci à mon meilleur ami, qui a testé l\'application dès ses toutes premières versions et n\'a jamais manqué de bonnes idées. Et merci aux projets libres sans lesquels elle n\'existerait pas : OpenWeatherMap, OpenStreetMap et la communauté Android.</string>
+	<string name="title_about_thanks_section">Remerciements</string>
 	<string name="title_settings_aqi_state">Qualité de l\'air</string>
 	<string name="summary_enable_settings_aqi_state">La qualité de l\'air sera recherchée et affichée</string>
 	<string name="summary_disable_settings_aqi_state">La qualité de l\'air sera ignorée</string>
@@ -182,7 +182,7 @@
 
 	<string name="error_place_move">Une erreur est survenue lors du déplacement</string>
 	<string name="title_about_application_section">À propos de l\'application</string>
-	<string name="content_about_application_section">Cette application et son code source ont été placés sous la licence GPL-3. Le code source de mon applicetion est disponible ici: github.com/QGdev/OpenWeather. Cela n\'inclut pas l\'API ou les données d\'OpenWeatherMap ni même les ressources graphiques de FreePik, qui sont sous une licence spécifique à chacun.</string>
+	<string name="content_about_application_section">OpenWeather est né pendant le confinement du COVID, d\'une idée simple : apprendre le développement Android en construisant quelque chose d\'utile. D\'abord écrit en Java, il est passé depuis à Kotlin et à Jetpack Compose, et a gagné au fil des versions des widgets et une toute nouvelle interface.\n\nIl n\'affiche aucune publicité et ne vous piste pas : l\'application est libre, sous licence GPLv3, et son code est ouvert à qui veut le lire ou y contribuer.</string>
     <string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
     <string name="error_no_api_key_registered">Aucune clé d\'API n\'est renseignée, allez dans les paramètres de l\'application et rentrez en une</string>
     <string name="error_api_key_incorrectly_formed">La clé d\'API renseignée doit contenir au minimum 32 caractères alphanumériques</string>
@@ -224,7 +224,6 @@
 	</plurals>
 	<string name="status_refresh_up_to_date">À jour · %1$s</string>
 	<string name="title_next_hour">Prochaine heure</string>
-	<string name="nowcast_dry">Aucune précipitation attendue dans l\'heure.</string>
 	<string name="nowcast_falling_now">Précipitations en cours.</string>
 	<plurals name="nowcast_starting_in">
 		<item quantity="one">Précipitations dans %1$d minute.</item>
@@ -329,4 +328,8 @@
 	<string name="action_confirm">Valider</string>
 	<string name="widget_details">Détails sur une ligne</string>
 	<string name="widget_details_summary">Sur une seule ligne, affiche aussi le lieu, les extrêmes du jour et les prochaines heures selon la largeur.</string>
+	<string name="label_six_pollutants">SIX POLLUANTS · µg/m³</string>
+	<string name="label_dominant_badge">DOMINANT</string>
+	<string name="label_level_short">niv. %1$d</string>
+	<string name="aqi_worst_not_average">L\'indice retenu est celui du polluant le plus défavorable, pas la moyenne des six.</string>
 </resources>
