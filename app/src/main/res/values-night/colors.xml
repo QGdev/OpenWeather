@@ -18,4 +18,6 @@
     <color name="colorBackground">@android:color/background_dark</color>
     <color name="colorBackgroundTiles">#222725</color>
 
+    <!-- The splash screen's ground: WeatherPalette.screen. -->
+    <color name="splash_background">#000000</color>
 </resources>
