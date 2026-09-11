@@ -20,6 +20,15 @@
 
 package fr.qgdev.openweather.ui.place.detail
 
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.Spacer
+import fr.qgdev.openweather.ui.place.ExtremeTemperature
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -160,6 +169,45 @@ fun PlaceDetailScreen(
  * that opened it; the tiles sit on a scrim over that wash rather than on the wash itself, which is
  * what keeps a six-value grid legible over an amber noon or a violet storm.
  */
+/**
+ * The header's temperature as the mock-up sets it: the whole degrees large, then the decimal and
+ * the unit smaller and top-aligned, "20" "{,9}{°C}". The whole degrees are what is read.
+ */
+@Composable
+private fun HeaderTemperature(formatted: String, unit: String) {
+    val palette = LocalWeatherPalette.current
+    val cleaned = formatted.removeSuffix("°")
+    val separatorIndex = cleaned.indexOfFirst { it == ',' || it == '.' }
+    val whole = if (separatorIndex >= 0) cleaned.substring(0, separatorIndex) else cleaned
+    val decimal = if (separatorIndex >= 0) cleaned.substring(separatorIndex) else ""
+
+    Row(verticalAlignment = Alignment.Top) {
+        Text(
+            text = whole,
+            color = palette.textPrimary,
+            fontSize = 62.sp,
+            lineHeight = 62.sp,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = (-1.5).sp
+        )
+        Text(
+            text = buildAnnotatedString {
+                append(decimal)
+                withStyle(SpanStyle(fontSize = 18.sp, fontWeight = FontWeight.Normal, color = palette.textSecondary)) {
+                    append(unit)
+                }
+            },
+            color = palette.textPrimary,
+            fontSize = 27.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(top = 6.dp)
+        )
+    }
+}
+
+/** How far the header's sky takes to fade into the screen's ground. */
+private val HEADER_FADE = 56.dp
+
 @Composable
 private fun DetailHeader(
     place: Place,
@@ -171,7 +219,23 @@ private fun DetailHeader(
     val sky = conditionSky(currentWeather.weatherCode, currentWeather.isDaytime(), currentWeather.cloudiness)
     val today = place.dailyForecastListList.firstOrNull()
 
-    Box(modifier = Modifier.background(sky.wash)) {
+    Box(
+        modifier = Modifier
+            .background(sky.wash)
+            //  The sky fades into the screen's ground over its last stretch, rather than stopping
+            //  on a hard edge above the sections. Drawn from the palette's ground, so it holds on
+            //  the light theme as on the dark one.
+            .drawBehind {
+                val fade = HEADER_FADE.toPx()
+                drawRect(
+                    Brush.verticalGradient(
+                        colors = listOf(palette.screen.copy(alpha = 0f), palette.screen),
+                        startY = size.height - fade,
+                        endY = size.height
+                    )
+                )
+            }
+    ) {
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -181,7 +245,8 @@ private fun DetailHeader(
                 .background(sky.haloBrush)
         )
 
-        Column(modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 16.dp, bottom = 20.dp)) {
+        //  The bottom padding leaves room for the fade under the tiles rather than behind them.
+        Column(modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 16.dp, bottom = 44.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
@@ -232,25 +297,31 @@ private fun DetailHeader(
                     contentDescription = currentWeather.weatherDescription,
                     modifier = Modifier.size(84.dp)
                 )
-                Text(
-                    text = formattingService.getFloatFormattedTemperature(
-                        currentWeather.temperature, FormattingSpec.UNIT_BUT_NO_SPACE
+                HeaderTemperature(
+                    formatted = formattingService.getFloatFormattedTemperature(
+                        currentWeather.temperature, FormattingSpec.NO_UNIT_NO_SPACE
                     ),
-                    color = palette.textPrimary,
-                    fontSize = 46.sp,
-                    fontWeight = FontWeight.Medium
+                    unit = formattingService.temperatureUnitLabel
                 )
                 if (today != null) {
-                    Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                        Text(
-                            text = formattingService.getFloatFormattedTemperature(
+                    //  Against the right edge, as in the mock-up: the day's range frames the reading
+                    //  rather than trailing it.
+                    Spacer(modifier = Modifier.weight(1f))
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        ExtremeTemperature(
+                            iconRes = R.drawable.temperature_maximum_material,
+                            value = formattingService.getFloatFormattedTemperature(
                                 today.temperatureMaximum, FormattingSpec.NO_UNIT_NO_SPACE
                             ),
                             color = palette.textPrimary,
                             fontSize = 14.sp
                         )
-                        Text(
-                            text = formattingService.getFloatFormattedTemperature(
+                        ExtremeTemperature(
+                            iconRes = R.drawable.temperature_minimum_material,
+                            value = formattingService.getFloatFormattedTemperature(
                                 today.temperatureMinimum, FormattingSpec.NO_UNIT_NO_SPACE
                             ),
                             color = palette.textSecondary,
@@ -265,9 +336,10 @@ private fun DetailHeader(
             val tiles = listOf(
                 Triple(
                     stringResource(R.string.title_temperature_feelslike),
+                    //  The degree sign belongs to the unit line below, not to the value as well.
                     formattingService.getFloatFormattedTemperature(
                         currentWeather.temperatureFeelsLike, FormattingSpec.NO_UNIT_NO_SPACE
-                    ),
+                    ).removeSuffix("°"),
                     formattingService.temperatureUnitLabel
                 ),
                 Triple(
@@ -280,7 +352,7 @@ private fun DetailHeader(
                     )
                 ),
                 Triple(
-                    stringResource(R.string.title_wind_gust_speed),
+                    stringResource(R.string.label_gusts),
                     formattingService.getFloatFormattedSpeed(
                         currentWeather.windGustSpeed, FormattingSpec.NO_UNIT_NO_SPACE
                     ),
@@ -307,8 +379,10 @@ private fun DetailHeader(
                 )
             )
 
+            //  A hairline between the reading and its measures, as in the mock-up.
+            HorizontalDivider(modifier = Modifier.padding(top = 20.dp), color = palette.outline)
             Column(
-                modifier = Modifier.padding(top = 18.dp),
+                modifier = Modifier.padding(top = 15.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 tiles.chunked(3).forEach { row ->
@@ -341,13 +415,18 @@ private fun MeasureTile(
             .clip(RoundedCornerShape(16.dp))
             .background(palette.tileScrim)
             .border(1.dp, palette.outlineStrong, RoundedCornerShape(16.dp))
-            .padding(12.dp)
+            //  Lines set tight, as in the mock-up: Material's default line heights (24 sp for a
+            //  16 sp value) made the tiles nearly square where the design has them wider than tall.
+            .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
+        //  A shade lighter than the unit below it, and spaced, as the mock-up sets the labels.
         Text(
             text = label.uppercase(),
-            color = palette.textSecondary,
-            fontSize = 9.5.sp,
+            color = lerp(palette.textSecondary, palette.textPrimary, 0.3f),
+            fontSize = 10.5.sp,
             fontWeight = FontWeight.Medium,
+            letterSpacing = 0.63.sp,
+            lineHeight = 13.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -355,12 +434,14 @@ private fun MeasureTile(
             text = value,
             color = palette.textPrimary,
             fontSize = 16.sp,
+            lineHeight = 19.sp,
             modifier = Modifier.padding(top = 4.dp)
         )
         Text(
             text = unit,
             color = palette.textSecondary,
             fontSize = 10.5.sp,
+            lineHeight = 13.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

@@ -240,7 +240,6 @@
     <string name="label_dominant_pollutant">dominant %1$s</string>
     <string name="action_details">Details</string>
     <string name="label_hours_count">%1$d h</string>
-    <string name="label_common_scale">shared scale %1$s → %2$s</string>
     <plurals name="status_active_alerts">
         <item quantity="one">%1$d active alert</item>
         <item quantity="other">%1$d active alerts</item>
@@ -264,14 +263,6 @@
     <string name="uv_level_high">High</string>
     <string name="uv_level_very_high">Very high</string>
     <string name="uv_level_extreme">Extreme</string>
-    <string name="moon_phase_new">New moon</string>
-    <string name="moon_phase_waxing_crescent">Waxing crescent</string>
-    <string name="moon_phase_first_quarter">First quarter</string>
-    <string name="moon_phase_waxing_gibbous">Waxing gibbous</string>
-    <string name="moon_phase_full">Full moon</string>
-    <string name="moon_phase_waning_gibbous">Waning gibbous</string>
-    <string name="moon_phase_last_quarter">Last quarter</string>
-    <string name="moon_phase_waning_crescent">Waning crescent</string>
     <string name="label_results_count">%1$d RESULTS</string>
     <string name="label_cities_only">cities only</string>
     <string name="label_already_added">already added</string>
@@ -309,7 +300,7 @@
         <item quantity="one">%1$d place</item>
         <item quantity="other">%1$d places</item>
     </plurals>
-    <string name="settings_call_budget">about %1$s calls per day. The free plan allows %2$s.</string>
+    <string name="settings_call_budget">%1$d calls per place, about %2$s a day.</string>
     <string name="action_about_source_code">Source code</string>
     <string name="action_about_license">License</string>
     <string name="about_license_badge">GPLv3 · free software</string>
@@ -335,4 +326,26 @@
     <string name="label_dominant_badge">DOMINANT</string>
     <string name="label_level_short">lvl %1$d</string>
     <string name="aqi_worst_not_average">The index is that of the worst pollutant, not the average of the six.</string>
+    <string name="label_max">max</string>
+    <string name="label_min">min</string>
+    <string name="label_gusts">Gusts</string>
+    <string name="settings_free_plan_exceeded">The free plan allows %1$s.</string>
+    <string name="label_rain">Rain</string>
+    <string name="label_snow">Snow</string>
+    <string name="label_clouds">Clouds</string>
+    <string name="label_sunrise">Sunrise</string>
+    <string name="label_sunset">Sunset</string>
+    <string name="label_phase">Phase</string>
+    <string name="group_temperature">Temperature</string>
+    <string name="label_actual">Actual</string>
+    <string name="moon_short_new">new</string>
+    <string name="moon_short_waxing_crescent">wax.</string>
+    <string name="moon_short_first_quarter">1st qtr.</string>
+    <string name="moon_short_waxing_gibbous">gib.</string>
+    <string name="moon_short_full">full</string>
+    <string name="moon_short_waning_gibbous">gib.</string>
+    <string name="moon_short_last_quarter">last qtr.</string>
+    <string name="moon_short_waning_crescent">wan.</string>
+    <string name="label_week_min_max">min %1$s · max %2$s</string>
+    <string name="label_at_hour">At %1$s</string>
 </resources>
