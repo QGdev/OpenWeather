@@ -31,6 +31,8 @@ import fr.qgdev.openweather.data.remote.PlaceSearchingService
 import fr.qgdev.openweather.data.remote.RequestStatus
 import fr.qgdev.openweather.data.remote.WeatherService
 import fr.qgdev.openweather.data.storage.PlaceDataStore
+import fr.qgdev.openweather.ui.viewmodel.identityKey
+import fr.qgdev.openweather.widgets.WidgetsManager
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -62,6 +64,7 @@ class PlaceRepository private constructor(context: Context) {
     private val weatherService = WeatherService.getInstance(context)
     private val placeSearchingService = PlaceSearchingService.getInstance(context)
     private val dataStore = PlaceDataStore.getDataStore(context.applicationContext)
+    private val applicationContext = context.applicationContext
 
     val placesFlow: Flow<List<Place>> = dataStore.data
         .catch {exception ->
@@ -229,6 +232,10 @@ class PlaceRepository private constructor(context: Context) {
                 .putPlaces(placeId, newPlace)
                 .build()
         }
+        //  Every refresh ends here, so this is where the widgets showing this place learn of it:
+        //  they change when their data does, whatever path refreshed it.
+        WidgetsManager.getInstance(applicationContext)
+            .updateWidgetsForPlace(applicationContext, newPlace.identityKey)
     }
 
     suspend fun updatePlace(place: Place) {

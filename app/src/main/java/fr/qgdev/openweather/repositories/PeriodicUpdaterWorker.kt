@@ -34,8 +34,8 @@ import java.time.Duration
  *
  * A CoroutineWorker that updates all places and widgets periodically.
  * Avoids PeriodicWorkRequest (15-minute minimum floor) by using a
- * OneTimeWorkRequest that reschedules itself at the next quarter-hour mark
- * (e.g. 13:00, 13:15, 13:30, 13:45, …).
+ * OneTimeWorkRequest that reschedules itself at the next mark of the chosen
+ * interval (e.g. every 30 minutes: 13:00, 13:30, 14:00, …).
  *
  * Flow:
  *  1. No places registered → success, nothing to do.
@@ -43,7 +43,10 @@ import java.time.Duration
  *  3. Update all places concurrently via [PlaceRepository.updateAllPlacesFromWeb].
  *  4. Broadcast a widget refresh via [WidgetsManager.updateWidgets].
  *  5. Every single update failed → retry (transient network issue).
- *  6. Otherwise → reschedule at the next quarter-hour mark and return success.
+ *  6. Otherwise → reschedule at the interval's next mark and return success.
+ *
+ * Until the rescheduling was written, this list described it but the code returned without
+ * doing it: the work ran once after each app launch or settings change, then stopped.
  *
  * @author Quentin GOMES DOS REIS
  * @version 1
@@ -71,12 +74,14 @@ class PeriodicUpdaterWorker(
                 return Result.retry()
             }
             
-            if (placeCount <= 0) {
+            val isPeriodicUpdateEnabled = settingsRepository.isPeriodicUpdateEnabled()
+            if (!isPeriodicUpdateEnabled) {
                 return Result.success()
             }
 
-            val isPeriodicUpdateEnabled = settingsRepository.isPeriodicUpdateEnabled()
-            if (!isPeriodicUpdateEnabled) {
+            if (placeCount <= 0) {
+                //  Nothing to update yet, but the chain goes on: a place may be added in between.
+                scheduleNextRun(settingsRepository, widgetsManager)
                 return Result.success()
             }
 
@@ -90,21 +95,29 @@ class PeriodicUpdaterWorker(
                 Pair(0, placeCount)
             }
             
+            //  Each place's widgets were redrawn as its data was written. This redraws them all once
+            //  more, so that a widget whose place could not be refreshed still shows its values
+            //  ageing.
             widgetsManager.updateWidgets(context)
 
             if (errorCount == placeCount) {
+                //  Retried with WorkManager's backoff; the next mark is scheduled once it succeeds.
                 return Result.retry()
             }
 
-            val periodMillis = settingsRepository.settingsFlow.value.updatePeriod.durationMillis
-            val timeUntilNextMark = periodMillis - (System.currentTimeMillis() % periodMillis)
-            widgetsManager.scheduleNextRun(context, Duration.ofMillis(timeUntilNextMark))
-
+            scheduleNextRun(settingsRepository, widgetsManager)
             return Result.success()
             
         } catch (e: Exception) {
             return Result.retry()
         }
+    }
+
+    /** Queues the next run at the chosen interval's next mark, after this one. */
+    private fun scheduleNextRun(settingsRepository: SettingsRepository, widgetsManager: WidgetsManager) {
+        val periodMillis = settingsRepository.getUpdatePeriodSetting().durationMillis
+        val untilNextMark = periodMillis - System.currentTimeMillis() % periodMillis
+        widgetsManager.scheduleNextRun(applicationContext, Duration.ofMillis(untilNextMark))
     }
 }
 

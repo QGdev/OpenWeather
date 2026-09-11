@@ -33,6 +33,8 @@ package fr.qgdev.openweather.data.settings
  */
 enum class UpdatePeriodSettings(val durationMillis: Long) {
     ONE_MINUTE(1 * 60 * 1_000L),  // 🔧 DEBUG only - 1 minute
+    FIVE_MINUTES(5 * 60 * 1_000L),
+    TEN_MINUTES(10 * 60 * 1_000L),
     FIFTEEN_MINUTES(15 * 60 * 1_000L),
     THIRTY_MINUTES(30 * 60 * 1_000L),
     ONE_HOUR(60 * 60 * 1_000L),

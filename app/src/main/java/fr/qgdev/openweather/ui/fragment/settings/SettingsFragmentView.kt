@@ -269,6 +269,8 @@ fun SettingsScreenView(
                         ChipSetting(
                             title = stringResource(R.string.title_settings_update_period),
                             entries = debugEntries + listOf(
+                                SettingOption(UpdatePeriodSettings.FIVE_MINUTES, stringResource(R.string.title_settings_update_period_short_5min)),
+                                SettingOption(UpdatePeriodSettings.TEN_MINUTES, stringResource(R.string.title_settings_update_period_short_10min)),
                                 SettingOption(UpdatePeriodSettings.FIFTEEN_MINUTES, stringResource(R.string.title_settings_update_period_short_15min)),
                                 SettingOption(UpdatePeriodSettings.THIRTY_MINUTES, stringResource(R.string.title_settings_update_period_short_30min)),
                                 SettingOption(UpdatePeriodSettings.ONE_HOUR, stringResource(R.string.title_settings_update_period_short_1h)),
@@ -278,7 +280,6 @@ fun SettingsScreenView(
                                 SettingOption(UpdatePeriodSettings.TWELVE_HOURS, stringResource(R.string.title_settings_update_period_short_12h))
                             ),
                             footer = if (placeCount > 0) callBudgetText(placeCount, period) else null,
-                            footerColor = if (dailyCalls(placeCount, period) > FREE_PLAN_DAILY_CALLS) palette.amber else null,
                             defaultValue = period,
                             onSelectionChanged = {
                                 period = it
@@ -326,14 +327,20 @@ private const val DAY_MILLIS = 24 * 60 * 60 * 1_000L
 private fun dailyCalls(placeCount: Int, period: UpdatePeriodSettings): Int =
     (placeCount * CALLS_PER_PLACE * (DAY_MILLIS / period.durationMillis)).toInt()
 
+/**
+ * "7 lieux · 2 appels par lieu, environ 56 par jour." The free plan's limit is only named, on a line
+ * of its own, once it is exceeded: below it, it was a figure to read for nothing.
+ */
 @Composable
 private fun callBudgetText(placeCount: Int, period: UpdatePeriodSettings): String {
-    return pluralStringResource(R.plurals.settings_place_count, placeCount, placeCount) + " · " +
-            stringResource(
-                R.string.settings_call_budget,
-                formatCount(dailyCalls(placeCount, period)),
-                formatCount(FREE_PLAN_DAILY_CALLS)
-            )
+    val calls = dailyCalls(placeCount, period)
+    val budget = pluralStringResource(R.plurals.settings_place_count, placeCount, placeCount) + " · " +
+            stringResource(R.string.settings_call_budget, CALLS_PER_PLACE, formatCount(calls))
+    return if (calls > FREE_PLAN_DAILY_CALLS) {
+        budget + "\n" + stringResource(R.string.settings_free_plan_exceeded, formatCount(FREE_PLAN_DAILY_CALLS))
+    } else {
+        budget
+    }
 }
 
 /**
@@ -638,7 +645,6 @@ private fun <T> ChipSetting(
     entries: List<SettingOption<T>>,
     defaultValue: T,
     footer: String? = null,
-    footerColor: Color? = null,
     onSelectionChanged: (T) -> Unit
 ) {
     val palette = LocalWeatherPalette.current
@@ -673,7 +679,7 @@ private fun <T> ChipSetting(
         if (footer != null) {
             Text(
                 text = footer,
-                color = footerColor ?: palette.textQuiet,
+                color = palette.textQuiet,
                 fontSize = 11.sp,
                 lineHeight = 16.sp,
                 modifier = Modifier.padding(top = 11.dp)
