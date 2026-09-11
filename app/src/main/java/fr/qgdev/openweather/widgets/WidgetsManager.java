@@ -21,6 +21,8 @@
 
 package fr.qgdev.openweather.widgets;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
@@ -35,6 +37,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import fr.qgdev.openweather.data.storage.SecuredPreferenceDataStore;
@@ -162,6 +166,37 @@ public final class WidgetsManager {
 	}
 	
 	/**
+	 * Redraws the widgets showing one place, and only them.
+	 * <p>
+	 * Called whenever that place's data is written, so a widget changes when its data does,
+	 * whichever path refreshed it: the background work, a pull-to-refresh, a retry.
+	 * </p>
+	 *
+	 * @param context  the context used to send the broadcast
+	 * @param placeKey the identity key of the place that changed
+	 */
+	public void updateWidgetsForPlace(@NonNull Context context, @NonNull String placeKey) {
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		int[] allIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetsProvider.class));
+		
+		List<Integer> matching = new ArrayList<>();
+		for (int appWidgetId : allIds) {
+			WidgetsSettings settings = loadWidgetSettings(appWidgetId, null);
+			if (settings != null && placeKey.equals(settings.getPlaceId())) matching.add(appWidgetId);
+		}
+		if (matching.isEmpty()) return;
+		
+		int[] ids = new int[matching.size()];
+		for (int i = 0; i < ids.length; i++) ids[i] = matching.get(i);
+		
+		// Explicit, so it reaches the provider only, carrying the ids it should redraw.
+		Intent updateIntent = new Intent(context, WidgetsProvider.class);
+		updateIntent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+		updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+		context.sendBroadcast(updateIntent);
+	}
+	
+	/**
 	 * Will remove scheduled work request that have been set by the app.
 	 *
 	 * @param context Use to get the WorkManager instance
@@ -174,6 +209,21 @@ public final class WidgetsManager {
 		} catch (Exception e) {
 			android.util.Log.e("WidgetsManager", "❌ Error cancelling work: " + e.getMessage(), e);
 		}
+	}
+	
+	/**
+	 * Schedules the next run from within the running one.
+	 * <p>
+	 * {@link #scheduleWorkRequest} replaces the unique work, which is what a settings change wants,
+	 * but called from the worker itself it would cancel the run in progress. This appends the next
+	 * run after the current one instead, so the chain carries on at the chosen interval.
+	 * </p>
+	 *
+	 * @param context              Use to get the WorkManager instance
+	 * @param timeBeforeNextUpdate Delay before the next run
+	 */
+	public void scheduleNextRun(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate) {
+		enqueueWorkRequest(context, timeBeforeNextUpdate, ExistingWorkPolicy.APPEND_OR_REPLACE);
 	}
 	
 	/**
@@ -194,16 +244,6 @@ public final class WidgetsManager {
 		} catch (Exception e) {
 			android.util.Log.e("WidgetsManager", "❌ Error scheduling work: " + e.getMessage(), e);
 		}
-	}
-	
-	/**
-	 * Will schedule the next run from the running work request, after it ends.
-	 *
-	 * @param context              Use to get the WorkManager instance
-	 * @param timeBeforeNextUpdate Delay before the next run
-	 */
-	public void scheduleNextRun(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate) {
-		enqueueWorkRequest(context, timeBeforeNextUpdate, ExistingWorkPolicy.APPEND_OR_REPLACE);
 	}
 	
 	/**
