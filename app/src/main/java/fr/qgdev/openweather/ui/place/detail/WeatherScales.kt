@@ -39,24 +39,32 @@ fun uvLevelLabel(uvIndex: Int): Int = when {
 }
 
 /**
- * The moon phase, named.
- *
- * OpenWeatherMap gives a fraction where 0 and 1 are a new moon, 0.25 the first quarter and 0.5 a
- * full moon. Printed as "25 %" it says nothing; the eight traditional names are what a reader
- * recognises. The quarters are given a small tolerance so a value a hair off 0.25 still reads as
- * the first quarter rather than as a crescent.
+ * The phase in the few characters a reading row has, as the mock-up writes it: "gib. 72 %",
+ * "dern. quart.". New, full and the quarters are named alone; the others carry how much of the
+ * disc is lit, since "crescent" alone does not say whether it is a sliver or nearly half.
  */
 @StringRes
-fun moonPhaseLabel(phase: Float): Int {
+fun moonPhaseShortLabel(phase: Float): Int {
     val wrapped = phase.mod(1f)
     return when {
-        wrapped < 0.02f || wrapped > 0.98f -> R.string.moon_phase_new
-        wrapped < 0.23f -> R.string.moon_phase_waxing_crescent
-        wrapped < 0.27f -> R.string.moon_phase_first_quarter
-        wrapped < 0.48f -> R.string.moon_phase_waxing_gibbous
-        wrapped < 0.52f -> R.string.moon_phase_full
-        wrapped < 0.73f -> R.string.moon_phase_waning_gibbous
-        wrapped < 0.77f -> R.string.moon_phase_last_quarter
-        else -> R.string.moon_phase_waning_crescent
+        wrapped < 0.02f || wrapped > 0.98f -> R.string.moon_short_new
+        wrapped < 0.23f -> R.string.moon_short_waxing_crescent
+        wrapped < 0.27f -> R.string.moon_short_first_quarter
+        wrapped < 0.48f -> R.string.moon_short_waxing_gibbous
+        wrapped < 0.52f -> R.string.moon_short_full
+        wrapped < 0.73f -> R.string.moon_short_waning_gibbous
+        wrapped < 0.77f -> R.string.moon_short_last_quarter
+        else -> R.string.moon_short_waning_crescent
     }
 }
+
+/** Whether [moonPhaseShortLabel] is followed by the lit share: not for new, full and the quarters. */
+fun moonPhaseShowsIllumination(phase: Float): Boolean {
+    val wrapped = phase.mod(1f)
+    return !(wrapped < 0.02f || wrapped > 0.98f || wrapped in 0.23f..0.27f ||
+            wrapped in 0.48f..0.52f || wrapped in 0.73f..0.77f)
+}
+
+/** The lit share of the disc, 0 to 100, for a phase from 0 (new) through 0.5 (full) to 1. */
+fun moonIllumination(phase: Float): Int =
+    ((1 - kotlin.math.cos(2 * Math.PI * phase.mod(1f))) / 2 * 100).toInt()

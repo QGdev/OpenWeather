@@ -25,7 +25,7 @@
     <string name="title_temperature_feelslike">Ressentie</string>
 	<string name="title_humidity">Humidité</string>
 	<string name="title_pressure">Pression</string>
-	<string name="title_visibility">Visibilitée</string>
+	<string name="title_visibility">Visibilité</string>
 	<string name="title_wind_information">Vents</string>
 	<string name="title_sky_information">Ciel</string>
 	<string name="title_sunrise">Levé de Soleil</string>
@@ -234,7 +234,6 @@
 	<string name="label_dominant_pollutant">dominant %1$s</string>
 	<string name="action_details">Détail</string>
 	<string name="label_hours_count">%1$d h</string>
-	<string name="label_common_scale">échelle commune %1$s → %2$s</string>
 	<plurals name="status_active_alerts">
 		<item quantity="one">%1$d alerte active</item>
 		<item quantity="other">%1$d alertes actives</item>
@@ -258,14 +257,6 @@
 	<string name="uv_level_high">Élevé</string>
 	<string name="uv_level_very_high">Très élevé</string>
 	<string name="uv_level_extreme">Extrême</string>
-	<string name="moon_phase_new">Nouvelle lune</string>
-	<string name="moon_phase_waxing_crescent">Premier croissant</string>
-	<string name="moon_phase_first_quarter">Premier quartier</string>
-	<string name="moon_phase_waxing_gibbous">Gibbeuse croissante</string>
-	<string name="moon_phase_full">Pleine lune</string>
-	<string name="moon_phase_waning_gibbous">Gibbeuse décroissante</string>
-	<string name="moon_phase_last_quarter">Dernier quartier</string>
-	<string name="moon_phase_waning_crescent">Dernier croissant</string>
 	<string name="label_results_count">%1$d RÉSULTATS</string>
 	<string name="label_cities_only">villes uniquement</string>
 	<string name="label_already_added">déjà ajouté</string>
@@ -303,7 +294,7 @@
 		<item quantity="one">%1$d lieu</item>
 		<item quantity="other">%1$d lieux</item>
 	</plurals>
-	<string name="settings_call_budget">environ %1$s appels par jour. L\'offre gratuite en autorise %2$s.</string>
+	<string name="settings_call_budget">%1$d appels par lieu, environ %2$s par jour.</string>
 	<string name="action_about_source_code">Code source</string>
 	<string name="action_about_license">Licence</string>
 	<string name="about_license_badge">GPLv3 · logiciel libre</string>
@@ -329,4 +320,26 @@
 	<string name="label_dominant_badge">DOMINANT</string>
 	<string name="label_level_short">niv. %1$d</string>
 	<string name="aqi_worst_not_average">L\'indice retenu est celui du polluant le plus défavorable, pas la moyenne des six.</string>
+	<string name="label_max">max</string>
+	<string name="label_min">min</string>
+	<string name="label_gusts">Rafales</string>
+	<string name="settings_free_plan_exceeded">L\'offre gratuite en autorise %1$s.</string>
+	<string name="label_rain">Pluie</string>
+	<string name="label_snow">Neige</string>
+	<string name="label_clouds">Nuages</string>
+	<string name="label_sunrise">Lever</string>
+	<string name="label_sunset">Coucher</string>
+	<string name="label_phase">Phase</string>
+	<string name="group_temperature">Température</string>
+	<string name="label_actual">Réelle</string>
+	<string name="moon_short_new">nouv.</string>
+	<string name="moon_short_waxing_crescent">crois.</string>
+	<string name="moon_short_first_quarter">1er quart.</string>
+	<string name="moon_short_waxing_gibbous">gib.</string>
+	<string name="moon_short_full">pleine</string>
+	<string name="moon_short_waning_gibbous">gib.</string>
+	<string name="moon_short_last_quarter">dern. quart.</string>
+	<string name="moon_short_waning_crescent">décr.</string>
+	<string name="label_week_min_max">min %1$s · max %2$s</string>
+	<string name="label_at_hour">À %1$s</string>
 </resources>
