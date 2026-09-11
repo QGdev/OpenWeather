@@ -20,6 +20,12 @@
 
 package fr.qgdev.openweather.ui.place
 
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -115,7 +121,13 @@ fun PlaceSkyCard(
                     .background(sky.haloBrush)
             )
 
-            Column(modifier = Modifier.padding(16.dp)) {
+            //  Compact vertically, as in the mock-up: the cards had grown about 20 dp taller than it.
+            Column(
+                modifier = Modifier.padding(
+                    horizontal = 16.dp,
+                    vertical = 14.dp
+                )
+            ) {
                 Row(verticalAlignment = Alignment.Top) {
                     Column(modifier = Modifier.weight(1f)) {
                         Row(
@@ -126,30 +138,44 @@ fun PlaceSkyCard(
                                 text = place.geolocation.city,
                                 color = palette.textPrimary,
                                 fontSize = 16.sp,
+                                lineHeight = 20.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.weight(1f, fill = false)
                             )
-                            if (alertCount > 0) AlertBadge(alertCount)
                         }
                         Text(
                             text = conditionLine(place),
                             color = palette.textSecondary,
                             fontSize = 11.sp,
+                            lineHeight = 14.sp,
+                            modifier = Modifier.padding(top = 3.dp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                    if (isStale && lastUpdateLabel.isNotEmpty()) {
-                        StaleChip(label = lastUpdateLabel)
+                    //  Status on the right, alerts first then old values: what the place is, on the left;
+                    //  what to watch about it, on the right.
+                    Row(
+                        modifier = Modifier.padding(start = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        if (alertCount > 0) AlertBadge(alertCount)
+                        if (isStale && lastUpdateLabel.isNotEmpty()) {
+                            StaleChip(label = lastUpdateLabel)
+                        }
                     }
                 }
 
+                //  Bottom-aligned, with the day's range against the right edge: the reading on the left,
+                //  what frames it on the right.
                 Row(
-                    modifier = Modifier.padding(top = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(11.dp)
                 ) {
                     Image(
                         painter = painterResource(
@@ -159,7 +185,8 @@ fun PlaceSkyCard(
                             )
                         ),
                         contentDescription = currentWeather.weatherDescription,
-                        modifier = Modifier.size(48.dp)
+                        modifier = Modifier
+                            .size(44.dp)
                     )
                     Temperature(
                         formatted = formattingService.getFloatFormattedTemperature(
@@ -167,12 +194,17 @@ fun PlaceSkyCard(
                             FormattingSpec.NO_UNIT_NO_SPACE
                         ),
                         unit = formattingService.temperatureUnitLabel,
-                        wholeSize = 31.sp,
-                        decimalSize = 15.sp,
-                        unitSize = 11.5.sp
+                        wholeSize = 38.sp,
+                        decimalSize = 18.sp,
+                        unitSize = 13.sp
                     )
                     if (today != null) {
-                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        Column(
+                            modifier = Modifier.padding(bottom = 3.dp),
+                            verticalArrangement = Arrangement.spacedBy(3.dp),
+                            horizontalAlignment = Alignment.End
+                        ) {
                             ExtremeTemperature(
                                 iconRes = R.drawable.temperature_maximum_material,
                                 value = formattingService.getFloatFormattedTemperature(
@@ -193,18 +225,23 @@ fun PlaceSkyCard(
                     }
                 }
 
+                HorizontalDivider(
+                    modifier = Modifier.padding(top = 11.dp),
+                    color = palette.outline
+                )
+                //  Four equal columns, as in the mock-up, rather than spread by their own widths.
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 13.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(top = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Measure(
                         label = stringResource(R.string.title_temperature_feelslike),
                         value = formattingService.getFloatFormattedTemperature(
                             currentWeather.temperatureFeelsLike, FormattingSpec.NO_UNIT_NO_SPACE
-                        ),
-                        unit = ""
+                        ).removeSuffix("°"),
+                        unit = "°"
                     )
                     Measure(
                         label = stringResource(R.string.title_humidity),
@@ -340,29 +377,34 @@ private fun Temperature(
     val whole = if (separatorIndex >= 0) cleaned.substring(0, separatorIndex) else cleaned
     val decimal = if (separatorIndex >= 0) cleaned.substring(separatorIndex) else ""
 
+    //  "20" then ",9°C" on one line, top-aligned, as in the mock-up.
     Row(verticalAlignment = Alignment.Top) {
         Text(
             text = whole,
             color = palette.textPrimary,
             fontSize = wholeSize,
-            fontWeight = FontWeight.Medium
+            lineHeight = wholeSize,
+            fontWeight = FontWeight.Medium,
+            letterSpacing = (-0.6).sp
         )
-        Column {
-            if (decimal.isNotEmpty()) {
-                Text(
-                    text = decimal,
-                    color = palette.textPrimary,
-                    fontSize = decimalSize,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-            Text(text = unit, color = palette.textSecondary, fontSize = unitSize)
-        }
+        Text(
+            text = buildAnnotatedString {
+                append(decimal)
+                withStyle(SpanStyle(fontSize = unitSize, fontWeight = FontWeight.Normal, color = palette.textSecondary)) {
+                    append(unit)
+                }
+            },
+            color = palette.textPrimary,
+            fontSize = decimalSize,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(top = 3.dp)
+        )
     }
 }
 
+/** A day's maximum or minimum, behind its thermometer. Shared with the detail screen's header. */
 @Composable
-private fun ExtremeTemperature(
+internal fun ExtremeTemperature(
     iconRes: Int,
     value: String,
     color: Color,
@@ -378,35 +420,41 @@ private fun ExtremeTemperature(
             modifier = Modifier.size(13.dp),
             colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(color)
         )
-        Text(text = value, color = color, fontSize = fontSize)
+        //  A tight line height: Material's default (24 sp for 12 sp text) made the two extremes
+        //  taller than the icon beside them, and the whole row with them.
+        Text(text = value, color = color, fontSize = fontSize, lineHeight = fontSize * 1.25f)
     }
 }
 
 @Composable
-private fun Measure(label: String, value: String, unit: String) {
+private fun RowScope.Measure(label: String, value: String, unit: String) {
     val palette = LocalWeatherPalette.current
-    Column {
+    Column(modifier = Modifier.weight(1f)) {
         Text(
             text = label,
             color = palette.textSecondary,
             fontSize = 10.sp,
-            maxLines = 1
+            lineHeight = 13.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(
-                text = value,
-                color = palette.textPrimary,
-                fontSize = 13.5.sp
-            )
-            if (unit.isNotEmpty()) {
-                Text(
-                    text = unit,
-                    color = palette.textSecondary,
-                    fontSize = 10.sp,
-                    modifier = Modifier.padding(start = 2.dp)
-                )
-            }
-        }
+        //  Value and unit in one text, so they share a baseline; "%", "hPa" and the wind's direction
+        //  are spaced from the value, the degree sign is not.
+        Text(
+            text = buildAnnotatedString {
+                append(value)
+                if (unit.isNotEmpty()) {
+                    withStyle(SpanStyle(fontSize = 10.sp, color = palette.textSecondary)) {
+                        append(if (unit == "°") unit else " $unit")
+                    }
+                }
+            },
+            color = palette.textPrimary,
+            fontSize = 13.5.sp,
+            lineHeight = 17.sp,
+            maxLines = 1,
+            modifier = Modifier.padding(top = 2.dp)
+        )
     }
 }
 

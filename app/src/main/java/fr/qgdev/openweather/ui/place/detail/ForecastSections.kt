@@ -20,6 +20,14 @@
 
 package fr.qgdev.openweather.ui.place.detail
 
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -60,11 +68,11 @@ import fr.qgdev.openweather.data.models.HourlyForecast
 import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.repositories.FormattingService.FormattingSpec
-import fr.qgdev.openweather.ui.components.forecasts.components.MoonPhaseIndicator
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
 import fr.qgdev.openweather.ui.theme.conditionSky
 import fr.qgdev.openweather.ui.utils.getDrawableResIdFromWeatherCode
 import fr.qgdev.openweather.ui.utils.toPercentage
+import java.util.Calendar
 import java.util.Date
 import java.util.TimeZone
 
@@ -115,14 +123,25 @@ internal fun HourlySection(
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             items(hours.size) { index ->
-                HourChip(
-                    forecast = hours[index],
-                    formattingService = formattingService,
-                    timeZone = timeZone,
-                    isDaytime = isDaytimeAt(hours[index].dt, sunrises, sunsets),
-                    selected = index == selected,
-                    onClick = { selected = index }
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    //  48 hours cross midnight once or twice, and nothing used to say so: from 23h
+                    //  the strip went on to 0h of a day it never named. A marker now opens each new
+                    //  day, reckoned in the place's own time zone.
+                    if (index > 0 && startsNewDay(hours[index - 1].dt, hours[index].dt, timeZone)) {
+                        DayMarker(Date(hours[index].dt), formattingService, timeZone)
+                    }
+                    HourChip(
+                        forecast = hours[index],
+                        formattingService = formattingService,
+                        timeZone = timeZone,
+                        isDaytime = isDaytimeAt(hours[index].dt, sunrises, sunsets),
+                        selected = index == selected,
+                        onClick = { selected = index }
+                    )
+                }
             }
         }
 
@@ -131,6 +150,48 @@ internal fun HourlySection(
             formattingService = formattingService,
             timeZone = timeZone,
             isDaytime = isDaytimeAt(hours[selected.coerceIn(hours.indices)].dt, sunrises, sunsets)
+        )
+    }
+}
+
+/** Whether two instants fall on different calendar days in [timeZone]. */
+internal fun startsNewDay(previous: Long, current: Long, timeZone: TimeZone): Boolean {
+    val calendar = Calendar.getInstance(timeZone)
+    calendar.timeInMillis = previous
+    val previousDay = calendar.get(Calendar.YEAR) * 1000 + calendar.get(Calendar.DAY_OF_YEAR)
+    calendar.timeInMillis = current
+    return previousDay != calendar.get(Calendar.YEAR) * 1000 + calendar.get(Calendar.DAY_OF_YEAR)
+}
+
+/** The start of a new day in the hour strip: its short name and date, over a thin rule. */
+@Composable
+private fun DayMarker(date: Date, formattingService: FormattingService, timeZone: TimeZone) {
+    val palette = LocalWeatherPalette.current
+    Column(
+        modifier = Modifier.width(34.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = formattingService.getFormattedShortDayName(date, timeZone),
+            color = palette.textPrimary,
+            fontSize = 10.5.sp,
+            lineHeight = 13.sp,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1
+        )
+        Text(
+            text = formattingService.getFormattedDayMonth(date, timeZone),
+            color = palette.textSecondary,
+            fontSize = 9.5.sp,
+            lineHeight = 12.sp,
+            maxLines = 1
+        )
+        Box(
+            modifier = Modifier
+                .padding(top = 6.dp)
+                .width(1.dp)
+                .height(84.dp)
+                .background(palette.outlineStrong)
         )
     }
 }
@@ -159,13 +220,16 @@ private fun HourChip(
                 shape = RoundedCornerShape(14.dp)
             )
             .clickable(onClick = onClick)
-            .padding(vertical = 10.dp),
+            //  The other hours step back, as in the mock-up: the one opened below stands out.
+            .alpha(if (selected) 1f else 0.6f)
+            .padding(top = 11.dp, bottom = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = formattingService.getFormattedHour(Date(forecast.dt), timeZone),
+            text = formattingService.getFormattedShortHour(Date(forecast.dt), timeZone),
             color = palette.textSecondary,
-            fontSize = 10.5.sp
+            fontSize = 10.5.sp,
+            lineHeight = 13.sp
         )
         Image(
             painter = painterResource(
@@ -173,41 +237,44 @@ private fun HourChip(
             ),
             contentDescription = null,
             modifier = Modifier
-                .padding(vertical = 4.dp)
-                .size(26.dp)
+                .padding(vertical = 8.dp)
+                .size(22.dp)
         )
         Text(
             text = formattingService.getFloatFormattedTemperature(
                 forecast.temperature, FormattingSpec.NO_UNIT_NO_SPACE
             ),
             color = palette.textPrimary,
-            fontSize = 13.sp
+            fontSize = 14.sp,
+            lineHeight = 17.sp
         )
         //  The chance of rain, as a bar and as a figure: the bar is read at a glance across the
         //  strip, the figure answers "how much" without counting pixels.
+        //  In the hour's own colour, as in the mock-up, like the day bars below.
         Box(
             modifier = Modifier
-                .padding(top = 6.dp)
-                .width(28.dp)
-                .height(3.dp)
+                .padding(top = 9.dp, start = 10.dp, end = 10.dp)
+                .fillMaxWidth()
+                .height(4.dp)
                 .clip(RoundedCornerShape(2.dp))
                 .background(palette.outline)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(probability / 100f)
-                    .height(3.dp)
+                    .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(palette.accent)
+                    .background(sky.icon)
             )
         }
         Text(
             text = formattingService.getIntFormattedPercentage(
-                probability, FormattingSpec.UNIT_BUT_NO_SPACE
+                probability, FormattingSpec.UNIT_AND_SPACE
             ),
-            color = if (probability >= 50f) palette.accent else palette.textQuiet,
+            color = if (probability >= 50f) sky.icon else palette.textSecondary,
             fontSize = 9.5.sp,
-            modifier = Modifier.padding(top = 3.dp)
+            lineHeight = 12.sp,
+            modifier = Modifier.padding(top = 5.dp)
         )
     }
 }
@@ -221,34 +288,62 @@ private fun SelectedHour(
 ) {
     val palette = LocalWeatherPalette.current
 
-    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
+    //  Under a hairline, as in the mock-up: "À 16h", then what the panel is.
+    HorizontalDivider(modifier = Modifier.padding(top = 14.dp), color = palette.outline)
+    Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(
                     id = getDrawableResIdFromWeatherCode(forecast.weatherCode, isDaytime)
                 ),
-                contentDescription = null,
-                modifier = Modifier.size(38.dp)
+                contentDescription = forecast.weatherDescription,
+                modifier = Modifier.size(28.dp)
             )
             Column(modifier = Modifier.padding(start = 11.dp).weight(1f)) {
+                //  "À 0h" and, beside it in the secondary colour, the day it belongs to: past
+                //  midnight the hour alone no longer says which day is being read.
+                val date = Date(forecast.dt)
                 Text(
-                    text = formattingService.getFormattedHour(Date(forecast.dt), timeZone),
+                    text = buildAnnotatedString {
+                        append(
+                            stringResource(
+                                R.string.label_at_hour,
+                                formattingService.getFormattedShortHour(date, timeZone)
+                            )
+                        )
+                        withStyle(SpanStyle(color = palette.textSecondary, fontWeight = FontWeight.Normal, fontSize = 12.sp)) {
+                            append(
+                                "  " + formattingService.getFormattedShortDayName(date, timeZone) +
+                                        " " + formattingService.getFormattedDayMonth(date, timeZone)
+                            )
+                        }
+                    },
                     color = palette.textPrimary,
                     fontSize = 13.5.sp,
+                    lineHeight = 17.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = forecast.weatherDescription.ifEmpty {
-                        stringResource(R.string.label_selected_hour)
-                    },
+                    text = stringResource(R.string.label_selected_hour),
                     color = palette.textSecondary,
-                    fontSize = 10.5.sp
+                    fontSize = 10.5.sp,
+                    lineHeight = 13.sp,
+                    modifier = Modifier.padding(top = 1.dp)
                 )
             }
+            //  The value large and its unit small beside it, as in the mock-up: the number is what
+            //  is read, the unit only confirms it.
             Text(
-                text = formattingService.getFloatFormattedTemperature(
-                    forecast.temperature, FormattingSpec.UNIT_BUT_NO_SPACE
-                ),
+                text = buildAnnotatedString {
+                    append(
+                        formattingService.getFloatFormattedTemperature(
+                            forecast.temperature, FormattingSpec.NO_UNIT_NO_SPACE
+                        ).removeSuffix("°")
+                    )
+                    withStyle(SpanStyle(fontSize = 11.5.sp, color = palette.textSecondary)) {
+                        append(" " + formattingService.temperatureUnitLabel)
+                    }
+                },
                 color = palette.textPrimary,
                 fontSize = 20.sp
             )
@@ -256,7 +351,7 @@ private fun SelectedHour(
 
         ReadingGroups(
             groups = hourlyGroups(forecast, formattingService),
-            modifier = Modifier.padding(top = 14.dp)
+            modifier = Modifier.padding(top = 16.dp)
         )
     }
 }
@@ -292,10 +387,12 @@ internal fun DailySection(
     ) {
         SectionHeader(
             title = stringResource(R.string.title_forecast_daily),
+            //  The week's extremes, which are also the ends of the grey track every day's bar sits on:
+            //  "min 11,3° · max 27,8°" reads plainly where "shared scale 11,3° → 27,8°C" did not.
             trailing = stringResource(
-                R.string.label_common_scale,
+                R.string.label_week_min_max,
                 formattingService.getFloatFormattedTemperature(coldest, FormattingSpec.NO_UNIT_NO_SPACE),
-                formattingService.getFloatFormattedTemperature(warmest, FormattingSpec.UNIT_BUT_NO_SPACE)
+                formattingService.getFloatFormattedTemperature(warmest, FormattingSpec.NO_UNIT_NO_SPACE)
             )
         )
 
@@ -380,6 +477,7 @@ private fun DayRow(
             TemperatureSpan(
                 fraction = (day.temperatureMinimum - coldest) / span,
                 width = (day.temperatureMaximum - day.temperatureMinimum) / span,
+                warmEnd = sky.icon,
                 modifier = Modifier.weight(1f)
             )
             Text(
@@ -392,20 +490,14 @@ private fun DayRow(
         }
 
         if (expanded) {
-            Column(modifier = Modifier.padding(start = 13.dp, end = 13.dp, bottom = 14.dp)) {
-                if (day.weatherDescription.isNotEmpty()) {
-                    Text(
-                        text = day.weatherDescription,
-                        color = palette.textSecondary,
-                        fontSize = 11.5.sp
-                    )
-                }
-
+            //  A hairline under the day's row, as in the mock-up, rather than the condition's words:
+            //  the icon on the row already says it.
+            HorizontalDivider(color = palette.outline)
+            Column(modifier = Modifier.padding(start = 13.dp, end = 13.dp, top = 14.dp, bottom = 14.dp)) {
                 DayTemperatures(
                     day = day,
                     formattingService = formattingService,
-                    accent = sky.icon,
-                    modifier = Modifier.padding(top = 10.dp)
+                    accent = sky.icon
                 )
 
                 ReadingGroups(
@@ -413,18 +505,18 @@ private fun DayRow(
                     modifier = Modifier.padding(top = 16.dp)
                 )
 
-                MoonPhase(
-                    phase = day.moonPhase,
-                    modifier = Modifier.padding(top = 14.dp)
-                )
             }
         }
     }
 }
 
-/** The day's range, placed on the week's scale. */
+/**
+ * The day's range, placed on the week's scale: the grey track runs from the week's coldest minimum
+ * to its warmest maximum (the "shared scale" in the section's header), the coloured part from this
+ * day's minimum to its maximum. A cooler day sits further left, a day of wider swings is longer.
+ */
 @Composable
-private fun TemperatureSpan(fraction: Float, width: Float, modifier: Modifier = Modifier) {
+private fun TemperatureSpan(fraction: Float, width: Float, warmEnd: Color, modifier: Modifier = Modifier) {
     val palette = LocalWeatherPalette.current
     //  Laid out in three weighted parts - before, the day's range, after - so the bar scales with
     //  the row rather than with a fixed width.
@@ -444,7 +536,9 @@ private fun TemperatureSpan(fraction: Float, width: Float, modifier: Modifier = 
                 .weight(span)
                 .height(4.dp)
                 .clip(RoundedCornerShape(2.dp))
-                .background(palette.accent)
+                //  From the cool blue of the minimum to the day's own colour at the maximum, as in
+                //  the mock-up.
+                .background(Brush.horizontalGradient(listOf(palette.accent, warmEnd)))
         )
         if (after > 0f) Box(modifier = Modifier.weight(after))
     }
@@ -479,21 +573,23 @@ private fun DayTemperatures(
                 fontSize = 10.sp,
                 fontWeight = FontWeight.SemiBold
             )
+            //  "max 22,5°  min 12,0°": labelled, since the curve below is read against them.
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
-                    text = formattingService.getFloatFormattedTemperature(
-                        day.temperatureMaximum, FormattingSpec.UNIT_BUT_NO_SPACE
-                    ),
-                    color = palette.textPrimary,
-                    fontSize = 10.sp
-                )
-                Text(
-                    text = formattingService.getFloatFormattedTemperature(
-                        day.temperatureMinimum, FormattingSpec.UNIT_BUT_NO_SPACE
-                    ),
-                    color = palette.textSecondary,
-                    fontSize = 10.sp
-                )
+                listOf(
+                    R.string.label_max to day.temperatureMaximum,
+                    R.string.label_min to day.temperatureMinimum
+                ).forEach { (label, value) ->
+                    Text(
+                        text = buildAnnotatedString {
+                            append(stringResource(label) + " ")
+                            withStyle(SpanStyle(color = palette.textPrimary)) {
+                                append(formattingService.getFloatFormattedTemperature(value, FormattingSpec.NO_UNIT_NO_SPACE))
+                            }
+                        },
+                        color = palette.textSecondary,
+                        fontSize = 10.sp
+                    )
+                }
             }
         }
 
@@ -533,40 +629,6 @@ private fun DayTemperatures(
                 stringResource(R.string.title_temperature_feelslike),
                 palette.textSecondary,
                 dashed = true
-            )
-        }
-    }
-}
-
-/**
- * The moon phase, drawn and named.
- *
- * It sits on its own rather than in the value column: "Waning gibbous" does not fit where a
- * temperature does, and the phase is one of the few readings a picture states better than a word.
- */
-@Composable
-private fun MoonPhase(phase: Float, modifier: Modifier = Modifier) {
-    val palette = LocalWeatherPalette.current
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        MoonPhaseIndicator(
-            modifier = Modifier.size(34.dp),
-            moonPhase = phase
-        )
-        Column {
-            Text(
-                text = stringResource(R.string.label_moon_phase).uppercase(),
-                color = palette.textSecondary,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = stringResource(moonPhaseLabel(phase)),
-                color = palette.textPrimary,
-                fontSize = 12.5.sp
             )
         }
     }
@@ -614,40 +676,63 @@ private fun SectionHeader(title: String, trailing: String) {
 @Composable
 private fun ReadingGroups(groups: List<ReadingGroup>, modifier: Modifier = Modifier) {
     val palette = LocalWeatherPalette.current
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(14.dp)) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(16.dp)) {
         groups.chunked(2).forEach { pair ->
             Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
                 pair.forEach { group ->
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = group.title.uppercase(),
-                            color = palette.textSecondary,
+                            color = lerp(palette.textSecondary, palette.textPrimary, 0.3f),
                             fontSize = 10.sp,
-                            fontWeight = FontWeight.SemiBold
+                            lineHeight = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            letterSpacing = 0.8.sp
                         )
                         Column(
-                            modifier = Modifier.padding(top = 5.dp),
+                            modifier = Modifier.padding(top = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(5.dp)
                         ) {
+                            //  One line per reading - label, value, unit in a fixed column - so the
+                            //  values of a group line up; a long label is cut rather than wrapped.
+                            //  The unit column only where the group has units: sun and moon has none,
+                            //  and the room is better given to "Lever de lune".
+                            val hasUnits = group.rows.any { it.unit.isNotEmpty() }
                             group.rows.forEach { reading ->
-                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                //  Aligned on the text baseline: label, value and unit have three sizes,
+                                //  and aligning their boxes left them visibly off one another.
+                                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                     Text(
                                         text = reading.label,
                                         color = palette.textSecondary,
                                         fontSize = 11.5.sp,
-                                        modifier = Modifier.weight(1f)
+                                        lineHeight = 16.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .alignByBaseline()
                                     )
                                     Text(
                                         text = reading.value,
                                         color = palette.textPrimary,
-                                        fontSize = 12.5.sp
+                                        fontSize = 12.5.sp,
+                                        lineHeight = 16.sp,
+                                        maxLines = 1,
+                                        modifier = Modifier.alignByBaseline()
                                     )
-                                    Text(
-                                        text = reading.unit,
-                                        color = palette.textSecondary,
-                                        fontSize = 9.5.sp,
-                                        modifier = Modifier.width(30.dp)
-                                    )
+                                    if (hasUnits) {
+                                        Text(
+                                            text = reading.unit,
+                                            color = palette.textSecondary,
+                                            fontSize = 9.5.sp,
+                                            lineHeight = 16.sp,
+                                            maxLines = 1,
+                                            modifier = Modifier
+                                                .width(26.dp)
+                                                .alignByBaseline()
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -666,65 +751,17 @@ private fun hourlyGroups(
     formatting: FormattingService
 ): List<ReadingGroup> = listOf(
     ReadingGroup(
-        stringResource(R.string.group_temperatures),
+        stringResource(R.string.group_temperature),
         listOf(
+            Reading(
+                stringResource(R.string.label_actual),
+                formatting.getFloatFormattedTemperature(forecast.temperature, FormattingSpec.NO_UNIT_NO_SPACE).removeSuffix("°"),
+                formatting.temperatureUnitLabel
+            ),
             Reading(
                 stringResource(R.string.title_temperature_feelslike),
-                formatting.getFloatFormattedTemperature(forecast.temperatureFeelsLike, FormattingSpec.NO_UNIT_NO_SPACE),
+                formatting.getFloatFormattedTemperature(forecast.temperatureFeelsLike, FormattingSpec.NO_UNIT_NO_SPACE).removeSuffix("°"),
                 formatting.temperatureUnitLabel
-            ),
-            Reading(
-                stringResource(R.string.label_dew_point),
-                formatting.getFloatFormattedTemperature(forecast.dewPoint, FormattingSpec.NO_UNIT_NO_SPACE),
-                formatting.temperatureUnitLabel
-            )
-        )
-    ),
-    ReadingGroup(
-        stringResource(R.string.group_wind),
-        listOf(
-            Reading(
-                stringResource(R.string.title_wind_speed),
-                formatting.getFloatFormattedSpeed(forecast.windSpeed, FormattingSpec.NO_UNIT_NO_SPACE),
-                formatting.speedUnitLabel
-            ),
-            Reading(
-                stringResource(R.string.title_wind_gust_speed),
-                formatting.getFloatFormattedSpeed(forecast.windGustSpeed, FormattingSpec.NO_UNIT_NO_SPACE),
-                formatting.speedUnitLabel
-            ),
-            Reading(
-                stringResource(R.string.title_wind_direction),
-                formatting.getFormattedDirectionInCardinalPoints(forecast.windDirection),
-                formatting.getFormattedDirectionInDegrees(forecast.windDirection)
-            )
-        )
-    ),
-    ReadingGroup(
-        stringResource(R.string.group_atmosphere),
-        listOf(
-            Reading(
-                stringResource(R.string.title_humidity),
-                forecast.humidity.toString(), "%"
-            ),
-            Reading(
-                stringResource(R.string.title_pressure),
-                formatting.getFormattedPressure(forecast.pressure.toFloat(), FormattingSpec.NO_UNIT_NO_SPACE),
-                formatting.pressureUnitLabel
-            ),
-            Reading(
-                stringResource(R.string.title_cloudiness),
-                forecast.cloudiness.toString(), "%"
-            ),
-            Reading(
-                stringResource(R.string.title_visibility),
-                formatting.getIntFormattedDistance(forecast.visibility.toFloat(), FormattingSpec.NO_UNIT_NO_SPACE),
-                formatting.distanceUnitLabel
-            ),
-            Reading(
-                stringResource(R.string.label_uv_index),
-                forecast.uvIndex.toString(),
-                stringResource(uvLevelLabel(forecast.uvIndex))
             )
         )
     ),
@@ -737,68 +774,72 @@ private fun hourlyGroups(
                 "%"
             ),
             Reading(
-                stringResource(R.string.title_precipitation_rain),
+                stringResource(R.string.label_rain),
                 formatting.getFloatFormattedShortDistance(forecast.rain, FormattingSpec.NO_UNIT_NO_SPACE),
                 formatting.shortDistanceUnitLabel
             ),
             Reading(
-                stringResource(R.string.title_precipitation_snow),
+                stringResource(R.string.label_snow),
                 formatting.getFloatFormattedShortDistance(forecast.snow, FormattingSpec.NO_UNIT_NO_SPACE),
                 formatting.shortDistanceUnitLabel
             )
         )
-    )
-)
-
-/** Every one of the thirty daily fields, grouped. */
-@Composable
-private fun dailyGroups(
-    day: DailyForecast,
-    formatting: FormattingService,
-    timeZone: TimeZone
-): List<ReadingGroup> = listOf(
+    ),
     ReadingGroup(
         stringResource(R.string.group_wind),
         listOf(
             Reading(
                 stringResource(R.string.title_wind_speed),
-                formatting.getFloatFormattedSpeed(day.windSpeed, FormattingSpec.NO_UNIT_NO_SPACE),
+                formatting.getFloatFormattedSpeed(forecast.windSpeed, FormattingSpec.NO_UNIT_NO_SPACE),
                 formatting.speedUnitLabel
             ),
             Reading(
-                stringResource(R.string.title_wind_gust_speed),
-                formatting.getFloatFormattedSpeed(day.windGustSpeed, FormattingSpec.NO_UNIT_NO_SPACE),
+                stringResource(R.string.label_gusts),
+                formatting.getFloatFormattedSpeed(forecast.windGustSpeed, FormattingSpec.NO_UNIT_NO_SPACE),
                 formatting.speedUnitLabel
             ),
             Reading(
                 stringResource(R.string.title_wind_direction),
-                formatting.getFormattedDirectionInCardinalPoints(day.windDirection),
-                formatting.getFormattedDirectionInDegrees(day.windDirection)
+                formatting.getFormattedDirection(forecast.windDirection, true),
+                ""
             )
         )
     ),
     ReadingGroup(
         stringResource(R.string.group_atmosphere),
         listOf(
-            Reading(stringResource(R.string.title_humidity), day.humidity.toString(), "%"),
+            Reading(stringResource(R.string.title_humidity), forecast.humidity.toString(), "%"),
+            Reading(
+                stringResource(R.string.title_pressure),
+                formatting.getFormattedPressure(forecast.pressure.toFloat(), FormattingSpec.NO_UNIT_NO_SPACE),
+                formatting.pressureUnitLabel
+            ),
             Reading(
                 stringResource(R.string.label_dew_point),
-                formatting.getFloatFormattedTemperature(day.dewPoint, FormattingSpec.NO_UNIT_NO_SPACE),
+                formatting.getFloatFormattedTemperature(forecast.dewPoint, FormattingSpec.NO_UNIT_NO_SPACE).removeSuffix("°"),
                 formatting.temperatureUnitLabel
             ),
             Reading(
-                stringResource(R.string.title_pressure),
-                formatting.getFormattedPressure(day.pressure.toFloat(), FormattingSpec.NO_UNIT_NO_SPACE),
-                formatting.pressureUnitLabel
+                stringResource(R.string.title_visibility),
+                formatting.getIntFormattedDistance(forecast.visibility.toFloat(), FormattingSpec.NO_UNIT_NO_SPACE),
+                formatting.distanceUnitLabel
             ),
-            Reading(stringResource(R.string.title_cloudiness), day.cloudiness.toString(), "%"),
-            Reading(
-                stringResource(R.string.label_uv_index),
-                day.uvIndex.toString(),
-                stringResource(uvLevelLabel(day.uvIndex))
-            )
+            Reading(stringResource(R.string.label_uv_index), forecast.uvIndex.toString(), ""),
+            Reading(stringResource(R.string.label_clouds), forecast.cloudiness.toString(), "%")
         )
-    ),
+    )
+)
+
+/**
+ * The day's fields, grouped as in the mock-up: precipitation, wind, atmosphere, then sun and moon.
+ * The temperatures are not repeated here - the curve above carries them.
+ */
+@Composable
+private fun dailyGroups(
+    day: DailyForecast,
+    formatting: FormattingService,
+    timeZone: TimeZone
+): List<ReadingGroup> = listOf(
     ReadingGroup(
         stringResource(R.string.group_precipitations),
         listOf(
@@ -808,39 +849,72 @@ private fun dailyGroups(
                 "%"
             ),
             Reading(
-                stringResource(R.string.title_precipitation_rain),
+                stringResource(R.string.label_rain),
                 formatting.getFloatFormattedShortDistance(day.rain, FormattingSpec.NO_UNIT_NO_SPACE),
                 formatting.shortDistanceUnitLabel
             ),
             Reading(
-                stringResource(R.string.title_precipitation_snow),
+                stringResource(R.string.label_snow),
                 formatting.getFloatFormattedShortDistance(day.snow, FormattingSpec.NO_UNIT_NO_SPACE),
                 formatting.shortDistanceUnitLabel
             )
         )
     ),
     ReadingGroup(
-        stringResource(R.string.group_sun_and_moon),
+        stringResource(R.string.group_wind),
         listOf(
             Reading(
-                stringResource(R.string.title_sunrise),
-                formatting.getFormattedTime(Date(day.sunriseDt), timeZone), ""
+                stringResource(R.string.title_wind_speed),
+                formatting.getFloatFormattedSpeed(day.windSpeed, FormattingSpec.NO_UNIT_NO_SPACE),
+                formatting.speedUnitLabel
             ),
             Reading(
-                stringResource(R.string.title_sunset),
-                formatting.getFormattedTime(Date(day.sunsetDt), timeZone), ""
+                stringResource(R.string.label_gusts),
+                formatting.getFloatFormattedSpeed(day.windGustSpeed, FormattingSpec.NO_UNIT_NO_SPACE),
+                formatting.speedUnitLabel
             ),
             Reading(
-                stringResource(R.string.title_moonrise),
-                formatting.getFormattedTime(Date(day.moonriseDt), timeZone), ""
+                stringResource(R.string.title_wind_direction),
+                formatting.getFormattedDirection(day.windDirection, true),
+                ""
+            )
+        )
+    ),
+    ReadingGroup(
+        stringResource(R.string.group_atmosphere),
+        listOf(
+            Reading(stringResource(R.string.title_humidity), day.humidity.toString(), "%"),
+            Reading(
+                stringResource(R.string.title_pressure),
+                formatting.getFormattedPressure(day.pressure.toFloat(), FormattingSpec.NO_UNIT_NO_SPACE),
+                formatting.pressureUnitLabel
             ),
             Reading(
-                stringResource(R.string.title_moonset),
-                formatting.getFormattedTime(Date(day.moonsetDt), timeZone), ""
+                stringResource(R.string.label_dew_point),
+                formatting.getFloatFormattedTemperature(day.dewPoint, FormattingSpec.NO_UNIT_NO_SPACE).removeSuffix("°"),
+                formatting.temperatureUnitLabel
+            ),
+            Reading(stringResource(R.string.label_uv_index), day.uvIndex.toString(), ""),
+            Reading(stringResource(R.string.label_clouds), day.cloudiness.toString(), "%")
+        )
+    ),
+    ReadingGroup(
+        stringResource(R.string.group_sun_and_moon),
+        listOf(
+            Reading(stringResource(R.string.label_sunrise), formatting.getFormattedTime(Date(day.sunriseDt), timeZone), ""),
+            Reading(stringResource(R.string.label_sunset), formatting.getFormattedTime(Date(day.sunsetDt), timeZone), ""),
+            Reading(stringResource(R.string.title_moonrise), formatting.getFormattedTime(Date(day.moonriseDt), timeZone), ""),
+            Reading(stringResource(R.string.title_moonset), formatting.getFormattedTime(Date(day.moonsetDt), timeZone), ""),
+            Reading(
+                stringResource(R.string.label_phase),
+                stringResource(moonPhaseShortLabel(day.moonPhase)) +
+                        if (moonPhaseShowsIllumination(day.moonPhase)) " ${moonIllumination(day.moonPhase)} %" else "",
+                ""
             )
         )
     )
 )
+
 
 /**
  * Whether a forecast hour falls in daylight, from the sunrises and sunsets of the days around it.
