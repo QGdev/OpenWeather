@@ -71,6 +71,45 @@ enum class AddPlaceResult {
     STORAGE_FULL
 }
 
+/**
+ * Whether two search results or stored places are the same location.
+ *
+ * Compares what identifies a place - its name, its country and its coordinates - rather than
+ * the whole message. The region arrived later and is absent from everything stored before it,
+ * so comparing the message itself would let the same city be added twice. It is the identity key,
+ * so that what makes two places the same is spelled out once.
+ */
+internal fun Geolocation.sameLocationAs(other: Geolocation): Boolean =
+    identityKey == other.identityKey
+
+/** Outcome of an attempt to replace a stored place by another. */
+internal enum class ReplaceResult {
+    REPLACED,
+
+    /** Another stored place already is the new location. */
+    ALREADY_PRESENT,
+
+    /** The place to replace is not stored any more. */
+    NOT_FOUND
+}
+
+/**
+ * This storage with the place at [oldGeolocation] replaced by [newPlace], under the same key so it
+ * keeps its position in the list.
+ *
+ * Refused when another stored place is already the new location: both would then share an
+ * identity, and the second could be neither updated nor deleted.
+ */
+internal fun PlaceStorage.withPlaceReplaced(oldGeolocation: Geolocation, newPlace: Place): Pair<PlaceStorage, ReplaceResult> {
+    val placeId = placesMap.entries.firstOrNull { it.value.geolocation.sameLocationAs(oldGeolocation) }?.key
+        ?: return this to ReplaceResult.NOT_FOUND
+
+    if (placesMap.any { (key, stored) -> key != placeId && stored.geolocation.sameLocationAs(newPlace.geolocation) }) {
+        return this to ReplaceResult.ALREADY_PRESENT
+    }
+    return toBuilder().putPlaces(placeId, newPlace).build() to ReplaceResult.REPLACED
+}
+
 /** Upper bound on stored places; ids are allocated modulo this value. */
 private const val MAX_PLACES = 100
 
@@ -127,18 +166,6 @@ class PlaceRepository private constructor(context: Context) {
         else (0 until MAX_PLACES).firstNotNullOfOrNull { offset ->
             ((lastKeyUsed + 1 + offset) % MAX_PLACES).takeIf { !placesMap.containsKey(it) }
         }
-
-    /**
-     * Whether two search results or stored places are the same location.
-     *
-     * Compares what identifies a place - its name, its country and its coordinates - rather than
-     * the whole message. The region arrived later and is absent from everything stored before it,
-     * so comparing the message itself would let the same city be added twice.
-     */
-    private fun Geolocation.sameLocationAs(other: Geolocation): Boolean =
-        city == other.city &&
-                countryCode == other.countryCode &&
-                coordinates == other.coordinates
 
     private fun PlaceStorage.holds(geolocation: Geolocation): Boolean =
         placesMap.values.any { it.geolocation.sameLocationAs(geolocation) }
@@ -427,6 +454,63 @@ class PlaceRepository private constructor(context: Context) {
             android.util.Log.e("PlaceRepository", "      💥 [updatePlaceFromWeb] Exception for placeId=$placeId: ${e.message}", e)
             callback.onError(RequestStatus.UNKNOWN_ERROR)
         }
+    }
+
+    /**
+     * Downloads a place chosen from a search and stores it in place of [oldPlace]: same position in
+     * the list, and the widgets that showed the old one follow it to the new one.
+     *
+     * For a town stored twice under nearby coordinates - a boundary and a centre, say - where the
+     * user would rather swap the one they have than keep both.
+     */
+    suspend fun fetchAndReplacePlaceFromWeb(oldPlace: Place, placeGeolocation: Geolocation, callback: FetchDataCallback) {
+        val partialPlace = Place.newBuilder()
+            .setGeolocation(placeGeolocation)
+            .buildPartial()
+
+        val innerCallback = object : FetchDataCallback {
+            override suspend fun onSuccess(place: Place) {
+                when (replacePlace(oldPlace, place)) {
+                    ReplaceResult.REPLACED -> callback.onSuccess(place)
+                    ReplaceResult.ALREADY_PRESENT -> callback.onError(RequestStatus.ALREADY_PRESENT)
+                    ReplaceResult.NOT_FOUND -> callback.onError(RequestStatus.UNKNOWN_ERROR)
+                }
+            }
+
+            override suspend fun onPartialSuccess(place: Place, requestStatus: RequestStatus) {
+                when (replacePlace(oldPlace, place)) {
+                    ReplaceResult.REPLACED -> callback.onPartialSuccess(place, requestStatus)
+                    ReplaceResult.ALREADY_PRESENT -> callback.onError(RequestStatus.ALREADY_PRESENT)
+                    ReplaceResult.NOT_FOUND -> callback.onError(RequestStatus.UNKNOWN_ERROR)
+                }
+            }
+
+            override suspend fun onError(status: RequestStatus) {
+                callback.onError(status)
+            }
+        }
+
+        weatherService.getPlaceDataOWM(partialPlace, innerCallback)
+    }
+
+    /** Stores [newPlace] under [oldPlace]'s key, then points the old place's widgets at it. */
+    private suspend fun replacePlace(oldPlace: Place, newPlace: Place): ReplaceResult {
+        val stampedPlace = newPlace.toBuilder()
+            .setProperties(newPlace.properties.toBuilder().setCreationTime(System.currentTimeMillis()))
+            .build()
+
+        var result = ReplaceResult.REPLACED
+        dataStore.updateData { placeStorage ->
+            val (replaced, outcome) = placeStorage.withPlaceReplaced(oldPlace.geolocation, stampedPlace)
+            result = outcome
+            replaced
+        }
+        if (result != ReplaceResult.REPLACED) return result
+
+        val widgetsManager = WidgetsManager.getInstance(applicationContext)
+        widgetsManager.repointWidgets(applicationContext, oldPlace.identityKey, stampedPlace.identityKey)
+        widgetsManager.updateWidgetsForPlace(applicationContext, stampedPlace.identityKey)
+        return result
     }
 
     suspend fun fetchAndAddNewPlaceFromWeb(placeGeolocation: Geolocation, callback: FetchDataCallback) {

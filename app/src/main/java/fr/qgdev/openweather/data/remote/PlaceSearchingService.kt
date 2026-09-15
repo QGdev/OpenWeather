@@ -20,6 +20,7 @@
 
 package fr.qgdev.openweather.data.remote
 
+import java.util.Locale
 import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
@@ -136,7 +137,13 @@ class PlaceSearchingService private constructor(
                 val version = runCatching {
                     context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "unknown"
                 }.getOrDefault("unknown")
-                return hashMapOf("User-Agent" to "OpenWeather/$version (Android)")
+                return hashMapOf(
+                    "User-Agent" to "OpenWeather/$version (Android)",
+                    //  Names in the device's language: without it Nominatim answers with each
+                    //  place's local name - "東京都" for Tokyo, "Venezia" for Venice. English follows
+                    //  as a fallback for places with no name in that language.
+                    "Accept-Language" to "${Locale.getDefault().toLanguageTag()},en;q=0.5"
+                )
             }
         }
 
@@ -148,7 +155,7 @@ class PlaceSearchingService private constructor(
     //  rather than fail the search. Results without usable coordinates are skipped; a missing
     //  country code still leaves a usable result.
     private fun parseLocationResponse(response: JSONArray): List<Geolocation> {
-        val locations = mutableListOf<Geolocation>()
+        val locations = mutableListOf<SearchCandidate>()
         for (i in 0 until response.length()) {
             val result = response.optJSONObject(i) ?: continue
             val lat = result.optDouble("lat", Double.NaN)
@@ -175,8 +182,10 @@ class PlaceSearchingService private constructor(
                 .setRegion(region)
                 .setCoordinates(coordinates)
                 .build()
-            locations.add(geolocation)
+            //  "place" is OpenStreetMap's class for a town's own point, as opposed to its boundary.
+            val isPlacePoint = result.optString("class") == "place"
+            locations.add(SearchCandidate(geolocation, isPlacePoint))
         }
-        return locations
+        return mergeNearDuplicates(locations)
     }
 }
