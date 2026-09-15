@@ -415,6 +415,57 @@ class PlaceRepository private constructor(context: Context) {
         }
     }
 
+    /**
+     * Downloads a place chosen from a search and stores it in place of [oldPlace]: same position in
+     * the list, and the widgets that showed the old one follow it to the new one.
+     *
+     * For a town stored twice under nearby coordinates - a boundary and a centre, say - where the
+     * user would rather swap the one they have than keep both.
+     */
+    suspend fun fetchAndReplacePlaceFromWeb(oldPlace: Place, placeGeolocation: Geolocation, callback: FetchDataCallback) {
+        val partialPlace = Place.newBuilder()
+            .setGeolocation(placeGeolocation)
+            .buildPartial()
+
+        val innerCallback = object : FetchDataCallback {
+            override suspend fun onSuccess(place: Place) {
+                if (replacePlace(oldPlace, place)) callback.onSuccess(place)
+                else callback.onError(RequestStatus.UNKNOWN_ERROR)
+            }
+
+            override suspend fun onPartialSuccess(place: Place, requestStatus: RequestStatus) {
+                if (replacePlace(oldPlace, place)) callback.onPartialSuccess(place, requestStatus)
+                else callback.onError(RequestStatus.UNKNOWN_ERROR)
+            }
+
+            override suspend fun onError(status: RequestStatus) {
+                callback.onError(status)
+            }
+        }
+
+        weatherService.getPlaceDataOWM(partialPlace, innerCallback)
+    }
+
+    /** Stores [newPlace] under [oldPlace]'s key, then points the old place's widgets at it. */
+    private suspend fun replacePlace(oldPlace: Place, newPlace: Place): Boolean {
+        val placeId = retrievePlaceKey(oldPlace)
+        if (placeId == -1) return false
+
+        val stampedPlace = newPlace.toBuilder()
+            .setProperties(newPlace.properties.toBuilder().setCreationTime(System.currentTimeMillis()))
+            .build()
+        dataStore.updateData { placeStorage ->
+            placeStorage.toBuilder()
+                .putPlaces(placeId, stampedPlace)
+                .build()
+        }
+
+        val widgetsManager = WidgetsManager.getInstance(applicationContext)
+        widgetsManager.repointWidgets(applicationContext, oldPlace.identityKey, stampedPlace.identityKey)
+        widgetsManager.updateWidgetsForPlace(applicationContext, stampedPlace.identityKey)
+        return true
+    }
+
     suspend fun fetchAndAddNewPlaceFromWeb(placeGeolocation: Geolocation, callback: FetchDataCallback) {
         val partialPlace = Place.newBuilder()
             .setGeolocation(placeGeolocation)

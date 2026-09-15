@@ -20,51 +20,61 @@
 
 package fr.qgdev.openweather.ui.common.dialogs
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.material.icons.filled.Close
+import android.view.View
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.displayCutoutPadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.mandatorySystemGesturesPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.DialogWindowProvider
+import androidx.core.view.WindowCompat
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.ui.theme.AppTheme
-import fr.qgdev.openweather.ui.theme.readableOn
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.material3.surfaceColorAtElevation
 
-private val DIALOG_ELEVATION = 10.dp
-
+/**
+ * The app's secondary screens - alerts, air quality, adding a place, About - as the redesign draws
+ * them: a full page on the screens' own ground, headed by a bordered close button, a title and an
+ * optional subtitle. They used to be a floating Material card with its own surface colour and
+ * type, which made each of them look like a different app from the screens behind.
+ *
+ * Still a dialog window, so it opens over whatever screen called it and closes on back.
+ */
 @Composable
 fun FullScreenDialog(
     title: String,
     onDismissRequest: () -> Unit,
+    subtitle: String? = null,
     content: @Composable () -> Unit = {}
 ) {
     AppTheme {
@@ -72,72 +82,84 @@ fun FullScreenDialog(
             properties = DialogProperties(
                 usePlatformDefaultWidth = false,
                 dismissOnBackPress = true,
-                dismissOnClickOutside = true,
-                decorFitsSystemWindows = true
+                dismissOnClickOutside = false,
+                decorFitsSystemWindows = false
             ),
             onDismissRequest = onDismissRequest,
         ) {
-            Surface(
-                Modifier
-                    .padding(16.dp)
-                    .displayCutoutPadding()
-                    .mandatorySystemGesturesPadding(),
-                color = MaterialTheme.colorScheme.surface,
-                shape = MaterialTheme.shapes.extraLarge,
-                shadowElevation = DIALOG_ELEVATION,
-                tonalElevation = DIALOG_ELEVATION,
-                border = BorderStroke(
-                    0.1.dp,
-                    MaterialTheme.colorScheme.outlineVariant)
-                ) {
-                Column (
-                    modifier = Modifier
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.Top,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .padding(end = 16.dp),
+            val palette = LocalWeatherPalette.current
+            SystemBarIconsFor(isDark = palette.isDark)
 
-                            onClick = onDismissRequest
-                        ) {
-                            Icon(
-                                modifier = Modifier
-                                    .fillMaxSize(),
-                                painter = painterResource(id = R.drawable.ic_baseline_close),
-                                contentDescription = ""
-                            )
-                        }
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.headlineSmall,
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(palette.screen)
+                    .systemBarsPadding()
+                    .padding(horizontal = 16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(top = 12.dp, bottom = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .clip(RoundedCornerShape(11.dp))
+                            .border(1.dp, palette.outlineStrong, RoundedCornerShape(11.dp))
+                            .clickable(onClick = onDismissRequest),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        //  An icon, not a "✕" character: the glyph sat off the middle of its line box.
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.action_close),
+                            tint = palette.textPrimary,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
-                    Surface (
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = MaterialTheme.shapes.large,
-                    ) {
-                        //  The palette's faintest texts are tuned for the screens' black or near-white
-                        //  ground; this surface is lighter, tinted by its elevation, and they fell under
-                        //  a readable contrast on it. They are adjusted to the surface actually drawn.
-                        val surface = MaterialTheme.colorScheme.surfaceColorAtElevation(DIALOG_ELEVATION)
-                        CompositionLocalProvider(
-                            LocalWeatherPalette provides LocalWeatherPalette.current.readableOn(surface)
-                        ) {
-                            content()
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = title,
+                            color = palette.textPrimary,
+                            fontSize = 18.sp,
+                            lineHeight = 22.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        if (subtitle != null) {
+                            Text(
+                                text = subtitle,
+                                color = palette.textQuiet,
+                                fontSize = 11.5.sp,
+                                lineHeight = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
                 }
+                Box(modifier = Modifier.weight(1f)) {
+                    content()
+                }
             }
+        }
+    }
+}
+
+/**
+ * The dialog has a window of its own, drawn edge to edge, whose status bar icons do not follow the
+ * activity's: without this they stayed white and vanished on the light theme's ground.
+ */
+@Composable
+private fun SystemBarIconsFor(isDark: Boolean) {
+    val view: View = LocalView.current
+    SideEffect {
+        val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
+        WindowCompat.getInsetsController(window, view).apply {
+            isAppearanceLightStatusBars = !isDark
+            isAppearanceLightNavigationBars = !isDark
         }
     }
 }

@@ -40,9 +40,14 @@ enum class AlertSeverity(@param:StringRes val labelRes: Int?) {
     UNKNOWN(null)
 }
 
-private val RED_WORDS = listOf("red", "rouge", "rot", "rojo", "rosso")
-private val ORANGE_WORDS = listOf("orange", "arancione", "naranja")
-private val YELLOW_WORDS = listOf("yellow", "jaune", "gelb", "amarillo", "giallo")
+//  The traffic-light names, and the Common Alerting Protocol's severity scale that some services
+//  word their events with instead - Météo-France's yellow vigilance reads "Moderate thunderstorm
+//  warning", its orange "Severe", its red "Extreme". "Minor" stays uncoloured, as below yellow.
+//  Words are matched whole, so the inflected forms are listed: Italian services issue "allerta
+//  rossa", Spanish ones "aviso amarillo" or "alerta roja", German ones "Rote Warnung".
+private val RED_WORDS = listOf("red", "rouge", "rot", "rote", "roter", "rojo", "roja", "rosso", "rossa", "extreme")
+private val ORANGE_WORDS = listOf("orange", "arancione", "naranja", "severe")
+private val YELLOW_WORDS = listOf("yellow", "jaune", "gelb", "gelbe", "gelber", "amarillo", "amarilla", "giallo", "gialla", "moderate")
 
 /** Reads the severity out of an alert's event wording. */
 fun severityOf(event: String): AlertSeverity {
