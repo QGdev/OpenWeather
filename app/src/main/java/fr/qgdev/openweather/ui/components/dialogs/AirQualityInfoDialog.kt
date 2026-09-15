@@ -20,6 +20,10 @@
 
 package fr.qgdev.openweather.ui.components.dialogs
 
+import fr.qgdev.openweather.ui.theme.PlexMono
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +35,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -41,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.qgdev.openweather.R
@@ -74,46 +76,66 @@ fun AirQualityInfoDialog(
         title = stringResource(R.string.title_dialog_understand_index),
         onDismissRequest = onDismissRequest
     ) {
+        //  Two cards, as in the mock-up and like the measurements screen it opens from: the scale,
+        //  then the six pollutants one under the other.
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
+                .padding(bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = stringResource(R.string.aqi_explainer_heading),
-                color = palette.textPrimary,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = stringResource(R.string.aqi_explainer_body),
-                color = palette.textSecondary,
-                fontSize = 12.5.sp,
-                textAlign = TextAlign.Justify,
-                modifier = Modifier.padding(top = 6.dp)
-            )
-
             Column(
-                modifier = Modifier.padding(top = 14.dp),
-                verticalArrangement = Arrangement.spacedBy(7.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, palette.outline, RoundedCornerShape(18.dp))
+                    .padding(16.dp)
             ) {
-                (1..5).forEach { level -> IndexLevelRow(level) }
+                Text(
+                    text = stringResource(R.string.aqi_explainer_heading),
+                    color = palette.textPrimary,
+                    fontSize = 13.sp,
+                    lineHeight = 17.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = stringResource(R.string.aqi_explainer_body),
+                    color = palette.textMuted,
+                    fontSize = 12.sp,
+                    lineHeight = 18.sp,
+                    modifier = Modifier.padding(top = 7.dp)
+                )
+                Column(
+                    modifier = Modifier.padding(top = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
+                    (1..5).forEach { level -> IndexLevelRow(level) }
+                }
             }
 
-            Pollutant.entries.forEach { pollutant ->
-                PollutantSection(pollutant)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, palette.outline, RoundedCornerShape(18.dp))
+            ) {
+                Pollutant.entries.forEachIndexed { index, pollutant ->
+                    if (index > 0) HorizontalDivider(color = palette.outline)
+                    PollutantSection(pollutant)
+                }
             }
 
             Text(
                 text = stringResource(R.string.aqi_scales_note),
                 color = palette.textQuiet,
                 fontSize = 10.5.sp,
-                modifier = Modifier.padding(top = 20.dp, bottom = 8.dp)
+                lineHeight = 15.sp,
+                modifier = Modifier.padding(horizontal = 4.dp)
             )
         }
     }
 }
 
+/** One step of the index: its number and colour as a short bar, then its name. */
 @Composable
 private fun IndexLevelRow(level: Int) {
     val palette = LocalWeatherPalette.current
@@ -121,68 +143,74 @@ private fun IndexLevelRow(level: Int) {
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(11.dp)
     ) {
+        Text(
+            text = level.toString(),
+            color = color,
+            fontSize = 12.sp,
+            lineHeight = 15.sp,
+            fontFamily = PlexMono,
+            modifier = Modifier.width(22.dp)
+        )
         Box(
             modifier = Modifier
-                .size(22.dp)
-                .clip(CircleShape)
-                .background(color.copy(alpha = 0.18f))
-                .border(1.dp, color, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = level.toString(),
-                color = color,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
+                .width(34.dp)
+                .height(5.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(color)
+        )
         Text(
             text = airQualityLabelRes(level)?.let { stringResource(it) }.orEmpty(),
             color = palette.textPrimary,
-            fontSize = 12.5.sp
+            fontSize = 12.sp,
+            lineHeight = 15.sp
         )
     }
 }
 
+/** A pollutant: its symbol and level thresholds, its full name, then what it is and does. */
 @Composable
 private fun PollutantSection(pollutant: Pollutant) {
     val palette = LocalWeatherPalette.current
 
-    Column(modifier = Modifier.padding(top = 18.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 15.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = pollutant.label,
                 color = palette.textPrimary,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 14.sp,
+                lineHeight = 18.sp,
+                fontFamily = PlexMono,
+                modifier = Modifier.alignByBaseline()
             )
             Text(
-                //  The four bounds, in order: they are the scale the composition bars are drawn on.
-                text = pollutant.boundaries.joinToString(" · ") { boundary ->
-                    boundary.toInt().toString()
-                },
+                //  The four bounds, in order: they separate the levels 1 to 5.
+                text = pollutant.boundaries.joinToString(" · ") { boundary -> boundary.toInt().toString() },
                 color = palette.textQuiet,
-                fontSize = 10.5.sp
+                fontSize = 10.sp,
+                lineHeight = 13.sp,
+                fontFamily = PlexMono,
+                modifier = Modifier.alignByBaseline()
             )
         }
+        //  The existing strings read "SO₂ - Sulphur dioxide"; the symbol is already the title.
         Text(
-            text = stringResource(pollutant.descriptionRes),
-            color = palette.textPrimary,
-            fontSize = 12.5.sp,
+            text = stringResource(pollutant.descriptionRes).substringAfter(" - "),
+            color = palette.textQuiet,
+            fontSize = 11.5.sp,
+            lineHeight = 15.sp,
             modifier = Modifier.padding(top = 2.dp)
         )
         Text(
             text = stringResource(pollutantDescriptionBodyRes(pollutant)),
-            color = palette.textSecondary,
+            color = palette.textMuted,
             fontSize = 12.sp,
-            textAlign = TextAlign.Justify,
-            modifier = Modifier.padding(top = 4.dp)
+            lineHeight = 18.sp,
+            modifier = Modifier.padding(top = 8.dp)
         )
     }
 }

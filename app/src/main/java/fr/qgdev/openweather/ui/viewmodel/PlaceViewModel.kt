@@ -179,6 +179,31 @@ class PlaceViewModel(
         }
     }
 
+    /**
+     * Replaces [oldPlace] with a place chosen from a search, showing the new one as pending while
+     * it downloads, as an addition does.
+     */
+    fun replacePlaceFromSearch(oldPlace: Place, placeGeolocation: Geolocation) {
+        _pendingPlaceName.value = placeGeolocation.city
+
+        viewModelScope.launch {
+            placeRepository.fetchAndReplacePlaceFromWeb(oldPlace, placeGeolocation, object : FetchDataCallback {
+                override suspend fun onSuccess(place: Place) {
+                    _pendingPlaceName.value = null
+                }
+
+                override suspend fun onPartialSuccess(place: Place, requestStatus: RequestStatus) {
+                    _pendingPlaceName.value = null
+                }
+
+                override suspend fun onError(requestStatus: RequestStatus) {
+                    _pendingPlaceName.value = null
+                    _addPlaceFailure.value = requestStatus
+                }
+            })
+        }
+    }
+
     fun acknowledgeAddPlaceFailure() {
         _addPlaceFailure.value = null
     }

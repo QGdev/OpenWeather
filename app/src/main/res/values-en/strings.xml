@@ -267,6 +267,7 @@
     <string name="label_cities_only">cities only</string>
     <string name="label_already_added">already added</string>
     <string name="action_search">Search</string>
+    <string name="action_close">Close</string>
     <string name="hint_search_city">City</string>
     <string name="info_same_name_cities">Several cities can share a name. The region and the coordinates tell them apart.</string>
     <string name="error_places_full">List full: %1$d places at most.</string>
@@ -348,4 +349,11 @@
     <string name="moon_short_waning_crescent">wan.</string>
     <string name="label_week_min_max">min %1$s · max %2$s</string>
     <string name="label_at_hour">At %1$s</string>
+    <string name="alert_language_note">Alerts are written by the issuing agency and arrive in its language, not the app\'s.</string>
+    <string name="label_km_from_above">%1$d km from the one above</string>
+    <string name="replace_place_title">%1$s is already in your list</string>
+    <string name="replace_place_body">This result is %1$d km from the one you have. Replacing it keeps its place in the list and its widgets.</string>
+    <string name="action_replace">Replace</string>
+    <string name="action_add_anyway">Add anyway</string>
+    <string name="action_cancel">Cancel</string>
 </resources>
