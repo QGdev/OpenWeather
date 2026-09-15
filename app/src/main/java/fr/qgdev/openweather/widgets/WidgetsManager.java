@@ -166,6 +166,28 @@ public final class WidgetsManager {
 	}
 	
 	/**
+	 * Points the widgets that show one place at another, keeping their other settings.
+	 * <p>
+	 * Used when a place is replaced by a nearby one: a widget refers to its place by identity key,
+	 * which the new coordinates change, and would otherwise lose it.
+	 * </p>
+	 *
+	 * @param context     used to list the widgets placed
+	 * @param oldPlaceKey the identity key of the place being replaced
+	 * @param newPlaceKey the identity key of the place replacing it
+	 */
+	public void repointWidgets(@NonNull Context context, @NonNull String oldPlaceKey, @NonNull String newPlaceKey) {
+		AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+		int[] allIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, WidgetsProvider.class));
+		for (int appWidgetId : allIds) {
+			WidgetsSettings settings = loadWidgetSettings(appWidgetId, null);
+			if (settings == null || !oldPlaceKey.equals(settings.getPlaceId())) continue;
+			saveWidgetSettings(new WidgetsSettings(newPlaceKey, appWidgetId,
+					  settings.getBackgroundTransparency(), settings.getShowDetails()));
+		}
+	}
+	
+	/**
 	 * Redraws the widgets showing one place, and only them.
 	 * <p>
 	 * Called whenever that place's data is written, so a widget changes when its data does,

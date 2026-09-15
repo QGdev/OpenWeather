@@ -20,6 +20,9 @@
 
 package fr.qgdev.openweather.widgets
 
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.Icons
 import fr.qgdev.openweather.ui.theme.contrast
 import fr.qgdev.openweather.ui.theme.MIN_TEXT_CONTRAST
 import android.appwidget.AppWidgetManager
@@ -346,7 +349,13 @@ private fun Header(onClose: () -> Unit) {
                 .clickable(onClick = onClose),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = "✕", color = palette.textPrimary, fontSize = 15.sp)
+            //  An icon, not a "✕" character: the glyph sat off the middle of its line box.
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = stringResource(R.string.action_close),
+                tint = palette.textPrimary,
+                modifier = Modifier.size(18.dp)
+            )
         }
         Text(
             text = stringResource(R.string.widget_configure),
