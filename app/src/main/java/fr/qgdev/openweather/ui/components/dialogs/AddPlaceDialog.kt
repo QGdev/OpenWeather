@@ -20,6 +20,21 @@
 
 package fr.qgdev.openweather.ui.components.dialogs
 
+import kotlin.math.roundToInt
+import fr.qgdev.openweather.data.remote.isSamePlaceAs
+import fr.qgdev.openweather.data.remote.distanceKm
+import fr.qgdev.openweather.data.models.Place
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.AlertDialog
+import fr.qgdev.openweather.ui.theme.PlexMono
+import fr.qgdev.openweather.ui.theme.Figtree
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.draw.alpha
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,7 +53,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -90,6 +104,8 @@ fun AddPlaceDialog(
     var searching by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<RequestStatus?>(null) }
     var results by remember { mutableStateOf(emptyList<Geolocation>()) }
+    //  A result chosen while a nearby place of the same name is already stored, and that place.
+    var replaceChoice by remember { mutableStateOf<Pair<Geolocation, Place>?>(null) }
 
     val storedKeys = places.orEmpty().map { it.identityKey }.toSet()
     val storageFull = (places?.size ?: 0) >= MAX_PLACES
@@ -115,37 +131,72 @@ fun AddPlaceDialog(
         placeViewModel.seachPlaces(query, searchCallback)
     }
 
+    replaceChoice?.let { (chosen, twin) ->
+        ReplaceConfirmation(
+            chosen = chosen,
+            twin = twin,
+            onReplace = {
+                placeViewModel.replacePlaceFromSearch(twin, chosen)
+                replaceChoice = null
+                onDismissRequest()
+            },
+            onAddAnyway = {
+                placeViewModel.addPlaceFromSearch(chosen)
+                replaceChoice = null
+                onDismissRequest()
+            },
+            onCancel = { replaceChoice = null }
+        )
+    }
+
     FullScreenDialog(
         title = stringResource(R.string.title_dialog_add_place),
         onDismissRequest = onDismissRequest
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            //  One field with its button inside, as in the mock-up; faded while a search runs.
+            val accent = MaterialTheme.colorScheme.primary
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 4.dp),
+                    .alpha(if (searching) 0.6f else 1f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .border(1.dp, accent.copy(alpha = 0.45f), RoundedCornerShape(16.dp))
+                    .padding(start = 16.dp, top = 4.dp, end = 4.dp, bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
-                    label = { Text(stringResource(R.string.hint_search_city)) },
-                    singleLine = true,
-                    enabled = !searching,
-                    modifier = Modifier.weight(1f),
-                    //  The button is kept - each search is a call to Nominatim, and typing should
-                    //  not fire one per keystroke - but the keyboard's own search key now works
-                    //  too, which is where a thumb already is.
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    keyboardActions = KeyboardActions(onSearch = { search() })
-                )
+                //  The hint shares the field's style: with the theme's own line height it sat lower
+                //  than the cursor.
+                val fieldStyle = TextStyle(color = palette.textPrimary, fontSize = 14.sp, fontFamily = Figtree)
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                    if (query.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.hint_search_city),
+                            style = fieldStyle.copy(color = palette.textQuiet)
+                        )
+                    }
+                    BasicTextField(
+                        value = query,
+                        onValueChange = { query = it },
+                        singleLine = true,
+                        enabled = !searching,
+                        textStyle = fieldStyle,
+                        cursorBrush = SolidColor(accent),
+                        modifier = Modifier.fillMaxWidth(),
+                        //  The button is kept - each search is a call to Nominatim, and typing should
+                        //  not fire one per keystroke - but the keyboard's own search key works too,
+                        //  which is where a thumb already is.
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                        keyboardActions = KeyboardActions(onSearch = { search() })
+                    )
+                }
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.primary)
+                        .background(accent)
                         .clickable(enabled = !searching) { search() }
-                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
                 ) {
                     if (searching) {
                         CircularProgressIndicator(
@@ -176,12 +227,32 @@ fun AddPlaceDialog(
 
             val currentError = error
             if (currentError != null) {
-                Text(
-                    text = stringResource(addPlaceErrorRes(currentError)),
-                    color = palette.textSecondary,
-                    fontSize = 13.sp,
-                    modifier = Modifier.padding(vertical = 12.dp)
-                )
+                //  In place of the results, marked by how serious it is: a query to fix, no
+                //  answer, the network or servers, something unexpected.
+                val dot = when (currentError) {
+                    RequestStatus.TOO_SHORT -> palette.amber
+                    RequestStatus.NOT_FOUND, RequestStatus.ALREADY_PRESENT -> palette.textQuiet
+                    RequestStatus.UNKNOWN_ERROR -> palette.red
+                    else -> palette.orange
+                }
+                Row(
+                    modifier = Modifier.padding(start = 4.dp, top = 20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .padding(top = 7.dp)
+                            .size(4.dp)
+                            .clip(CircleShape)
+                            .background(dot)
+                    )
+                    Text(
+                        text = stringResource(addPlaceErrorRes(currentError)),
+                        color = palette.textPrimary,
+                        fontSize = 12.5.sp,
+                        lineHeight = 17.sp
+                    )
+                }
                 return@Column
             }
 
@@ -190,43 +261,59 @@ fun AddPlaceDialog(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, bottom = 8.dp),
+                    .padding(start = 4.dp, end = 4.dp, top = 20.dp, bottom = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = stringResource(R.string.label_results_count, results.size),
-                    color = palette.textSecondary,
-                    fontSize = 11.sp
+                    color = palette.textQuiet,
+                    fontSize = 11.sp,
+                    lineHeight = 14.sp,
+                    letterSpacing = 0.66.sp
                 )
                 Text(
                     text = stringResource(R.string.label_cities_only),
-                    color = palette.textSecondary,
-                    fontSize = 11.sp
+                    color = palette.textQuiet,
+                    fontSize = 11.sp,
+                    lineHeight = 14.sp
                 )
             }
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(rememberScrollState())
+                    .padding(bottom = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(9.dp)
             ) {
-                results.forEach { geolocation ->
+                results.forEachIndexed { index, geolocation ->
+                    //  Near duplicates are merged before they get here; what remains under one name
+                    //  says how far it is from the same-named result above it.
+                    val kmFromAbove = results.take(index)
+                        .filter {
+                            it.city.equals(geolocation.city, ignoreCase = true) &&
+                                    it.countryCode.equals(geolocation.countryCode, ignoreCase = true)
+                        }
+                        .minOfOrNull { distanceKm(it.coordinates, geolocation.coordinates) }
                     SearchResultRow(
                         geolocation = geolocation,
                         alreadyAdded = geolocation.identityKey in storedKeys,
+                        kmFromAbove = kmFromAbove,
                         onClick = {
-                            placeViewModel.addPlaceFromSearch(geolocation)
-                            onDismissRequest()
+                            val twin = places.orEmpty().firstOrNull { it.geolocation.isSamePlaceAs(geolocation) }
+                            if (twin != null) {
+                                replaceChoice = geolocation to twin
+                            } else {
+                                placeViewModel.addPlaceFromSearch(geolocation)
+                                onDismissRequest()
+                            }
                         }
                     )
                 }
 
-                Text(
+                InfoNote(
                     text = stringResource(R.string.info_same_name_cities),
-                    color = palette.textQuiet,
-                    fontSize = 11.sp,
-                    modifier = Modifier.padding(vertical = 12.dp)
+                    modifier = Modifier.padding(top = 6.dp)
                 )
             }
         }
@@ -237,6 +324,7 @@ fun AddPlaceDialog(
 private fun SearchResultRow(
     geolocation: Geolocation,
     alreadyAdded: Boolean,
+    kmFromAbove: Double?,
     onClick: () -> Unit
 ) {
     val palette = LocalWeatherPalette.current
@@ -252,6 +340,8 @@ private fun SearchResultRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            //  A place already in the list stays shown - the search did find it - but steps back.
+            .alpha(if (alreadyAdded) 0.55f else 1f)
             .clip(RoundedCornerShape(18.dp))
             .border(1.dp, palette.outline, RoundedCornerShape(18.dp))
             .clickable(enabled = !alreadyAdded, onClick = onClick)
@@ -259,26 +349,29 @@ private fun SearchResultRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(13.dp)
     ) {
+        val accent = MaterialTheme.colorScheme.primary
         Box(
             modifier = Modifier
                 .size(34.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
+                .background(if (alreadyAdded) palette.outline else accent.copy(alpha = 0.14f)),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = geolocation.countryCode.uppercase(),
-                color = MaterialTheme.colorScheme.primary,
+                color = if (alreadyAdded) palette.textMuted else accent,
                 fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = PlexMono
             )
         }
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = geolocation.city,
-                color = if (alreadyAdded) palette.textMuted else palette.textPrimary,
+                color = palette.textPrimary,
                 fontSize = 15.sp,
+                lineHeight = 19.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -286,26 +379,111 @@ private fun SearchResultRow(
             if (place.isNotEmpty()) {
                 Text(
                     text = place,
-                    color = palette.textSecondary,
+                    color = palette.textQuiet,
                     fontSize = 11.sp,
+                    lineHeight = 14.sp,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 2.dp)
                 )
             }
-            Text(text = coordinates, color = palette.textQuiet, fontSize = 10.5.sp)
+            Text(
+                text = coordinates + (kmFromAbove?.let {
+                    " · " + stringResource(R.string.label_km_from_above, it.roundToInt())
+                } ?: ""),
+                color = palette.textQuiet,
+                fontSize = 10.5.sp,
+                lineHeight = 13.sp,
+                fontFamily = PlexMono,
+                modifier = Modifier.padding(top = 3.dp)
+            )
         }
 
         if (alreadyAdded) {
             Text(
                 text = stringResource(R.string.label_already_added),
                 color = palette.textQuiet,
-                fontSize = 10.5.sp
+                fontSize = 10.5.sp,
+                lineHeight = 13.sp,
+                textAlign = TextAlign.End,
+                modifier = Modifier.width(52.dp)
             )
         } else {
-            Text(text = "›", color = palette.textSecondary, fontSize = 15.sp)
+            Text(text = "›", color = palette.textQuiet, fontSize = 15.sp)
         }
+    }
+}
+
+/** A note under the results, boxed with an "i" like the other notes in the redesign. */
+@Composable
+private fun InfoNote(text: String, modifier: Modifier = Modifier) {
+    val palette = LocalWeatherPalette.current
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .border(1.dp, palette.outline, RoundedCornerShape(16.dp))
+            .padding(14.dp),
+        horizontalArrangement = Arrangement.spacedBy(11.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(top = 1.dp)
+                .size(18.dp)
+                .border(1.3.dp, palette.textQuiet, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(text = "i", color = palette.textQuiet, fontSize = 10.sp, lineHeight = 10.sp, fontWeight = FontWeight.SemiBold)
+        }
+        Text(text = text, color = palette.textQuiet, fontSize = 11.5.sp, lineHeight = 17.sp)
     }
 }
 
 /** Mirrors the repository's own ceiling, so the dialog can say so before a search. */
 private const val MAX_PLACES = 100
+
+/**
+ * Asked when the chosen result is a town already in the list under nearby coordinates: swap the
+ * stored one for it, keep both, or neither. Replacing keeps the place's position and its widgets.
+ */
+@Composable
+private fun ReplaceConfirmation(
+    chosen: Geolocation,
+    twin: Place,
+    onReplace: () -> Unit,
+    onAddAnyway: () -> Unit,
+    onCancel: () -> Unit
+) {
+    val palette = LocalWeatherPalette.current
+    val km = distanceKm(chosen.coordinates, twin.geolocation.coordinates).roundToInt()
+    AlertDialog(
+        onDismissRequest = onCancel,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        title = {
+            Text(
+                text = stringResource(R.string.replace_place_title, twin.geolocation.city),
+                color = palette.textPrimary,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(R.string.replace_place_body, km),
+                color = palette.textSecondary,
+                fontSize = 13.sp,
+                lineHeight = 19.sp
+            )
+        },
+        confirmButton = {
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                TextButton(onClick = onAddAnyway) { Text(stringResource(R.string.action_add_anyway)) }
+                TextButton(onClick = onReplace) {
+                    Text(stringResource(R.string.action_replace), fontWeight = FontWeight.SemiBold)
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCancel) { Text(stringResource(R.string.action_cancel)) }
+        }
+    )
+}

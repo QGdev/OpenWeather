@@ -264,6 +264,7 @@
 	<string name="label_cities_only">villes uniquement</string>
 	<string name="label_already_added">déjà ajouté</string>
 	<string name="action_search">Chercher</string>
+	<string name="action_close">Fermer</string>
 	<string name="hint_search_city">Ville</string>
 	<string name="info_same_name_cities">Plusieurs villes peuvent porter le même nom. La région et les coordonnées les distinguent.</string>
 	<string name="error_places_full">Liste pleine : %1$d lieux au maximum.</string>
@@ -345,4 +346,11 @@
 	<string name="moon_short_waning_crescent">décr.</string>
 	<string name="label_week_min_max">min %1$s · max %2$s</string>
 	<string name="label_at_hour">À %1$s</string>
+	<string name="alert_language_note">Le texte des alertes est rédigé par l\'agence émettrice et arrive dans sa langue, pas dans celle de l\'application.</string>
+	<string name="label_km_from_above">à %1$d km de celui du dessus</string>
+	<string name="replace_place_title">%1$s est déjà dans votre liste</string>
+	<string name="replace_place_body">Ce résultat est à %1$d km de celui que vous avez. Le remplacer garde sa place dans la liste et ses widgets.</string>
+	<string name="action_replace">Remplacer</string>
+	<string name="action_add_anyway">Ajouter quand même</string>
+	<string name="action_cancel">Annuler</string>
 </resources>
