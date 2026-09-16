@@ -19,6 +19,19 @@
  */
 package fr.qgdev.openweather.ui.fragment.place
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.clickable
+import fr.qgdev.openweather.ui.utils.countryNameFromCode
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.material3.SnackbarData
+import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.layout.Arrangement
+import fr.qgdev.openweather.ui.viewmodel.RefreshProgress
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.material.icons.filled.Check
 import androidx.collection.MutableObjectList
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -47,19 +60,15 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
@@ -76,10 +85,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -88,7 +94,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.IntOffset
@@ -152,6 +157,7 @@ fun PlacesScreenView(
     val data by placeViewModel.placesState.collectAsState()
     val isRefreshing by placeViewModel.isRefreshing.collectAsState(initial = false)
     val refreshOutcome by placeViewModel.lastRefreshOutcome.collectAsState()
+    val refreshProgress by placeViewModel.refreshProgress.collectAsState()
     val pendingPlaceName by placeViewModel.pendingPlaceName.collectAsState()
     val addPlaceFailure by placeViewModel.addPlaceFailure.collectAsState()
     val settings by settingsViewModel.settingsState.collectAsState()
@@ -162,11 +168,16 @@ fun PlacesScreenView(
     val isApiKeyValid = settings?.apiKey?.length == 32
 
     val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
-    val deletedLabel = stringResource(R.string.place_deleted)
-    val undoLabel = stringResource(R.string.action_undo)
+    //  The place just deleted, offered back at the top of the list for a while.
+    var recentlyDeleted by remember { mutableStateOf<DeletedPlace?>(null) }
+    val undoDelete: (DeletedPlace) -> Unit = { deleted ->
+        //  Restored where it was, not appended: addPlace put the place back at the end of the
+        //  list, so undoing a delete silently reordered the list.
+        placeViewModel.restorePlace(deleted.place, deleted.index)
+        recentlyDeleted = null
+    }
 
     AppTheme {
         Box(
@@ -182,6 +193,17 @@ fun PlacesScreenView(
                                     .align(Alignment.Center)
                                     .padding(16.dp)
                             )
+                            //  The last place deleted takes the list with it; the undo stays.
+                            recentlyDeleted?.let { deleted ->
+                                DeletedPlaceBanner(
+                                    deleted = deleted,
+                                    onUndo = { undoDelete(deleted) },
+                                    onShown = { recentlyDeleted = null },
+                                    modifier = Modifier
+                                        .align(Alignment.TopCenter)
+                                        .padding(horizontal = 20.dp, vertical = 12.dp)
+                                )
+                            }
                         }
                         else -> {
                             LoadPlacesScreen(
@@ -192,7 +214,11 @@ fun PlacesScreenView(
                                     formattingService = formattingService,
                                     lazyListState = lazyListState,
                                     isRefreshing = isRefreshing,
+                                    refreshProgress = refreshProgress,
                                     refreshOutcome = refreshOutcome,
+                                    recentlyDeleted = recentlyDeleted,
+                                    onUndoDelete = undoDelete,
+                                    onDeletedShown = { recentlyDeleted = null },
                                     pendingPlaceName = pendingPlaceName,
                                     onRefreshOutcomeShown = { placeViewModel.acknowledgeRefreshOutcome() },
                                     onOpenPlace = onOpenPlace,
@@ -202,19 +228,7 @@ fun PlacesScreenView(
                                     },
                                     onDismiss = { place, index ->
                                         placeViewModel.deletePlace(place)
-                                        scope.launch {
-                                            val result = snackbarHostState.showSnackbar(
-                                                message = String.format(deletedLabel, place.geolocation.city, place.geolocation.countryCode),
-                                                actionLabel = undoLabel,
-                                                duration = SnackbarDuration.Long
-                                            )
-                                            if (result == SnackbarResult.ActionPerformed) {
-                                                //  Restored where it was, not appended: addPlace put the
-                                                //  place back at the end of the list, so undoing a delete
-                                                //  silently reordered the list.
-                                                placeViewModel.restorePlace(place, index)
-                                            }
-                                        }
+                                        recentlyDeleted = DeletedPlace(place, index)
                                     }
                                 )
                             }
@@ -260,7 +274,7 @@ fun PlacesScreenView(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 80.dp) // au-dessus de la NavigationBar
-            )
+            ) { data -> PlacesSnackbar(data) }
         }
     }
 }
@@ -366,7 +380,11 @@ private fun PlacesList(
     formattingService: FormattingService,
     lazyListState: LazyListState = rememberLazyListState(),
     isRefreshing: Boolean = false,
+    refreshProgress: RefreshProgress? = null,
     refreshOutcome: RefreshOutcome? = null,
+    recentlyDeleted: DeletedPlace? = null,
+    onUndoDelete: (DeletedPlace) -> Unit = {},
+    onDeletedShown: () -> Unit = {},
     pendingPlaceName: String? = null,
     onRefreshOutcomeShown: () -> Unit = {},
     onOpenPlace: (Place) -> Unit = {},
@@ -403,45 +421,23 @@ private fun PlacesList(
     
 
     pendingDeletePlace?.let { place ->
-        AlertDialog(
-            onDismissRequest = {
+        DeletePlaceDialog(
+            place = place,
+            onKeep = {
                 pendingDeletePlace = null
                 pendingResetCallback?.invoke()
                 pendingResetCallback = null
             },
-            title = { Text(stringResource(R.string.dialog_confirmation_title_delete_place)) },
-            text = {
-                Text(
-                    String.format(
-                        stringResource(R.string.dialog_confirmation_message_delete_place),
-                        place.geolocation.city,
-                        place.geolocation.countryCode
-                    )
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = {
-                    val placeToDelete = pendingDeletePlace
-                    val indexToDelete = pendingDeleteIndex
+            onDelete = {
+                val placeToDelete = pendingDeletePlace
+                val indexToDelete = pendingDeleteIndex
 
-                    pendingDeletePlace = null
-                    pendingDeleteIndex = -1
-                    pendingResetCallback = null  // Nettoyer sans appeler reset()
+                pendingDeletePlace = null
+                pendingDeleteIndex = -1
+                pendingResetCallback = null  // Nettoyer sans appeler reset()
 
-                    if (placeToDelete != null && indexToDelete != -1) {
-                        onDismiss(placeToDelete, indexToDelete)
-                    }
-                }) {
-                    Text(stringResource(R.string.dialog_confirmation_choice_yes))
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    pendingDeletePlace = null
-                    pendingResetCallback?.invoke()
-                    pendingResetCallback = null
-                }) {
-                    Text(stringResource(R.string.dialog_confirmation_choice_no))
+                if (placeToDelete != null && indexToDelete != -1) {
+                    onDismiss(placeToDelete, indexToDelete)
                 }
             }
         )
@@ -452,18 +448,15 @@ private fun PlacesList(
     //  material3, so this adds no dependency, and it frees the vertical drag gesture for the
     //  reordering below - the custom connection consumed scroll at the top of the list, which is
     //  exactly where a drag to reorder starts.
-    //
-    //  The drop-shaped indicator is kept rather than falling back to the Material default, driven
-    //  by the state's distanceFraction instead of a hand-tracked pixel offset.
     val pullToRefreshState = rememberPullToRefreshState()
 
     //  PullToRefreshBox holds the indicator extended for the whole refresh and only animates
-    //  distanceFraction back to zero once isRefreshing clears. Without this latch the drop would
+    //  distanceFraction back to zero once isRefreshing clears. Without this latch the arc would
     //  reappear for that retraction and be seen draining from full to empty after the refresh had
     //  already finished - the pull replayed backwards.
     //
     //  Armed when a refresh starts, disarmed once the indicator has actually come to rest, so the
-    //  drop is only ever drawn for a pull the user is making.
+    //  arc is only ever drawn for a pull the user is making.
     var retractingAfterRefresh by remember { mutableStateOf(false) }
     LaunchedEffect(isRefreshing, pullToRefreshState.distanceFraction) {
         when {
@@ -472,42 +465,38 @@ private fun PlacesList(
         }
     }
 
+    //  Dimmed, not hidden, while the refresh runs: the old values stay readable, and the list does
+    //  not blink when the new ones land.
+    val cardsAlpha by animateFloatAsState(
+        targetValue = if (isRefreshing) REFRESHING_CARDS_ALPHA else 1f,
+        label = "cardsAlpha"
+    )
+
     PullToRefreshBox(
         modifier = Modifier.fillMaxSize(),
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
         state = pullToRefreshState,
         indicator = {
-            if (!isRefreshing && !retractingAfterRefresh && pullToRefreshState.distanceFraction > 0f) {
-                Box(
+            val pulling = !retractingAfterRefresh && pullToRefreshState.distanceFraction > 0f
+            if (isRefreshing || pulling) {
+                PullToRefreshIndicator(
                     modifier = Modifier.align(Alignment.TopCenter),
-                    contentAlignment = Alignment.Center
-                ) {
-                    PullToRefreshDropIndicator(
-                        displayedDragY = pullToRefreshState.distanceFraction * PULL_THRESHOLD_PX,
-                        pullThreshold = PULL_THRESHOLD_PX,
-                        showReleaseText = pullToRefreshState.distanceFraction >= 1f
-                    )
-                }
-            }
-            if (isRefreshing) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 16.dp)
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .width(48.dp)
-                            .height(48.dp),
-                        strokeWidth = 4.dp
-                    )
-                }
+                    distanceFraction = pullToRefreshState.distanceFraction,
+                    isRefreshing = isRefreshing,
+                    refreshProgress = refreshProgress
+                )
             }
         }
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            //  The list follows the finger down, opening the band the indicator sits in, rather
+            //  than having the indicator drawn over the title.
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    translationY = pullToRefreshState.distanceFraction * PULL_INDICATOR_HEIGHT.toPx()
+                },
             state = lazyListState
         ) {
             //  Keyed on the place, not its position. With the index as the key, deleting or moving
@@ -520,7 +509,13 @@ private fun PlacesList(
             //  a protobuf message does not. Passing the message itself compiles and then throws
             //  when the list state is saved.
             item(key = "header") {
-                PlacesHeader(refreshOutcome = refreshOutcome, onOutcomeShown = onRefreshOutcomeShown)
+                PlacesHeader(
+                    refreshOutcome = refreshOutcome,
+                    onOutcomeShown = onRefreshOutcomeShown,
+                    recentlyDeleted = recentlyDeleted,
+                    onUndoDelete = onUndoDelete,
+                    onDeletedShown = onDeletedShown
+                )
             }
             itemsIndexed(
                 items = orderedPlaces,
@@ -544,6 +539,7 @@ private fun PlacesList(
                         //  Lifted above its neighbours so it is drawn over them while travelling.
                         .zIndex(if (isDragging) 1f else 0f)
                         .graphicsLayer {
+                            alpha = cardsAlpha
                             translationY = if (isDragging) reorderState.draggingItemOffset else 0f
                             //  A slight lift, so it reads as picked up rather than stuck.
                             scaleX = if (isDragging) 1.02f else 1f
@@ -589,7 +585,10 @@ private fun PlacesList(
 @Composable
 private fun PlacesHeader(
     refreshOutcome: RefreshOutcome?,
-    onOutcomeShown: () -> Unit
+    onOutcomeShown: () -> Unit,
+    recentlyDeleted: DeletedPlace?,
+    onUndoDelete: (DeletedPlace) -> Unit,
+    onDeletedShown: () -> Unit
 ) {
     val palette = LocalWeatherPalette.current
     val formattingService = FormattingService.getInstance(LocalContext.current)
@@ -602,7 +601,26 @@ private fun PlacesHeader(
             fontWeight = FontWeight.SemiBold
         )
 
+        //  One banner at a time: the deletion is the gesture just made, so it goes first, and a
+        //  refresh outcome arriving meanwhile still clears itself on time.
+        if (recentlyDeleted != null) {
+            DeletedPlaceBanner(
+                deleted = recentlyDeleted,
+                onUndo = { onUndoDelete(recentlyDeleted) },
+                onShown = onDeletedShown,
+                modifier = Modifier.padding(top = 12.dp)
+            )
+        }
+
         if (refreshOutcome != null) {
+            //  Shown, then gone: the banner reports a gesture, it is not a state of the list.
+            LaunchedEffect(refreshOutcome) {
+                delay(OUTCOME_VISIBLE_MILLIS)
+                onOutcomeShown()
+            }
+        }
+
+        if (refreshOutcome != null && recentlyDeleted == null) {
             val finishedAt = formattingService.getFormattedTime(
                 Date(refreshOutcome.finishedAt),
                 TimeZone.getDefault()
@@ -618,14 +636,9 @@ private fun PlacesHeader(
                 } else {
                     stringResource(R.string.status_refresh_up_to_date, finishedAt)
                 },
-                accent = if (refreshOutcome.failed > 0) palette.orange else palette.green
+                accent = if (refreshOutcome.failed > 0) palette.orange else palette.green,
+                icon = if (refreshOutcome.failed > 0) null else Icons.Default.Check
             )
-
-            //  Shown, then gone: the banner reports a gesture, it is not a state of the list.
-            LaunchedEffect(refreshOutcome) {
-                delay(OUTCOME_VISIBLE_MILLIS)
-                onOutcomeShown()
-            }
         }
     }
 }
@@ -647,117 +660,254 @@ internal fun addPlaceErrorRes(status: RequestStatus): Int = when (status) {
     RequestStatus.UNKNOWN_ERROR -> R.string.error_unknown_error
 }
 
-/** How long the refresh outcome stays on screen before clearing itself. */
-private const val OUTCOME_VISIBLE_MILLIS = 4000L
+/** A place just deleted, and where it stood, so undoing puts it back there. */
+private data class DeletedPlace(val place: Place, val index: Int)
 
-/** Drag distance, in pixels, at which the indicator switches to "release to refresh". */
-private const val PULL_THRESHOLD_PX = 80f
+/** How long a deleted place can be brought back, as long as the snackbar that used to offer it. */
+private const val UNDO_VISIBLE_MILLIS = 10_000L
 
+/**
+ * "Venice, Italy deleted · Undo", at the top of the list where the refresh outcome is told, and in
+ * the same banner: in the red of destructive actions, the undo as its action. Clears itself after
+ * a while, the deletion then being final.
+ */
 @Composable
-private fun PullToRefreshDropIndicator(
-    displayedDragY: Float,
-    pullThreshold: Float,
-    showReleaseText: Boolean
+private fun DeletedPlaceBanner(
+    deleted: DeletedPlace,
+    onUndo: () -> Unit,
+    onShown: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val progress = (displayedDragY / pullThreshold).coerceIn(0f, 1f)
-    val outline = MaterialTheme.colorScheme.primary
-    val fill = MaterialTheme.colorScheme.primary.copy(alpha = 0.85f)
-
-    //  The drop settles to full size once the threshold is reached, so the moment it is ready to
-    //  release is felt as much as read.
-    val scale by animateFloatAsState(
-        targetValue = if (showReleaseText) 1f else 0.7f + progress * 0.25f,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-        label = "dropScale"
+    LaunchedEffect(deleted) {
+        delay(UNDO_VISIBLE_MILLIS)
+        onShown()
+    }
+    PlacesBanner(
+        modifier = modifier,
+        text = String.format(
+            stringResource(R.string.place_deleted),
+            deleted.place.geolocation.city,
+            deleted.place.displayCountry()
+        ),
+        accent = LocalWeatherPalette.current.red,
+        actionLabel = stringResource(R.string.action_undo),
+        onAction = onUndo
     )
+}
+
+/** How long the refresh outcome stays on screen before clearing itself. */
+private const val OUTCOME_VISIBLE_MILLIS = 2000L
+
+/** Height of the band the pull opens above the list, where the indicator sits. */
+private val PULL_INDICATOR_HEIGHT = 84.dp
+
+/** How far the cards fade while a refresh runs. */
+private const val REFRESHING_CARDS_ALPHA = 0.55f
+
+/**
+ * The pull-to-refresh indicator, in three steps: an arc filling with the distance pulled, a full
+ * badge once letting go will refresh, and that badge spinning while the places are fetched, with
+ * how many are done - each place is a request of its own, so there is a real wait to count down.
+ */
+@Composable
+private fun PullToRefreshIndicator(
+    distanceFraction: Float,
+    isRefreshing: Boolean,
+    refreshProgress: RefreshProgress?,
+    modifier: Modifier = Modifier
+) {
+    val palette = LocalWeatherPalette.current
+    val accent = MaterialTheme.colorScheme.primary
+    val readyToRelease = !isRefreshing && distanceFraction >= 1f
+    val armed = isRefreshing || readyToRelease
 
     Column(
+        modifier = modifier
+            .height(PULL_INDICATOR_HEIGHT)
+            .padding(top = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(top = 12.dp)
+        verticalArrangement = Arrangement.spacedBy(9.dp)
     ) {
-        Canvas(
-            modifier = Modifier
-                .width(30.dp)
-                .height(38.dp)
-                .graphicsLayer {
-                    scaleX = scale
-                    scaleY = scale
-                    transformOrigin = TransformOrigin(0.5f, 0f)
+        Box(modifier = Modifier.size(34.dp), contentAlignment = Alignment.Center) {
+            if (armed) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(CircleShape)
+                        .background(accent.copy(alpha = 0.14f))
+                        .border(1.dp, accent.copy(alpha = 0.4f), CircleShape)
+                )
+            }
+            when {
+                isRefreshing -> CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    color = accent,
+                    trackColor = accent.copy(alpha = 0.25f),
+                    strokeWidth = 2.dp
+                )
+                readyToRelease -> Canvas(modifier = Modifier.size(20.dp)) {
+                    //  A clock face: the data's time is what letting go will change.
+                    val unit = size.minDimension / 26f
+                    val stroke = Stroke(width = 2.2f * unit, cap = StrokeCap.Round)
+                    drawCircle(color = accent, radius = 9.8f * unit, style = stroke)
+                    drawLine(accent, Offset(13f * unit, 7.5f * unit), Offset(13f * unit, 13.5f * unit),
+                        strokeWidth = stroke.width, cap = StrokeCap.Round)
+                    drawLine(accent, Offset(13f * unit, 13.5f * unit), Offset(17f * unit, 15.9f * unit),
+                        strokeWidth = stroke.width, cap = StrokeCap.Round)
                 }
-        ) {
-            //  A teardrop: apex at the top, circular bowl at the bottom, the sides curving between
-            //  the two. The previous version drew a full-width rectangle, which is why pulling the
-            //  list painted a slab across the screen.
-            val radius = size.width / 2f
-            val centreX = size.width / 2f
-            val centreY = size.height - radius
-
-            val drop = Path().apply {
-                moveTo(centreX, 0f)
-                cubicTo(
-                    centreX + radius * 0.6f, radius * 0.75f,
-                    centreX + radius, centreY - radius * 0.75f,
-                    centreX + radius, centreY
-                )
-                arcTo(
-                    rect = Rect(
-                        left = centreX - radius,
-                        top = centreY - radius,
-                        right = centreX + radius,
-                        bottom = centreY + radius
-                    ),
-                    startAngleDegrees = 0f,
-                    sweepAngleDegrees = 180f,
-                    forceMoveTo = false
-                )
-                cubicTo(
-                    centreX - radius, centreY - radius * 0.75f,
-                    centreX - radius * 0.6f, radius * 0.75f,
-                    centreX, 0f
-                )
-                close()
+                else -> Canvas(modifier = Modifier.size(22.dp)) {
+                    //  Filled clockwise from the top as the pull deepens, over a faint full turn.
+                    val unit = size.minDimension / 26f
+                    val stroke = Stroke(width = 2.2f * unit, cap = StrokeCap.Round)
+                    val radius = 9.8f * unit
+                    val topLeft = Offset(center.x - radius, center.y - radius)
+                    val arcSize = Size(radius * 2, radius * 2)
+                    drawCircle(color = palette.textQuiet.copy(alpha = 0.25f), radius = radius, style = stroke)
+                    drawArc(
+                        color = palette.textQuiet,
+                        startAngle = -90f,
+                        sweepAngle = 360f * distanceFraction.coerceIn(0f, 1f),
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = stroke
+                    )
+                }
             }
-
-            //  Water rising inside the outline as the pull deepens.
-            clipPath(drop) {
-                drawRect(
-                    color = fill,
-                    topLeft = Offset(0f, size.height * (1f - progress)),
-                    size = Size(size.width, size.height * progress)
-                )
-            }
-
-            drawPath(
-                path = drop,
-                color = outline,
-                style = Stroke(width = 2.dp.toPx())
-            )
         }
 
-        if (showReleaseText) {
+        Text(
+            text = when {
+                isRefreshing && refreshProgress != null -> stringResource(
+                    R.string.status_refreshing_progress,
+                    refreshProgress.done,
+                    refreshProgress.total
+                )
+                armed -> stringResource(R.string.action_release_to_refresh)
+                else -> stringResource(R.string.action_pull_to_refresh)
+            },
+            color = if (armed) accent else palette.textQuiet,
+            fontSize = 10.5.sp,
+            fontWeight = if (readyToRelease) FontWeight.Medium else FontWeight.Normal
+        )
+    }
+}
+
+/** "France" rather than "FR", as on the cards; the code itself when it has no name (§12.13). */
+private fun Place.displayCountry(): String =
+    countryNameFromCode(geolocation.countryCode).ifEmpty { geolocation.countryCode.uppercase() }
+
+/**
+ * Asks before a swiped place goes: its name in full, keeping on the left, deleting on the right in
+ * the red of destructive actions.
+ */
+@Composable
+private fun DeletePlaceDialog(
+    place: Place,
+    onKeep: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val palette = LocalWeatherPalette.current
+    val shape = RoundedCornerShape(16.dp)
+    Dialog(onDismissRequest = onKeep) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(shape)
+                .background(palette.screen)
+                .border(1.dp, palette.outlineStrong, shape)
+                .padding(16.dp)
+        ) {
             Text(
-                text = stringResource(R.string.action_release_to_refresh),
-                style = MaterialTheme.typography.labelSmall,
-                color = outline,
-                textAlign = TextAlign.Center,
+                text = stringResource(R.string.dialog_confirmation_title_delete_place),
+                color = palette.textPrimary,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = String.format(
+                    stringResource(R.string.dialog_confirmation_message_delete_place),
+                    place.geolocation.city,
+                    place.displayCountry()
+                ),
+                color = palette.textSecondary,
+                fontSize = 12.sp,
+                lineHeight = 17.sp,
                 modifier = Modifier.padding(top = 6.dp)
             )
+            Row(
+                modifier = Modifier.padding(top = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(9.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(CircleShape)
+                        .border(1.dp, palette.outlineStrong, CircleShape)
+                        .clickable(onClick = onKeep)
+                        .padding(vertical = 11.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.dialog_confirmation_choice_no),
+                        color = palette.textPrimary,
+                        fontSize = 12.sp
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(CircleShape)
+                        .background(palette.red)
+                        .clickable(onClick = onDelete)
+                        .padding(vertical = 11.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.dialog_confirmation_choice_yes),
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
         }
     }
 }
 
-// Preview of PullToRefreshDropIndicator
-@Preview
+/**
+ * The list's snackbar, left to report a place that could not be added: on the same ground as the
+ * deletion banner rather than Material's inverted one.
+ */
 @Composable
-fun PullToRefreshDropIndicatorPreview() {
-    PullToRefreshDropIndicator(
-        displayedDragY = 120f,
-        pullThreshold = 80f,
-        showReleaseText = true
-    )
-    Spacer(modifier = Modifier.height(96.dp))
-    Spacer(modifier = Modifier.height(96.dp))
-    
+private fun PlacesSnackbar(data: SnackbarData) {
+    val palette = LocalWeatherPalette.current
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(14.dp))
+            .background(palette.textPrimary.copy(alpha = 0.09f).compositeOver(palette.screen))
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = data.visuals.message,
+            color = palette.textPrimary,
+            fontSize = 12.sp,
+            modifier = Modifier.weight(1f)
+        )
+        data.visuals.actionLabel?.let { label ->
+            Text(
+                text = label,
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.clickable { data.performAction() }
+            )
+        }
+    }
 }
 
 @Composable
@@ -771,19 +921,25 @@ private fun SwipeablePlaceItem(
     val scope = rememberCoroutineScope()
     val dismissState = rememberSwipeToDismissBoxState()
 
-    // Détecte une seule fois si on hérite d'un état non-Settled (après Undo)
-    // et le reset silencieusement sans appeler onSwipedPastThreshold()
-    LaunchedEffect(Unit) {
-        if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
-            scope.launch { dismissState.reset() }
-        }
+    //  The swipe state is saved under the place's key, so a place brought back by Undo comes back
+    //  still swiped away. That inherited state is reset silently, without asking again. It used
+    //  to be reset by an effect of its own, which ran alongside the one below and lost the race:
+    //  the confirmation reopened for the place just restored.
+    var inheritedSwipe by remember {
+        mutableStateOf(dismissState.currentValue != SwipeToDismissBoxValue.Settled)
     }
 
     // Logique normale du swipe : appelle onSwipedPastThreshold() avec le callback reset
     LaunchedEffect(dismissState.currentValue) {
-        if (dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
-            onSwipedPastThreshold { scope.launch { dismissState.reset() } }
-            scope.launch { dismissState.reset() }
+        when {
+            dismissState.currentValue == SwipeToDismissBoxValue.Settled -> inheritedSwipe = false
+            //  Snapped, not animated: the card is only just back in the list, and an animated reset
+            //  started there stopped halfway, leaving the card half swiped.
+            inheritedSwipe -> dismissState.snapTo(SwipeToDismissBoxValue.Settled)
+            else -> {
+                onSwipedPastThreshold { scope.launch { dismissState.reset() } }
+                scope.launch { dismissState.reset() }
+            }
         }
     }
 
@@ -798,21 +954,49 @@ private fun SwipeablePlaceItem(
             val offsetPx = runCatching<Float> { dismissState.requireOffset() }.getOrDefault(0f)
             val alpha = (kotlin.math.abs(offsetPx) / fullAlphaPx).coerceIn(0f, 1f)
             val isStart = offsetPx > 0f
+            val palette = LocalWeatherPalette.current
+            val red = palette.red
+            //  Past the threshold, letting go will ask to delete: the banner deepens and says so.
+            val armed = dismissState.targetValue != SwipeToDismissBoxValue.Settled
+            val fill by animateFloatAsState(
+                targetValue = if (armed) 0.18f else 0.09f,
+                label = "swipeFill"
+            )
+            val shape = RoundedCornerShape(if (hero) 24.dp else 22.dp)
 
+            //  The banners' look - a faint red ground under a red outline - rather than a slab of
+            //  solid red, faded in with the distance swiped.
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(5.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFE01C15).copy(alpha = alpha)),
+                    //  Behind the card exactly: its margins and its corners.
+                    .padding(horizontal = 16.dp, vertical = 5.dp)
+                    .graphicsLayer { this.alpha = alpha }
+                    .clip(shape)
+                    .background(red.copy(alpha = fill))
+                    .border(1.dp, red.copy(alpha = 0.36f), shape),
                 contentAlignment = if (isStart) Alignment.CenterStart else Alignment.CenterEnd
             ) {
-                Icon(
-                    imageVector = Icons.Filled.Delete,
-                    contentDescription = stringResource(R.string.description_delete_icon),
-                    tint = Color.White.copy(alpha = alpha),
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
+                Row(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = stringResource(R.string.description_delete_icon),
+                        tint = red,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = stringResource(
+                            if (armed) R.string.action_release_to_delete else R.string.action_delete
+                        ),
+                        color = palette.textSecondary,
+                        fontSize = 12.5.sp,
+                        fontWeight = if (armed) FontWeight.Medium else FontWeight.Normal
+                    )
+                }
             }
         }
     ) {

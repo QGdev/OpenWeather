@@ -72,8 +72,12 @@
 	<string name="error_cannot_refresh_place_list">Impossible de rafraîchir les lieux</string>
 	<string name="dialog_confirmation_title_delete_place">Supprimer un lieu</string>
 	<string name="dialog_confirmation_message_delete_place"><![CDATA[Supprimer %s, %s ?]]></string>
-	<string name="dialog_confirmation_choice_yes">Oui, supprimez-le</string>
-	<string name="dialog_confirmation_choice_no">Non, gardez-le</string>
+	<string name="dialog_confirmation_choice_yes">Oui, supprimer</string>
+	<string name="dialog_confirmation_choice_no">Non, garder</string>
+	<string name="place_deleted"><![CDATA[%s, %s supprimée]]></string>
+	<string name="action_undo">Annuler</string>
+	<string name="action_delete">Supprimer</string>
+	<string name="action_release_to_delete">Relâchez pour supprimer</string>
 	<string name="title_precipitations_1h">Précipitations - 1h</string>
 	<string name="title_precipitation_rain">Pluie :</string>
 	<string name="title_precipitation_snow">Neige :</string>
@@ -206,7 +210,9 @@
     <string name="title_settings_update_period_12h">Toutes les 12 heures</string>
     <string name="description_precipitations_1h">Volume des précipitations dans l\'heure</string>
     <string name="title_dialog_about_app">À propos</string>
-    <string name="action_release_to_refresh">Relâcher pour rafraîchir</string>
+    <string name="action_pull_to_refresh">Tirez pour actualiser</string>
+    <string name="action_release_to_refresh">Relâchez pour actualiser</string>
+    <string name="status_refreshing_progress">Actualisation… %1$d sur %2$d</string>
 	<string name="label_wind">Vent</string>
 	<string name="action_retry">Réessayer</string>
 	<string name="status_update_failed_values_from">Mise à jour échouée · valeurs de %1$s</string>
