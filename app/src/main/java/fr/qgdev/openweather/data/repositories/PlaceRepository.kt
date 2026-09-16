@@ -294,9 +294,13 @@ class PlaceRepository private constructor(context: Context) {
      * Updates all stored places from the web concurrently.
      * Uses CompletableDeferred to properly await Volley's async callbacks.
      *
+     * @param onProgress told how many places are done, out of how many, each time one finishes -
+     * whether it succeeded or not - so a refresh can be counted down as it runs.
      * @return Pair(successCount, errorCount)
      */
-    suspend fun updateAllPlacesFromWeb(): Pair<Int, Int> {
+    suspend fun updateAllPlacesFromWeb(
+        onProgress: (done: Int, total: Int) -> Unit = { _, _ -> }
+    ): Pair<Int, Int> {
         android.util.Log.d("PlaceRepository", "🔄 [updateAllPlacesFromWeb] Starting...")
         
         val placeStorage = dataStore.data.first()
@@ -310,6 +314,8 @@ class PlaceRepository private constructor(context: Context) {
 
         val successCount = AtomicInteger(0)
         val errorCount = AtomicInteger(0)
+        val doneCount = AtomicInteger(0)
+        onProgress(0, keys.size)
 
         android.util.Log.d("PlaceRepository", "   Launching ${keys.size} coroutines in parallel...")
         
@@ -356,6 +362,7 @@ class PlaceRepository private constructor(context: Context) {
                         android.util.Log.e("PlaceRepository", "   💥 Exception in update for placeId=$placeId: ${e.message}", e)
                         errorCount.incrementAndGet()
                     }
+                    onProgress(doneCount.incrementAndGet(), keys.size)
                 }
             }
 
