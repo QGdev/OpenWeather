@@ -385,7 +385,10 @@ class MainActivity : AppCompatActivity() {
                         settingsViewModel = settingsViewModel,
                         onBack = {
                             placeViewModel.clearSelectedPlace()
-                            navController.popBackStack()
+                            //  Pops the detail screen only: clearing the selection sends the
+                            //  screen, still composed while it animates out, back through here,
+                            //  and a plain popBackStack() would then pop Places as well.
+                            navController.popBackStack(PLACE_DETAIL_ROUTE, inclusive = true)
                         }
                     )
                 }

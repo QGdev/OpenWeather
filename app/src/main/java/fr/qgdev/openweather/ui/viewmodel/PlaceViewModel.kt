@@ -46,6 +46,11 @@ class PlaceViewModel(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
+    //  How far the running refresh has got, for the indicator's "2 of 4": each place is a request
+    //  of its own, and with several places the wait is long enough to want counting down.
+    private val _refreshProgress = MutableStateFlow<RefreshProgress?>(null)
+    val refreshProgress: StateFlow<RefreshProgress?> = _refreshProgress.asStateFlow()
+
     //  The place being downloaded after a search, so the list can show it arriving.
     private val _pendingPlaceName = MutableStateFlow<String?>(null)
     val pendingPlaceName: StateFlow<String?> = _pendingPlaceName.asStateFlow()
@@ -222,7 +227,9 @@ class PlaceViewModel(
 
         viewModelScope.launch {
             try {
-                val (succeeded, failed) = placeRepository.updateAllPlacesFromWeb()
+                val (succeeded, failed) = placeRepository.updateAllPlacesFromWeb { done, total ->
+                    _refreshProgress.value = RefreshProgress(done, total)
+                }
                 _lastRefreshOutcome.value = RefreshOutcome(
                     succeeded = succeeded,
                     failed = failed,
@@ -230,6 +237,7 @@ class PlaceViewModel(
                 )
             } finally {
                 _isRefreshing.value = false
+                _refreshProgress.value = null
             }
         }
     }
@@ -259,4 +267,10 @@ data class RefreshOutcome(
     val succeeded: Int,
     val failed: Int,
     val finishedAt: Long
+)
+
+/** How many places a running refresh has finished, out of how many it has to fetch. */
+data class RefreshProgress(
+    val done: Int,
+    val total: Int
 )

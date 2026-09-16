@@ -20,6 +20,8 @@
 
 package fr.qgdev.openweather.ui.fragment.place
 
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -54,6 +56,7 @@ fun PlacesBanner(
     text: String,
     accent: Color,
     modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
     actionLabel: String? = null,
     onAction: () -> Unit = {}
 ) {
@@ -68,12 +71,22 @@ fun PlacesBanner(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(5.dp)
-                .clip(CircleShape)
-                .background(accent)
-        )
+        //  A dot marks the state; an icon, where given, says it outright - the check of "up to date".
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = accent,
+                modifier = Modifier.size(14.dp)
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(5.dp)
+                    .clip(CircleShape)
+                    .background(accent)
+            )
+        }
         Text(
             text = text,
             color = palette.textSecondary,
