@@ -19,6 +19,8 @@
  */
 package fr.qgdev.openweather
 
+import androidx.compose.runtime.saveable.rememberSaveable
+import fr.qgdev.openweather.ui.onboarding.OnboardingFlow
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -152,7 +154,24 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             AppTheme {
-                MainScreen()
+                //  Read from the repository, not the ViewModel: the ViewModel starts from default
+                //  settings, which would flash the onboarding at every launch before the real ones
+                //  arrive.
+                val settings by settingsRepository.settingsFlow.collectAsState()
+                var replayingOnboarding by rememberSaveable { mutableStateOf(false) }
+
+                if (settings.onboardingVersion == null || replayingOnboarding) {
+                    OnboardingFlow(
+                        settingsRepository = settingsRepository,
+                        placeViewModel = placeViewModel,
+                        onFinished = {
+                            settingsRepository.setOnboardingVersion(BuildConfig.VERSION_NAME)
+                            replayingOnboarding = false
+                        }
+                    )
+                } else {
+                    MainScreen(onReplayOnboarding = { replayingOnboarding = true })
+                }
             }
         }
     }
@@ -295,7 +314,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
-    fun MainScreen() {
+    fun MainScreen(onReplayOnboarding: () -> Unit = {}) {
         val navController = rememberNavController()
         val items = listOf(
             Screen.Places,
@@ -376,6 +395,16 @@ class MainActivity : AppCompatActivity() {
                         onOpenPlace = { place ->
                             placeViewModel.selectPlace(place)
                             navController.navigate(PLACE_DETAIL_ROUTE)
+                        },
+                        //  As the tab does, so Back and the tab bar behave the same after it.
+                        onOpenSettings = {
+                            navController.navigate(Screen.Settings.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     )
                 }
@@ -398,7 +427,8 @@ class MainActivity : AppCompatActivity() {
                     val places by placeViewModel.placesState.collectAsState()
                     SettingsScreenView(
                         settingsRepository = settingsRepository,
-                        places = places
+                        places = places,
+                        onReplayOnboarding = onReplayOnboarding
                     )
                 }
 
