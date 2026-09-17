@@ -19,11 +19,15 @@
  */
 package fr.qgdev.openweather.ui.fragment.place
 
+import fr.qgdev.openweather.data.repositories.RefreshProblem
+import fr.qgdev.openweather.ui.onboarding.API_KEY_LENGTH
+import fr.qgdev.openweather.ui.onboarding.isWellFormedApiKey
+import fr.qgdev.openweather.ui.onboarding.FirstPlaceCard
+import fr.qgdev.openweather.ui.onboarding.ApiKeyDialog
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.clickable
 import fr.qgdev.openweather.ui.utils.countryNameFromCode
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.material3.SnackbarData
 import androidx.compose.ui.window.Dialog
 import androidx.compose.foundation.layout.Arrangement
 import fr.qgdev.openweather.ui.viewmodel.RefreshProgress
@@ -64,8 +68,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
@@ -152,7 +154,8 @@ import kotlinx.coroutines.launch
 fun PlacesScreenView(
     placeViewModel: PlaceViewModel,
     settingsViewModel: SettingsViewModel,
-    onOpenPlace: (Place) -> Unit = {}
+    onOpenPlace: (Place) -> Unit = {},
+    onOpenSettings: () -> Unit = {}
 ) {
     val data by placeViewModel.placesState.collectAsState()
     val isRefreshing by placeViewModel.isRefreshing.collectAsState(initial = false)
@@ -160,14 +163,17 @@ fun PlacesScreenView(
     val refreshProgress by placeViewModel.refreshProgress.collectAsState()
     val pendingPlaceName by placeViewModel.pendingPlaceName.collectAsState()
     val addPlaceFailure by placeViewModel.addPlaceFailure.collectAsState()
+    val refreshProblem by placeViewModel.refreshProblem.collectAsState()
+    val placesRefreshing by placeViewModel.placesRefreshing.collectAsState()
     val settings by settingsViewModel.settingsState.collectAsState()
     //  Republished as a new instance on every settings change, which is what makes the cards
     //  below redraw when a unit changes.
     val formattingService by settingsViewModel.formattingServiceState.collectAsState()
-    val isApiKeyRegistered = settings?.apiKey?.isNotEmpty() ?: false
-    val isApiKeyValid = settings?.apiKey?.length == 32
+    val apiKey = settings?.apiKey.orEmpty()
+    val isApiKeyValid = isWellFormedApiKey(apiKey)
+    var apiKeyDialogOpened by remember { mutableStateOf(false) }
+    var addPlaceDialogOpened by remember { mutableStateOf(false) }
 
-    val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
 
     //  The place just deleted, offered back at the top of the list for a while.
@@ -179,162 +185,149 @@ fun PlacesScreenView(
         recentlyDeleted = null
     }
 
+    //  What the banners at the top of the list report, whether the list has places or not.
+    //  A refused key is about the key it was refused with: changing the key clears it, rather
+    //  than keeping the banner up until the next refresh proves the new one.
+    var keyOfProblem by remember { mutableStateOf(apiKey) }
+    LaunchedEffect(apiKey) {
+        if (apiKey != keyOfProblem) {
+            keyOfProblem = apiKey
+            if (refreshProblem?.status == RequestStatus.AUTH_FAILED) placeViewModel.clearRefreshProblem()
+        }
+    }
+
+    val banners = PlacesBannersState(
+        apiKey = apiKey,
+        onFixApiKey = { apiKeyDialogOpened = true },
+        addFailure = addPlaceFailure,
+        onAddFailureShown = { placeViewModel.acknowledgeAddPlaceFailure() },
+        refreshProblem = refreshProblem,
+        onOpenSettings = onOpenSettings,
+        //  The oldest observation on screen: what "offline" leaves the user reading.
+        dataTime = data.orEmpty().map { it.currentWeather.dt }.filter { it > 0 }.minOrNull(),
+        nextPeriodicUpdate = refreshProblem?.takeIf { settings?.periodicUpdateEnabled == true }
+            ?.let { it.at + settings!!.updatePeriod.durationMillis },
+        //  A refresh the pull did not start - the periodic worker's - has no indicator of its own.
+        backgroundRefreshCount = placesRefreshing.takeIf { !isRefreshing } ?: 0,
+        refreshOutcome = refreshOutcome,
+        onRefreshOutcomeShown = { placeViewModel.acknowledgeRefreshOutcome() },
+        recentlyDeleted = recentlyDeleted,
+        onUndoDelete = undoDelete,
+        onDeletedShown = { recentlyDeleted = null }
+    )
+
     AppTheme {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            if (isApiKeyRegistered) {
-                if (isApiKeyValid) {
-                    when {
-                        data == null -> { /* chargement en cours : rien à afficher */ }
-                        data!!.isEmpty() -> {
-                            NoPlacesRegisteredMessage(
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .padding(16.dp)
-                            )
-                            //  The last place deleted takes the list with it; the undo stays.
-                            recentlyDeleted?.let { deleted ->
-                                DeletedPlaceBanner(
-                                    deleted = deleted,
-                                    onUndo = { undoDelete(deleted) },
-                                    onShown = { recentlyDeleted = null },
-                                    modifier = Modifier
-                                        .align(Alignment.TopCenter)
-                                        .padding(horizontal = 20.dp, vertical = 12.dp)
-                                )
-                            }
-                        }
-                        else -> {
-                            LoadPlacesScreen(
-                                settingsViewModel = settingsViewModel
-                            ) {
-                                PlacesList(
-                                    placeList = data!!,
-                                    formattingService = formattingService,
-                                    lazyListState = lazyListState,
-                                    isRefreshing = isRefreshing,
-                                    refreshProgress = refreshProgress,
-                                    refreshOutcome = refreshOutcome,
-                                    recentlyDeleted = recentlyDeleted,
-                                    onUndoDelete = undoDelete,
-                                    onDeletedShown = { recentlyDeleted = null },
-                                    pendingPlaceName = pendingPlaceName,
-                                    onRefreshOutcomeShown = { placeViewModel.acknowledgeRefreshOutcome() },
-                                    onOpenPlace = onOpenPlace,
-                                    onRefresh = { placeViewModel.refreshAllPlaces() },
-                                    onMovePlace = { from, to ->
-                                        placeViewModel.movePlace(from, to)
-                                    },
-                                    onDismiss = { place, index ->
-                                        placeViewModel.deletePlace(place)
-                                        recentlyDeleted = DeletedPlace(place, index)
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    AddPlaceFloatingActionButton(
-                        modifier = Modifier
-                            .padding(32.dp)
-                            .align(Alignment.BottomEnd),
-                        placeViewModel = placeViewModel,
-                        //  Labelled while the list is at rest, icon-only once scrolled: the label
-                        //  says what the button does, but it should not sit over the cards being read.
-                        expanded = lazyListState.firstVisibleItemIndex == 0 &&
-                                lazyListState.firstVisibleItemScrollOffset == 0
-                    )
-                } else {
-                    InvalidApiKeyMessage(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(16.dp)
+            //  The onboarding asks for the key before the tabs are reached. A key missing or
+            //  malformed afterwards - edited in the settings - is a banner over the places, which
+            //  stay readable, rather than a screen in their place.
+            when {
+                data == null -> { /* chargement en cours : rien à afficher */ }
+                data!!.isEmpty() -> {
+                    EmptyPlacesScreen(
+                        banners = banners,
+                        onAddPlace = if (isApiKeyValid) ({ addPlaceDialogOpened = true }) else null
                     )
                 }
-            } else {
-                NoApiKeyMessage(
+                else -> {
+                    LoadPlacesScreen {
+                        PlacesList(
+                            placeList = data!!,
+                            formattingService = formattingService,
+                            lazyListState = lazyListState,
+                            isRefreshing = isRefreshing,
+                            refreshProgress = refreshProgress,
+                            banners = banners,
+                            pendingPlaceName = pendingPlaceName,
+                            onOpenPlace = onOpenPlace,
+                            onRefresh = { placeViewModel.refreshAllPlaces() },
+                            onMovePlace = { from, to ->
+                                placeViewModel.movePlace(from, to)
+                            },
+                            onDismiss = { place, index ->
+                                placeViewModel.deletePlace(place)
+                                recentlyDeleted = DeletedPlace(place, index)
+                            }
+                        )
+                    }
+                }
+            }
+            //  Adding a place needs a key to fetch its weather with.
+            if (isApiKeyValid) {
+                AddPlaceFloatingActionButton(
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(16.dp)
+                        .padding(32.dp)
+                        .align(Alignment.BottomEnd),
+                    onClick = { addPlaceDialogOpened = true },
+                    //  Labelled while the list is at rest, icon-only once scrolled: the label
+                    //  says what the button does, but it should not sit over the cards being read.
+                    expanded = lazyListState.firstVisibleItemIndex == 0 &&
+                            lazyListState.firstVisibleItemScrollOffset == 0
                 )
             }
 
-            //  A first download that fails leaves nothing behind - no half-built card in the list -
-            //  so the failure has to be said out loud or the place would simply never appear.
-            val addFailureMessage = addPlaceFailure?.let { stringResource(addPlaceErrorRes(it)) }
-            LaunchedEffect(addPlaceFailure) {
-                if (addFailureMessage != null) {
-                    snackbarHostState.showSnackbar(addFailureMessage)
-                    placeViewModel.acknowledgeAddPlaceFailure()
-                }
+            if (addPlaceDialogOpened) {
+                AddPlaceDialog(
+                    placeViewModel = placeViewModel,
+                    onDismissRequest = { addPlaceDialogOpened = false }
+                )
+            }
+            if (apiKeyDialogOpened) {
+                ApiKeyDialog(
+                    currentKey = apiKey,
+                    onSave = { settingsViewModel.setApiKey(it) },
+                    onDismissRequest = { apiKeyDialogOpened = false }
+                )
             }
 
-            SnackbarHost(
-                hostState = snackbarHostState,
+        }
+    }
+}
+
+/**
+ * No places yet: the title and banners as over a list, and in the middle the invitation to add
+ * a first one - the add button alone is easy to miss. Without a key there is nothing to add with,
+ * and the banner saying so is left alone.
+ */
+@Composable
+private fun EmptyPlacesScreen(
+    banners: PlacesBannersState,
+    onAddPlace: (() -> Unit)?
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(LocalWeatherPalette.current.screen)
+    ) {
+        PlacesHeader(banners)
+        if (onAddPlace != null) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 80.dp) // au-dessus de la NavigationBar
-            ) { data -> PlacesSnackbar(data) }
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 60.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                FirstPlaceCard(onAddPlace = onAddPlace)
+            }
         }
     }
 }
 
 @Composable
-private fun InvalidApiKeyMessage(
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = stringResource(id = R.string.error_api_key_incorrectly_formed),
-        modifier = modifier,
-        textAlign = TextAlign.Center,
-        fontSize = 18.sp
-    )
-}
-
-@Composable
-private fun NoApiKeyMessage(
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = stringResource(id = R.string.error_no_api_key_registered),
-        modifier = modifier,
-        textAlign = TextAlign.Center,
-        fontSize = 18.sp
-    )
-}
-
-@Composable
-private fun NoPlacesRegisteredMessage(
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = stringResource(id = R.string.error_no_places_registered),
-        modifier = modifier,
-        textAlign = TextAlign.Center,
-        color = colorResource(id = R.color.colorFirstText),
-        fontSize = 18.sp
-    )
-}
-
-@Composable
 private fun AddPlaceFloatingActionButton(
     modifier: Modifier = Modifier,
-    placeViewModel: PlaceViewModel,
     expanded: Boolean = true,
-    onClick: () -> Unit = {},
+    onClick: () -> Unit
 ) {
-    val addPlaceDialogOpened = remember { mutableStateOf(false) }
-    val palette = LocalWeatherPalette.current
-
     ExtendedFloatingActionButton(
         modifier = modifier,
         expanded = expanded,
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
-        onClick = {
-            onClick()
-            addPlaceDialogOpened.value = true
-        },
+        onClick = onClick,
         icon = {
             Icon(
                 imageVector = Icons.Filled.Add,
@@ -343,34 +336,21 @@ private fun AddPlaceFloatingActionButton(
         },
         text = { Text(text = stringResource(id = R.string.title_dialog_add_place)) }
     )
-
-    if (addPlaceDialogOpened.value) {
-        AddPlaceDialog(
-            placeViewModel = placeViewModel,
-            onDismissRequest = {
-                addPlaceDialogOpened.value = false
-            }
-        )
-    }
 }
 
 @Composable
 fun LoadPlacesScreen(
-    settingsViewModel: SettingsViewModel,
     content: @Composable () -> Unit
 ) {
-    MutableStateFlow(false)
-
-    if (settingsViewModel.isApiKeyRegistered() && settingsViewModel.isApiKeyValid()) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                //  The redesign's ground, as on the other screens: the old colorBackground resource is
-                //  pure white in light mode, a shade apart from the bars around it.
-                .background(color = LocalWeatherPalette.current.screen)
-        ) {
-            content()
-        }
+    //  No longer gated on the key: without one, the places stay on screen under a banner.
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            //  The redesign's ground, as on the other screens: the old colorBackground resource is
+            //  pure white in light mode, a shade apart from the bars around it.
+            .background(color = LocalWeatherPalette.current.screen)
+    ) {
+        content()
     }
 }
 
@@ -381,12 +361,8 @@ private fun PlacesList(
     lazyListState: LazyListState = rememberLazyListState(),
     isRefreshing: Boolean = false,
     refreshProgress: RefreshProgress? = null,
-    refreshOutcome: RefreshOutcome? = null,
-    recentlyDeleted: DeletedPlace? = null,
-    onUndoDelete: (DeletedPlace) -> Unit = {},
-    onDeletedShown: () -> Unit = {},
+    banners: PlacesBannersState,
     pendingPlaceName: String? = null,
-    onRefreshOutcomeShown: () -> Unit = {},
     onOpenPlace: (Place) -> Unit = {},
     onRefresh: () -> Unit = {},
     onDismiss: (Place, Int) -> Unit = { _, _ -> },
@@ -509,13 +485,7 @@ private fun PlacesList(
             //  a protobuf message does not. Passing the message itself compiles and then throws
             //  when the list state is saved.
             item(key = "header") {
-                PlacesHeader(
-                    refreshOutcome = refreshOutcome,
-                    onOutcomeShown = onRefreshOutcomeShown,
-                    recentlyDeleted = recentlyDeleted,
-                    onUndoDelete = onUndoDelete,
-                    onDeletedShown = onDeletedShown
-                )
+                PlacesHeader(banners)
             }
             itemsIndexed(
                 items = orderedPlaces,
@@ -575,23 +545,59 @@ private fun PlacesList(
     }
 }
 
+/** Everything the banners at the top of the list may have to say, and what they act on. */
+private class PlacesBannersState(
+    val apiKey: String,
+    val onFixApiKey: () -> Unit,
+    val addFailure: RequestStatus?,
+    val onAddFailureShown: () -> Unit,
+    val refreshProblem: RefreshProblem?,
+    val onOpenSettings: () -> Unit,
+    val dataTime: Long?,
+    val nextPeriodicUpdate: Long?,
+    val backgroundRefreshCount: Int,
+    val refreshOutcome: RefreshOutcome?,
+    val onRefreshOutcomeShown: () -> Unit,
+    val recentlyDeleted: DeletedPlace?,
+    val onUndoDelete: (DeletedPlace) -> Unit,
+    val onDeletedShown: () -> Unit
+)
+
 /**
- * The screen's title, and the one line reporting how the last refresh went.
+ * The screen's title, and the one banner under it.
  *
- * A refresh used to end in silence: the indicator retracted whether four places had been updated or
- * none. The outcome is announced and then cleared, so it reads as the result of the gesture just
- * made rather than as a permanent state.
+ * One at a time. What answers a gesture just made comes first, since it will not wait: the undo
+ * of a deletion, a place that could not be added. Then the canvas's order - a refused key, a
+ * malformed one, no network, the quota, a refresh running in the background - and last how the
+ * last pull went. A refresh used to end in silence, so its outcome is announced and then cleared,
+ * reading as the result of the gesture rather than as a state of the list.
  */
 @Composable
-private fun PlacesHeader(
-    refreshOutcome: RefreshOutcome?,
-    onOutcomeShown: () -> Unit,
-    recentlyDeleted: DeletedPlace?,
-    onUndoDelete: (DeletedPlace) -> Unit,
-    onDeletedShown: () -> Unit
-) {
+private fun PlacesHeader(banners: PlacesBannersState) {
     val palette = LocalWeatherPalette.current
     val formattingService = FormattingService.getInstance(LocalContext.current)
+    val refreshOutcome = banners.refreshOutcome
+    val recentlyDeleted = banners.recentlyDeleted
+    val apiKey = banners.apiKey
+    val addFailure = banners.addFailure
+    val problem = banners.refreshProblem?.status
+
+    //  Shown, then gone, even when another banner took its place meanwhile.
+    if (refreshOutcome != null) {
+        LaunchedEffect(refreshOutcome) {
+            delay(OUTCOME_VISIBLE_MILLIS)
+            banners.onRefreshOutcomeShown()
+        }
+    }
+    //  A first download that fails leaves nothing behind - no half-built card in the list - so the
+    //  failure has to be said, or the place would simply never appear.
+    if (addFailure != null) {
+        LaunchedEffect(addFailure) {
+            delay(ADD_FAILURE_VISIBLE_MILLIS)
+            banners.onAddFailureShown()
+        }
+    }
+    fun time(millis: Long) = formattingService.getFormattedTime(Date(millis), TimeZone.getDefault())
 
     Column(modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 12.dp)) {
         Text(
@@ -601,44 +607,86 @@ private fun PlacesHeader(
             fontWeight = FontWeight.SemiBold
         )
 
-        //  One banner at a time: the deletion is the gesture just made, so it goes first, and a
-        //  refresh outcome arriving meanwhile still clears itself on time.
-        if (recentlyDeleted != null) {
-            DeletedPlaceBanner(
+        when {
+            recentlyDeleted != null -> DeletedPlaceBanner(
                 deleted = recentlyDeleted,
-                onUndo = { onUndoDelete(recentlyDeleted) },
-                onShown = onDeletedShown,
+                onUndo = { banners.onUndoDelete(recentlyDeleted) },
+                onShown = banners.onDeletedShown,
                 modifier = Modifier.padding(top = 12.dp)
             )
-        }
-
-        if (refreshOutcome != null) {
-            //  Shown, then gone: the banner reports a gesture, it is not a state of the list.
-            LaunchedEffect(refreshOutcome) {
-                delay(OUTCOME_VISIBLE_MILLIS)
-                onOutcomeShown()
-            }
-        }
-
-        if (refreshOutcome != null && recentlyDeleted == null) {
-            val finishedAt = formattingService.getFormattedTime(
-                Date(refreshOutcome.finishedAt),
-                TimeZone.getDefault()
-            )
-            PlacesBanner(
+            addFailure != null -> PlacesBanner(
                 modifier = Modifier.padding(top = 12.dp),
-                text = if (refreshOutcome.failed > 0) {
-                    pluralStringResource(
-                        R.plurals.status_refresh_failed,
-                        refreshOutcome.failed,
-                        refreshOutcome.failed
-                    )
-                } else {
-                    stringResource(R.string.status_refresh_up_to_date, finishedAt)
-                },
-                accent = if (refreshOutcome.failed > 0) palette.orange else palette.green,
-                icon = if (refreshOutcome.failed > 0) null else Icons.Default.Check
+                text = stringResource(addPlaceErrorRes(addFailure)),
+                accent = palette.orange
             )
+            problem == RequestStatus.AUTH_FAILED -> PlacesBanner(
+                modifier = Modifier.padding(top = 12.dp),
+                text = stringResource(R.string.banner_api_key_refused),
+                accent = palette.red,
+                actionLabel = stringResource(R.string.title_settings),
+                onAction = banners.onOpenSettings
+            )
+            !isWellFormedApiKey(apiKey) -> PlacesBanner(
+                modifier = Modifier.padding(top = 12.dp),
+                text = when {
+                    apiKey.isEmpty() -> stringResource(R.string.banner_api_key_missing)
+                    apiKey.length < API_KEY_LENGTH ->
+                        stringResource(R.string.onboarding_key_too_short, apiKey.length, API_KEY_LENGTH)
+                    apiKey.length > API_KEY_LENGTH ->
+                        stringResource(R.string.onboarding_key_too_long, apiKey.length, API_KEY_LENGTH)
+                    else -> stringResource(R.string.onboarding_key_not_alphanumeric)
+                },
+                accent = palette.amber,
+                actionLabel = stringResource(
+                    if (apiKey.isEmpty()) R.string.action_add_key else R.string.action_fix
+                ),
+                onAction = banners.onFixApiKey
+            )
+            //  No "Retry": it states a passing condition, and pulling the list is already the way
+            //  to try again.
+            problem == RequestStatus.NOT_CONNECTED -> PlacesBanner(
+                modifier = Modifier.padding(top = 12.dp),
+                text = banners.dataTime?.let { stringResource(R.string.banner_offline_since, time(it)) }
+                    ?: stringResource(R.string.banner_offline),
+                accent = palette.orange
+            )
+            problem == RequestStatus.TOO_MANY_REQUESTS -> PlacesBanner(
+                modifier = Modifier.padding(top = 12.dp),
+                text = banners.nextPeriodicUpdate
+                    ?.let { stringResource(R.string.banner_quota_next_try, time(it)) }
+                    ?: stringResource(R.string.banner_quota),
+                accent = palette.amber
+            )
+            banners.backgroundRefreshCount > 0 -> PlacesBanner(
+                modifier = Modifier.padding(top = 12.dp),
+                text = pluralStringResource(
+                    R.plurals.banner_refreshing,
+                    banners.backgroundRefreshCount,
+                    banners.backgroundRefreshCount
+                ),
+                accent = MaterialTheme.colorScheme.primary,
+                tinted = false
+            )
+            refreshOutcome != null -> {
+                val finishedAt = formattingService.getFormattedTime(
+                    Date(refreshOutcome.finishedAt),
+                    TimeZone.getDefault()
+                )
+                PlacesBanner(
+                    modifier = Modifier.padding(top = 12.dp),
+                    text = if (refreshOutcome.failed > 0) {
+                        pluralStringResource(
+                            R.plurals.status_refresh_failed,
+                            refreshOutcome.failed,
+                            refreshOutcome.failed
+                        )
+                    } else {
+                        stringResource(R.string.status_refresh_up_to_date, finishedAt)
+                    },
+                    accent = if (refreshOutcome.failed > 0) palette.orange else palette.green,
+                    icon = if (refreshOutcome.failed > 0) null else Icons.Default.Check
+                )
+            }
         }
     }
 }
@@ -694,6 +742,9 @@ private fun DeletedPlaceBanner(
         onAction = onUndo
     )
 }
+
+/** How long a place that could not be added is reported. */
+private const val ADD_FAILURE_VISIBLE_MILLIS = 6000L
 
 /** How long the refresh outcome stays on screen before clearing itself. */
 private const val OUTCOME_VISIBLE_MILLIS = 2000L
@@ -875,40 +926,6 @@ private fun DeletePlaceDialog(
     }
 }
 
-/**
- * The list's snackbar, left to report a place that could not be added: on the same ground as the
- * deletion banner rather than Material's inverted one.
- */
-@Composable
-private fun PlacesSnackbar(data: SnackbarData) {
-    val palette = LocalWeatherPalette.current
-    Row(
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(palette.textPrimary.copy(alpha = 0.09f).compositeOver(palette.screen))
-            .padding(horizontal = 14.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = data.visuals.message,
-            color = palette.textPrimary,
-            fontSize = 12.sp,
-            modifier = Modifier.weight(1f)
-        )
-        data.visuals.actionLabel?.let { label ->
-            Text(
-                text = label,
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable { data.performAction() }
-            )
-        }
-    }
-}
 
 @Composable
 private fun SwipeablePlaceItem(
@@ -926,13 +943,15 @@ private fun SwipeablePlaceItem(
     //  to be reset by an effect of its own, which ran alongside the one below and lost the race:
     //  the confirmation reopened for the place just restored.
     var inheritedSwipe by remember {
-        mutableStateOf(dismissState.currentValue != SwipeToDismissBoxValue.Settled)
+        mutableStateOf(dismissState.settledValue != SwipeToDismissBoxValue.Settled)
     }
 
-    // Logique normale du swipe : appelle onSwipedPastThreshold() avec le callback reset
-    LaunchedEffect(dismissState.currentValue) {
+    //  Keyed on where the card has come to rest, not on currentValue: currentValue follows the
+    //  finger and turns to "dismissed" as soon as the threshold is crossed, so the confirmation
+    //  opened while the card was still held - under a background reading "Release to delete".
+    LaunchedEffect(dismissState.settledValue) {
         when {
-            dismissState.currentValue == SwipeToDismissBoxValue.Settled -> inheritedSwipe = false
+            dismissState.settledValue == SwipeToDismissBoxValue.Settled -> inheritedSwipe = false
             //  Snapped, not animated: the card is only just back in the list, and an animated reset
             //  started there stopped halfway, leaving the card half swiped.
             inheritedSwipe -> dismissState.snapTo(SwipeToDismissBoxValue.Settled)

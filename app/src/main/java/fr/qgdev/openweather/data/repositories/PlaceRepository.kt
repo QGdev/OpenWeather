@@ -20,6 +20,10 @@
 
 package fr.qgdev.openweather.data.repositories
 
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import android.content.Context
 import android.util.Log
 import fr.qgdev.openweather.data.models.Geolocation
@@ -65,6 +69,21 @@ class PlaceRepository private constructor(context: Context) {
     private val placeSearchingService = PlaceSearchingService.getInstance(context)
     private val dataStore = PlaceDataStore.getDataStore(context.applicationContext)
     private val applicationContext = context.applicationContext
+
+    //  What stopped the last refresh of every place, when it concerns them all - a refused key, no
+    //  network, the quota - for the list to say once in a banner rather than on each card. Held
+    //  here, not in a ViewModel, so a refresh run by the periodic worker reports it too.
+    private val _refreshProblem = MutableStateFlow<RefreshProblem?>(null)
+    val refreshProblem: StateFlow<RefreshProblem?> = _refreshProblem.asStateFlow()
+
+    /** Forgets the last refresh problem - the key it was about has just been changed. */
+    fun clearRefreshProblem() {
+        _refreshProblem.value = null
+    }
+
+    //  How many places a refresh is fetching right now, whoever started it; 0 when none runs.
+    private val _placesRefreshing = MutableStateFlow(0)
+    val placesRefreshing: StateFlow<Int> = _placesRefreshing.asStateFlow()
 
     val placesFlow: Flow<List<Place>> = dataStore.data
         .catch {exception ->
@@ -315,7 +334,9 @@ class PlaceRepository private constructor(context: Context) {
         val successCount = AtomicInteger(0)
         val errorCount = AtomicInteger(0)
         val doneCount = AtomicInteger(0)
+        val failures = ConcurrentLinkedQueue<RequestStatus>()
         onProgress(0, keys.size)
+        _placesRefreshing.value = keys.size
 
         android.util.Log.d("PlaceRepository", "   Launching ${keys.size} coroutines in parallel...")
         
@@ -341,6 +362,7 @@ class PlaceRepository private constructor(context: Context) {
                             }
                             override suspend fun onError(requestStatus: RequestStatus) {
                                 android.util.Log.d("PlaceRepository", "   ❌ Place $placeId: onError CALLBACK RECEIVED - $requestStatus")
+                                failures.add(requestStatus)
                                 errorCount.incrementAndGet()
                                 deferred.complete(Unit)
                             }
@@ -367,7 +389,12 @@ class PlaceRepository private constructor(context: Context) {
             }
 
             android.util.Log.d("PlaceRepository", "   Waiting for all coroutines to complete (${jobs.size})...")
-            jobs.awaitAll()
+            try {
+                jobs.awaitAll()
+            } finally {
+                _placesRefreshing.value = 0
+            }
+            _refreshProblem.value = RefreshProblem.of(failures, System.currentTimeMillis())
             
             android.util.Log.d("PlaceRepository", "   All coroutines completed!")
             android.util.Log.d("PlaceRepository", "✅ [updateAllPlacesFromWeb] Completed: ${successCount.get()} success, ${errorCount.get()} errors")
@@ -513,5 +540,27 @@ class PlaceRepository private constructor(context: Context) {
         callback: FetchCallback<List<Geolocation>>
     ) {
         placeSearchingService.fetchLocationDetails(query, callback)
+    }
+}
+
+/**
+ * A refresh failure that concerns every place rather than one: worth a banner over the list.
+ *
+ * @property status the most serious of the failures, by the banners' priority.
+ * @property at when the refresh that met it ended.
+ */
+data class RefreshProblem(val status: RequestStatus, val at: Long) {
+    companion object {
+        //  A refused key first: nothing works until it is fixed. Then no network, then the quota,
+        //  which both pass by themselves. Other failures belong to the places they hit.
+        private val BY_PRIORITY = listOf(
+            RequestStatus.AUTH_FAILED,
+            RequestStatus.NOT_CONNECTED,
+            RequestStatus.TOO_MANY_REQUESTS
+        )
+
+        /** The problem among [failures] worth a banner, if any: none means the refresh went through. */
+        fun of(failures: Collection<RequestStatus>, at: Long): RefreshProblem? =
+            BY_PRIORITY.firstOrNull { it in failures }?.let { RefreshProblem(it, at) }
     }
 }
