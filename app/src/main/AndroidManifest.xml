@@ -55,7 +55,11 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <!-- Resized, not panned, by the keyboard: the onboarding's key field is lifted by imePadding
+             instead of the whole window sliding up under the status bar. -->
+        <activity
+            android:name=".MainActivity"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".splash.SplashScreenActivity"
             android:exported="true"

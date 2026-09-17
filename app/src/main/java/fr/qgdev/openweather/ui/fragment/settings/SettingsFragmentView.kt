@@ -110,7 +110,8 @@ import java.util.Locale
 @Composable
 fun SettingsScreenView(
     settingsRepository: SettingsRepository,
-    places: List<Place>? = null
+    places: List<Place>? = null,
+    onReplayOnboarding: () -> Unit = {}
 ) {
     val sample = remember(places) { UnitSample.from(places) }
     val placeCount = places?.size ?: 0
@@ -290,6 +291,19 @@ fun SettingsScreenView(
                 }
 
                 AboutAppEntry()
+
+                //  The onboarding is shown once; this is the way back to it, at the very end.
+                Text(
+                    text = stringResource(R.string.onboarding_replay),
+                    color = LocalWeatherPalette.current.textMuted,
+                    fontSize = 12.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(onClick = onReplayOnboarding)
+                        .padding(vertical = 10.dp)
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
             }

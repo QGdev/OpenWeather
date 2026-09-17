@@ -95,7 +95,10 @@ import java.text.DecimalFormat
 @Composable
 fun AddPlaceDialog(
     placeViewModel: PlaceViewModel,
-    onDismissRequest: () -> Unit = {}
+    onDismissRequest: () -> Unit = {},
+    //  Told when a place was chosen, rather than the dialog merely closed: the onboarding moves on
+    //  only then.
+    onPlaceChosen: () -> Unit = {}
 ) {
     val palette = LocalWeatherPalette.current
     val places by placeViewModel.placesState.collectAsState()
@@ -138,11 +141,13 @@ fun AddPlaceDialog(
             onReplace = {
                 placeViewModel.replacePlaceFromSearch(twin, chosen)
                 replaceChoice = null
+                onPlaceChosen()
                 onDismissRequest()
             },
             onAddAnyway = {
                 placeViewModel.addPlaceFromSearch(chosen)
                 replaceChoice = null
+                onPlaceChosen()
                 onDismissRequest()
             },
             onCancel = { replaceChoice = null }
@@ -305,6 +310,7 @@ fun AddPlaceDialog(
                                 replaceChoice = geolocation to twin
                             } else {
                                 placeViewModel.addPlaceFromSearch(geolocation)
+                                onPlaceChosen()
                                 onDismissRequest()
                             }
                         }

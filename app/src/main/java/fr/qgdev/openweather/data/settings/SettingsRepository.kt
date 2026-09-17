@@ -97,7 +97,8 @@ class SettingsRepository private constructor(
                 getDefaultLocale(),
                 getApiKey(),
                 isPeriodicUpdateEnabled(),
-                getUpdatePeriodSetting()
+                getUpdatePeriodSetting(),
+                getOnboardingVersion()
             )
         )
 
@@ -112,7 +113,8 @@ class SettingsRepository private constructor(
         TIME_FORMAT("conf_time_format"),
         API_KEY("conf_api_key"),
         UPDATE_PERIODIC("conf_update_periodic"),
-        UPDATE_PERIOD("conf_update_period")
+        UPDATE_PERIOD("conf_update_period"),
+        ONBOARDING_VERSION("onboarding_version")
     }
 
     /**
@@ -199,5 +201,14 @@ class SettingsRepository private constructor(
     fun setUpdatePeriodSetting(period: UpdatePeriodSettings) {
         securedPreferenceDataStore.putString(PreferenceKey.UPDATE_PERIOD.key, period.name)
         _settingsFlow.value = _settingsFlow.value.copy(updatePeriod = period)
+    }
+
+    fun getOnboardingVersion(): String? =
+        securedPreferenceDataStore.getString(PreferenceKey.ONBOARDING_VERSION.key, null)
+
+    /** Marks the onboarding as completed with [version], the app's own version name. */
+    fun setOnboardingVersion(version: String) {
+        securedPreferenceDataStore.putString(PreferenceKey.ONBOARDING_VERSION.key, version)
+        _settingsFlow.value = _settingsFlow.value.copy(onboardingVersion = version)
     }
 }

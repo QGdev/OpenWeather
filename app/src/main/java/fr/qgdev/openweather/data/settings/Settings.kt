@@ -31,5 +31,11 @@ data class Settings(
     val defaultLocale: Locale = Locale.getDefault(),
     val apiKey: String? = null,
     val periodicUpdateEnabled: Boolean = false,
-    val updatePeriod: UpdatePeriodSettings = UpdatePeriodSettings.THIRTY_MINUTES
+    val updatePeriod: UpdatePeriodSettings = UpdatePeriodSettings.THIRTY_MINUTES,
+    /**
+     * The app version the onboarding was last completed with, never shown as a setting. Unset on
+     * a fresh install or after the data is cleared, which is what brings the onboarding up. Kept
+     * as a version rather than a flag, so a later onboarding can tell who saw which one.
+     */
+    val onboardingVersion: String? = null
 )
