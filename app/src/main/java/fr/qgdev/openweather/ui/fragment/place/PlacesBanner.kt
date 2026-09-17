@@ -57,6 +57,8 @@ fun PlacesBanner(
     accent: Color,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
+    //  Untinted for what is news rather than trouble - a refresh running - as in the mock-up.
+    tinted: Boolean = true,
     actionLabel: String? = null,
     onAction: () -> Unit = {}
 ) {
@@ -65,8 +67,12 @@ fun PlacesBanner(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(accent.copy(alpha = 0.09f))
-            .border(1.dp, accent.copy(alpha = 0.36f), RoundedCornerShape(14.dp))
+            .background(if (tinted) accent.copy(alpha = 0.09f) else Color.Transparent)
+            .border(
+                1.dp,
+                if (tinted) accent.copy(alpha = 0.36f) else palette.outlineStrong,
+                RoundedCornerShape(14.dp)
+            )
             .padding(horizontal = 12.dp, vertical = 11.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp)

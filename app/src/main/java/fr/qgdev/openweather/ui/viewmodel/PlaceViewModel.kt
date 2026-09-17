@@ -20,6 +20,7 @@
 
 package fr.qgdev.openweather.ui.viewmodel
 
+import fr.qgdev.openweather.data.repositories.RefreshProblem
 import fr.qgdev.openweather.data.repositories.identityKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -64,6 +65,16 @@ class PlaceViewModel(
     //  failed kept showing its old values with nothing to say so.
     private val _lastRefreshOutcome = MutableStateFlow<RefreshOutcome?>(null)
     val lastRefreshOutcome: StateFlow<RefreshOutcome?> = _lastRefreshOutcome.asStateFlow()
+
+    /** A failure every place met on the last refresh, whoever ran it - see [RefreshProblem]. */
+    val refreshProblem: StateFlow<RefreshProblem?> = placeRepository.refreshProblem
+
+    /** How many places a refresh is fetching, including one the periodic worker runs. */
+    val placesRefreshing: StateFlow<Int> = placeRepository.placesRefreshing
+
+    fun clearRefreshProblem() {
+        placeRepository.clearRefreshProblem()
+    }
 
     /** Clears the outcome once the UI has shown it. */
     fun acknowledgeRefreshOutcome() {
