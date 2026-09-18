@@ -20,6 +20,7 @@
 
 package fr.qgdev.openweather.ui.fragment.settings
 
+import androidx.compose.runtime.collectAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -243,7 +244,10 @@ fun SettingsScreenView(
                     var periodicEnabled by remember {
                         mutableStateOf(settingsRepository.isPeriodicUpdateEnabled())
                     }
-                    var period by remember { mutableStateOf(settingsRepository.getUpdatePeriodSetting()) }
+                    val settings by settingsRepository.settingsFlow.collectAsState()
+                    //  Follows the stored period, which the debug menu moves off one minute when it
+                    //  withdraws that option.
+                    var period by remember(settings.updatePeriod) { mutableStateOf(settings.updatePeriod) }
 
                     SwitchSetting(
                         title = stringResource(R.string.title_settings_update_periodic),
@@ -260,9 +264,9 @@ fun SettingsScreenView(
                         SettingsDivider()
 
                         //  One minute is a debugging aid: it burns through the free API quota in an
-                        //  afternoon, so it is offered only in debug builds.
+                        //  afternoon, so it is offered only once switched on in the debug menu.
                         val debugEntries =
-                            if (BuildConfig.DEBUG) listOf(
+                            if (settings.oneMinuteUpdateAllowed) listOf(
                                 SettingOption(UpdatePeriodSettings.ONE_MINUTE, stringResource(R.string.title_settings_update_period_short_1min))
                             )
                             else emptyList()
@@ -662,7 +666,9 @@ private fun <T> ChipSetting(
     onSelectionChanged: (T) -> Unit
 ) {
     val palette = LocalWeatherPalette.current
-    var selected by remember { mutableStateOf(defaultValue) }
+    //  Keyed on the value passed in, so a change made elsewhere - the debug menu moving the period
+    //  off one minute - is shown rather than the chip last tapped here.
+    var selected by remember(defaultValue) { mutableStateOf(defaultValue) }
 
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 15.dp)) {
         SettingTitle(title)

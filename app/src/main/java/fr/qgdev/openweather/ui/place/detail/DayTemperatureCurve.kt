@@ -141,12 +141,23 @@ internal fun DayTemperatureCurve(
                 style = Stroke(width = 2.dp.toPx())
             )
 
+            //  Each label on the outer side of its pair: measured above and felt below while the
+            //  day feels cooler than it is, the other way round when it feels warmer. Both were
+            //  drawn on the same side before, and met between the two lines whenever they ran
+            //  close together.
+            val feltIsAbove = feelsLike[index] > value
+            val actualTop =
+                if (feltIsAbove) y(value) + 7.dp.toPx()
+                else y(value) - 10.dp.toPx() - 12.sp.toPx()
+            val feltTop =
+                if (feltIsAbove) y(feelsLike[index]) - 8.dp.toPx() - 10.5.sp.toPx()
+                else y(feelsLike[index]) + 5.dp.toPx()
+
             drawCentredText(
-                textMeasurer, format(value), x(index), y(value) - 10.dp.toPx() - 12.sp.toPx(),
-                valueColor, 12.sp.value
+                textMeasurer, format(value), x(index), actualTop, valueColor, 12.sp.value
             )
             drawCentredText(
-                textMeasurer, format(feelsLike[index]), x(index), y(feelsLike[index]) + 5.dp.toPx(),
+                textMeasurer, format(feelsLike[index]), x(index), feltTop,
                 secondaryColor, 10.5.sp.value
             )
             drawCentredText(
