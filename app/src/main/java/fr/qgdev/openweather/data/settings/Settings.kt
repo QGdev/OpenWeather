@@ -37,5 +37,10 @@ data class Settings(
      * a fresh install or after the data is cleared, which is what brings the onboarding up. Kept
      * as a version rather than a flag, so a later onboarding can tell who saw which one.
      */
-    val onboardingVersion: String? = null
+    val onboardingVersion: String? = null,
+    /**
+     * Whether the 1-minute update interval is offered. A debugging aid switched on from the
+     * debug menu, off by default: it burns through the free API quota in an afternoon.
+     */
+    val oneMinuteUpdateAllowed: Boolean = false
 )

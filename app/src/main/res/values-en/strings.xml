@@ -104,6 +104,8 @@
 	<string name="action_add_key">Add</string>
 	<string name="action_fix">Fix</string>
 	<string name="onboarding_key_title">First, an API key</string>
+	<string name="onboarding_key_title_fix">Fix the API key</string>
+	<string name="onboarding_key_title_valid">Your API key</string>
 	<string name="onboarding_key_body">OpenWeather uses your own OpenWeatherMap key. It stays on the device and is never sent anywhere else.</string>
 	<string name="onboarding_key_step_account">Create a free account on openweathermap.org</string>
 	<string name="onboarding_key_step_subscribe">Subscribe to the One Call plan “1,000 calls / day”</string>

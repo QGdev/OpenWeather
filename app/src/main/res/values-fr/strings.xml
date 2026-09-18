@@ -101,6 +101,8 @@
 	<string name="action_add_key">Ajouter</string>
 	<string name="action_fix">Corriger</string>
 	<string name="onboarding_key_title">Il faut d\'abord une clé API</string>
+	<string name="onboarding_key_title_fix">Corriger la clé API</string>
+	<string name="onboarding_key_title_valid">Votre clé API</string>
 	<string name="onboarding_key_body">OpenWeather utilise votre propre clé OpenWeatherMap. Elle reste sur l\'appareil et n\'est jamais transmise ailleurs.</string>
 	<string name="onboarding_key_step_account">Créez un compte gratuit sur openweathermap.org</string>
 	<string name="onboarding_key_step_subscribe">Abonnez-vous à l\'offre One Call « 1 000 appels / jour »</string>
