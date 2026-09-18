@@ -98,7 +98,8 @@ class SettingsRepository private constructor(
                 getApiKey(),
                 isPeriodicUpdateEnabled(),
                 getUpdatePeriodSetting(),
-                getOnboardingVersion()
+                getOnboardingVersion(),
+                isOneMinuteUpdateAllowed()
             )
         )
 
@@ -114,7 +115,8 @@ class SettingsRepository private constructor(
         API_KEY("conf_api_key"),
         UPDATE_PERIODIC("conf_update_periodic"),
         UPDATE_PERIOD("conf_update_period"),
-        ONBOARDING_VERSION("onboarding_version")
+        ONBOARDING_VERSION("onboarding_version"),
+        DEBUG_ONE_MINUTE_UPDATE("debug_one_minute_update")
     }
 
     /**
@@ -201,6 +203,21 @@ class SettingsRepository private constructor(
     fun setUpdatePeriodSetting(period: UpdatePeriodSettings) {
         securedPreferenceDataStore.putString(PreferenceKey.UPDATE_PERIOD.key, period.name)
         _settingsFlow.value = _settingsFlow.value.copy(updatePeriod = period)
+    }
+
+    fun isOneMinuteUpdateAllowed(): Boolean =
+        securedPreferenceDataStore.getBoolean(PreferenceKey.DEBUG_ONE_MINUTE_UPDATE.key, false)
+
+    /**
+     * Offers or withdraws the 1-minute interval. Withdrawn while in use, the interval falls back
+     * to the shortest one left, rather than staying on an option the settings no longer show.
+     */
+    fun setOneMinuteUpdateAllowed(allowed: Boolean) {
+        securedPreferenceDataStore.putBoolean(PreferenceKey.DEBUG_ONE_MINUTE_UPDATE.key, allowed)
+        _settingsFlow.value = _settingsFlow.value.copy(oneMinuteUpdateAllowed = allowed)
+        if (!allowed && getUpdatePeriodSetting() == UpdatePeriodSettings.ONE_MINUTE) {
+            setUpdatePeriodSetting(UpdatePeriodSettings.FIVE_MINUTES)
+        }
     }
 
     fun getOnboardingVersion(): String? =
