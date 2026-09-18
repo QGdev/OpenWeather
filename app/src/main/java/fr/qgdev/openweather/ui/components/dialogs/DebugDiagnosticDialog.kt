@@ -20,6 +20,9 @@
 
 package fr.qgdev.openweather.ui.components.dialogs
 
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.material3.Switch
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -466,7 +469,9 @@ fun DebugDiagnosticDialog(
                         }
                     ),
                     field("settings.periodic", "periodicUpdateEnabled", settings.periodicUpdateEnabled),
-                    field("settings.period", "updatePeriod", settings.updatePeriod)
+                    field("settings.period", "updatePeriod", settings.updatePeriod),
+                    field("settings.oneMinute", "oneMinuteUpdateAllowed", settings.oneMinuteUpdateAllowed),
+                    field("settings.onboarding", "onboardingVersion", settings.onboardingVersion ?: "(not set)")
                 )
             }
         )
@@ -507,6 +512,33 @@ fun DebugDiagnosticDialog(
                 fontSize = 11.sp,
                 modifier = Modifier.padding(bottom = 10.dp)
             )
+
+            //  Switches for testing, above the stored data they act on.
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(14.dp))
+                    .border(1.dp, palette.outlineStrong, RoundedCornerShape(14.dp))
+                    .clickable { settingsRepository.setOneMinuteUpdateAllowed(!settings.oneMinuteUpdateAllowed) }
+                    .padding(start = 14.dp, end = 10.dp, top = 8.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("1-minute update interval", color = palette.textPrimary, fontSize = 12.5.sp)
+                    Text(
+                        "offered in the settings; burns the free quota fast",
+                        color = palette.textQuiet,
+                        fontSize = 10.5.sp,
+                        fontFamily = PlexMono,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                }
+                Switch(
+                    checked = settings.oneMinuteUpdateAllowed,
+                    onCheckedChange = { settingsRepository.setOneMinuteUpdateAllowed(it) }
+                )
+            }
+            Spacer(modifier = Modifier.height(10.dp))
 
             //  The filter field, drawn like the redesign's other inputs rather than as a Material
             //  outlined field: a dev tool still sits inside the app.

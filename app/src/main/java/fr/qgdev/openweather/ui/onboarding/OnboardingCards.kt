@@ -111,7 +111,17 @@ fun ApiKeyCard(
 
     OnboardingCard {
         OnboardingBadge { color -> drawKey(color) }
-        OnboardingTitle(stringResource(R.string.onboarding_key_title))
+        //  Titled after the key it was opened with, not the one being typed, so it holds still:
+        //  asking for a first key, correcting a malformed one, or showing one that works.
+        OnboardingTitle(
+            stringResource(
+                when {
+                    currentKey.isEmpty() -> R.string.onboarding_key_title
+                    isWellFormedApiKey(currentKey) -> R.string.onboarding_key_title_valid
+                    else -> R.string.onboarding_key_title_fix
+                }
+            )
+        )
         OnboardingBody(stringResource(R.string.onboarding_key_body))
 
         Column(
