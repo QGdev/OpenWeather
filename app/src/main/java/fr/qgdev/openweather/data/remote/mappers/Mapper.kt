@@ -22,6 +22,22 @@ package fr.qgdev.openweather.data.remote.mappers
 
 import org.json.JSONObject
 
+/**
+ * Mapper
+ * <p>
+ * Contract of every mapper turning an OpenWeatherMap JSON response into a protobuf message.
+ * </p>
+ *
+ * @param O Type of the protobuf message built by the mapper
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 interface Mapper<O> {
+    /**
+     * Builds a protobuf message from the JSON object of an OpenWeatherMap response.
+     *
+     * @param jsonObject JSON object to read the values from
+     * @return The built protobuf message
+     */
     fun fromOWMToProto(jsonObject: JSONObject): O
 }

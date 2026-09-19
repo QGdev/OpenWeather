@@ -25,6 +25,18 @@ import com.google.gson.annotations.SerializedName
 import fr.qgdev.openweather.data.models.DailyForecast
 import org.json.JSONObject
 
+/**
+ * DailyForecastMapper
+ * <p>
+ * Maps a daily forecast of an OpenWeatherMap response to a DailyForecast protobuf message.
+ * The companion object is the only instance, the class being open only in order to let it extend
+ * Mapper.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Mapper
+ */
 open class DailyForecastMapper private constructor() : Mapper<DailyForecast> {
     companion object : DailyForecastMapper() {
         override fun fromOWMToProto(jsonObject: JSONObject): DailyForecast {
