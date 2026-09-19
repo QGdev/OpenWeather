@@ -88,6 +88,7 @@ dependencies {
     implementation("com.google.protobuf:protobuf-javalite:4.35.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("androidx.navigation:navigation-compose:2.9.8")
+    implementation("androidx.activity:activity-compose:1.13.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20260522")
@@ -142,6 +143,8 @@ abstract class GenerateProtoTask : DefaultTask() {
     @TaskAction
     fun generate() {
         val outDir = outputDir.get().asFile
+        //  protoc only adds files: without this, the classes of a renamed or removed .proto linger
+        outDir.deleteRecursively()
         outDir.mkdirs()
 
         val protoc = protocPath.get().asFile
@@ -174,11 +177,5 @@ androidComponents {
             generateProto,
             GenerateProtoTask::outputDir
         )
-    }
-}
-
-tasks.configureEach {
-    if (name.startsWith("compile") && (name.endsWith("JavaWithJavac") || name.endsWith("Kotlin"))) {
-        dependsOn(generateProto)
     }
 }
