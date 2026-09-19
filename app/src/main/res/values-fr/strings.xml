@@ -342,4 +342,6 @@
 	<string name="action_replace">Remplacer</string>
 	<string name="action_add_anyway">Ajouter quand même</string>
 	<string name="action_cancel">Annuler</string>
+	<string name="error_place_query_too_short">Impossible de rechercher un lieu avec un nom aussi court</string>
+	<string name="error_no_results">Aucun résultat</string>
 </resources>
