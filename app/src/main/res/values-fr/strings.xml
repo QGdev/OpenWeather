@@ -207,8 +207,6 @@
     <string name="action_pull_to_refresh">Tirez pour actualiser</string>
     <string name="action_release_to_refresh">Relâchez pour actualiser</string>
     <string name="status_refreshing_progress">Actualisation… %1$d sur %2$d</string>
-    <string name="error_place_query_too_short">Impossible de rechercher un lieu avec un nom aussi court</string>
-    <string name="error_no_results">Aucun résultat</string>
 	<string name="label_wind">Vent</string>
 	<string name="action_retry">Réessayer</string>
 	<string name="status_update_failed_values_from">Mise à jour échouée · valeurs de %1$s</string>
@@ -344,4 +342,6 @@
 	<string name="action_replace">Remplacer</string>
 	<string name="action_add_anyway">Ajouter quand même</string>
 	<string name="action_cancel">Annuler</string>
+	<string name="error_place_query_too_short">Impossible de rechercher un lieu avec un nom aussi court</string>
+	<string name="error_no_results">Aucun résultat</string>
 </resources>
