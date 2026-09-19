@@ -32,16 +32,28 @@ class DayMarkerTest {
     private val elevenPm = 1_790_118_000_000L
     private val utc = SimpleTimeZone(0, "UTC")
 
+    /**
+     * Test the start of a new day in the zone of the place.
+     * Test will not pass if midnight doesn't start a new day.
+     */
     @Test
     fun `midnight in the place's zone starts a new day`() {
         assertTrue(startsNewDay(elevenPm, elevenPm + hour, utc))
     }
 
+    /**
+     * Test two hours belonging to the same day.
+     * Test will not pass if one of them starts a new day.
+     */
     @Test
     fun `two hours of the same day do not`() {
         assertFalse(startsNewDay(elevenPm - hour, elevenPm, utc))
     }
 
+    /**
+     * Test the zone the day is computed in.
+     * Test will not pass if the zone of the phone is used instead of the one of the place.
+     */
     @Test
     fun `the day is the place's, not the phone's`() {
         //  23:00 and 00:00 UTC are 01:00 and 02:00 in UTC+2: the same day there.
