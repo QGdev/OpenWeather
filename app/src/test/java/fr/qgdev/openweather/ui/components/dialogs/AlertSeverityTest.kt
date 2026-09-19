@@ -25,6 +25,10 @@ import org.junit.Test
 
 class AlertSeverityTest {
 
+    /**
+     * Test the colour given by traffic light names.
+     * Test will not pass if one of the names doesn't give its colour.
+     */
     @Test
     fun `traffic-light names give the colour`() {
         assertEquals(AlertSeverity.ORANGE, severityOf("Orange Thunderstorm Warning"))
@@ -32,6 +36,10 @@ class AlertSeverityTest {
         assertEquals(AlertSeverity.RED, severityOf("Allerta rossa"))
     }
 
+    /**
+     * Test the colour given by the CAP severity scale.
+     * Test will not pass if one of the severities doesn't give its colour.
+     */
     @Test
     fun `the CAP severity scale gives the colour too`() {
         assertEquals(AlertSeverity.YELLOW, severityOf("Moderate thunderstorm warning"))
@@ -39,6 +47,10 @@ class AlertSeverityTest {
         assertEquals(AlertSeverity.RED, severityOf("Extreme flood warning"))
     }
 
+    /**
+     * Test a wording holding no known word.
+     * Test will not pass if it gets a colour.
+     */
     @Test
     fun `wording without a known word stays uncoloured`() {
         assertEquals(AlertSeverity.UNKNOWN, severityOf("Minor coastal event"))

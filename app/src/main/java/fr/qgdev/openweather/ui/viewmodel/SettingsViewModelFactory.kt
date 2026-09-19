@@ -26,6 +26,18 @@ import androidx.lifecycle.ViewModelProvider
 import fr.qgdev.openweather.data.settings.SettingsRepository
 import fr.qgdev.openweather.repositories.FormattingService
 
+/**
+ * SettingsViewModelFactory
+ * <p>
+ * Builds a SettingsViewModel with the context it needs in order to reach the settings repository,
+ * the view models of the main flow being instantiated by hand in MainActivity.
+ * </p>
+ *
+ * @param context                  Context given to the built view model
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see SettingsViewModel
+ */
 class SettingsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SettingsViewModel::class.java)) {

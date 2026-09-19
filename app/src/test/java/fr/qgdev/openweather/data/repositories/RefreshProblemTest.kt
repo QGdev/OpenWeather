@@ -27,11 +27,19 @@ import org.junit.Test
 
 class RefreshProblemTest {
 
+    /**
+     * Test a refresh which met no failure.
+     * Test will not pass if a problem is reported.
+     */
     @Test
     fun `a refresh with no failure has no problem`() {
         assertNull(RefreshProblem.of(emptyList(), 0L))
     }
 
+    /**
+     * Test failures which belong to single places.
+     * Test will not pass if they raise a banner.
+     */
     @Test
     fun `failures that belong to single places are no banner`() {
         assertNull(
@@ -39,6 +47,10 @@ class RefreshProblemTest {
         )
     }
 
+    /**
+     * Test the priority of a refused API key.
+     * Test will not pass if being offline or the quota outranks it.
+     */
     @Test
     fun `a refused key outranks being offline and the quota`() {
         val problem = RefreshProblem.of(
@@ -48,6 +60,10 @@ class RefreshProblemTest {
         assertEquals(RefreshProblem(RequestStatus.AUTH_FAILED, 42L), problem)
     }
 
+    /**
+     * Test the priority of being offline.
+     * Test will not pass if the quota outranks it.
+     */
     @Test
     fun `being offline outranks the quota`() {
         val problem = RefreshProblem.of(

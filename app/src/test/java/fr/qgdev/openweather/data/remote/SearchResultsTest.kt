@@ -40,11 +40,19 @@ class SearchResultsTest {
     private val nantesPoint = place("Nantes", "fr", "Pays de la Loire", 47.219, -1.554)
     private val nantesBrazil = place("Nantes", "br", "São Paulo", -22.619, -51.238)
 
+    /**
+     * Test the distance computed between two results.
+     * Test will not pass if the two Nantes aren't about 12 km apart.
+     */
     @Test
     fun `the distance between the two Nantes is about 12 km`() {
         assertEquals(12.6, distanceKm(nantesBoundary.coordinates, nantesPoint.coordinates), 0.5)
     }
 
+    /**
+     * Test the merging of near duplicate results.
+     * Test will not pass if the own point of a town doesn't win over its boundary.
+     */
     @Test
     fun `near duplicates merge, and the town's own point wins over its boundary`() {
         val merged = mergeNearDuplicates(
@@ -57,6 +65,10 @@ class SearchResultsTest {
         assertEquals(listOf(nantesPoint, nantesBrazil), merged)
     }
 
+    /**
+     * Test the order in which results are merged.
+     * Test will not pass if a boundary coming after a point replaces it.
+     */
     @Test
     fun `a boundary after the point does not replace it`() {
         val merged = mergeNearDuplicates(
@@ -65,6 +77,10 @@ class SearchResultsTest {
         assertEquals(listOf(nantesPoint), merged)
     }
 
+    /**
+     * Test the identification of distinct places.
+     * Test will not pass if a same name in another region or far away is merged.
+     */
     @Test
     fun `same name in another region or far away is another place`() {
         assertFalse(nantesPoint.isSamePlaceAs(nantesBrazil))
@@ -72,6 +88,10 @@ class SearchResultsTest {
         assertTrue(nantesPoint.isSamePlaceAs(nantesBoundary))
     }
 
+    /**
+     * Test the matching of a place stored before regions were kept.
+     * Test will not pass if such a place doesn't match its result anymore.
+     */
     @Test
     fun `a place stored before regions existed still matches`() {
         assertTrue(place("Nantes", "fr", "", 47.21, -1.55).isSamePlaceAs(nantesPoint))
