@@ -31,6 +31,16 @@ import fr.qgdev.openweather.data.models.PlaceStorage
 import java.io.InputStream
 import java.io.OutputStream
 
+/**
+ * PlaceDataStore
+ * <p>
+ * Builds and holds the single DataStore of PlaceStorage, the protobuf container persisting every
+ * place of the application.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 object PlaceDataStore {
 
     private const val TAG: String = "PlaceDataStore"

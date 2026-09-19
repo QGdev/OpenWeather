@@ -33,6 +33,16 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+/**
+ * VisibilityOff
+ * <p>
+ * The crossed out eye marking a hidden API key, drawn as an ImageVector in order to avoid a
+ * drawable resource.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public val Icons.VisibilityOff: ImageVector
     get() {
         if (_VisibilityOff != null) {

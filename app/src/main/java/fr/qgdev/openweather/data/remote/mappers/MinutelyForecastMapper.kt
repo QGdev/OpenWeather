@@ -25,6 +25,18 @@ import com.google.gson.annotations.SerializedName
 import fr.qgdev.openweather.data.models.MinutelyForecast
 import org.json.JSONObject
 
+/**
+ * MinutelyForecastMapper
+ * <p>
+ * Maps a minutely precipitation forecast of an OpenWeatherMap response to a MinutelyForecast protobuf message.
+ * The companion object is the only instance, the class being open only in order to let it extend
+ * Mapper.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Mapper
+ */
 open class MinutelyForecastMapper private constructor() : Mapper<MinutelyForecast> {
     companion object : MinutelyForecastMapper() {
         override fun fromOWMToProto(jsonObject: JSONObject): MinutelyForecast {

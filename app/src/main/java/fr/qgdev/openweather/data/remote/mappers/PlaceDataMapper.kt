@@ -29,6 +29,20 @@ import fr.qgdev.openweather.data.models.WeatherAlert
 import org.json.JSONException
 import org.json.JSONObject
 
+/**
+ * PlaceDataMapper
+ * <p>
+ * Maps a whole OneCall response of an OpenWeatherMap response to a Place protobuf message.
+ * Sections missing from a shortened response are left empty instead of failing the whole mapping,
+ * the OneCall plan not always returning the minutely, hourly, daily and alerts sections.
+ * The companion object is the only instance, the class being open only in order to let it extend
+ * Mapper.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Mapper
+ */
 open class PlaceDataMapper private constructor() : Mapper<Place> {
     companion object : PlaceDataMapper() {
         fun fromOWMToProtoBuilder(jsonObject: JSONObject): Place.Builder? {

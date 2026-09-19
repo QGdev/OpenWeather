@@ -25,6 +25,18 @@ import com.google.gson.annotations.SerializedName
 import fr.qgdev.openweather.data.models.WeatherAlert
 import org.json.JSONObject
 
+/**
+ * WeatherAlertMapper
+ * <p>
+ * Maps a weather alert of an OpenWeatherMap response to a WeatherAlert protobuf message.
+ * The companion object is the only instance, the class being open only in order to let it extend
+ * Mapper.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Mapper
+ */
 open class WeatherAlertMapper private constructor() : Mapper<WeatherAlert> {
     companion object : WeatherAlertMapper() {
         override fun fromOWMToProto(jsonObject: JSONObject): WeatherAlert {

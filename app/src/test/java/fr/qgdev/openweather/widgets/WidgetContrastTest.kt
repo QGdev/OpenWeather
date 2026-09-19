@@ -38,6 +38,10 @@ class WidgetContrastTest {
     private val lightWallpaper = Color(0xFF87B5E0)   // a clear sky photo
     private val darkPalette = DarkWeatherPalette
 
+    /**
+     * Test labels on every opaque sky.
+     * Test will not pass if one of them doesn't reach a readable contrast.
+     */
     @Test
     fun `labels reach a readable contrast on every opaque sky`() {
         for (palette in listOf(DarkWeatherPalette, LightWeatherPalette)) {
@@ -52,12 +56,20 @@ class WidgetContrastTest {
         }
     }
 
+    /**
+     * Test a colour which is already readable.
+     * Test will not pass if it is changed.
+     */
     @Test
     fun `a colour that is already readable is left alone`() {
         val ground = Color.Black
         assertEquals(darkPalette.textSecondary, readableOn(ground, darkPalette.textSecondary, darkPalette.textPrimary))
     }
 
+    /**
+     * Test secondary texts as the sky turns transparent.
+     * Test will not pass if they don't get closer to the primary text.
+     */
     @Test
     fun `secondary texts get closer to the primary text as the sky turns transparent`() {
         val sky = ConditionFamily.CLOUD.sky(isDark = true)
@@ -66,6 +78,10 @@ class WidgetContrastTest {
         assertTrue(seeThrough.textQuiet.luminance() > opaque.textQuiet.luminance())
     }
 
+    /**
+     * Test secondary texts when nothing less will do.
+     * Test will not pass if one of them doesn't become the primary text.
+     */
     @Test
     fun `when nothing less will do, a secondary text becomes the primary text`() {
         val ground = Color(0xFFE8EEF4)   // white text cannot reach 4.5:1 here
