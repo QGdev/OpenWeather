@@ -23,12 +23,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="env_variables_drawing_padding">5dp</dimen>
-    <dimen name="env_variables_width">120dp</dimen>
-
-    <dimen name="dialog_max_width">250dp</dimen>
     <dimen name="floating_action_button_margin">16dp</dimen>
-    <dimen name="recycler_view_bottom_padding">70dp</dimen>
     <dimen name="action_bar_height">56dp</dimen>
     <dimen name="nav_bar_height">60dp</dimen>
 
@@ -36,16 +31,11 @@
 
 
     <dimen name="text_size_dialog_title">20sp</dimen>
-    <dimen name="text_size_dialog_subtitle">18sp</dimen>
     <dimen name="text_size_dialog_content">16sp</dimen>
 
     <dimen name="text_marginTop_dialog_title">8dp</dimen>
-    <dimen name="text_marginBottom_dialog_title">0dp</dimen>
-    <dimen name="text_marginStart_dialog_title">0dp</dimen>
-    <dimen name="text_marginEnd_dialog_title">0dp</dimen>
 
     <dimen name="text_marginTop_dialog_content">16dp</dimen>
     <dimen name="text_marginBottom_dialog_content">8dp</dimen>
     <dimen name="text_marginStart_dialog_content">8dp</dimen>
-    <dimen name="text_marginEnd_dialog_content">8dp</dimen>
 </resources>
