@@ -19,28 +19,6 @@
   -->
 
 <resources>
-    <attr name="labelText" format="string" />
-    <attr name="mainColor" format="color" />
-    <attr name="backgroundColor" format="color" />
-    <attr name="textColor" format="color" />
-    <attr name="subtextColor" format="color" />
-
-    <declare-styleable name="GaugeBarView">
-        <attr name="sectionsBoundaries" format="reference" />
-        <attr name="sectionsColors" format="reference" />
-        <attr name="labelText" />
-        <attr name="value" format="float" />
-    </declare-styleable>
-
-    <declare-styleable name="AqiBarView">
-        <attr name="labelText" />
-        <attr name="indexValue" format="integer" />
-        <attr name="mainColor" />
-        <attr name="backgroundColor" />
-        <attr name="textColor" />
-        <attr name="subtextColor" />
-    </declare-styleable>
-
     <dimen name="widget_margin">0dp</dimen>
 
     <declare-styleable name="AppWidgetAttrs">
