@@ -73,6 +73,7 @@ import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.models.Geolocation
 import fr.qgdev.openweather.data.remote.FetchCallback
 import fr.qgdev.openweather.data.remote.RequestStatus
+import fr.qgdev.openweather.data.repositories.MAX_PLACES
 import fr.qgdev.openweather.ui.common.dialogs.FullScreenDialog
 import fr.qgdev.openweather.ui.fragment.place.addPlaceErrorRes
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
@@ -443,9 +444,6 @@ private fun InfoNote(text: String, modifier: Modifier = Modifier) {
         Text(text = text, color = palette.textQuiet, fontSize = 11.5.sp, lineHeight = 17.sp)
     }
 }
-
-/** Mirrors the repository's own ceiling, so the dialog can say so before a search. */
-private const val MAX_PLACES = 100
 
 /**
  * Asked when the chosen result is a town already in the list under nearby coordinates: swap the

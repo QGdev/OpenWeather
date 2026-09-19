@@ -269,7 +269,7 @@ class FormattingService private constructor(
     // region Update methods
 
     fun update() {
-        settingsRepository!!.let {
+        settingsRepository?.let {
             temperatureUnitInit(it.getTemperatureSetting())
             measureUnitInit(it.getMeasureSetting())
             pressureUnitInit(it.getPressureSetting())
@@ -294,7 +294,7 @@ class FormattingService private constructor(
      * This exists because [update] mutates in place, which Compose cannot observe. The compiler
      * infers this class as unstable - it has 29 mutable fields - and under strong skipping an
      * unstable parameter is compared by instance identity. A singleton mutated in place therefore
-     * always compares equal, so `PlaceCardView` is skipped and keeps rendering the old units until
+     * always compares equal, so a composable given it is skipped and keeps rendering the old units until
      * something else forces it to recompose.
      *
      * Handing the UI a different instance per settings change makes that comparison fail, which is
