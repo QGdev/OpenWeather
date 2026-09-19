@@ -35,7 +35,6 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.util.SizeF
-import android.util.TypedValue
 import android.view.View
 import android.widget.RemoteViews
 import androidx.annotation.LayoutRes
@@ -408,10 +407,6 @@ object WidgetsBinder {
         /** Widget type size in dp. */
         val sizeF: SizeF get() = SizeF(width.toFloat(), height.toFloat())
 
-        fun getPxWidth(context: Context): Int = dpToPx(context, width.toFloat()).toInt()
-
-        fun getPxHeight(context: Context): Int = dpToPx(context, height.toFloat()).toInt()
-
         override fun toString(): String = id
 
         companion object {
@@ -424,9 +419,6 @@ object WidgetsBinder {
             @JvmStatic
             fun fromString(id: String?): WidgetType? =
                 entries.firstOrNull { it.id.equals(id, ignoreCase = true) }
-
-            private fun dpToPx(context: Context, dp: Float): Float =
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics)
         }
     }
 }
