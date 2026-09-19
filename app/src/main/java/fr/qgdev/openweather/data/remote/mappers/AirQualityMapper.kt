@@ -25,6 +25,18 @@ import com.google.gson.annotations.SerializedName
 import fr.qgdev.openweather.data.models.AirQuality
 import org.json.JSONObject
 
+/**
+ * AirQualityMapper
+ * <p>
+ * Maps the first entry of the air pollution list of an OpenWeatherMap response to a AirQuality protobuf message.
+ * The companion object is the only instance, the class being open only in order to let it extend
+ * Mapper.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see Mapper
+ */
 open class AirQualityMapper private constructor() : Mapper<AirQuality> {
     companion object : AirQualityMapper() {
         override fun fromOWMToProto(jsonObject: JSONObject): AirQuality {

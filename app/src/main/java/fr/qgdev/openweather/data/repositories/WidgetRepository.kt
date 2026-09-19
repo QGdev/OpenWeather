@@ -23,6 +23,16 @@ package fr.qgdev.openweather.data.repositories
 import android.content.Context
 import fr.qgdev.openweather.data.storage.PlaceDataStore
 
+/**
+ * WidgetRepository
+ * <p>
+ * Holds the settings of every home screen widget and tells which widgets are bound to a place, in
+ * order to let the application redraw them when the data of that place is written.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 class WidgetRepository private constructor(context: Context) {
     private val dataStore = PlaceDataStore.getDataStore(context)
 

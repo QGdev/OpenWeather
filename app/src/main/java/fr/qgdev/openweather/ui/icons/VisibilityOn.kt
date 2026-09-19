@@ -36,6 +36,16 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+/**
+ * VisibilityOn
+ * <p>
+ * The eye marking a shown API key, drawn as an ImageVector in order to avoid a drawable
+ * resource.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ */
 public val Icons.VisibilityOn: ImageVector
     get() {
         if (_VisibilityOn != null) {
