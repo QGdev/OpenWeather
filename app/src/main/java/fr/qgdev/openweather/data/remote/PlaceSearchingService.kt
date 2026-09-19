@@ -39,6 +39,20 @@ import fr.qgdev.openweather.data.models.Geolocation
 import org.json.JSONArray
 import org.json.JSONObject
 
+/**
+ * PlaceSearchingService
+ * <p>
+ * A class to manage place searching requests.
+ * It uses the Volley library to make HTTP requests to the OpenStreetMap Nominatim API and returns
+ * its results through a SearchPlaceCallback.
+ * Results are asked in the language of the device and the query is encoded before being put in the
+ * URL.
+ * </p>
+ *
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see SearchPlaceCallback
+ */
 class PlaceSearchingService private constructor(
     context: Context,
 ) {

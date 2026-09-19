@@ -25,6 +25,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import fr.qgdev.openweather.data.repositories.PlaceRepository
 
+/**
+ * PlaceViewModelFactory
+ * <p>
+ * Builds a PlaceViewModel with the context it needs in order to reach the repositories, the view
+ * models of the main flow being instantiated by hand in MainActivity.
+ * </p>
+ *
+ * @param context                  Context given to the built view model
+ * @author Quentin GOMES DOS REIS
+ * @version 1
+ * @see PlaceViewModel
+ */
 class PlaceViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PlaceViewModel::class.java)) {
