@@ -26,6 +26,7 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.SizeF
 import android.widget.RemoteViews
@@ -130,12 +131,39 @@ class WidgetsProvider : AppWidgetProvider() {
                 ?: return
 
             val formattingService = FormattingService.getInstance(context)
-            val sizes = getSizes(appWidgetManager.getAppWidgetOptions(appWidgetId))
-            appWidgetManager.updateAppWidget(
-                appWidgetId,
-                RemoteViews(getRemoteViewsMap(context, place, formattingService, widgetsSettings, sizes))
-            )
+            val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
+            val views = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                RemoteViews(getRemoteViewsMap(context, place, formattingService, widgetsSettings, getSizes(options)))
+            } else {
+                getRemoteViewsFor(context, place, formattingService, widgetsSettings, getPortraitSize(options))
+            }
+            appWidgetManager.updateAppWidget(appWidgetId, views)
         }
+
+        /**
+         * Provides the one layout Android 11 can take, having no size-mapped RemoteViews: the
+         * largest fitting the size, or the one-row layout when none does - as before the launcher
+         * has reported any size.
+         */
+        private fun getRemoteViewsFor(
+            context: Context,
+            place: Place,
+            formattingService: FormattingService,
+            settings: WidgetsSettings,
+            size: SizeF
+        ): RemoteViews = WidgetsBinder.bindWidget(
+            context, WidgetType.fromSizeF(size) ?: WidgetType.MINIMAL, place, formattingService,
+            settings.backgroundTransparency, size.width, settings.showDetails
+        )
+
+        /**
+         * The size, in dp, a widget is shown at in portrait on Android 11: launchers of that
+         * version report its narrowest width with its tallest height for it.
+         */
+        private fun getPortraitSize(options: Bundle): SizeF = SizeF(
+            options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH).toFloat(),
+            options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT).toFloat()
+        )
 
         /**
          * Provides a layout for each size the launcher may show the widget at.
