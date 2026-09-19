@@ -34,12 +34,6 @@
 	<color name="colorUvVeryHigh">#FF0007</color>
 	<color name="colorUvExtreme">#FF007C</color>
 
-	<color name="colorAqiGood">#29CA6D</color>
-	<color name="colorAqiModerate">#FDD01E</color>
-	<color name="colorAqiBad">#FB8116</color>
-	<color name="colorAqiVeryBad">#FF301A</color>
-	<color name="colorAqiHazardous">#A63ED1</color>
-
 	<color name="colorMoonLight">#FDBF00</color>
 	<color name="colorMoonShadow">#416675</color>
 

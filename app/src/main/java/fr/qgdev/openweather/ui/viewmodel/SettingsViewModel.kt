@@ -65,10 +65,6 @@ class SettingsViewModel(
         settingsRepository.setApiKey(apiKey)
     }
 
-    fun isApiKeyRegistered(): Boolean {
-        return settingsState.value?.apiKey?.isNotEmpty() ?: false
-    }
-
     fun isApiKeyValid(): Boolean {
         return settingsState.value?.apiKey?.length == 32
     }

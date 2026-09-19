@@ -24,21 +24,6 @@ import androidx.annotation.StringRes
 import fr.qgdev.openweather.R
 
 /**
- * The World Health Organisation's UV bands.
- *
- * A bare index means nothing to most readers - 3 and 8 are both "a number" - so the band is what
- * actually carries the advice.
- */
-@StringRes
-fun uvLevelLabel(uvIndex: Int): Int = when {
-    uvIndex < 3 -> R.string.uv_level_low
-    uvIndex < 6 -> R.string.uv_level_moderate
-    uvIndex < 8 -> R.string.uv_level_high
-    uvIndex < 11 -> R.string.uv_level_very_high
-    else -> R.string.uv_level_extreme
-}
-
-/**
  * The phase in the few characters a reading row has, as the mock-up writes it: "gib. 72 %",
  * "dern. quart.". New, full and the quarters are named alone; the others carry how much of the
  * disc is lit, since "crescent" alone does not say whether it is a sliver or nearly half.

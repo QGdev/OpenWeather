@@ -50,7 +50,6 @@ import fr.qgdev.openweather.repositories.FormattingService.FormattingSpec
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
 import java.util.Date
 import java.util.TimeZone
-import kotlin.math.roundToInt
 
 /**
  * The next hour, minute by minute.
@@ -188,7 +187,3 @@ private fun NowcastFigure(label: String, value: String, suffix: String? = null) 
         }
     }
 }
-
-/** Rounds a minute count for display; kept here so the card's arithmetic stays in one place. */
-internal fun minutesUntil(timestamp: Long, from: Long = System.currentTimeMillis()): Int =
-    ((timestamp - from) / 60_000.0).roundToInt().coerceAtLeast(0)
