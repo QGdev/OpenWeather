@@ -116,7 +116,7 @@ internal fun PlaceStorage.withPlaceReplaced(oldGeolocation: Geolocation, newPlac
 }
 
 /** Upper bound on stored places; ids are allocated modulo this value. */
-private const val MAX_PLACES = 100
+internal const val MAX_PLACES = 100
 
 class PlaceRepository private constructor(context: Context) {
     private val weatherService = WeatherService.getInstance(context)
@@ -161,16 +161,6 @@ class PlaceRepository private constructor(context: Context) {
                 instance ?: PlaceRepository(context).also { instance = it }
             }
         }
-    }
-
-    //  first(), not single(): DataStore's flow never completes, so single() waits forever for a
-    //  completion that never arrives. Neither of these was called, so the hang was latent.
-    suspend fun isPlaceStorageEmpty(): Boolean {
-        return dataStore.data.first().placesCount == 0
-    }
-
-    suspend fun isPlaceStorageFull(): Boolean {
-        return dataStore.data.first().placesCount >= MAX_PLACES
     }
 
     /**
@@ -330,14 +320,6 @@ class PlaceRepository private constructor(context: Context) {
         }
     }
 
-    suspend fun deleteAllPlaces() {
-        dataStore.updateData { placeStorage ->
-            placeStorage.toBuilder()
-                .clear()
-                .build()
-        }
-    }
-
     suspend fun getPlace(placeId: Int): Place? {
         return dataStore.data.first().placesMap[placeId]
     }
@@ -388,25 +370,26 @@ class PlaceRepository private constructor(context: Context) {
                 async {
                     android.util.Log.d("PlaceRepository", "   📌 Starting update for placeId=$placeId")
                     
+                    //  Only the first outcome of a place counts: a callback arriving after the
+                    //  timeout, which already counted an error, must not count it a second time.
                     val deferred = CompletableDeferred<Unit>()
                     try {
                         android.util.Log.d("PlaceRepository", "      Calling updatePlaceFromWeb for placeId=$placeId...")
                         updatePlaceFromWeb(placeId, object : FetchDataCallback {
                             override suspend fun onSuccess(place: Place) {
                                 android.util.Log.d("PlaceRepository", "   ✅ Place $placeId: onSuccess CALLBACK RECEIVED")
-                                successCount.incrementAndGet()
-                                deferred.complete(Unit)
+                                if (deferred.complete(Unit)) successCount.incrementAndGet()
                             }
                             override suspend fun onPartialSuccess(place: Place, requestStatus: RequestStatus) {
                                 android.util.Log.d("PlaceRepository", "   ⚠️  Place $placeId: onPartialSuccess CALLBACK RECEIVED")
-                                successCount.incrementAndGet()
-                                deferred.complete(Unit)
+                                if (deferred.complete(Unit)) successCount.incrementAndGet()
                             }
                             override suspend fun onError(requestStatus: RequestStatus) {
                                 android.util.Log.d("PlaceRepository", "   ❌ Place $placeId: onError CALLBACK RECEIVED - $requestStatus")
-                                failures.add(requestStatus)
-                                errorCount.incrementAndGet()
-                                deferred.complete(Unit)
+                                if (deferred.complete(Unit)) {
+                                    failures.add(requestStatus)
+                                    errorCount.incrementAndGet()
+                                }
                             }
                         })
                         
@@ -416,7 +399,7 @@ class PlaceRepository private constructor(context: Context) {
                             deferred.await()
                         }
                         
-                        if (result == null) {
+                        if (result == null && deferred.complete(Unit)) {
                             android.util.Log.e("PlaceRepository", "   ⏱️  Place $placeId: TIMEOUT after 15 seconds waiting for callback!")
                             errorCount.incrementAndGet()
                         } else {
@@ -424,7 +407,7 @@ class PlaceRepository private constructor(context: Context) {
                         }
                     } catch (e: Exception) {
                         android.util.Log.e("PlaceRepository", "   💥 Exception in update for placeId=$placeId: ${e.message}", e)
-                        errorCount.incrementAndGet()
+                        if (deferred.complete(Unit)) errorCount.incrementAndGet()
                     }
                     onProgress(doneCount.incrementAndGet(), keys.size)
                 }
