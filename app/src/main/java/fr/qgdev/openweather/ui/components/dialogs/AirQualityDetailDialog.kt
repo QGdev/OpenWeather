@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -119,6 +120,8 @@ fun AirQualityDetailDialog(
 @Composable
 private fun IndexSummary(airQuality: AirQuality, dominant: Pollutant?) {
     val palette = LocalWeatherPalette.current
+    //  Read from the configuration, not Locale.getDefault(), so the labels follow a language change.
+    val locale = LocalConfiguration.current.locales[0]
     val labelRes = airQualityLabelRes(airQuality.aqi)
     val indexColor = palette.aqiColor(airQuality.aqi) ?: palette.textMuted
     val shape = RoundedCornerShape(20.dp)
@@ -191,13 +194,13 @@ private fun IndexSummary(airQuality: AirQuality, dominant: Pollutant?) {
         }
         Row(modifier = Modifier.padding(top = 4.dp)) {
             Text(
-                text = stringResource(R.string.air_quality_1).lowercase(Locale.getDefault()),
+                text = stringResource(R.string.air_quality_1).lowercase(locale),
                 color = palette.textQuiet,
                 fontSize = 9.5.sp,
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = stringResource(R.string.air_quality_5).lowercase(Locale.getDefault()),
+                text = stringResource(R.string.air_quality_5).lowercase(locale),
                 color = palette.textQuiet,
                 fontSize = 9.5.sp
             )
