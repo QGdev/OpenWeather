@@ -20,8 +20,6 @@
   -->
 
 <resources>
-    <string name="from_date">From</string>
-    <string name="until_date">Until</string>
     <string name="title_dialog_weather_alert">Weather alert</string>
 	<string name="title_places">Places</string>
     <string name="description_places">List of the registered places</string>
@@ -41,21 +39,16 @@
 	<string name="title_1hour_precipitation">1 hour</string>
 	<string name="title_3hour_precipitation">3 hours</string>
 	<string name="title_snow_precipitations">Precipitations - Snow</string>
-	<string name="title_last_update">Last Update Available</string>
 	<string name="description_delete_icon">Delete the place</string>
 	<string name="title_settings">Settings</string>
     <string name="description_settings">Settings of the application</string>
     <string name="title_settings_api_key">API key</string>
 	<string name="title_settings_units">Units</string>
 	<string name="title_settings_units_temperature">Temperature</string>
-	<string name="title_settings_units_temperature_celsius">Celsius</string>
-	<string name="title_settings_units_temperature_fahrenheit">Fahrenheit</string>
 	<string name="title_settings_units_measure">Measure</string>
 	<string name="title_settings_units_measure_imperial">Imperial</string>
 	<string name="title_settings_units_measure_metric">Metric</string>
 	<string name="title_settings_units_pressure">Pressure</string>
-	<string name="title_settings_units_pressure_mbar">mBar - Barometric</string>
-	<string name="title_settings_units_pressure_hpa">hPa - HectoPascal</string>
 	<string name="title_settings_time">Time</string>
 	<string name="title_settings_hour_timeoffset">Time Offset</string>
 	<string name="title_settings_hour_format">Time Format</string>
@@ -63,14 +56,9 @@
 	<string name="title_dialog_add_place_textinput_city">City</string>
 	<string name="title_dialog_add_place_spinner_country">Country</string>
 	<string name="dialog_add_place_add_button_text">Add</string>
-	<string name="error_no_api_key_registered_short">No API key found</string>
 	<string name="error_server_unreachable">Cannot reach OMW servers, verify your connection and try again</string>
-	<string name="error_place_not_found">Place not found</string>
-	<string name="error_wrong_api_key">OpenWeatherMaps didn\'t recognize your API key</string>
-	<string name="error_too_many_request_in_a_day">Cannot get weather data, too many requests today</string>
 	<string name="error_unknown_error">Unknown error happened</string>
 	<string name="place_added_successfully">was successfully added</string>
-	<string name="error_place_country_not_in_list">The country must exist in the list</string>
 	<string name="error_cannot_save_place">Cannot save the place</string>
 	<string name="error_cannot_refresh_place_list">Cannot refresh places</string>
 	<string name="dialog_confirmation_title_delete_place">Delete a place</string>
@@ -121,9 +109,6 @@
 	<string name="onboarding_place_body">Search for a city to follow its weather. Your places stay on the device.</string>
 	<string name="action_delete">Delete</string>
 	<string name="action_release_to_delete">Release to delete</string>
-	<string name="title_precipitations_1h">Precipitations - 1h</string>
-	<string name="title_precipitation_rain">Rain :</string>
-	<string name="title_precipitation_snow">Snow :</string>
 	<string name="title_forecast">Weather Forecast</string>
 	<string name="title_forecast_hourly">Hourly Forecast</string>
 	<string name="error_cannot_refresh_place_list_network">Cannot refresh place list due to a network error</string>
@@ -156,23 +141,9 @@
 	<string name="error_place_deletion">An error occurred while deleting</string>
 	<string name="error_cannot_save_place_treatment">Cannot save place due to a treatment error</string>
 	<string name="place_deletion_successful">Successfully deleted !</string>
-	<string name="error_place_city_field_empty">Please give the name of the city</string>
-	<string name="error_place_country_field_empty">Please where is that city</string>
-	<string name="title_settings_units_pressure_psi">PSI - Pound per square inch</string>
-	<string name="title_settings_units_pressure_inhg">inHg - Inch of mercury</string>
 	<string name="title_settings_units_direction">Wind direction</string>
 	<string name="title_settings_units_direction_cardinal">"Cardinal points "</string>
 	<string name="title_settings_units_direction_degrees">Angular</string>
-	<string name="description_wind_direction">Wind direction</string>
-	<string name="description_wind_speed">Wind speed</string>
-    <string name="description_wind_gust_speed">Wind gust speed</string>
-    <string name="description_pressure">Pressure</string>
-    <string name="description_visibility">Visibility</string>
-	<string name="description_sunrise">Sunrise time</string>
-	<string name="description_sunset">Sunset time</string>
-	<string name="description_humidity">Humidity</string>
-	<string name="description_cloudiness">Cloudiness</string>
-	<string name="description_weather_alert">Weather alerts</string>
 	<string name="title_daily_forecast_morning">Morning</string>
 	<string name="title_daily_forecast_noon">Noon</string>
 	<string name="title_daily_forecast_evening">Evening</string>
@@ -195,11 +166,7 @@
 	<string name="wind_direction_westnorthwest">WNW</string>
 	<string name="title_about_thanks_section">Thanks</string>
 	<string name="content_about_thanks_section">Thanks to my best friend, who tested the app from its very first versions and never ran short of good ideas. And thanks to the open projects it could not exist without: OpenWeatherMap, OpenStreetMap and the Android community.</string>
-	<string name="title_settings_aqi_state">Air quality</string>
-	<string name="summary_enable_settings_aqi_state">"Air quality will be fetch and displayed "</string>
-	<string name="summary_disable_settings_aqi_state">Air quality will be ignored</string>
 	<string name="title_air_quality">Air Quality</string>
-	<string name="title_air_quality_concentrations">Composition</string>
 	<string name="air_quality_1">Good</string>
 	<string name="air_quality_2">Moderate</string>
 	<string name="air_quality_5">Very unhealthy</string>
@@ -227,12 +194,8 @@
 	<string name="title_about_application_section">About this app</string>
 	<string name="content_about_application_section">OpenWeather was born during the COVID lockdown, from a simple idea: learning Android development by building something useful. First written in Java, it has since moved to Kotlin and Jetpack Compose, and gained widgets and a whole new interface along the way.\n\nIt shows no ads and does not track you: the app is free software, under the GPLv3, and its code is open to anyone who wants to read it or contribute.</string>
     <string name="error_storage_security">An error occurred while initializing the storage</string>
-    <string name="error_no_api_key_registered">API key isn\'t registered, please go into settings and register one</string>
-    <string name="error_api_key_incorrectly_formed">The registered API key must have 32 alphanumerical characters</string>
-    <string name="air_quality_composition_unit">in µg/m³</string>
     <string name="title_about_attributions_section">Attributions</string>
 
-    <string name="add_widget">Add widget</string>
     <string name="widget_standard_info_description">Show basic weather for a specific location</string>
     <string name="widget_configure">Widget configuration</string>
     <string name="label_widget">Classic widget</string>
@@ -241,21 +204,11 @@
     <string name="summary_enabled_settings_update_periodic">Data will be updated in background</string>
     <string name="summary_disabled_settings_update_periodic">Data will not be updated in background</string>
     <string name="title_settings_update_period">Update interval</string>
-    <string name="title_settings_update_period_1min">Every minute (DEBUG)</string>
-    <string name="title_settings_update_period_15min">Every 15 minutes</string>
-    <string name="title_settings_update_period_30min">Every 30 minutes</string>
-    <string name="title_settings_update_period_1h">Every hour</string>
-    <string name="title_settings_update_period_2h">Every 2 hours</string>
-    <string name="title_settings_update_period_3h">Every 3 hours</string>
-    <string name="title_settings_update_period_6h">Every 6 hours</string>
-    <string name="title_settings_update_period_12h">Every 12 hours</string>
-    <string name="description_precipitations_1h">Precipitations volumes in the previous hour</string>
      <string name="title_dialog_about_app">About us</string>
      <string name="action_pull_to_refresh">Pull to refresh</string>
      <string name="action_release_to_refresh">Release to refresh</string>
      <string name="status_refreshing_progress">Refreshing… %1$d of %2$d</string>
  	<string name="error_place_query_too_short">Can\'t lookup for a place with a short name</string>
-	<string name="error_place_query_empty">No results</string>
 	<string name="error_no_results">No results</string>
     <string name="label_wind">Wind</string>
     <string name="status_downloading_forecast">Downloading the forecast…</string>
@@ -274,7 +227,6 @@
         <item quantity="one">Precipitation in %1$d minute.</item>
         <item quantity="other">Precipitation in %1$d minutes.</item>
     </plurals>
-    <string name="nowcast_unavailable">Minute-by-minute forecast unavailable for %1$s.</string>
     <string name="label_now">now</string>
     <string name="label_nowcast_total">total</string>
     <string name="label_nowcast_peak">peak</string>
@@ -294,17 +246,10 @@
     <string name="label_probability">Probability</string>
     <string name="label_dew_point">Dew point</string>
     <string name="label_uv_index">UV index</string>
-    <string name="label_moon_phase">Moon phase</string>
     <string name="label_morning">Morning</string>
     <string name="label_real">actual</string>
-    <string name="description_back">Back</string>
     <string name="title_moonrise">Moonrise</string>
     <string name="title_moonset">Moonset</string>
-    <string name="uv_level_low">Low</string>
-    <string name="uv_level_moderate">Moderate</string>
-    <string name="uv_level_high">High</string>
-    <string name="uv_level_very_high">Very high</string>
-    <string name="uv_level_extreme">Extreme</string>
     <string name="label_results_count">%1$d RESULTS</string>
     <string name="label_cities_only">cities only</string>
     <string name="label_already_added">already added</string>
