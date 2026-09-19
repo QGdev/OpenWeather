@@ -147,7 +147,7 @@ class WeatherService private constructor(
             { response: JSONObject? ->
                 try {
                     //  Mapping the JSON response to the Place object
-                    val mappedPlaceBuilder = PlaceDataMapper.fromOWMToProtoBuilder(response!!)
+                    val mappedPlaceBuilder = response?.let { PlaceDataMapper.fromOWMToProtoBuilder(it) }
 
                     if (mappedPlaceBuilder == null) {
                         serviceScope.launch {
@@ -247,8 +247,12 @@ class WeatherService private constructor(
             { response: JSONObject? ->
                 serviceScope.launch {
                     try {
+                        if (response == null) {
+                            callback.onPartialSuccess(place, RequestStatus.UNKNOWN_ERROR)
+                            return@launch
+                        }
                         //  Mapping the JSON response to the Place object
-                        val airQuality = AirQualityMapper.fromOWMToProto(response!!)
+                        val airQuality = AirQualityMapper.fromOWMToProto(response)
                         val newPlace = place.toBuilder()
                             .setAirQuality(airQuality)
                             .setProperties(
