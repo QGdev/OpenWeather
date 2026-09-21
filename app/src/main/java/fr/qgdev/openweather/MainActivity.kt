@@ -53,7 +53,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import fr.qgdev.openweather.data.repositories.PlaceRepository
-import fr.qgdev.openweather.data.repositories.WidgetRepository
 import fr.qgdev.openweather.data.settings.SettingsRepository
 import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.ui.fragment.place.PlacesScreenView
@@ -98,7 +97,6 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private lateinit var placeRepository: PlaceRepository
-    private lateinit var widgetRepository: WidgetRepository
     private lateinit var settingsRepository: SettingsRepository
     private lateinit var formattingService: FormattingService
 
@@ -125,7 +123,6 @@ class MainActivity : AppCompatActivity() {
         android.util.Log.d("MainActivity", "🚀 [onCreate] Starting MainActivity initialization...")
 
         placeRepository = PlaceRepository.getInstance(applicationContext)
-        widgetRepository = WidgetRepository.getInstance(applicationContext)
         settingsRepository = SettingsRepository.getInstance(applicationContext)
         formattingService = FormattingService.getInstance(applicationContext)
 

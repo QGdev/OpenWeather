@@ -77,9 +77,6 @@
 
 
     <string name="title_dialog_add_place">Add place</string>
-    <string name="title_dialog_add_place_textinput_city">City</string>
-    <string name="title_dialog_add_place_spinner_country">Country</string>
-    <string name="dialog_add_place_add_button_text">Add</string>
 
     <string name="error_server_unreachable">Cannot reach OMW servers, verify your connection and try again</string>
     <string name="error_unknown_error">Unknown error happened</string>
@@ -148,7 +145,6 @@
     <string name="onboarding_place_body">Search for a city to follow its weather. Your places stay on the device.</string>
     <string name="action_delete">Delete</string>
     <string name="action_release_to_delete">Release to delete</string>
-    <string name="title_forecast">Weather Forecast</string>
     <string name="title_forecast_hourly">Hourly Forecast</string>
     <string name="error_cannot_refresh_place_list_network">Cannot refresh place list due to a network error</string>
     <string name="error_place_already_added">This place is already added</string>
@@ -157,31 +153,13 @@
     <string name="splash_screen" translatable="false">Splash Screen</string>
     <string name="title_dialog_weather_alert">Weather alert</string>
     <string name="about_us">About us</string>
-    <string name="dialog_exit_button">Exit</string>
 
     <string name="title_about_the_developer_section">About the developer</string>
     <string name="content_about_the_developer_section">I was a computer science student when I wrote the first lines of OpenWeather, and I have since become a developer. If I keep the app going in my spare time, it is because it has remained my playground: a project I carry from start to finish, at my own pace, where I try what I do not get the chance to try elsewhere.</string>
     <string name="title_about_your_data_section">About your data</string>
     <string name="content_about_your_data_section">No account, no tracking, no usage analytics. Your places and settings stay on this device. Only two things leave the phone: a place\'s coordinates, sent to OpenWeatherMap with your API key and language to get its weather, and the text you type in the search, sent to OpenStreetMap Nominatim.</string>
     <string name="place_deletion_successful">Successfully deleted !</string>
-    <string name="icon_legend_data_time">Date and hour</string>
-    <string name="icon_legend_weather_condition">Weather conditions</string>
-    <string name="icon_legend_temperature">Temperature</string>
-    <string name="icon_legend_feel_like_temperature">Feel like temperature</string>
-    <string name="icon_legend_humidity">Humidity</string>
-    <string name="icon_legend_atmo_pressure">Atmospheric pressure</string>
-    <string name="icon_legend_uv_index">UV index</string>
-    <string name="icon_legend_dew_point">Dew point</string>
-    <string name="icon_legend_cloudiness">Cloudiness</string>
-    <string name="icon_legend_visibility">Visibility</string>
-    <string name="icon_legend_wind_speed">Wind speed</string>
-    <string name="icon_legend_wind_gust_speed">Wind gust speed</string>
-    <string name="icon_legend_wind_direction">Wind direction</string>
-    <string name="icon_legend_rain">Rain</string>
-    <string name="icon_legend_snow">Snow</string>
-    <string name="icon_legend_pop">Probability of precipitation</string>
     <string name="title_daily_forecast_noon">Noon</string>
-    <string name="title_daily_forecast_morning">Morning</string>
     <string name="title_daily_forecast_evening">Evening</string>
     <string name="title_daily_forecast_night">Night</string>
     <string name="wind_direction_north">N</string>
@@ -208,8 +186,6 @@
     <string name="air_quality_3">Unhealthy (sensitives)</string>
     <string name="air_quality_4">Unhealthy</string>
     <string name="air_quality_5">Very unhealthy</string>
-
-    <string name="title_dialog_air_quality_information">Air quality information</string>
 
     <string name="title_air_quality_so2">SO₂ - Sulphur dioxide</string>
     <string name="title_air_quality_no2">NO₂ - Nitrogen dioxide</string>
