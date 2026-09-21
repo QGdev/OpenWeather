@@ -26,37 +26,6 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
-        <item name="android:dialogTheme">@style/MaterialTheme.Dialog</item>
-        <item name="floatingActionButtonStyle">
-            @style/Widget.Material3.FloatingActionButton.Primary
-        </item>
-        <item name="extendedFloatingActionButtonStyle">
-            @style/Widget.Material3.ExtendedFloatingActionButton.Primary
-        </item>
-        <item name="snackbarStyle">@style/MaterialTheme.SnackBar</item>
-        <item name="bottomNavigationStyle">@style/Widget.Material3.BottomNavigationView</item>
-        <item name="materialCardViewStyle">@style/Widget.Material3.CardView.Elevated</item>
-        <item name="android:editTextStyle">@style/Widget.Material3.TextInputEditText.OutlinedBox
-        </item>
-    </style>
-
-    <style name="MaterialTheme.SnackBar" parent="ThemeOverlay.Material3.Snackbar">
-        <item name="android:layout_margin">20dp</item>
-        <item name="android:layout_marginBottom">40dp</item>
-    </style>
-
-    <style name="MaterialTheme.Dialog" parent="ThemeOverlay.Material3.Dialog">
-        <item name="shapeAppearance">@style/ShapeAppearance.MaterialTheme.SmallComponent</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:backgroundDimEnabled">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-    </style>
-
-    <style name="ShapeAppearance.MaterialTheme.SmallComponent" parent="ShapeAppearance.Material3.SmallComponent">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">20dp</item>
     </style>
 
     <style name="Widget.OpenWeather.AppWidget.Container" parent="android:Widget">

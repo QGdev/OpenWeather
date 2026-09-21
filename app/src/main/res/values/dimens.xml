@@ -23,19 +23,5 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="floating_action_button_margin">16dp</dimen>
     <dimen name="action_bar_height">56dp</dimen>
-    <dimen name="nav_bar_height">60dp</dimen>
-
-    <dimen name="text_size_tile_title">25sp</dimen>
-
-
-    <dimen name="text_size_dialog_title">20sp</dimen>
-    <dimen name="text_size_dialog_content">16sp</dimen>
-
-    <dimen name="text_marginTop_dialog_title">8dp</dimen>
-
-    <dimen name="text_marginTop_dialog_content">16dp</dimen>
-    <dimen name="text_marginBottom_dialog_content">8dp</dimen>
-    <dimen name="text_marginStart_dialog_content">8dp</dimen>
 </resources>
