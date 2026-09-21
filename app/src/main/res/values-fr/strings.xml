@@ -52,9 +52,6 @@
 	<string name="title_settings_hour_timeoffset">Décalage horaire</string>
 	<string name="title_settings_hour_format">Format horaire</string>
 	<string name="title_dialog_add_place">Ajouter un lieu</string>
-	<string name="title_dialog_add_place_textinput_city">Ville</string>
-	<string name="title_dialog_add_place_spinner_country">Pays</string>
-	<string name="dialog_add_place_add_button_text">Ajouter</string>
 	<string name="error_server_unreachable">Impossible d\'atteindre les serveurs OMW , vérifiez votre connexion et réessayez</string>
 	<string name="error_unknown_error">Une erreur inconnue s\'est produite</string>
 	<string name="place_added_successfully">a été ajouté avec succès</string>
@@ -108,7 +105,6 @@
 	<string name="onboarding_place_body">Cherchez une ville pour suivre sa météo. Vos lieux restent sur l\'appareil.</string>
 	<string name="action_delete">Supprimer</string>
 	<string name="action_release_to_delete">Relâchez pour supprimer</string>
-	<string name="title_forecast">Prévisions météorologiques</string>
 	<string name="title_forecast_hourly">Prévisions horaires</string>
 	<string name="error_cannot_refresh_place_list_network">Impossible de rafraîchir la liste des lieux en raison d\'une erreur de réseau</string>
 	<string name="error_place_already_added">Ce lieu est déjà ajouté</string>
@@ -116,7 +112,6 @@
 	<string name="title_forecast_daily">Prévisions quotidiennes</string>
 	<string name="title_dialog_weather_alert">Alertes Météorologiques</string>
 	<string name="about_us">À propos</string>
-	<string name="dialog_exit_button">Quitter</string>
 	<string name="content_about_your_data_section">Aucun compte, aucun pistage, aucune analyse d\'usage. Vos lieux et vos réglages restent sur l\'appareil. Deux informations seulement quittent le téléphone : les coordonnées d\'un lieu, envoyées à OpenWeatherMap avec votre clé d\'API et votre langue pour obtenir sa météo, et le texte que vous tapez dans la recherche, envoyé à OpenStreetMap Nominatim.</string>
 	<string name="title_about_the_developer_section">À propos du développeur</string>
 	<string name="title_about_your_data_section">À propos de vos données</string>
@@ -125,26 +120,9 @@
 	<string name="error_place_deletion">Une erreur est survenue lors de la suppression</string>
 	<string name="error_cannot_save_place_treatment">Impossible de sauvegarder la lieu à cause d\'une erreur de traitement</string>
 	<string name="place_deletion_successful">Suppression réussie !</string>
-	<string name="icon_legend_data_time">Date et heure</string>
-	<string name="icon_legend_weather_condition">Conditions métérologiques</string>
-	<string name="icon_legend_temperature">Température</string>
-	<string name="icon_legend_feel_like_temperature">Température ressentie</string>
-	<string name="icon_legend_humidity">Humiditée</string>
-	<string name="icon_legend_atmo_pressure">Pression atmosphérique</string>
-	<string name="icon_legend_uv_index">Indice UV</string>
-	<string name="icon_legend_dew_point">Point de rosée</string>
-	<string name="icon_legend_cloudiness">Nébulosité</string>
-	<string name="icon_legend_visibility">Visibilitée</string>
-	<string name="icon_legend_wind_speed">Vitesse du vent</string>
-	<string name="icon_legend_wind_gust_speed">Vitesse des rafales de vent</string>
-	<string name="icon_legend_wind_direction">Direction du vent</string>
-	<string name="icon_legend_rain">Pluie</string>
-	<string name="icon_legend_snow">Neige</string>
-	<string name="icon_legend_pop">Probabilitée de précipitation</string>
 	<string name="title_settings_units_direction">Direction du vent</string>
 	<string name="title_settings_units_direction_cardinal">Points cardinaux</string>
 	<string name="title_settings_units_direction_degrees">Angulaire</string>
-    <string name="title_daily_forecast_morning">Matin</string>
     <string name="title_daily_forecast_noon">Midi</string>
     <string name="title_daily_forecast_evening">Soirée</string>
     <string name="title_daily_forecast_night">Nuit</string>
@@ -172,8 +150,6 @@
 	<string name="air_quality_5">Très Mauvais</string>
 	<string name="air_quality_4">Mauvais</string>
 	<string name="air_quality_3">Mauvais (sensible)</string>
-
-	<string name="title_dialog_air_quality_information">Informations qualité de l\'air</string>
 
 	<string name="title_air_quality_so2">SO₂ - Dioxyde de soufre</string>
 	<string name="title_air_quality_no2">NO₂ - Dioxyde d\'azote</string>
