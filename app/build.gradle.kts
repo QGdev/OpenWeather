@@ -49,7 +49,6 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
         compose = true
         buildConfig = true
     }
@@ -59,13 +58,7 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
     implementation("com.google.android.material:material:1.14.0")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.9.8")
-    implementation("androidx.navigation:navigation-ui-ktx:2.9.8")
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
-    implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("androidx.core:core-ktx:1.19.0")
     implementation("androidx.security:security-crypto:1.1.0")
     implementation("com.google.code.gson:gson:2.14.0")
@@ -84,12 +77,10 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview-android")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.datastore:datastore:1.2.1")
-    implementation("androidx.datastore:datastore-core:1.2.1")
     implementation("com.google.protobuf:protobuf-javalite:4.35.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("androidx.navigation:navigation-compose:2.9.8")
     implementation("androidx.activity:activity-compose:1.13.0")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20260522")
     debugImplementation(platform("androidx.compose:compose-bom:2026.06.01"))

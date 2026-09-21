@@ -21,20 +21,7 @@
 <resources>
 	<color name="colorPrimary">#FA825C</color>
 	<color name="colorPrimaryDark">#A6563D</color>
-	<color name="colorSecondary">#F4511E</color>
 	<color name="colorAccent">#F96824</color>
 
-	<color name="colorRedError">#E01C15</color>
-
 	<color name="colorLightBlue">#5DA3EA</color>
-
-	<color name="colorUvLow">#089718</color>
-	<color name="colorUvModerate">#FFDC01</color>
-	<color name="colorUvHigh">#FF9400</color>
-	<color name="colorUvVeryHigh">#FF0007</color>
-	<color name="colorUvExtreme">#FF007C</color>
-
-	<color name="colorMoonLight">#FDBF00</color>
-	<color name="colorMoonShadow">#416675</color>
-
 </resources>
