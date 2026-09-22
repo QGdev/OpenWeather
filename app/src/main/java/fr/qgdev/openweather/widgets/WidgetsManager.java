@@ -223,12 +223,10 @@ public final class WidgetsManager {
 	 * @param context Use to get the WorkManager instance
 	 */
 	public void unscheduleWorkRequest(@NonNull Context context) {
-		android.util.Log.d("WidgetsManager", "🛑 Cancelling work request: " + WORKER_TASK_NAME);
 		try {
 			WorkManager.getInstance(context).cancelUniqueWork(WORKER_TASK_NAME);
-			android.util.Log.d("WidgetsManager", "✅ Work request cancelled successfully");
 		} catch (Exception e) {
-			android.util.Log.e("WidgetsManager", "❌ Error cancelling work: " + e.getMessage(), e);
+			android.util.Log.e("WidgetsManager", "Error cancelling work: " + e.getMessage(), e);
 		}
 	}
 	
@@ -244,18 +242,7 @@ public final class WidgetsManager {
 	 * @param timeBeforeNextUpdate Delay before the next run
 	 */
 	public void scheduleNextRun(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate) {
-		Constraints constraints = new Constraints.Builder()
-				  .setRequiresBatteryNotLow(true)
-				  .build();
-		
-		OneTimeWorkRequest next = new OneTimeWorkRequest.Builder(PeriodicUpdaterWorker.class)
-				  .setConstraints(constraints)
-				  .setInitialDelay(timeBeforeNextUpdate)
-				  .build();
-		
-		WorkManager.getInstance(context).enqueueUniqueWork(WORKER_TASK_NAME,
-				  ExistingWorkPolicy.APPEND_OR_REPLACE,
-				  next);
+		enqueueWorkRequest(context, timeBeforeNextUpdate, ExistingWorkPolicy.APPEND_OR_REPLACE);
 	}
 	
 	/**
@@ -264,32 +251,36 @@ public final class WidgetsManager {
 	 * @param context Use to get the WorkManager instance
 	 */
 	public void scheduleWorkRequest(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate) {
-		android.util.Log.d("WidgetsManager", "📅 Scheduling work request: " + WORKER_TASK_NAME);
-		android.util.Log.d("WidgetsManager", "   - Delay: " + timeBeforeNextUpdate.toMillis() + "ms (" + (timeBeforeNextUpdate.toMillis() / 60000) + " min)");
-		
 		try {
-			Constraints constraints = new Constraints.Builder()
-					  //.setRequiredNetworkType(NetworkType.CONNECTED)
-					  .setRequiresBatteryNotLow(true)
-					  .build();
-			
-			android.util.Log.d("WidgetsManager", "   - Constraints: Network=CONNECTED, BatteryNotLow=true");
-			
-			OneTimeWorkRequest oneTimeWorkRequest =
-					  new OneTimeWorkRequest.Builder(PeriodicUpdaterWorker.class)
-								 .setConstraints(constraints)
-								 .setInitialDelay(timeBeforeNextUpdate)
-								 .build();
-			
-			android.util.Log.d("WidgetsManager", "   - Work request built with ID: " + oneTimeWorkRequest.getId());
-			
-			WorkManager.getInstance(context).enqueueUniqueWork(WORKER_TASK_NAME,
-					  ExistingWorkPolicy.REPLACE,
-					  oneTimeWorkRequest);
-			
-			android.util.Log.d("WidgetsManager", "✅ Work request scheduled successfully");
+			enqueueWorkRequest(context, timeBeforeNextUpdate, ExistingWorkPolicy.REPLACE);
 		} catch (Exception e) {
-			android.util.Log.e("WidgetsManager", "❌ Error scheduling work: " + e.getMessage(), e);
+			android.util.Log.e("WidgetsManager", "Error scheduling work: " + e.getMessage(), e);
 		}
+	}
+	
+	private void enqueueWorkRequest(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate,
+	                                @NonNull ExistingWorkPolicy policy) {
+		Constraints constraints = new Constraints.Builder()
+				  .setRequiresBatteryNotLow(true)
+				  .build();
+		
+		OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(PeriodicUpdaterWorker.class)
+				  .setConstraints(constraints)
+				  .setInitialDelay(timeBeforeNextUpdate)
+				  .build();
+		
+		WorkManager.getInstance(context).enqueueUniqueWork(WORKER_TASK_NAME, policy, workRequest);
+	}
+	
+	/**
+	 * The delay until the next mark of the given update period, marks falling on multiples of the
+	 * period since the epoch: a quarter-hour period runs at :00, :15, :30 and :45.
+	 *
+	 * @param periodMillis The update period, in milliseconds
+	 * @return The delay before the next mark
+	 */
+	@NonNull
+	public static Duration timeUntilNextMark(long periodMillis) {
+		return Duration.ofMillis(periodMillis - System.currentTimeMillis() % periodMillis);
 	}
 }
