@@ -108,7 +108,7 @@ class SplashScreenActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
-            // Préchauffage des singletons et du cache DataStore en parallèle du délai splash
+            // Warm up the singletons and the DataStore cache during the splash delay
             val preloadJob = launch(Dispatchers.IO) {
                 SettingsRepository.getInstance(applicationContext)
                 withContext(Dispatchers.Main) { stepsDone++ }
@@ -122,7 +122,7 @@ class SplashScreenActivity : AppCompatActivity() {
                 delay(FRAME_MILLIS)
                 timeElapsed = ((SystemClock.elapsedRealtime() - start) / SPLASH_TIMEOUT.toFloat()).coerceAtMost(1f)
             }
-            preloadJob.join() // attend si le chargement dépasse 1 s (cas rare)
+            preloadJob.join() // waits when loading takes longer than 1 s (rare)
             startActivity(Intent(this@SplashScreenActivity, MainActivity::class.java))
             finish()
         }

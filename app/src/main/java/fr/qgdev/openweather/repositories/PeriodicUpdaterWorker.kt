@@ -27,7 +27,6 @@ import fr.qgdev.openweather.data.repositories.PlaceRepository
 import fr.qgdev.openweather.data.settings.SettingsRepository
 import fr.qgdev.openweather.widgets.WidgetsManager
 import kotlinx.coroutines.withTimeoutOrNull
-import java.time.Duration
 
 /**
  * PeriodicUpdaterWorker
@@ -116,8 +115,7 @@ class PeriodicUpdaterWorker(
     /** Queues the next run at the chosen interval's next mark, after this one. */
     private fun scheduleNextRun(settingsRepository: SettingsRepository, widgetsManager: WidgetsManager) {
         val periodMillis = settingsRepository.getUpdatePeriodSetting().durationMillis
-        val untilNextMark = periodMillis - System.currentTimeMillis() % periodMillis
-        widgetsManager.scheduleNextRun(applicationContext, Duration.ofMillis(untilNextMark))
+        widgetsManager.scheduleNextRun(applicationContext, WidgetsManager.timeUntilNextMark(periodMillis))
     }
 }
 
