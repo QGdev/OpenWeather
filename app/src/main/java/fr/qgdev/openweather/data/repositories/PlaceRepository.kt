@@ -64,6 +64,8 @@ enum class AddPlaceResult {
 /** Upper bound on stored places; ids are allocated modulo this value. */
 internal const val MAX_PLACES = 100
 
+private const val TAG = "PlaceRepository"
+
 class PlaceRepository private constructor(context: Context) {
     private val weatherService = WeatherService.getInstance(context)
     private val placeSearchingService = PlaceSearchingService.getInstance(context)
@@ -88,7 +90,7 @@ class PlaceRepository private constructor(context: Context) {
     val placesFlow: Flow<List<Place>> = dataStore.data
         .catch {exception ->
             if (exception is IOException) {
-                Log.e("PlaceRepository", "Error reading placeStorage.", exception)
+                Log.e(TAG, "Error reading placeStorage.", exception)
                 emit(PlaceStorage.getDefaultInstance())
             } else { throw exception }
         }
@@ -302,14 +304,11 @@ class PlaceRepository private constructor(context: Context) {
     suspend fun updateAllPlacesFromWeb(
         onProgress: (done: Int, total: Int) -> Unit = { _, _ -> }
     ): Pair<Int, Int> {
-        android.util.Log.d("PlaceRepository", "🔄 [updateAllPlacesFromWeb] Starting...")
         
         val placeStorage = dataStore.data.first()
         val keys = placeStorage.orderedPlaceKeysList.toList()
         
-        android.util.Log.d("PlaceRepository", "   Places to update: ${keys.size}")
         if (keys.isEmpty()) {
-            android.util.Log.d("PlaceRepository", "   No places to update")
             return Pair(0, 0)
         }
 
@@ -320,30 +319,23 @@ class PlaceRepository private constructor(context: Context) {
         onProgress(0, keys.size)
         _placesRefreshing.value = keys.size
 
-        android.util.Log.d("PlaceRepository", "   Launching ${keys.size} coroutines in parallel...")
-        
         // Launch all updates concurrently using async within coroutineScope
         return coroutineScope {
             val jobs = keys.map { placeId ->
                 async {
-                    android.util.Log.d("PlaceRepository", "   📌 Starting update for placeId=$placeId")
                     
                     //  Only the first outcome of a place counts: a callback arriving after the
                     //  timeout, which already counted an error, must not count it a second time.
                     val deferred = CompletableDeferred<Unit>()
                     try {
-                        android.util.Log.d("PlaceRepository", "      Calling updatePlaceFromWeb for placeId=$placeId...")
                         updatePlaceFromWeb(placeId, object : FetchDataCallback {
                             override suspend fun onSuccess(place: Place) {
-                                android.util.Log.d("PlaceRepository", "   ✅ Place $placeId: onSuccess CALLBACK RECEIVED")
                                 if (deferred.complete(Unit)) successCount.incrementAndGet()
                             }
                             override suspend fun onPartialSuccess(place: Place, requestStatus: RequestStatus) {
-                                android.util.Log.d("PlaceRepository", "   ⚠️  Place $placeId: onPartialSuccess CALLBACK RECEIVED")
                                 if (deferred.complete(Unit)) successCount.incrementAndGet()
                             }
                             override suspend fun onError(requestStatus: RequestStatus) {
-                                android.util.Log.d("PlaceRepository", "   ❌ Place $placeId: onError CALLBACK RECEIVED - $requestStatus")
                                 if (deferred.complete(Unit)) {
                                     failures.add(requestStatus)
                                     errorCount.incrementAndGet()
@@ -352,35 +344,28 @@ class PlaceRepository private constructor(context: Context) {
                         })
                         
                         // Wait for callback to complete with 15 second timeout
-                        android.util.Log.d("PlaceRepository", "      Waiting for callback for placeId=$placeId (timeout: 15s)...")
                         val result = withTimeoutOrNull(15000) {
                             deferred.await()
                         }
                         
                         if (result == null && deferred.complete(Unit)) {
-                            android.util.Log.e("PlaceRepository", "   ⏱️  Place $placeId: TIMEOUT after 15 seconds waiting for callback!")
+                            Log.e(TAG, "Place $placeId: no answer after 15 seconds")
                             errorCount.incrementAndGet()
-                        } else {
-                            android.util.Log.d("PlaceRepository", "      Place $placeId: Callback completed successfully")
                         }
                     } catch (e: Exception) {
-                        android.util.Log.e("PlaceRepository", "   💥 Exception in update for placeId=$placeId: ${e.message}", e)
+                        Log.e(TAG, "Failed to update place $placeId: ${e.message}", e)
                         if (deferred.complete(Unit)) errorCount.incrementAndGet()
                     }
                     onProgress(doneCount.incrementAndGet(), keys.size)
                 }
             }
 
-            android.util.Log.d("PlaceRepository", "   Waiting for all coroutines to complete (${jobs.size})...")
             try {
                 jobs.awaitAll()
             } finally {
                 _placesRefreshing.value = 0
             }
             _refreshProblem.value = RefreshProblem.of(failures, System.currentTimeMillis())
-            
-            android.util.Log.d("PlaceRepository", "   All coroutines completed!")
-            android.util.Log.d("PlaceRepository", "✅ [updateAllPlacesFromWeb] Completed: ${successCount.get()} success, ${errorCount.get()} errors")
             
             Pair(successCount.get(), errorCount.get())
         }
@@ -389,45 +374,34 @@ class PlaceRepository private constructor(context: Context) {
     //  Remote part, fetch from web
     //  ASYNC TASK
     suspend fun updatePlaceFromWeb(placeId: Int, callback: FetchDataCallback) {
-        android.util.Log.d("PlaceRepository", "      [updatePlaceFromWeb] Starting for placeId=$placeId")
         
         try {
-            android.util.Log.d("PlaceRepository", "      [updatePlaceFromWeb] About to call getPlace($placeId)...")
             val place = getPlace(placeId)
-            android.util.Log.d("PlaceRepository", "      [updatePlaceFromWeb] getPlace() returned, place=${place != null}")
             
             if (place == null) {
-                android.util.Log.e("PlaceRepository", "      [updatePlaceFromWeb] Place not found for placeId=$placeId")
                 callback.onError(RequestStatus.NOT_FOUND)
                 return
             }
             
-            android.util.Log.d("PlaceRepository", "      [updatePlaceFromWeb] Place found, geolocation set")
-
             val innerCallback = object : FetchDataCallback {
                 override suspend fun onSuccess(place: Place) {
-                    android.util.Log.d("PlaceRepository", "      [innerCallback] onSuccess received for placeId=$placeId")
                     updatePlace(placeId, place)
                     callback.onSuccess(place)
                 }
 
                 override suspend fun onPartialSuccess(place: Place, requestStatus: RequestStatus) {
-                    android.util.Log.d("PlaceRepository", "      [innerCallback] onPartialSuccess received for placeId=$placeId")
                     updatePlace(placeId, place)
                     callback.onPartialSuccess(place, requestStatus)
                 }
 
                 override suspend fun onError(requestStatus: RequestStatus) {
-                    android.util.Log.e("PlaceRepository", "      [innerCallback] onError received for placeId=$placeId: $requestStatus")
                     callback.onError(requestStatus)
                 }
             }
 
-            android.util.Log.d("PlaceRepository", "      [updatePlaceFromWeb] Calling weatherService.getPlaceDataOWM()...")
             weatherService.getPlaceDataOWM(place, innerCallback)
-            android.util.Log.d("PlaceRepository", "      [updatePlaceFromWeb] weatherService.getPlaceDataOWM() returned (async)")
         } catch (e: Exception) {
-            android.util.Log.e("PlaceRepository", "      💥 [updatePlaceFromWeb] Exception for placeId=$placeId: ${e.message}", e)
+            Log.e(TAG, "Failed to fetch place $placeId: ${e.message}", e)
             callback.onError(RequestStatus.UNKNOWN_ERROR)
         }
     }
