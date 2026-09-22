@@ -224,12 +224,10 @@ public final class WidgetsManager {
 	 * @param context Use to get the WorkManager instance
 	 */
 	public void unscheduleWorkRequest(@NonNull Context context) {
-		android.util.Log.d("WidgetsManager", "🛑 Cancelling work request: " + WORKER_TASK_NAME);
 		try {
 			WorkManager.getInstance(context).cancelUniqueWork(WORKER_TASK_NAME);
-			android.util.Log.d("WidgetsManager", "✅ Work request cancelled successfully");
 		} catch (Exception e) {
-			android.util.Log.e("WidgetsManager", "❌ Error cancelling work: " + e.getMessage(), e);
+			android.util.Log.e("WidgetsManager", "Error cancelling work: " + e.getMessage(), e);
 		}
 	}
 	
@@ -254,17 +252,10 @@ public final class WidgetsManager {
 	 * @param context Use to get the WorkManager instance
 	 */
 	public void scheduleWorkRequest(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate) {
-		android.util.Log.d("WidgetsManager", "📅 Scheduling work request: " + WORKER_TASK_NAME);
-		android.util.Log.d("WidgetsManager", "   - Delay: " + timeBeforeNextUpdate.toMillis() + "ms (" + (timeBeforeNextUpdate.toMillis() / 60000) + " min)");
-		
 		try {
-			android.util.Log.d("WidgetsManager", "   - Constraints: Network=CONNECTED, BatteryNotLow=true");
-			
 			enqueueWorkRequest(context, timeBeforeNextUpdate, ExistingWorkPolicy.REPLACE);
-			
-			android.util.Log.d("WidgetsManager", "✅ Work request scheduled successfully");
 		} catch (Exception e) {
-			android.util.Log.e("WidgetsManager", "❌ Error scheduling work: " + e.getMessage(), e);
+			android.util.Log.e("WidgetsManager", "Error scheduling work: " + e.getMessage(), e);
 		}
 	}
 	
@@ -288,5 +279,17 @@ public final class WidgetsManager {
 				  .build();
 		
 		WorkManager.getInstance(context).enqueueUniqueWork(WORKER_TASK_NAME, policy, workRequest);
+	}
+	
+	/**
+	 * The delay until the next mark of the given update period, marks falling on multiples of the
+	 * period since the epoch: a quarter-hour period runs at :00, :15, :30 and :45.
+	 *
+	 * @param periodMillis The update period, in milliseconds
+	 * @return The delay before the next mark
+	 */
+	@NonNull
+	public static Duration timeUntilNextMark(long periodMillis) {
+		return Duration.ofMillis(periodMillis - System.currentTimeMillis() % periodMillis);
 	}
 }

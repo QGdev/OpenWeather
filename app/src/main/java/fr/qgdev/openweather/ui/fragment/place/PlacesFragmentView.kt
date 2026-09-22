@@ -224,7 +224,7 @@ fun PlacesScreenView(
             //  malformed afterwards - edited in the settings - is a banner over the places, which
             //  stay readable, rather than a screen in their place.
             when {
-                data == null -> { /* chargement en cours : rien à afficher */ }
+                data == null -> { /* still loading: nothing to show */ }
                 data!!.isEmpty() -> {
                     EmptyPlacesScreen(
                         banners = banners,
@@ -372,8 +372,8 @@ private fun PlacesList(
     //  Reaching for the singleton here pinned one instance for the lifetime of the screen, and
     //  since Compose compares this unstable type by identity, changing a unit never redrew the
     //  cards. It now comes from SettingsViewModel, which republishes a new instance per change.
-    // Dialog géré ici, hors du composable de l'item :
-    // évite toute réutilisation d'état après un Undo qui remettrait le dialog au premier plan.
+    // The dialog lives here, outside the item's composable, so that an Undo
+    // cannot reuse its state and bring the dialog back to the front.
     var pendingDeletePlace by remember { mutableStateOf<Place?>(null) }
     var pendingDeleteIndex by remember { mutableStateOf(-1) }
     var pendingResetCallback by remember { mutableStateOf<(() -> Unit)?>(null) }
@@ -967,7 +967,7 @@ private fun SwipeablePlaceItem(
         enableDismissFromEndToStart = true,
         backgroundContent = {
             val density = LocalDensity.current
-            // 96 dp = distance à partir de laquelle l'alpha atteint 1.0
+            // 96 dp = swipe distance at which the alpha reaches 1.0
             val fullAlphaPx = with(density) { 96.dp.toPx() }
             val offsetPx = runCatching<Float> { dismissState.requireOffset() }.getOrDefault(0f)
             val alpha = (kotlin.math.abs(offsetPx) / fullAlphaPx).coerceIn(0f, 1f)
