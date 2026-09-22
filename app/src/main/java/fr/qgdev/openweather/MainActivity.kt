@@ -120,34 +120,20 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        android.util.Log.d("MainActivity", "🚀 [onCreate] Starting MainActivity initialization...")
-
         placeRepository = PlaceRepository.getInstance(applicationContext)
         settingsRepository = SettingsRepository.getInstance(applicationContext)
         formattingService = FormattingService.getInstance(applicationContext)
 
-        android.util.Log.d("MainActivity", "✅ [onCreate] All repositories initialized")
-
-        // Check initial settings state
-        val initialSettings = settingsRepository.settingsFlow.value
-        android.util.Log.d("MainActivity", "📋 [onCreate] Initial settings - Periodic update: ${initialSettings.periodicUpdateEnabled}, Period: ${initialSettings.updatePeriod.name}")
-
-        // Observer les changements de paramètres pour réagir aux modifications
+        // Follow the settings to schedule or cancel the periodic update
         lifecycleScope.launch {
-            android.util.Log.d("MainActivity", "📋 [onCreate] Settings observer launched")
             settingsRepository.settingsFlow.collect { settings ->
-                android.util.Log.d("MainActivity", "📋 [Settings] Periodic update changed: ${settings.periodicUpdateEnabled}")
                 if (settings.periodicUpdateEnabled) {
-                    android.util.Log.d("MainActivity", "✅ [Settings] Enabling periodic updates with period: ${settings.updatePeriod.name}")
                     schedulePeriodicWidgetUpdate()
                 } else {
-                    android.util.Log.d("MainActivity", "❌ [Settings] Disabling periodic updates")
                     unschedulePeriodicWidgetUpdate()
                 }
             }
         }
-
-        android.util.Log.d("MainActivity", "✅ [onCreate] MainActivity initialized")
 
         setContent {
             AppTheme {
@@ -174,38 +160,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Planifie la mise à jour périodique des widgets.
-     * Calcule le temps jusqu'au prochain quart d'heure et planifie une mise à jour.
+     * Schedules the periodic update of the places and widgets at the next mark of the chosen period.
      */
     private fun schedulePeriodicWidgetUpdate() {
         val tag = "MainActivity.schedulePeriodicWidgetUpdate"
         
         try {
-            val widgetsManager = WidgetsManager.getInstance(applicationContext)
-            val settings = settingsRepository.settingsFlow.value
-            val periodMillis = settings.updatePeriod.durationMillis
-            
-            val now = System.currentTimeMillis()
-            // Calculate time until next aligned mark for the chosen period
-            // e.g. if period=60000ms (1 min) and now=12:00:30 → next mark at 12:01:00 (30 sec wait)
-            val timeUntilNextMark = periodMillis - (now % periodMillis)
-            
-            android.util.Log.d(tag, "🎯 [schedulePeriodicWidgetUpdate] Starting...")
-            android.util.Log.d(tag, "   ⏱️  Current time: $now ms")
-            android.util.Log.d(tag, "   📅 Period: ${settings.updatePeriod.name} ($periodMillis ms)")
-            android.util.Log.d(tag, "   ⏱️  Time until next mark: $timeUntilNextMark ms (${timeUntilNextMark / 1000}s)")
-            
-            android.util.Log.d(tag, "📤 Calling WidgetsManager.scheduleWorkRequest()...")
-            widgetsManager.scheduleWorkRequest(applicationContext, java.time.Duration.ofMillis(timeUntilNextMark))
-            
-            android.util.Log.d(tag, "✅ Work scheduled successfully")
+            val periodMillis = settingsRepository.settingsFlow.value.updatePeriod.durationMillis
+            WidgetsManager.getInstance(applicationContext)
+                .scheduleWorkRequest(applicationContext, WidgetsManager.timeUntilNextMark(periodMillis))
         } catch (e: Exception) {
-            android.util.Log.e(tag, "❌ Failed to schedule work: ${e.message}", e)
+            android.util.Log.e(tag, "Failed to schedule work: ${e.message}", e)
         }
     }
 
     /**
-     * Désactive la mise à jour périodique des widgets.
+     * Cancels the periodic update of the places and widgets.
      */
     private fun unschedulePeriodicWidgetUpdate() {
         val tag = "MainActivity.unschedulePeriodicWidgetUpdate"
@@ -213,12 +183,10 @@ class MainActivity : AppCompatActivity() {
         try {
             val widgetsManager = WidgetsManager.getInstance(applicationContext)
             
-            android.util.Log.d(tag, "Cancelling periodic update work...")
             widgetsManager.unscheduleWorkRequest(applicationContext)
             
-            android.util.Log.d(tag, "✅ Work cancelled successfully")
         } catch (e: Exception) {
-            android.util.Log.e(tag, "❌ Failed to cancel work: ${e.message}", e)
+            android.util.Log.e(tag, "Failed to cancel work: ${e.message}", e)
         }
     }
 
