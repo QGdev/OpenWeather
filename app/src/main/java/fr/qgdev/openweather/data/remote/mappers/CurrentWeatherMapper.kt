@@ -20,8 +20,6 @@
 
 package fr.qgdev.openweather.data.remote.mappers
 
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import fr.qgdev.openweather.data.models.CurrentWeather
 import org.json.JSONObject
 
@@ -40,31 +38,32 @@ import org.json.JSONObject
 open class CurrentWeatherMapper private constructor() : Mapper<CurrentWeather> {
     companion object : CurrentWeatherMapper() {
         override fun fromOWMToProto(jsonObject: JSONObject): CurrentWeather {
-
-            val currentWeatherJson = Gson()
-                .fromJson(jsonObject.toString(), CurrentWeatherJson::class.java)
+            val weather = jsonObject.getJSONArray("weather").getJSONObject(0)
+            //  A missing number reads as 0, as it did through Gson; only the wind direction tells
+            //  "missing" apart, to flag it unreadable.
+            val windDeg = if (jsonObject.isNull("wind_deg")) null else jsonObject.getInt("wind_deg")
 
             return CurrentWeather.newBuilder()
-                .setDt(currentWeatherJson.dt * 1000)
-                .setWeather(currentWeatherJson.weather[0].main)
-                .setWeatherDescription(currentWeatherJson.weather[0].description)
-                .setWeatherCode(currentWeatherJson.weather[0].id)
-                .setTemperature(currentWeatherJson.temp.toFloat())
-                .setTemperatureFeelsLike(currentWeatherJson.feelsLike.toFloat())
-                .setPressure(currentWeatherJson.pressure)
-                .setHumidity(currentWeatherJson.humidity)
-                .setDewPoint(currentWeatherJson.dewPoint.toFloat())
-                .setUvIndex(currentWeatherJson.uvi.toInt())
-                .setCloudiness(currentWeatherJson.clouds)
-                .setVisibility(currentWeatherJson.visibility)
-                .setSunrise(currentWeatherJson.sunrise * 1000)
-                .setSunset(currentWeatherJson.sunset * 1000)
-                .setWindSpeed(currentWeatherJson.windSpeed.toFloat())
-                .setIsWindDirectionReadable(currentWeatherJson.windDeg != null)
-                .setWindDirection(currentWeatherJson.windDeg ?: 0)
-                .setWindGustSpeed(currentWeatherJson.windGust?.toFloat() ?: 0f)
-                .setRain(currentWeatherJson.rain?.oneHour?.toFloat() ?: 0f)
-                .setSnow(currentWeatherJson.snow?.oneHour?.toFloat() ?: 0f)
+                .setDt(jsonObject.optLong("dt") * 1000)
+                .setWeather(weather.getString("main"))
+                .setWeatherDescription(weather.getString("description"))
+                .setWeatherCode(weather.optInt("id"))
+                .setTemperature(jsonObject.optDouble("temp", 0.0).toFloat())
+                .setTemperatureFeelsLike(jsonObject.optDouble("feels_like", 0.0).toFloat())
+                .setPressure(jsonObject.optInt("pressure"))
+                .setHumidity(jsonObject.optInt("humidity"))
+                .setDewPoint(jsonObject.optDouble("dew_point", 0.0).toFloat())
+                .setUvIndex(jsonObject.optDouble("uvi", 0.0).toInt())
+                .setCloudiness(jsonObject.optInt("clouds"))
+                .setVisibility(jsonObject.optInt("visibility"))
+                .setSunrise(jsonObject.optLong("sunrise") * 1000)
+                .setSunset(jsonObject.optLong("sunset") * 1000)
+                .setWindSpeed(jsonObject.optDouble("wind_speed", 0.0).toFloat())
+                .setIsWindDirectionReadable(windDeg != null)
+                .setWindDirection(windDeg ?: 0)
+                .setWindGustSpeed(jsonObject.optDouble("wind_gust", 0.0).toFloat())
+                .setRain(jsonObject.optJSONObject("rain")?.optDouble("1h", 0.0)?.toFloat() ?: 0f)
+                .setSnow(jsonObject.optJSONObject("snow")?.optDouble("1h", 0.0)?.toFloat() ?: 0f)
                 .build()
         }
     }
@@ -72,33 +71,4 @@ open class CurrentWeatherMapper private constructor() : Mapper<CurrentWeather> {
     override fun fromOWMToProto(jsonObject: JSONObject): CurrentWeather {
         return CurrentWeatherMapper.fromOWMToProto(jsonObject)
     }
-
-    private data class CurrentWeatherJson(
-        @SerializedName("dt") val dt: Long,
-        @SerializedName("weather") val weather: List<WeatherJson>,
-        @SerializedName("temp") val temp: Double,
-        @SerializedName("feels_like") val feelsLike: Double,
-        @SerializedName("pressure") val pressure: Int,
-        @SerializedName("humidity") val humidity: Int,
-        @SerializedName("dew_point") val dewPoint: Double,
-        @SerializedName("uvi") val uvi: Float,
-        @SerializedName("clouds") val clouds: Int,
-        @SerializedName("visibility") val visibility: Int,
-        @SerializedName("sunrise") val sunrise: Long,
-        @SerializedName("sunset") val sunset: Long,
-        @SerializedName("wind_speed") val windSpeed: Double,
-        @SerializedName("wind_deg") val windDeg: Int?,
-        @SerializedName("wind_gust") val windGust: Double?,
-        @SerializedName("rain") val rain: RainJson?,
-        @SerializedName("snow") val snow: SnowJson?
-    )
-
-    private data class WeatherJson(
-        @SerializedName("main") val main: String,
-        @SerializedName("description") val description: String,
-        @SerializedName("id") val id: Int
-    )
-
-    private data class RainJson(@SerializedName("1h") val oneHour: Double)
-    private data class SnowJson(@SerializedName("1h") val oneHour: Double)
 }
