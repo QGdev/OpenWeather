@@ -61,7 +61,6 @@ dependencies {
     implementation("com.google.android.material:material:1.14.0")
     implementation("androidx.core:core-ktx:1.19.0")
     implementation("androidx.security:security-crypto:1.1.0")
-    implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.android.volley:volley:1.2.1")
     implementation("androidx.work:work-runtime-ktx:2.11.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.11.0")

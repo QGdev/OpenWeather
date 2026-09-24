@@ -20,8 +20,6 @@
 
 package fr.qgdev.openweather.data.remote.mappers
 
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import fr.qgdev.openweather.data.models.WeatherAlert
 import org.json.JSONObject
 
@@ -40,14 +38,14 @@ import org.json.JSONObject
 open class WeatherAlertMapper private constructor() : Mapper<WeatherAlert> {
     companion object : WeatherAlertMapper() {
         override fun fromOWMToProto(jsonObject: JSONObject): WeatherAlert {
-            val result = Gson().fromJson(jsonObject.toString(), WeatherAlertJson::class.java)
+            val tags = jsonObject.getJSONArray("tags")
             return WeatherAlert.newBuilder()
-                .setSender(result.sender)
-                .setEvent(result.event)
-                .setStartDt(result.start * 1000)
-                .setEndDt(result.end * 1000)
-                .setDescription(result.description)
-                .addAllTags(result.tags)
+                .setSender(jsonObject.getString("sender_name"))
+                .setEvent(jsonObject.getString("event"))
+                .setStartDt(jsonObject.optLong("start") * 1000)
+                .setEndDt(jsonObject.optLong("end") * 1000)
+                .setDescription(jsonObject.getString("description"))
+                .addAllTags((0 until tags.length()).map { tags.getString(it) })
                 .build()
         }
     }
@@ -55,14 +53,4 @@ open class WeatherAlertMapper private constructor() : Mapper<WeatherAlert> {
     override fun fromOWMToProto(jsonObject: JSONObject): WeatherAlert {
         return WeatherAlertMapper.fromOWMToProto(jsonObject)
     }
-
-    private data class WeatherAlertJson(
-        @SerializedName("sender_name") val sender: String,
-        @SerializedName("event") val event: String,
-        @SerializedName("start") val start: Long,
-        @SerializedName("end") val end: Long,
-        @SerializedName("description") val description: String,
-        @SerializedName("tags") val tags: List<String>
-    )
 }
-
