@@ -1,0 +1,143 @@
+== current
+cloudiness: 75
+dew_point: 282.31
+dt: 1700000000000
+humidity: 81
+is_wind_direction_readable: true
+pressure: 1013
+rain: 0.42
+sunrise: 1699948800000
+sunset: 1699984800000
+temperature: 285.42
+temperature_feels_like: 284.71
+uv_index: 1
+visibility: 10000
+weather: "Rain"
+weather_code: 500
+weather_description: "l\303\251g\303\250re pluie"
+wind_direction: 230
+wind_gust_speed: 8.75
+wind_speed: 4.12
+== minutely 0
+dt: 1700000040000
+== hourly 0
+cloudiness: 70
+dew_point: 282.4
+dt: 1700002800000
+humidity: 79
+pop: 0.42
+pressure: 1013
+rain: 0.31
+temperature: 285.9
+temperature_feels_like: 285.2
+uv_index: 1
+visibility: 10000
+weather: "Rain"
+weather_code: 500
+weather_description: "l\303\251g\303\250re pluie"
+wind_direction: 233
+wind_gust_speed: 9.1
+wind_speed: 4.4
+== hourly 1
+cloudiness: 62
+dew_point: 282.1
+dt: 1700006400000
+humidity: 76
+pop: 0.18
+pressure: 1012
+temperature: 286.3
+temperature_feels_like: 285.6
+uv_index: 1
+visibility: 10000
+weather: "Clouds"
+weather_code: 803
+weather_description: "nuageux"
+wind_direction: 240
+wind_speed: 4.8
+== daily 0
+cloudiness: 68
+dew_point: 282.0
+dt: 1700046000000
+humidity: 74
+moon_phase: 0.25
+moonrise_dt: 1700040000000
+moonset_dt: 1700078400000
+pop: 0.62
+pressure: 1012
+rain: 1.84
+sunrise_dt: 1700035200000
+sunset_dt: 1700071200000
+temperature_day: 287.1
+temperature_day_feels_like: 286.4
+temperature_evening: 286.0
+temperature_evening_feels_like: 285.3
+temperature_maximum: 288.6
+temperature_minimum: 283.4
+temperature_morning: 283.9
+temperature_morning_feels_like: 283.1
+temperature_night: 284.2
+temperature_night_feels_like: 283.5
+uv_index: 2
+weather: "Rain"
+weather_code: 500
+weather_description: "l\303\251g\303\250re pluie"
+wind_direction: 245
+wind_gust_speed: 11.3
+wind_speed: 5.2
+== daily 1
+cloudiness: 4
+dew_point: 279.4
+dt: 1700132400000
+humidity: 66
+moon_phase: 0.28
+moonrise_dt: 1700126400000
+moonset_dt: 1700164800000
+pressure: 1018
+sunrise_dt: 1700121600000
+sunset_dt: 1700157600000
+temperature_day: 284.9
+temperature_day_feels_like: 284.0
+temperature_evening: 283.8
+temperature_evening_feels_like: 283.0
+temperature_maximum: 285.7
+temperature_minimum: 281.2
+temperature_morning: 281.6
+temperature_morning_feels_like: 280.9
+temperature_night: 282.0
+temperature_night_feels_like: 281.1
+uv_index: 2
+weather: "Clear"
+weather_code: 800
+weather_description: "ciel d\303\251gag\303\251"
+wind_direction: 190
+wind_speed: 3.1
+== alert 0
+description: "Des rafales de vent pouvant atteindre 100 km/h sont attendues."
+end_dt: 1700038800000
+event: "Vent violent"
+sender: "M\303\251t\303\251o-France"
+start_dt: 1700010000000
+tags: "Wind"
+== current sparse
+dew_point: 4.8
+dt: 1700000000000
+humidity: 60
+pressure: 1015
+sunrise: 1699990000000
+sunset: 1700030000000
+temperature: 12.5
+temperature_feels_like: 11.0
+weather: "Clear"
+weather_code: 800
+weather_description: "ciel d\303\251gag\303\251"
+wind_speed: 3.1
+== air quality
+aqi: 2
+co: 230.31
+nh3: 0.56
+no: 0.02
+no2: 12.5
+o3: 61.1
+pm10: 7.3
+pm25: 4.87
+so2: 1.4

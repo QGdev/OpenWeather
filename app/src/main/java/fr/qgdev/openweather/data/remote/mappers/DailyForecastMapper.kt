@@ -20,8 +20,6 @@
 
 package fr.qgdev.openweather.data.remote.mappers
 
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import fr.qgdev.openweather.data.models.DailyForecast
 import org.json.JSONObject
 
@@ -40,88 +38,45 @@ import org.json.JSONObject
 open class DailyForecastMapper private constructor() : Mapper<DailyForecast> {
     companion object : DailyForecastMapper() {
         override fun fromOWMToProto(jsonObject: JSONObject): DailyForecast {
-            val result = Gson().fromJson(jsonObject.toString(), DailyWeatherJson::class.java)
+            val weather = jsonObject.getJSONArray("weather").getJSONObject(0)
+            val temp = jsonObject.getJSONObject("temp")
+            val feelsLike = jsonObject.getJSONObject("feels_like")
 
             return DailyForecast.newBuilder()
-                .setDt(result.dt * 1000)
-                .setWeather(result.weather[0].main)
-                .setWeatherDescription(result.weather[0].description)
-                .setWeatherCode(result.weather[0].id)
-                .setTemperatureMorning(result.temp.morning.toFloat())
-                .setTemperatureDay(result.temp.day.toFloat())
-                .setTemperatureEvening(result.temp.evening.toFloat())
-                .setTemperatureNight(result.temp.night.toFloat())
-                .setTemperatureMinimum(result.temp.min.toFloat())
-                .setTemperatureMaximum(result.temp.max.toFloat())
-                .setTemperatureMorningFeelsLike(result.feelsLike.morning.toFloat())
-                .setTemperatureDayFeelsLike(result.feelsLike.day.toFloat())
-                .setTemperatureEveningFeelsLike(result.feelsLike.evening.toFloat())
-                .setTemperatureNightFeelsLike(result.feelsLike.night.toFloat())
-                .setPressure(result.pressure)
-                .setHumidity(result.humidity)
-                .setDewPoint(result.dewPoint.toFloat())
-                .setCloudiness(result.clouds)
-                .setSunriseDt(result.sunrise * 1000)
-                .setSunsetDt(result.sunset * 1000)
-                .setUvIndex(result.uvi.toInt())
-                .setMoonriseDt(result.moonrise * 1000)
-                .setMoonsetDt(result.moonset * 1000)
-                .setMoonPhase(result.moonPhase.toFloat())
-                .setWindSpeed(result.windSpeed.toFloat())
-                .setWindDirection(result.windDeg)
-                .setWindGustSpeed(result.windGust?.toFloat() ?: 0f)
-                .setPop(result.pop.toFloat())
-                .setRain(result.rain?.toFloat() ?: 0f)
-                .setSnow(result.snow?.toFloat() ?: 0f)
+                .setDt(jsonObject.optLong("dt") * 1000)
+                .setWeather(weather.getString("main"))
+                .setWeatherDescription(weather.getString("description"))
+                .setWeatherCode(weather.optInt("id"))
+                .setTemperatureMorning(temp.optDouble("morn", 0.0).toFloat())
+                .setTemperatureDay(temp.optDouble("day", 0.0).toFloat())
+                .setTemperatureEvening(temp.optDouble("eve", 0.0).toFloat())
+                .setTemperatureNight(temp.optDouble("night", 0.0).toFloat())
+                .setTemperatureMinimum(temp.optDouble("min", 0.0).toFloat())
+                .setTemperatureMaximum(temp.optDouble("max", 0.0).toFloat())
+                .setTemperatureMorningFeelsLike(feelsLike.optDouble("morn", 0.0).toFloat())
+                .setTemperatureDayFeelsLike(feelsLike.optDouble("day", 0.0).toFloat())
+                .setTemperatureEveningFeelsLike(feelsLike.optDouble("eve", 0.0).toFloat())
+                .setTemperatureNightFeelsLike(feelsLike.optDouble("night", 0.0).toFloat())
+                .setPressure(jsonObject.optInt("pressure"))
+                .setHumidity(jsonObject.optInt("humidity"))
+                .setDewPoint(jsonObject.optDouble("dew_point", 0.0).toFloat())
+                .setCloudiness(jsonObject.optInt("clouds"))
+                .setSunriseDt(jsonObject.optLong("sunrise") * 1000)
+                .setSunsetDt(jsonObject.optLong("sunset") * 1000)
+                .setUvIndex(jsonObject.optDouble("uvi", 0.0).toInt())
+                .setMoonriseDt(jsonObject.optLong("moonrise") * 1000)
+                .setMoonsetDt(jsonObject.optLong("moonset") * 1000)
+                .setMoonPhase(jsonObject.optDouble("moon_phase", 0.0).toFloat())
+                .setWindSpeed(jsonObject.optDouble("wind_speed", 0.0).toFloat())
+                .setWindDirection(jsonObject.optInt("wind_deg"))
+                .setWindGustSpeed(jsonObject.optDouble("wind_gust", 0.0).toFloat())
+                .setPop(jsonObject.optDouble("pop", 0.0).toFloat())
+                .setRain(jsonObject.optDouble("rain", 0.0).toFloat())
+                .setSnow(jsonObject.optDouble("snow", 0.0).toFloat())
                 .build()
         }
     }
     override fun fromOWMToProto(jsonObject: JSONObject): DailyForecast {
         return DailyForecastMapper.fromOWMToProto(jsonObject)
     }
-
-    private data class DailyWeatherJson(
-        @SerializedName("dt") val dt: Long,
-        @SerializedName("weather") val weather: List<WeatherJson>,
-        @SerializedName("temp") val temp: TemperatureJson,
-        @SerializedName("feels_like") val feelsLike: FeelsLikeJson,
-        @SerializedName("pressure") val pressure: Int,
-        @SerializedName("humidity") val humidity: Int,
-        @SerializedName("dew_point") val dewPoint: Double,
-        @SerializedName("clouds") val clouds: Int,
-        @SerializedName("sunrise") val sunrise: Long,
-        @SerializedName("sunset") val sunset: Long,
-        @SerializedName("uvi") val uvi: Double,
-        @SerializedName("moonrise") val moonrise: Long,
-        @SerializedName("moonset") val moonset: Long,
-        @SerializedName("moon_phase") val moonPhase: Double,
-        @SerializedName("wind_speed") val windSpeed: Double,
-        @SerializedName("wind_deg") val windDeg: Int,
-        @SerializedName("wind_gust") val windGust: Double?,
-        @SerializedName("pop") val pop: Double,
-        @SerializedName("rain") val rain: Double?,
-        @SerializedName("snow") val snow: Double?
-    )
-
-    private data class WeatherJson(
-        @SerializedName("main") val main: String,
-        @SerializedName("description") val description: String,
-        @SerializedName("id") val id: Int
-    )
-
-    private data class TemperatureJson(
-        @SerializedName("morn") val morning: Double,
-        @SerializedName("day") val day: Double,
-        @SerializedName("eve") val evening: Double,
-        @SerializedName("night") val night: Double,
-        @SerializedName("min") val min: Double,
-        @SerializedName("max") val max: Double
-    )
-
-    private data class FeelsLikeJson(
-        @SerializedName("morn") val morning: Double,
-        @SerializedName("day") val day: Double,
-        @SerializedName("eve") val evening: Double,
-        @SerializedName("night") val night: Double
-    )
 }
