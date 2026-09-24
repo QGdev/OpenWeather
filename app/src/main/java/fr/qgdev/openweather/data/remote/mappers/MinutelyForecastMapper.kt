@@ -20,8 +20,6 @@
 
 package fr.qgdev.openweather.data.remote.mappers
 
-import com.google.gson.Gson
-import com.google.gson.annotations.SerializedName
 import fr.qgdev.openweather.data.models.MinutelyForecast
 import org.json.JSONObject
 
@@ -40,10 +38,9 @@ import org.json.JSONObject
 open class MinutelyForecastMapper private constructor() : Mapper<MinutelyForecast> {
     companion object : MinutelyForecastMapper() {
         override fun fromOWMToProto(jsonObject: JSONObject): MinutelyForecast {
-            val result = Gson().fromJson(jsonObject.toString(), MinutelyWeatherJson::class.java)
             return MinutelyForecast.newBuilder()
-                .setDt(result.dt * 1000)
-                .setPrecipitation(result.precipitation.toFloat())
+                .setDt(jsonObject.optLong("dt") * 1000)
+                .setPrecipitation(jsonObject.optDouble("precipitation", 0.0).toFloat())
                 .build()
         }
     }
@@ -51,9 +48,4 @@ open class MinutelyForecastMapper private constructor() : Mapper<MinutelyForecas
     override fun fromOWMToProto(jsonObject: JSONObject): MinutelyForecast {
         return MinutelyForecastMapper.fromOWMToProto(jsonObject);
     }
-
-    private data class MinutelyWeatherJson(
-        @SerializedName("dt") val dt: Long,
-        @SerializedName("precipitation") val precipitation: Double
-    )
 }
