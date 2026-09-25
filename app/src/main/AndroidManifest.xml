@@ -35,7 +35,6 @@
 
         <receiver
             android:name=".widgets.WidgetsProvider"
-            android:enabled="@bool/widgets_enabled"
             android:exported="false"
             android:label="@string/label_widget"
             android:permission="fr.qgdev.openweather.permission.UPDATE_WIDGET">
@@ -50,7 +49,6 @@
 
         <activity
             android:name=".widgets.WidgetsConfigurationActivity"
-            android:enabled="@bool/widgets_enabled"
             android:exported="true"
             android:theme="@style/MaterialTheme.WidgetConfig" >
             <intent-filter>
