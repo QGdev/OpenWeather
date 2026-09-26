@@ -136,6 +136,7 @@ class WeatherService private constructor(
         val url = String.format(
             Locale.ROOT,
             this.urlOWMWeatherData,
+            settingsRepository.getOneCallVersion().wireValue,
             place.geolocation.coordinates.latitude,
             place.geolocation.coordinates.longitude,
             settingsRepository.getApiKey(),

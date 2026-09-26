@@ -30,6 +30,7 @@ data class Settings(
     val timeFormat: TimeSettings = TimeSettings.TWENTY_FOUR_HOURS,
     val defaultLocale: Locale = Locale.getDefault(),
     val apiKey: String? = null,
+    val oneCallVersion: OneCallVersion = OneCallVersion.V3_0,
     val periodicUpdateEnabled: Boolean = false,
     val updatePeriod: UpdatePeriodSettings = UpdatePeriodSettings.THIRTY_MINUTES,
     /**
