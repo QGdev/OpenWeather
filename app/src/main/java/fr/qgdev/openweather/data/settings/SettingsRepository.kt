@@ -87,6 +87,17 @@ class SettingsRepository private constructor(
     }
 
     init {
+        //  Settled once, before anything reads it. A key already saved means an install from
+        //  before the choice existed, whose key was working with 2.5: it stays there rather than
+        //  being broken by an update. A fresh install has no key yet and starts on 3.0, the only
+        //  version new keys are accepted on.
+        if (securedPreferenceDataStore.getString(PreferenceKey.ONE_CALL_VERSION.key, null) == null) {
+            putEnum(
+                PreferenceKey.ONE_CALL_VERSION,
+                if (getApiKey() != null) OneCallVersion.V2_5 else OneCallVersion.V3_0
+            )
+        }
+
         _settingsFlow = MutableStateFlow(
             Settings(
                 getTemperatureSetting(),
@@ -96,6 +107,7 @@ class SettingsRepository private constructor(
                 getTimeSetting(),
                 getDefaultLocale(),
                 getApiKey(),
+                getOneCallVersion(),
                 isPeriodicUpdateEnabled(),
                 getUpdatePeriodSetting(),
                 getOnboardingVersion(),
@@ -113,6 +125,7 @@ class SettingsRepository private constructor(
         DIRECTION_UNIT("conf_direction_unit"),
         TIME_FORMAT("conf_time_format"),
         API_KEY("conf_api_key"),
+        ONE_CALL_VERSION("conf_one_call_version"),
         UPDATE_PERIODIC("conf_update_periodic"),
         UPDATE_PERIOD("conf_update_period"),
         ONBOARDING_VERSION("onboarding_version"),
@@ -183,6 +196,14 @@ class SettingsRepository private constructor(
     fun setApiKey(apiKey: String) {
         securedPreferenceDataStore.putString(PreferenceKey.API_KEY.key, apiKey)
         _settingsFlow.value = _settingsFlow.value.copy(apiKey = apiKey)
+    }
+
+    fun getOneCallVersion(): OneCallVersion =
+        getEnum(PreferenceKey.ONE_CALL_VERSION, OneCallVersion.V3_0)
+
+    fun setOneCallVersion(version: OneCallVersion) {
+        putEnum(PreferenceKey.ONE_CALL_VERSION, version)
+        _settingsFlow.value = _settingsFlow.value.copy(oneCallVersion = version)
     }
 
     fun isPeriodicUpdateEnabled(): Boolean {

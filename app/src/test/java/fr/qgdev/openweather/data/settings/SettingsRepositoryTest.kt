@@ -103,6 +103,46 @@ class SettingsRepositoryTest {
         }
     }
 
+    @Test
+    fun `every One Call version survives a write and read`() {
+        OneCallVersion.entries.forEach { version ->
+            val store = FakePreferenceDataStore()
+            repository(store).setOneCallVersion(version)
+            assertEquals(version, repository(store).getOneCallVersion())
+        }
+    }
+
+    // endregion
+
+    // region One Call version on first launch
+
+    @Test
+    fun `a fresh install starts on One Call 3_0`() {
+        assertEquals(OneCallVersion.V3_0, repository().getOneCallVersion())
+    }
+
+    @Test
+    fun `an install upgraded with a key stays on One Call 2_5`() {
+        val store = FakePreferenceDataStore()
+        store.putString("conf_api_key", "0123456789abcdef0123456789abcdef")
+        assertEquals(OneCallVersion.V2_5, repository(store).getOneCallVersion())
+    }
+
+    @Test
+    fun `a key saved after the first launch does not move the version`() {
+        //  The fresh install settles on 3.0 before the onboarding saves a key; the key must not
+        //  then be mistaken for one from an older install.
+        val store = FakePreferenceDataStore()
+        repository(store).setApiKey("0123456789abcdef0123456789abcdef")
+        assertEquals(OneCallVersion.V3_0, repository(store).getOneCallVersion())
+    }
+
+    @Test
+    fun `the One Call wire values are the URL version segments`() {
+        assertEquals("3.0", OneCallVersion.V3_0.wireValue)
+        assertEquals("2.5", OneCallVersion.V2_5.wireValue)
+    }
+
     // endregion
 
     /**

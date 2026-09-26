@@ -79,6 +79,7 @@ import fr.qgdev.openweather.BuildConfig
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.data.settings.MeasureSettings
+import fr.qgdev.openweather.data.settings.OneCallVersion
 import fr.qgdev.openweather.data.settings.PressureSettings
 import fr.qgdev.openweather.data.settings.SettingsRepository
 import fr.qgdev.openweather.data.settings.TemperatureSettings
@@ -86,6 +87,7 @@ import fr.qgdev.openweather.data.settings.TimeSettings
 import fr.qgdev.openweather.data.settings.UpdatePeriodSettings
 import fr.qgdev.openweather.data.settings.WindDirectionSettings
 import fr.qgdev.openweather.repositories.FormattingService.Conversion
+import fr.qgdev.openweather.ui.components.OneCallVersionSwitch
 import fr.qgdev.openweather.ui.components.dialogs.AboutAppDialog
 import fr.qgdev.openweather.ui.icons.VisibilityOff
 import fr.qgdev.openweather.ui.icons.VisibilityOn
@@ -145,6 +147,13 @@ fun SettingsScreenView(
                         modifier = Modifier.padding(16.dp),
                         defaultValue = settingsRepository.getApiKey() ?: "",
                         onValueChanged = { settingsRepository.setApiKey(it) }
+                    )
+                    SettingsDivider()
+                    val apiSettings by settingsRepository.settingsFlow.collectAsState()
+                    OneCallVersionSwitch(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp),
+                        version = apiSettings.oneCallVersion,
+                        onVersionChanged = { settingsRepository.setOneCallVersion(it) }
                     )
                 }
 
@@ -284,7 +293,7 @@ fun SettingsScreenView(
                                 SettingOption(UpdatePeriodSettings.SIX_HOURS, stringResource(R.string.title_settings_update_period_short_6h)),
                                 SettingOption(UpdatePeriodSettings.TWELVE_HOURS, stringResource(R.string.title_settings_update_period_short_12h))
                             ),
-                            footer = if (placeCount > 0) callBudgetText(placeCount, period) else null,
+                            footer = if (placeCount > 0) callBudgetText(placeCount, period, settings.oneCallVersion) else null,
                             defaultValue = period,
                             onSelectionChanged = {
                                 period = it
@@ -331,7 +340,11 @@ fun SettingsScreenViewPreview() {
  */
 private const val CALLS_PER_PLACE = 2
 
-/** Daily calls OpenWeatherMap's free One Call plan allows. */
+/**
+ * Daily calls OpenWeatherMap's free One Call 3.0 plan allows. Only the One Call request counts
+ * against it: air quality is a separate API with its own, far larger, free allowance. One Call 2.5
+ * has no daily limit the periodic work could reach.
+ */
 private const val FREE_PLAN_DAILY_CALLS = 1_000
 
 private const val DAY_MILLIS = 24 * 60 * 60 * 1_000L
@@ -350,11 +363,16 @@ private fun dailyCalls(placeCount: Int, period: UpdatePeriodSettings): Int =
  * of its own, once it is exceeded: below it, it was a figure to read for nothing.
  */
 @Composable
-private fun callBudgetText(placeCount: Int, period: UpdatePeriodSettings): String {
+private fun callBudgetText(
+    placeCount: Int,
+    period: UpdatePeriodSettings,
+    oneCallVersion: OneCallVersion
+): String {
     val calls = dailyCalls(placeCount, period)
     val budget = pluralStringResource(R.plurals.settings_place_count, placeCount, placeCount) + " · " +
             stringResource(R.string.settings_call_budget, CALLS_PER_PLACE, formatCount(calls))
-    return if (calls > FREE_PLAN_DAILY_CALLS) {
+    val oneCallCalls = calls / CALLS_PER_PLACE
+    return if (oneCallVersion == OneCallVersion.V3_0 && oneCallCalls > FREE_PLAN_DAILY_CALLS) {
         budget + "\n" + stringResource(R.string.settings_free_plan_exceeded, formatCount(FREE_PLAN_DAILY_CALLS))
     } else {
         budget

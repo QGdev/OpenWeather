@@ -295,7 +295,13 @@
     <string name="label_max">max</string>
     <string name="label_min">min</string>
     <string name="label_gusts">Gusts</string>
-    <string name="settings_free_plan_exceeded">The free plan allows %1$s.</string>
+    <string name="settings_free_plan_exceeded">One Call 3.0 is free up to %1$s calls a day, air quality calls not counted.</string>
+    <string name="title_settings_one_call_version">One Call API 3.0</string>
+    <string name="summary_settings_one_call_v3">For keys subscribed to “One Call by Call”</string>
+    <string name="summary_settings_one_call_v2_5">One Call 2.5, for keys created before June 2024</string>
+    <string name="description_one_call_version_help">What is the One Call version?</string>
+    <string name="title_one_call_version_help">Which One Call version?</string>
+    <string name="content_one_call_version_help">OpenWeatherMap serves forecasts through its One Call API, in two versions giving the same data. They differ only in the keys they accept.\n\n3.0 works with keys subscribed to the “One Call by Call” plan. It is free up to 1,000 calls a day, but OpenWeatherMap asks for a bank card to subscribe. Set a limit of 1,000 calls a day in your OpenWeatherMap account and you will never be charged.\n\n2.5 is the former version, closed to keys created from June 2024. Some older keys still work with it, without a subscription.\n\nIf your key is refused, try the other version.</string>
     <string name="label_rain">Rain</string>
     <string name="label_snow">Snow</string>
     <string name="label_clouds">Clouds</string>

@@ -76,6 +76,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.qgdev.openweather.R
+import fr.qgdev.openweather.data.settings.OneCallVersion
+import fr.qgdev.openweather.ui.components.OneCallVersionSwitch
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
 import fr.qgdev.openweather.ui.theme.PlexMono
 import kotlinx.coroutines.launch
@@ -93,11 +95,14 @@ fun isWellFormedApiKey(key: String): Boolean =
  * sent the user to the settings to work it out alone.
  *
  * @param currentKey the key saved so far, if any: a malformed one is shown back to be corrected.
+ * @param oneCallVersion the One Call version, offered under the steps; left out, it is not shown.
  */
 @Composable
 fun ApiKeyCard(
     currentKey: String,
-    onSave: (String) -> Unit
+    onSave: (String) -> Unit,
+    oneCallVersion: OneCallVersion? = null,
+    onOneCallVersionChanged: (OneCallVersion) -> Unit = {}
 ) {
     val palette = LocalWeatherPalette.current
     val accent = MaterialTheme.colorScheme.primary
@@ -151,6 +156,14 @@ fun ApiKeyCard(
                     )
                 }
             }
+        }
+
+        if (oneCallVersion != null) {
+            OneCallVersionSwitch(
+                modifier = Modifier.padding(top = 14.dp),
+                version = oneCallVersion,
+                onVersionChanged = onOneCallVersionChanged
+            )
         }
 
         //  The field, with a paste action inside: the key is copied from the website, never typed.
