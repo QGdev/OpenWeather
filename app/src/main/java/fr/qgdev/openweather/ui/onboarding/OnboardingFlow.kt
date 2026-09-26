@@ -131,7 +131,9 @@ fun OnboardingFlow(
                             onSave = { key ->
                                 settingsRepository.setApiKey(key)
                                 stepIndex++
-                            }
+                            },
+                            oneCallVersion = settings.oneCallVersion,
+                            onOneCallVersionChanged = { settingsRepository.setOneCallVersion(it) }
                         )
                     }
                     OnboardingStep.FIRST_PLACE -> FirstPlaceStep(
