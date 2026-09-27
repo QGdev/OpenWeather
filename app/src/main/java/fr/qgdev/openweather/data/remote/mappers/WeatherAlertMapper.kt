@@ -21,6 +21,7 @@
 package fr.qgdev.openweather.data.remote.mappers
 
 import fr.qgdev.openweather.data.models.WeatherAlert
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -38,7 +39,7 @@ import org.json.JSONObject
 open class WeatherAlertMapper private constructor() : Mapper<WeatherAlert> {
     companion object : WeatherAlertMapper() {
         override fun fromOWMToProto(jsonObject: JSONObject): WeatherAlert {
-            val tags = jsonObject.getJSONArray("tags")
+            val tags = jsonObject.optJSONArray("tags") ?: JSONArray()
             return WeatherAlert.newBuilder()
                 .setSender(jsonObject.getString("sender_name"))
                 .setEvent(jsonObject.getString("event"))
