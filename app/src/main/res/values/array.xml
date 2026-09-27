@@ -20,18 +20,24 @@
 
 <resources>
     <string-array name="attribution_title">
-        <item>"Weather data and forecasts"</item>
-        <item>"OpenWeatherMap API"</item>
         <item>"Place search"</item>
         <item>"Icons"</item>
         <item>"Fonts"</item>
+        <item>"No affiliation"</item>
     </string-array>
 
     <string-array name="attribution_content">
-        <item>"OpenWeatherMap · ODbL"</item>
-        <item>"CC BY-SA 4.0"</item>
-        <item>"OpenStreetMap Nominatim · ODbL"</item>
+        <item>"© OpenStreetMap contributors · ODbL"</item>
         <item>"freepik.com · flaticon.com"</item>
         <item>"Figtree, IBM Plex Mono · SIL OFL 1.1"</item>
+        <item>"OpenWeather is an independent application. It uses the OpenWeatherMap APIs but is not affiliated with, endorsed or sponsored by OpenWeather Ltd."</item>
+    </string-array>
+
+    <!-- The page each attribution card opens, empty for a card without one. -->
+    <string-array name="attribution_url" translatable="false">
+        <item>https://www.openstreetmap.org/copyright</item>
+        <item></item>
+        <item></item>
+        <item></item>
     </string-array>
 </resources>
