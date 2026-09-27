@@ -26,18 +26,8 @@
 	<string name="title_humidity">Humidité</string>
 	<string name="title_pressure">Pression</string>
 	<string name="title_visibility">Visibilité</string>
-	<string name="title_wind_information">Vents</string>
-	<string name="title_sky_information">Ciel</string>
-	<string name="title_sunrise">Levé de Soleil</string>
-	<string name="title_sunset">Couché de Soleil</string>
-	<string name="title_cloudiness">Couverture nuageuse</string>
-	<string name="title_wind_gust_speed">Vitesse des rafales</string>
 	<string name="title_wind_speed">Vitesse</string>
 	<string name="title_wind_direction">Direction</string>
-	<string name="title_rain_precipitations">Précipitations - Pluie</string>
-	<string name="title_1hour_precipitation">1 heure</string>
-	<string name="title_3hour_precipitation">3 heures</string>
-	<string name="title_snow_precipitations">Précipitations - Neige</string>
 	<string name="description_delete_icon">Supprimer le lieu</string>
 	<string name="title_settings">Paramètres</string>
     <string name="description_settings">Paramètres de l\'application</string>
@@ -49,14 +39,10 @@
 	<string name="title_settings_units_measure_metric">Métrique</string>
 	<string name="title_settings_units_pressure">Pression</string>
 	<string name="title_settings_time">Temps</string>
-	<string name="title_settings_hour_timeoffset">Décalage horaire</string>
 	<string name="title_settings_hour_format">Format horaire</string>
 	<string name="title_dialog_add_place">Ajouter un lieu</string>
 	<string name="error_server_unreachable">Impossible d\'atteindre les serveurs OMW , vérifiez votre connexion et réessayez</string>
 	<string name="error_unknown_error">Une erreur inconnue s\'est produite</string>
-	<string name="place_added_successfully">a été ajouté avec succès</string>
-	<string name="error_cannot_save_place">Impossible de sauvegarder le lieu</string>
-	<string name="error_cannot_refresh_place_list">Impossible de rafraîchir les lieux</string>
 	<string name="dialog_confirmation_title_delete_place">Supprimer un lieu</string>
 	<string name="dialog_confirmation_message_delete_place"><![CDATA[Supprimer %s, %s ?]]></string>
 	<string name="dialog_confirmation_choice_yes">Oui, supprimer</string>
@@ -106,7 +92,6 @@
 	<string name="action_delete">Supprimer</string>
 	<string name="action_release_to_delete">Relâchez pour supprimer</string>
 	<string name="title_forecast_hourly">Prévisions horaires</string>
-	<string name="error_cannot_refresh_place_list_network">Impossible de rafraîchir la liste des lieux en raison d\'une erreur de réseau</string>
 	<string name="error_place_already_added">Ce lieu est déjà ajouté</string>
 	<string name="error_no_places_registered">Aucun lieu enregistré</string>
 	<string name="title_forecast_daily">Prévisions quotidiennes</string>
@@ -117,9 +102,6 @@
 	<string name="title_about_your_data_section">À propos de vos données</string>
 	<string name="content_about_the_developer_section">Étudiant en informatique quand j\'ai écrit les premières lignes d\'OpenWeather, je suis devenu développeur depuis. Si je continue à faire vivre cette application sur mon temps libre, c\'est qu\'elle est restée mon terrain de jeu : un projet que je mène de bout en bout, à mon rythme, où j\'essaie ce que je n\'ai pas l\'occasion de faire ailleurs.</string>
 	<string name="error_device_not_connected">" Impossible de se connecter à Internet, veuillez vérifier votre connexion et réessayer"</string>
-	<string name="error_place_deletion">Une erreur est survenue lors de la suppression</string>
-	<string name="error_cannot_save_place_treatment">Impossible de sauvegarder la lieu à cause d\'une erreur de traitement</string>
-	<string name="place_deletion_successful">Suppression réussie !</string>
 	<string name="title_settings_units_direction">Direction du vent</string>
 	<string name="title_settings_units_direction_cardinal">Points cardinaux</string>
 	<string name="title_settings_units_direction_degrees">Angulaire</string>
@@ -165,10 +147,8 @@
 	<string name="content_air_quality_o3_information">L\'ozone ou O₃ est un gaz présent dans l\'atmosphère qui peut être bénéfique ou nocif en fonction de son emplacement. Au niveau du sol, l\'ozone est un polluant qui se forme à partir des réactions chimiques entre les émissions de gaz à effet de serre et la lumière du soleil. Il peut causer des problèmes respiratoires, des irritations des voies respiratoires et aggraver les maladies pulmonaires existantes. Cependant, dans la stratosphère, l\'ozone joue un rôle important en protégeant la Terre des rayons ultraviolets du soleil.</string>
 	<string name="content_air_quality_co_information">Le monoxyde de carbone ou CO est un gaz incolore et inodore produit par la combustion incomplète de combustibles fossiles, tels que l\essence, le charbon et le bois. Il est principalement émis par les véhicules, les appareils de chauffage et les générateurs. Le monoxide de carbone est dangereux car il se lie à l\'hémoglobine dans le sang, réduisant ainsi sa capacité à transporter l\'oxygène. Une exposition élevée au CO peut provoquer des symptômes tels que des maux de tête, des étourdissements, des nausées et, dans les cas graves, peut être fatal.</string>
 
-	<string name="error_place_move">Une erreur est survenue lors du déplacement</string>
 	<string name="title_about_application_section">À propos de l\'application</string>
 	<string name="content_about_application_section">OpenWeather est né pendant le confinement du COVID, d\'une idée simple : apprendre le développement Android en construisant quelque chose d\'utile. D\'abord écrit en Java, il est passé depuis à Kotlin et à Jetpack Compose, et a gagné au fil des versions des widgets et une toute nouvelle interface.\n\nIl n\'affiche aucune publicité et ne vous piste pas : l\'application est libre, sous licence GPLv3, et son code est ouvert à qui veut le lire ou y contribuer.</string>
-    <string name="error_storage_security">Une erreur s\'est produite lors de l\'initialisation du stockage</string>
     <string name="title_about_attributions_section">Attributions</string>
 
     <string name="widget_standard_info_description">Montre la météo de manière basique pour un lieu spécifique</string>

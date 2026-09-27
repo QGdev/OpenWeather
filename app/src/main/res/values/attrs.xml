@@ -19,8 +19,6 @@
   -->
 
 <resources>
-    <dimen name="widget_margin">0dp</dimen>
-
     <declare-styleable name="AppWidgetAttrs">
         <attr name="appWidgetPadding" format="dimension" />
         <attr name="appWidgetInnerRadius" format="dimension" />
