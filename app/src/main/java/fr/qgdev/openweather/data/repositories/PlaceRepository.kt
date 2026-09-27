@@ -72,6 +72,12 @@ class PlaceRepository private constructor(context: Context) {
     private val dataStore = PlaceDataStore.getDataStore(context.applicationContext)
     private val applicationContext = context.applicationContext
 
+    init {
+        //  Room database of 0.9.x, whose places are not migrated to the DataStore: deleted so the
+        //  old data does not stay on the device. Does nothing once it is gone.
+        applicationContext.deleteDatabase("appDB")
+    }
+
     //  What stopped the last refresh of every place, when it concerns them all - a refused key, no
     //  network, the quota - for the list to say once in a banner rather than on each card. Held
     //  here, not in a ViewModel, so a refresh run by the periodic worker reports it too.
