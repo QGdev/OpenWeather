@@ -79,6 +79,9 @@ import fr.qgdev.openweather.ui.viewmodel.PlaceViewModelFactory
 import fr.qgdev.openweather.ui.viewmodel.SettingsViewModel
 import fr.qgdev.openweather.ui.viewmodel.SettingsViewModelFactory
 import fr.qgdev.openweather.widgets.WidgetsManager
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -123,6 +126,14 @@ class MainActivity : AppCompatActivity() {
         placeRepository = PlaceRepository.getInstance(applicationContext)
         settingsRepository = SettingsRepository.getInstance(applicationContext)
         formattingService = FormattingService.getInstance(applicationContext)
+
+        lifecycleScope.launch {
+            settingsRepository.settingsFlow
+                .map { !it.apiKey.isNullOrEmpty() }
+                .distinctUntilChanged()
+                .filter { it }
+                .collect { placeRepository.restoreLegacyPlaces() }
+        }
 
         // Follow the settings to schedule or cancel the periodic update
         lifecycleScope.launch {

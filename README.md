@@ -18,7 +18,7 @@ The application is committed to not collecting any user data, only city data is 
 OpenWeatherMap.
 
 Since 0.10.0 the whole interface has been rewritten in Jetpack Compose, each city now having the
-colour of its own sky. Cities saved with 0.9 are not carried over, add them again after updating.
+colour of its own sky.
 
 ## ✨ Features
 * Every city under its own sky, by day and by night.
