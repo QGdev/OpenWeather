@@ -41,12 +41,17 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
@@ -63,6 +68,13 @@ import fr.qgdev.openweather.ui.theme.PlexMono
 
 private const val SOURCE_CODE_URL = "https://github.com/QGdev/OpenWeather"
 private const val LICENSE_URL = "https://www.gnu.org/licenses/gpl-3.0.html"
+private const val PRIVACY_URL = "https://github.com/QGdev/OpenWeather/blob/master/PRIVACY.md"
+private const val OPENWEATHER_URL = "https://openweathermap.org/"
+private const val OPENWEATHER_DATA_LICENSES = "ODbL · CC BY-SA 4.0"
+
+//  The licences shipped in the assets, listed first by third_party.txt which says what each covers.
+private const val LICENSES_DIR = "licenses"
+private const val LICENSES_INDEX = "third_party.txt"
 
 /**
  * About the app, in the order the redesign gives it: what happens to your data first, since it is
@@ -83,6 +95,11 @@ fun AboutAppDialog(
             onDebugModeToggle(false)
         })
         return
+    }
+
+    var showLicenses by remember { mutableStateOf(false) }
+    if (showLicenses) {
+        OpenSourceLicensesDialog(onDismissRequest = { showLicenses = false })
     }
 
     val palette = LocalWeatherPalette.current
@@ -116,26 +133,51 @@ fun AboutAppDialog(
 
             Column {
                 SectionTitle(stringResource(R.string.title_about_attributions_section))
+                OpenWeatherAttribution(onClick = { uriHandler.openUri(OPENWEATHER_URL) })
                 AttributionCards(
                     titleList = stringArrayResource(id = R.array.attribution_title).toList(),
-                    contentList = stringArrayResource(id = R.array.attribution_content).toList()
+                    contentList = stringArrayResource(id = R.array.attribution_content).toList(),
+                    urlList = stringArrayResource(id = R.array.attribution_url).toList(),
+                    onUrlClick = { uriHandler.openUri(it) }
                 )
             }
 
-            Row(
+            //  The GPL's notice for an interactive program: no warranty, and the right to redistribute.
+            Text(
+                text = stringResource(R.string.about_no_warranty),
+                color = palette.textQuiet,
+                fontSize = 11.5.sp,
+                lineHeight = 17.sp
+            )
+
+            Column(
                 modifier = Modifier.padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(9.dp)
+                verticalArrangement = Arrangement.spacedBy(9.dp)
             ) {
-                LinkButton(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.action_about_source_code),
-                    onClick = { uriHandler.openUri(SOURCE_CODE_URL) }
-                )
-                LinkButton(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(R.string.action_about_license),
-                    onClick = { uriHandler.openUri(LICENSE_URL) }
-                )
+                Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                    LinkButton(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.action_about_source_code),
+                        onClick = { uriHandler.openUri(SOURCE_CODE_URL) }
+                    )
+                    LinkButton(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.action_about_license),
+                        onClick = { uriHandler.openUri(LICENSE_URL) }
+                    )
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(9.dp)) {
+                    LinkButton(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.action_about_privacy),
+                        onClick = { uriHandler.openUri(PRIVACY_URL) }
+                    )
+                    LinkButton(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(R.string.action_about_open_source_licenses),
+                        onClick = { showLicenses = true }
+                    )
+                }
             }
         }
     }
@@ -203,6 +245,12 @@ private fun IdentityCard(onLogoLongPress: () -> Unit) {
                     .border(1.dp, palette.outlineStrong, CircleShape)
                     .padding(horizontal = 9.dp, vertical = 3.dp)
             )
+            Text(
+                text = stringResource(R.string.about_copyright),
+                color = palette.textQuiet,
+                fontSize = 10.5.sp,
+                modifier = Modifier.padding(top = 7.dp)
+            )
         }
     }
 }
@@ -260,10 +308,57 @@ private fun Section(title: String, body: String) {
     }
 }
 
+/**
+ * OpenWeather's attribution in the form its free plan asks for: its logo, "Weather data provided by
+ * OpenWeather" and a link to its website, along with the licences of its data.
+ */
+@Composable
+private fun OpenWeatherAttribution(onClick: () -> Unit) {
+    val palette = LocalWeatherPalette.current
+    val shape = RoundedCornerShape(14.dp)
+
+    Row(
+        modifier = Modifier
+            .padding(top = 10.dp)
+            .fillMaxWidth()
+            .clip(shape)
+            .border(1.dp, palette.outline, shape)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 13.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        //  The negative logo has a white wordmark, the master one a dark grey wordmark.
+        Image(
+            painter = painterResource(
+                id = if (palette.isDark) R.drawable.owm_logo_negative else R.drawable.owm_logo_master
+            ),
+            contentDescription = null,
+            modifier = Modifier.height(32.dp)
+        )
+        Column {
+            Text(
+                text = stringResource(R.string.about_owm_attribution),
+                color = palette.textPrimary,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = OPENWEATHER_URL.removePrefix("https://").removeSuffix("/") + " · " + OPENWEATHER_DATA_LICENSES,
+                color = palette.textQuiet,
+                fontSize = 11.5.sp,
+                modifier = Modifier.padding(top = 4.dp)
+            )
+        }
+    }
+}
+
 @Composable
 private fun AttributionCards(
     titleList: List<String>,
-    contentList: List<String>
+    contentList: List<String>,
+    urlList: List<String>,
+    onUrlClick: (String) -> Unit
 ) {
     val palette = LocalWeatherPalette.current
     val shape = RoundedCornerShape(14.dp)
@@ -272,11 +367,16 @@ private fun AttributionCards(
         modifier = Modifier.padding(top = 10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        titleList.zip(contentList).forEach { (title, content) ->
+        titleList.indices.forEach { index ->
+            val title = titleList[index]
+            val content = contentList[index]
+            val url = urlList.getOrNull(index).orEmpty()
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clip(shape)
                     .border(1.dp, palette.outline, shape)
+                    .then(if (url.isEmpty()) Modifier else Modifier.clickable { onUrlClick(url) })
                     .padding(horizontal = 14.dp, vertical = 13.dp)
             ) {
                 Text(
@@ -293,6 +393,42 @@ private fun AttributionCards(
                 )
             }
         }
+    }
+}
+
+/**
+ * The licences of the libraries and typefaces built into the app, read from the assets: the
+ * protobuf runtime's BSD licence asks for its notice in any binary distribution, and the Apache
+ * licence for a copy of its text.
+ */
+@Composable
+private fun OpenSourceLicensesDialog(onDismissRequest: () -> Unit) {
+    val palette = LocalWeatherPalette.current
+    val assets = LocalContext.current.assets
+    val text = remember {
+        assets.list(LICENSES_DIR).orEmpty()
+            .sortedWith(compareBy({ it != LICENSES_INDEX }, { it }))
+            .joinToString("\n\n\n") { name ->
+                val body = assets.open("$LICENSES_DIR/$name").bufferedReader().use { it.readText() }
+                if (name == LICENSES_INDEX) body else "── $name ──\n\n$body"
+            }
+    }
+
+    FullScreenDialog(
+        title = stringResource(R.string.action_about_open_source_licenses),
+        onDismissRequest = onDismissRequest,
+    ) {
+        Text(
+            text = text,
+            color = palette.textMuted,
+            fontSize = 11.sp,
+            lineHeight = 16.sp,
+            fontFamily = PlexMono,
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 16.dp)
+        )
     }
 }
 

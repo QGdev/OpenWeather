@@ -112,7 +112,7 @@
 	<string name="error_no_places_registered">No places registered</string>
 	<string name="title_forecast_daily">Daily Forecast</string>
 	<string name="about_us">About us</string>
-	<string name="content_about_your_data_section">No account, no tracking, no usage analytics. Your places and settings stay on this device. Only two things leave the phone: a place\'s coordinates, sent to OpenWeatherMap with your API key and language to get its weather, and the text you type in the search, sent to OpenStreetMap Nominatim.</string>
+	<string name="content_about_your_data_section">No account, no tracking, no usage analytics. Your places and settings stay on this device. Only two things leave the phone, along with its IP address as with any connection: a place\'s coordinates, sent to OpenWeatherMap with your API key and language to get its weather, background updates and widgets included, and the text you type in the search, sent to OpenStreetMap Nominatim.</string>
 	<string name="title_about_the_developer_section">About the developer</string>
 	<string name="title_about_your_data_section">About your data</string>
 	<string name="content_about_the_developer_section">I was a computer science student when I wrote the first lines of OpenWeather, and I have since become a developer. If I keep the app going in my spare time, it is because it has remained my playground: a project I carry from start to finish, at my own pace, where I try what I do not get the chance to try elsewhere.</string>
@@ -269,6 +269,10 @@
     <string name="settings_call_budget">%1$d calls per place, about %2$s a day.</string>
     <string name="action_about_source_code">Source code</string>
     <string name="action_about_license">License</string>
+    <string name="action_about_privacy">Privacy</string>
+    <string name="action_about_open_source_licenses">Open source licenses</string>
+    <string name="about_no_warranty">This program comes with absolutely no warranty. It is free software, and you are welcome to redistribute it under the terms of the GPLv3.</string>
+    <string name="about_owm_attribution">Weather data provided by OpenWeather</string>
     <string name="about_license_badge">GPLv3 · free software</string>
     <string name="splash_tagline">Free weather, no account, no tracking</string>
     <string name="splash_attribution">OpenWeatherMap data (ODbL · CC BY-SA 4.0) · OpenStreetMap Nominatim search</string>
