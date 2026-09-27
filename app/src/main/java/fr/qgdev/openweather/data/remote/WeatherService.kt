@@ -181,13 +181,15 @@ class WeatherService private constructor(
 
                     //  The stored properties are kept - they hold the creation time and the air
                     //  quality timestamps, which this response knows nothing about - but the time
-                    //  offset comes from the response and can legitimately change (daylight saving),
-                    //  so it is carried over rather than left at its stored value.
+                    //  offset and the time of the data come from the response: the offset can
+                    //  legitimately change (daylight saving), so both are carried over rather than
+                    //  left at their stored value.
                     val properties = place.properties
                         .toBuilder()
                         .setLastWeatherUpdateAttemptTime(currentTime)
                         .setLastSuccessfulWeatherUpdateTime(currentTime)
                         .setTimeOffset(mappedPlaceBuilder.properties.timeOffset)
+                        .setLastAvailableWeatherDataTime(mappedPlaceBuilder.properties.lastAvailableWeatherDataTime)
                         .build()
 
                     newPlace
