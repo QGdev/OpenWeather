@@ -63,10 +63,7 @@ class PlaceDataMapperTest {
         assertEquals(1700000000L * 1000, place.currentWeather.dt)
         assertEquals(1700000040L * 1000, place.getMinutelyForecastList(0).dt)
         assertEquals(1700002800L * 1000, place.getHourlyForecastList(0).dt)
-
-        //  lastAvailableWeatherDataTime is deliberately NOT converted - it is taken straight from
-        //  current.dt in seconds. Pinned here so the inconsistency is a decision, not a surprise.
-        assertEquals(1700000000L, place.properties.lastAvailableWeatherDataTime)
+        assertEquals(1700000000L * 1000, place.properties.lastAvailableWeatherDataTime)
     }
 
     @Test
@@ -103,6 +100,14 @@ class PlaceDataMapperTest {
         val place = PlaceDataMapper.fromOWMToProtoBuilder(json)!!.buildPartial()
 
         assertEquals(0, place.weatherAlertsListCount)
+    }
+
+    @Test
+    fun `alert without tags yields an empty tag list`() {
+        val json = fixture().apply { getJSONArray("alerts").getJSONObject(0).remove("tags") }
+        val place = PlaceDataMapper.fromOWMToProtoBuilder(json)!!.buildPartial()
+
+        assertEquals(0, place.getWeatherAlertsList(0).tagsCount)
     }
 
     @Test

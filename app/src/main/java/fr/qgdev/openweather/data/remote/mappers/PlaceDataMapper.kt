@@ -53,7 +53,7 @@ open class PlaceDataMapper private constructor() : Mapper<Place> {
             // Parse Current Weather
             val crtWeatherJSON = jsonObject.optJSONObject("current")
                 ?: throw JSONException("Cannot find current weather data in PlaceObjectJSON")
-            tmpLastAvailableDataTime = crtWeatherJSON.getLong("dt")
+            tmpLastAvailableDataTime = crtWeatherJSON.getLong("dt") * 1000
             val tmpCurrentWeather = CurrentWeatherMapper.fromOWMToProto(crtWeatherJSON)
 
             //  All four forecast arrays are optional here. One Call omits minutely for locations it
