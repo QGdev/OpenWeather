@@ -1,0 +1,22 @@
+OpenWeather is built with the following open source components. Their licences are reproduced
+below.
+
+Apache License, Version 2.0 (Apache-2.0.txt)
+  Android Jetpack (AndroidX) libraries, Copyright The Android Open Source Project
+  Material Components for Android, Copyright Google LLC
+  Volley, Copyright The Android Open Source Project
+  Tink, Copyright Google LLC
+  Gson, Copyright Google Inc.
+  Guava ListenableFuture, Copyright The Guava Authors
+  Error Prone annotations, Copyright The Error Prone Authors
+  Kotlin standard library, kotlinx.coroutines, kotlinx.serialization and JetBrains annotations,
+    Copyright JetBrains s.r.o. and Kotlin Programming Language contributors
+  Okio, Copyright Square, Inc.
+  JSpecify, Copyright The JSpecify Authors
+
+BSD 3-Clause License (Protobuf-BSD-3-Clause.txt)
+  Protocol Buffers (protobuf-javalite), Copyright 2008 Google Inc.
+
+SIL Open Font License, Version 1.1 (Figtree-OFL.txt, IBMPlexMono-OFL.txt)
+  Figtree, Copyright 2022 The Figtree Project Authors
+  IBM Plex Mono, Copyright 2017 IBM Corp.
