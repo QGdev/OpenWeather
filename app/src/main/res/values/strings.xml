@@ -21,8 +21,6 @@
 <resources>
     <string name="app_name" translatable="false">OpenWeather</string>
 
-
-    <string name="title_activity_main" translatable="false">MainActivity</string>
     <string name="title_places">Places</string>
     <string name="description_places">List of the registered places</string>
 
@@ -30,18 +28,8 @@
     <string name="title_humidity">Humidity</string>
     <string name="title_pressure">Pressure</string>
     <string name="title_visibility">Visibility</string>
-    <string name="title_wind_information">Winds</string>
-    <string name="title_sky_information">Sky</string>
-    <string name="title_sunrise">Sunrise</string>
-    <string name="title_sunset">Sunset</string>
-    <string name="title_cloudiness">Cloud coverage</string>
-    <string name="title_wind_gust_speed">Gust Speed</string>
     <string name="title_wind_speed">Speed</string>
     <string name="title_wind_direction">Direction</string>
-    <string name="title_rain_precipitations">Precipitations - Rain</string>
-    <string name="title_1hour_precipitation">1 hour</string>
-    <string name="title_3hour_precipitation">3 hours</string>
-    <string name="title_snow_precipitations">Precipitations - Snow</string>
     <string name="description_delete_icon">Delete the place</string>
 
 
@@ -54,25 +42,19 @@
     <string name="title_settings_units">Units</string>
 
     <string name="title_settings_units_temperature">Temperature</string>
-    <string name="default_temperature" translatable="false">celsius</string>
 
     <string name="title_settings_units_measure">Measure</string>
-    <string name="default_measure" translatable="false">metric</string>
     <string name="title_settings_units_measure_imperial">Imperial</string>
     <string name="title_settings_units_measure_metric">Metric</string>
 
     <string name="title_settings_units_pressure">Pressure</string>
-    <string name="default_pressure" translatable="false">hpa</string>
 
     <string name="title_settings_units_direction">Wind direction</string>
-    <string name="default_direction" translatable="false">cardinal</string>
     <string name="title_settings_units_direction_cardinal">Cardinal points</string>
     <string name="title_settings_units_direction_degrees">Angular</string>
 
 
     <string name="title_settings_time">Time</string>
-    <string name="default_timeoffset" translatable="false">place</string>
-    <string name="title_settings_hour_timeoffset">Time Offset</string>
     <string name="title_settings_hour_format">Time Format</string>
 
 
@@ -87,15 +69,6 @@
     <string name="url_owm_properties_name" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?q="%s",%s&appid=%s&lang=%s]]></string>
     <string name="url_owm_properties_coordinates" translatable="false"><![CDATA[https://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&appid=%s&lang=%s]]></string>
     <string name="url_osm_place_searching" translatable="false"><![CDATA[https://nominatim.openstreetmap.org/search?q={search}&format=json&addressdetails=1&featureType=city&limit=10]]></string>
-
-    <string name="place_added_successfully">was successfully added</string>
-
-    <string name="error_cannot_save_place">Cannot save the place</string>
-    <string name="error_cannot_refresh_place_list">Cannot refresh places</string>
-    <string name="error_place_deletion">An error occurred while deleting</string>
-    <string name="error_place_move">An error occurred while moving place</string>
-    <string name="error_cannot_save_place_treatment">Cannot save place due to a treatment error</string>
-
 
     <string name="dialog_confirmation_title_delete_place">Delete a place</string>
     <string name="dialog_confirmation_message_delete_place"><![CDATA[Delete %s, %s ?]]></string>
@@ -146,11 +119,9 @@
     <string name="action_delete">Delete</string>
     <string name="action_release_to_delete">Release to delete</string>
     <string name="title_forecast_hourly">Hourly Forecast</string>
-    <string name="error_cannot_refresh_place_list_network">Cannot refresh place list due to a network error</string>
     <string name="error_place_already_added">This place is already added</string>
     <string name="error_no_places_registered">No places registered</string>
     <string name="title_forecast_daily">Daily Forecast</string>
-    <string name="splash_screen" translatable="false">Splash Screen</string>
     <string name="title_dialog_weather_alert">Weather alert</string>
     <string name="about_us">About us</string>
 
@@ -158,7 +129,6 @@
     <string name="content_about_the_developer_section">I was a computer science student when I wrote the first lines of OpenWeather, and I have since become a developer. If I keep the app going in my spare time, it is because it has remained my playground: a project I carry from start to finish, at my own pace, where I try what I do not get the chance to try elsewhere.</string>
     <string name="title_about_your_data_section">About your data</string>
     <string name="content_about_your_data_section">No account, no tracking, no usage analytics. Your places and settings stay on this device. Only two things leave the phone, along with its IP address as with any connection: a place\'s coordinates, sent to OpenWeatherMap with your API key and language to get its weather, background updates and widgets included, and the text you type in the search, sent to OpenStreetMap Nominatim.</string>
-    <string name="place_deletion_successful">Successfully deleted !</string>
     <string name="title_daily_forecast_noon">Noon</string>
     <string name="title_daily_forecast_evening">Evening</string>
     <string name="title_daily_forecast_night">Night</string>
@@ -203,7 +173,6 @@
 
     <string name="content_about_application_section">OpenWeather was born during the COVID lockdown, from a simple idea: learning Android development by building something useful. First written in Java, it has since moved to Kotlin and Jetpack Compose, and gained widgets and a whole new interface along the way.\n\nIt shows no ads and does not track you: the app is free software, under the GPLv3, and its code is open to anyone who wants to read it or contribute.</string>
     <string name="title_about_application_section">About this app</string>
-    <string name="error_storage_security">An error occurred while initializing the storage</string>
 
     <string name="title_settings_time_format_24h" translatable="false">24 h</string>
     <string name="title_settings_time_format_12h" translatable="false">12 h</string>
