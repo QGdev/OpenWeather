@@ -112,7 +112,7 @@
 	<string name="title_forecast_daily">Prévisions quotidiennes</string>
 	<string name="title_dialog_weather_alert">Alertes Météorologiques</string>
 	<string name="about_us">À propos</string>
-	<string name="content_about_your_data_section">Aucun compte, aucun pistage, aucune analyse d\'usage. Vos lieux et vos réglages restent sur l\'appareil. Deux informations seulement quittent le téléphone : les coordonnées d\'un lieu, envoyées à OpenWeatherMap avec votre clé d\'API et votre langue pour obtenir sa météo, et le texte que vous tapez dans la recherche, envoyé à OpenStreetMap Nominatim.</string>
+	<string name="content_about_your_data_section">Aucun compte, aucun pistage, aucune analyse d\'usage. Vos lieux et vos réglages restent sur l\'appareil. Deux informations seulement quittent le téléphone, avec son adresse IP comme pour toute connexion : les coordonnées d\'un lieu, envoyées à OpenWeatherMap avec votre clé d\'API et votre langue pour obtenir sa météo, mises à jour en arrière-plan et widgets compris, et le texte que vous tapez dans la recherche, envoyé à OpenStreetMap Nominatim.</string>
 	<string name="title_about_the_developer_section">À propos du développeur</string>
 	<string name="title_about_your_data_section">À propos de vos données</string>
 	<string name="content_about_the_developer_section">Étudiant en informatique quand j\'ai écrit les premières lignes d\'OpenWeather, je suis devenu développeur depuis. Si je continue à faire vivre cette application sur mon temps libre, c\'est qu\'elle est restée mon terrain de jeu : un projet que je mène de bout en bout, à mon rythme, où j\'essaie ce que je n\'ai pas l\'occasion de faire ailleurs.</string>
@@ -264,6 +264,10 @@
 	<string name="settings_call_budget">%1$d appels par lieu, environ %2$s par jour.</string>
 	<string name="action_about_source_code">Code source</string>
 	<string name="action_about_license">Licence</string>
+	<string name="action_about_privacy">Confidentialité</string>
+	<string name="action_about_open_source_licenses">Licences open source</string>
+	<string name="about_no_warranty">Ce programme est fourni sans aucune garantie. C\'est un logiciel libre, que vous pouvez redistribuer selon les termes de la GPLv3.</string>
+	<string name="about_owm_attribution">Données météo fournies par OpenWeather</string>
 	<string name="about_license_badge">GPLv3 · logiciel libre</string>
 	<string name="splash_tagline">Météo libre, sans compte, sans pistage</string>
 	<string name="splash_attribution">Données OpenWeatherMap (ODbL · CC BY-SA 4.0) · Recherche OpenStreetMap Nominatim</string>
