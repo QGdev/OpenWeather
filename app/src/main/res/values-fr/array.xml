@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string-array name="attribution_title">
-		<item>"Données et prévisions météo"</item>
-		<item>"API OpenWeatherMap"</item>
 		<item>"Recherche de lieux"</item>
 		<item>"Icônes"</item>
 		<item>"Polices"</item>
+		<item>"Aucune affiliation"</item>
 	</string-array>
 
 	<string-array name="attribution_content">
-		<item>"OpenWeatherMap · ODbL"</item>
-		<item>"CC BY-SA 4.0"</item>
-		<item>"OpenStreetMap Nominatim · ODbL"</item>
+		<item>"© les contributeurs d'OpenStreetMap · ODbL"</item>
 		<item>"freepik.com · flaticon.com"</item>
 		<item>"Figtree, IBM Plex Mono · SIL OFL 1.1"</item>
+		<item>"OpenWeather est une application indépendante. Elle utilise les API d'OpenWeatherMap mais n'est ni affiliée à OpenWeather Ltd, ni approuvée ou soutenue par elle."</item>
 	</string-array>
 </resources>
