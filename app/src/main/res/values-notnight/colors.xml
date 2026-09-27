@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingDefaultResource">
-
-    <color name="colorFirstText">#222725</color>
-    <color name="colorSecondaryText">#222725</color>
-
     <!-- Only used for custom views like Forecasts to make custom drawings!-->
 
     <color name="colorBackgroundTiles">#E1E1E1</color>
