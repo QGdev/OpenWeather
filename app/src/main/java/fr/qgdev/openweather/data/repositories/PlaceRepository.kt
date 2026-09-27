@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import android.content.Context
+import android.database.sqlite.SQLiteException
 import android.util.Log
 import fr.qgdev.openweather.data.models.Geolocation
 import fr.qgdev.openweather.data.models.Place
@@ -34,13 +35,18 @@ import fr.qgdev.openweather.data.remote.FetchDataCallback
 import fr.qgdev.openweather.data.remote.PlaceSearchingService
 import fr.qgdev.openweather.data.remote.RequestStatus
 import fr.qgdev.openweather.data.remote.WeatherService
+import fr.qgdev.openweather.data.storage.LegacyPlaceDatabase
 import fr.qgdev.openweather.data.storage.PlaceDataStore
 import fr.qgdev.openweather.widgets.WidgetsManager
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
@@ -125,12 +131,7 @@ class PlaceRepository private constructor(context: Context) {
     private val placeSearchingService = PlaceSearchingService.getInstance(context)
     private val dataStore = PlaceDataStore.getDataStore(context.applicationContext)
     private val applicationContext = context.applicationContext
-
-    init {
-        //  Room database of 0.9.x, whose places are not migrated to the DataStore: deleted so the
-        //  old data does not stay on the device. Does nothing once it is gone.
-        applicationContext.deleteDatabase("appDB")
-    }
+    private val legacyRestoreMutex = Mutex()
 
     //  What stopped the last refresh of every place, when it concerns them all - a refused key, no
     //  network, the quota - for the list to say once in a banner rather than on each card. Held
@@ -417,6 +418,43 @@ class PlaceRepository private constructor(context: Context) {
             
             Pair(successCount.get(), errorCount.get())
         }
+    }
+
+    /**
+     * Restores the places of 0.9.x, one at a time in order to keep their order.
+     * The old database is deleted once every place is stored, otherwise the next launch tries again.
+     *
+     * @return true when no place is left to restore
+     */
+    suspend fun restoreLegacyPlaces(): Boolean = legacyRestoreMutex.withLock {
+        if (!LegacyPlaceDatabase.exists(applicationContext)) return@withLock true
+
+        val geolocations = try {
+            withContext(Dispatchers.IO) { LegacyPlaceDatabase.readPlaces(applicationContext) }
+        } catch (e: SQLiteException) {
+            Log.e(TAG, "Cannot read the 0.9.x places", e)
+            return@withLock false
+        }
+
+        val placeStorage = dataStore.data.first()
+        for (geolocation in geolocations.filterNot { placeStorage.holds(it) }) {
+            val deferred = CompletableDeferred<Boolean>()
+            fetchAndAddNewPlaceFromWeb(geolocation, object : FetchDataCallback {
+                override suspend fun onSuccess(place: Place) {
+                    deferred.complete(true)
+                }
+                override suspend fun onPartialSuccess(place: Place, requestStatus: RequestStatus) {
+                    deferred.complete(true)
+                }
+                override suspend fun onError(requestStatus: RequestStatus) {
+                    deferred.complete(requestStatus == RequestStatus.ALREADY_PRESENT)
+                }
+            })
+            if (withTimeoutOrNull(15000) { deferred.await() } != true) return@withLock false
+        }
+
+        LegacyPlaceDatabase.delete(applicationContext)
+        true
     }
 
     //  Remote part, fetch from web
