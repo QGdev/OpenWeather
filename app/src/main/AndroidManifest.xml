@@ -9,10 +9,10 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <permission
-        android:name="fr.qgdev.openweather.permission.UPDATE_WIDGET"
+        android:name="${applicationId}.permission.UPDATE_WIDGET"
         android:protectionLevel="signature" />
 
-    <uses-permission android:name="fr.qgdev.openweather.permission.UPDATE_WIDGET" />
+    <uses-permission android:name="${applicationId}.permission.UPDATE_WIDGET" />
 
     <application
         android:allowBackup="false"
@@ -37,7 +37,7 @@
             android:name=".widgets.WidgetsProvider"
             android:exported="false"
             android:label="@string/label_widget"
-            android:permission="fr.qgdev.openweather.permission.UPDATE_WIDGET">
+            android:permission="${applicationId}.permission.UPDATE_WIDGET">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

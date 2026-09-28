@@ -17,9 +17,19 @@ android {
         versionName = "0.10.0"
     }
 
+    //  The nightly key comes from the CI secrets; without them the nightly build is left unsigned
+    signingConfigs {
+        create("nightly") {
+            System.getenv("NIGHTLY_KEYSTORE_FILE")?.let { storeFile = file(it) }
+            storePassword = System.getenv("NIGHTLY_KEYSTORE_PASSWORD")
+            keyAlias = System.getenv("NIGHTLY_KEY_ALIAS")
+            keyPassword = System.getenv("NIGHTLY_KEY_PASSWORD")
+        }
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -37,9 +47,12 @@ android {
             isDebuggable = true
         }
         create("nightly") {
-            versionNameSuffix = "-alpha"
-            isDebuggable = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
+            initWith(getByName("release"))
+            applicationIdSuffix = ".nightly"
+            versionNameSuffix = "-nightly"
+            if (System.getenv("NIGHTLY_KEYSTORE_FILE") != null) {
+                signingConfig = signingConfigs.getByName("nightly")
+            }
         }
     }
 

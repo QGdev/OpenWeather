@@ -19,3 +19,19 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# protobuf-javalite ships no R8 rules: the generated messages are read by reflection on their fields.
+-keep class * extends com.google.protobuf.GeneratedMessageLite { <fields>; }
+
+# Logs are for debug builds only: strip every android.util.Log call from the minified release.
+-assumenosideeffects class android.util.Log {
+    public static int v(...);
+    public static int d(...);
+    public static int i(...);
+    public static int w(...);
+    public static int e(...);
+    public static int wtf(...);
+}
+
+# Annotations used by Tink (from security-crypto) at compile time only, absent from the APK.
+-dontwarn javax.annotation.Nullable
+-dontwarn javax.annotation.concurrent.GuardedBy
