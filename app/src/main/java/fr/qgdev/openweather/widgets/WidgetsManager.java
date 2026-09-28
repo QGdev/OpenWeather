@@ -144,16 +144,6 @@ public final class WidgetsManager {
 	}
 	
 	/**
-	 * Check if widget settings are present
-	 *
-	 * @param appWidgetId The id of the widget
-	 * @return True if settings are present, false otherwise
-	 */
-	public boolean isWidgetSettingsPresent(int appWidgetId) {
-		return securedPreferenceDataStore.contains(getKeyName(appWidgetId));
-	}
-	
-	/**
 	 * Will send a broadcast to all widgets to update them.
 	 *
 	 * @param context the context used to send the broadcast

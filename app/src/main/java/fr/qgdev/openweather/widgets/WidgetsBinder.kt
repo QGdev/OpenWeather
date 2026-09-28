@@ -414,11 +414,6 @@ object WidgetsBinder {
             @JvmStatic
             fun fromSizeF(size: SizeF): WidgetType? =
                 entries.firstOrNull { it.width <= size.width && it.height <= size.height }
-
-            /** The widget type matching the given id, or null when none does. */
-            @JvmStatic
-            fun fromString(id: String?): WidgetType? =
-                entries.firstOrNull { it.id.equals(id, ignoreCase = true) }
         }
     }
 }
