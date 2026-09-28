@@ -126,22 +126,9 @@ class PlaceSearchingService private constructor(
                 callback.onSuccess(locations)
             },
             { error: VolleyError ->
-                //  no server response (NO INTERNET or SERVER DOWN)
-                if (error.networkResponse == null) {
-                    callback.onError(RequestStatus.NO_ANSWER)
-                    error.printStackTrace()
-                } else {
-                    when (error.networkResponse.statusCode) {
-                        429 -> callback.onError(RequestStatus.TOO_MANY_REQUESTS)
-                        404 -> callback.onError(RequestStatus.NOT_FOUND)
-                        403 -> callback.onError(RequestStatus.AUTH_FAILED)
-                        401 -> callback.onError(RequestStatus.AUTH_FAILED)
-                        else -> {
-                            callback.onError(RequestStatus.UNKNOWN_ERROR)
-                            error.message?.let { Log.w(TAG, it) }
-                        }
-                    }
-                }
+                val status = RequestStatus.fromHttpStatus(error.networkResponse?.statusCode)
+                if (status == RequestStatus.UNKNOWN_ERROR) error.message?.let { Log.w(TAG, it) }
+                callback.onError(status)
             }
         ) {
             // Nominatim usage policy requires a valid User-Agent identifying the application.

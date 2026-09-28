@@ -37,5 +37,16 @@ enum class RequestStatus {
     NOT_CONNECTED,
     UNKNOWN_ERROR,
     ALREADY_PRESENT,
-    TOO_SHORT
+    TOO_SHORT;
+
+    companion object {
+        /** The status of a failed request from its HTTP status, null when no response came back. */
+        fun fromHttpStatus(status: Int?): RequestStatus = when (status) {
+            null -> NO_ANSWER
+            429 -> TOO_MANY_REQUESTS
+            404 -> NOT_FOUND
+            401, 403 -> AUTH_FAILED
+            else -> UNKNOWN_ERROR
+        }
+    }
 }

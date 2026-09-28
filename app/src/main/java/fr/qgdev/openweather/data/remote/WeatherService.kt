@@ -203,19 +203,9 @@ class WeatherService private constructor(
             },
             { error: VolleyError ->
                 serviceScope.launch {
-                    if (error.networkResponse == null) {
-                        callback.onError(RequestStatus.NO_ANSWER)
-                    } else {
-                        when (error.networkResponse.statusCode) {
-                            429 -> callback.onError(RequestStatus.TOO_MANY_REQUESTS)
-                            404 -> callback.onError(RequestStatus.NOT_FOUND)
-                            401 -> callback.onError(RequestStatus.AUTH_FAILED)
-                            else -> {
-                                error.message?.let { Log.w(TAG, it) }
-                                callback.onError(RequestStatus.UNKNOWN_ERROR)
-                            }
-                        }
-                    }
+                    val status = RequestStatus.fromHttpStatus(error.networkResponse?.statusCode)
+                    if (status == RequestStatus.UNKNOWN_ERROR) error.message?.let { Log.w(TAG, it) }
+                    callback.onError(status)
                 }
             }
         )
@@ -273,19 +263,9 @@ class WeatherService private constructor(
             },
             { error: VolleyError ->
                 serviceScope.launch {
-                    if (error.networkResponse == null) {
-                        callback.onPartialSuccess(place, RequestStatus.NO_ANSWER)
-                    } else {
-                        when (error.networkResponse.statusCode) {
-                            429 -> callback.onPartialSuccess(place, RequestStatus.TOO_MANY_REQUESTS)
-                            404 -> callback.onPartialSuccess(place, RequestStatus.NOT_FOUND)
-                            401 -> callback.onPartialSuccess(place, RequestStatus.AUTH_FAILED)
-                            else -> {
-                                error.message?.let { Log.w(TAG, it) }
-                                callback.onPartialSuccess(place, RequestStatus.UNKNOWN_ERROR)
-                            }
-                        }
-                    }
+                    val status = RequestStatus.fromHttpStatus(error.networkResponse?.statusCode)
+                    if (status == RequestStatus.UNKNOWN_ERROR) error.message?.let { Log.w(TAG, it) }
+                    callback.onPartialSuccess(place, status)
                 }
             }
         )
