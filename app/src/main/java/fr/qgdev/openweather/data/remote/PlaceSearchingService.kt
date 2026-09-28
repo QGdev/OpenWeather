@@ -44,14 +44,14 @@ import org.json.JSONObject
  * <p>
  * A class to manage place searching requests.
  * It uses the Volley library to make HTTP requests to the OpenStreetMap Nominatim API and returns
- * its results through a SearchPlaceCallback.
+ * its results through a FetchCallback.
  * Results are asked in the language of the device and the query is encoded before being put in the
  * URL.
  * </p>
  *
  * @author Quentin GOMES DOS REIS
  * @version 1
- * @see SearchPlaceCallback
+ * @see FetchCallback
  */
 class PlaceSearchingService private constructor(
     context: Context,
