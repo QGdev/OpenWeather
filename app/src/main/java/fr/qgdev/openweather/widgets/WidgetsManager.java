@@ -160,8 +160,8 @@ public final class WidgetsManager {
 	 */
 	public void updateWidgets(@NonNull Context context) {
 		Intent updateIntent = new Intent("android.appwidget.action.APPWIDGET_UPDATE");
-		updateIntent.setPackage("fr.qgdev.openweather");
-		context.sendBroadcast(updateIntent, "fr.qgdev.openweather.permission.UPDATE_WIDGET");
+		updateIntent.setPackage(context.getPackageName());
+		context.sendBroadcast(updateIntent, context.getPackageName() + ".permission.UPDATE_WIDGET");
 	}
 	
 	/**

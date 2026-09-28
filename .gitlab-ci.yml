@@ -75,12 +75,18 @@ lintDebug:
   script:
     - ./gradlew -Pci --console=plain :app:lintDebug -PbuildDir=lint 
 
-# Make Project, debug and release
+# Make Project, debug, release and nightly
+# The nightly is signed only when the NIGHTLY_* variables are set, protected ones reaching protected branches only
 assemble:
   interruptible: true
   stage: build
   script:
-    - ./gradlew assembleDebug assembleRelease
+    - >
+      if [ -n "$NIGHTLY_KEYSTORE_BASE64" ]; then
+        echo "$NIGHTLY_KEYSTORE_BASE64" | base64 -d > /tmp/nightly.jks;
+        export NIGHTLY_KEYSTORE_FILE=/tmp/nightly.jks;
+      fi
+    - ./gradlew assembleDebug assembleRelease assembleNightly
   artifacts:
     paths:
       - app/build/outputs/
