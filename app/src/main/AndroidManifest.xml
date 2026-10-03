@@ -35,8 +35,9 @@
         <receiver
             android:name=".widgets.WidgetsProvider"
             android:enabled="@bool/widgets_enabled"
-            android:exported="true"
-            android:label="@string/label_widget" >
+            android:exported="false"
+            android:label="@string/label_widget"
+            android:permission="fr.qgdev.openweather.permission.UPDATE_WIDGET" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

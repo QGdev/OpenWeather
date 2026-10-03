@@ -19,5 +19,5 @@
   -->
 
 <resources>
-    <bool name="widgets_enabled">true</bool>
+    <bool name="widgets_enabled">false</bool>
 </resources>
