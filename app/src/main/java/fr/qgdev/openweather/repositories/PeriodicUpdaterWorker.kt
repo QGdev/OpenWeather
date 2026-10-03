@@ -96,6 +96,10 @@ class PeriodicUpdaterWorker(
                 return Result.retry()
             }
 
+            val periodMillis = settingsRepository.settingsFlow.value.updatePeriod.durationMillis
+            val timeUntilNextMark = periodMillis - (System.currentTimeMillis() % periodMillis)
+            widgetsManager.scheduleNextRun(context, Duration.ofMillis(timeUntilNextMark))
+
             return Result.success()
             
         } catch (e: Exception) {

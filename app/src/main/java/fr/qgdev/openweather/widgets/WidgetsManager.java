@@ -27,6 +27,7 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
 import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -185,28 +186,45 @@ public final class WidgetsManager {
 		android.util.Log.d("WidgetsManager", "   - Delay: " + timeBeforeNextUpdate.toMillis() + "ms (" + (timeBeforeNextUpdate.toMillis() / 60000) + " min)");
 		
 		try {
-			Constraints constraints = new Constraints.Builder()
-					  //.setRequiredNetworkType(NetworkType.CONNECTED)
-					  .setRequiresBatteryNotLow(true)
-					  .build();
-			
 			android.util.Log.d("WidgetsManager", "   - Constraints: Network=CONNECTED, BatteryNotLow=true");
 			
-			OneTimeWorkRequest oneTimeWorkRequest =
-					  new OneTimeWorkRequest.Builder(PeriodicUpdaterWorker.class)
-								 .setConstraints(constraints)
-								 .setInitialDelay(timeBeforeNextUpdate)
-								 .build();
-			
-			android.util.Log.d("WidgetsManager", "   - Work request built with ID: " + oneTimeWorkRequest.getId());
-			
-			WorkManager.getInstance(context).enqueueUniqueWork(WORKER_TASK_NAME,
-					  ExistingWorkPolicy.REPLACE,
-					  oneTimeWorkRequest);
+			enqueueWorkRequest(context, timeBeforeNextUpdate, ExistingWorkPolicy.REPLACE);
 			
 			android.util.Log.d("WidgetsManager", "✅ Work request scheduled successfully");
 		} catch (Exception e) {
 			android.util.Log.e("WidgetsManager", "❌ Error scheduling work: " + e.getMessage(), e);
 		}
+	}
+	
+	/**
+	 * Will schedule the next run from the running work request, after it ends.
+	 *
+	 * @param context              Use to get the WorkManager instance
+	 * @param timeBeforeNextUpdate Delay before the next run
+	 */
+	public void scheduleNextRun(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate) {
+		enqueueWorkRequest(context, timeBeforeNextUpdate, ExistingWorkPolicy.APPEND_OR_REPLACE);
+	}
+	
+	/**
+	 * Will enqueue the update work request with the given policy.
+	 *
+	 * @param context              Use to get the WorkManager instance
+	 * @param timeBeforeNextUpdate Delay before the run
+	 * @param policy               What to do with an already scheduled work request
+	 */
+	private void enqueueWorkRequest(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate,
+	                                @NonNull ExistingWorkPolicy policy) {
+		Constraints constraints = new Constraints.Builder()
+				  .setRequiredNetworkType(NetworkType.CONNECTED)
+				  .setRequiresBatteryNotLow(true)
+				  .build();
+		
+		OneTimeWorkRequest workRequest = new OneTimeWorkRequest.Builder(PeriodicUpdaterWorker.class)
+				  .setConstraints(constraints)
+				  .setInitialDelay(timeBeforeNextUpdate)
+				  .build();
+		
+		WorkManager.getInstance(context).enqueueUniqueWork(WORKER_TASK_NAME, policy, workRequest);
 	}
 }
