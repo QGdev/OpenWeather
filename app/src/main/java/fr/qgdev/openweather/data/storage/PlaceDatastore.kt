@@ -24,6 +24,7 @@ import android.content.Context
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStore
 import com.google.protobuf.InvalidProtocolBufferException
 import fr.qgdev.openweather.data.models.PlaceStorage
@@ -36,7 +37,8 @@ object PlaceDataStore {
     private const val FILENAME = "placeStorage.pb"
     private val Context.placeDatastore by dataStore(
         fileName = FILENAME,
-        serializer = PlaceSerializer
+        serializer = PlaceSerializer,
+        corruptionHandler = ReplaceFileCorruptionHandler { PlaceStorage.getDefaultInstance() }
     )
 
     fun getDataStore(context: Context): DataStore<PlaceStorage> {
