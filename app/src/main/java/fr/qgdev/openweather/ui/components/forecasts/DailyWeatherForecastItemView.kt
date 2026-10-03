@@ -290,8 +290,7 @@ fun DailyWeatherForecastItemView(
             min = data.temperatureGraphBounds.first,
             max = data.temperatureGraphBounds.second,
             colorA = primaryGraphColor,
-            colorB = secondaryGraphColor,
-            debug = true
+            colorB = secondaryGraphColor
         )
 
         // Environmental variables section
