@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="UnusedAttribute" >
+    xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -19,8 +18,6 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:enableOnBackInvokedCallback="true"
         android:enabled="true"
-        android:fullBackupContent="false"
-        android:fullBackupOnly="false"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:isGame="false"
@@ -30,7 +27,8 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="false"
         android:theme="@style/MaterialTheme"
-        android:usesCleartextTraffic="false" >
+        android:usesCleartextTraffic="false"
+        tools:targetApi="33" >
 
         <receiver
             android:name=".widgets.WidgetsProvider"
