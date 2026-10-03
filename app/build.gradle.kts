@@ -49,9 +49,9 @@ android {
             isDebuggable = true
         }
         create("nightly") {
+            initWith(getByName("release"))
+            signingConfig = null
             versionNameSuffix = "-alpha"
-            isDebuggable = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
         }
     }
 
@@ -75,7 +75,6 @@ dependencies {
     implementation("com.google.android.material:material:1.14.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.9.8")
     implementation("androidx.navigation:navigation-ui-ktx:2.9.8")
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
     implementation("androidx.recyclerview:recyclerview:1.4.0")
     implementation("androidx.core:core-ktx:1.19.0")
@@ -96,14 +95,11 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview-android")
     implementation("androidx.preference:preference-ktx:1.2.1")
     implementation("androidx.datastore:datastore:1.2.1")
-    implementation("androidx.datastore:datastore-core:1.2.1")
     implementation("com.google.protobuf:protobuf-javalite:4.35.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("androidx.navigation:navigation-compose:2.9.8")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.11.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20260522")
-    debugImplementation(platform("androidx.compose:compose-bom:2026.06.01"))
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
 
@@ -143,6 +139,7 @@ abstract class GenerateProtoTask : DefaultTask() {
     abstract val execOps: ExecOperations
 
     @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val protoDir: DirectoryProperty
 
     @get:InputFile
@@ -186,11 +183,5 @@ androidComponents {
             generateProto,
             GenerateProtoTask::outputDir
         )
-    }
-}
-
-tasks.configureEach {
-    if (name.startsWith("compile") && (name.endsWith("JavaWithJavac") || name.endsWith("Kotlin"))) {
-        dependsOn(generateProto)
     }
 }
