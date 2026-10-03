@@ -121,6 +121,11 @@ internal fun PlaceStorage.withPlaceReplaced(oldGeolocation: Geolocation, newPlac
     return toBuilder().putPlaces(placeId, newPlace).build() to ReplaceResult.REPLACED
 }
 
+/** This storage with the place under [placeId] replaced, or null when no place is stored under it. */
+internal fun PlaceStorage.withPlaceUpdated(placeId: Int, newPlace: Place): PlaceStorage? =
+    if (!containsPlaces(placeId)) null
+    else toBuilder().putPlaces(placeId, newPlace).build()
+
 /** Upper bound on stored places; ids are allocated modulo this value. */
 internal const val MAX_PLACES = 100
 
@@ -286,12 +291,18 @@ class PlaceRepository private constructor(context: Context) {
         }
     }
 
+    /**
+     * Replaces the place stored under [placeId]. A place deleted while its refresh was in flight
+     * stays deleted: the late result is dropped instead of putting it back, unlisted.
+     */
     suspend fun updatePlace(placeId: Int, newPlace: Place) {
+        var stored = true
         dataStore.updateData { placeStorage ->
-            placeStorage.toBuilder()
-                .putPlaces(placeId, newPlace)
-                .build()
+            val updated = placeStorage.withPlaceUpdated(placeId, newPlace)
+            stored = updated != null
+            updated ?: placeStorage
         }
+        if (!stored) return
         //  Every refresh ends here, so this is where the widgets showing this place learn of it:
         //  they change when their data does, whatever path refreshed it.
         WidgetsManager.getInstance(applicationContext)
