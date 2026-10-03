@@ -136,7 +136,7 @@ fun AddPlaceDialog(
             place: Place,
             requestStatus: RequestStatus
         ) {
-            onDismissRequest
+            onDismissRequest()
         }
 
         override suspend fun onError(requestStatus: RequestStatus) {
