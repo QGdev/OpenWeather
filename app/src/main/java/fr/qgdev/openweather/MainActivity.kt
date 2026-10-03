@@ -135,15 +135,24 @@ class MainActivity : AppCompatActivity() {
                 .collect { placeRepository.restoreLegacyPlaces() }
         }
 
-        // Follow the settings to schedule or cancel the periodic update
+        // Follow the settings to schedule or cancel the periodic update. Only its own settings are
+        // watched: rescheduling replaces the work, so any other setting changing would cancel a
+        // refresh in progress. The first value comes with every creation of the activity, a
+        // rotation or a change of language for instance, not with a change of settings: it leaves
+        // the scheduled work as it is.
         lifecycleScope.launch {
-            settingsRepository.settingsFlow.collect { settings ->
-                if (settings.periodicUpdateEnabled) {
-                    schedulePeriodicWidgetUpdate()
-                } else {
-                    unschedulePeriodicWidgetUpdate()
+            var isFirstValue = true
+            settingsRepository.settingsFlow
+                .map { it.periodicUpdateEnabled to it.updatePeriod }
+                .distinctUntilChanged()
+                .collect { (enabled, _) ->
+                    if (enabled) {
+                        schedulePeriodicWidgetUpdate(replacePending = !isFirstValue)
+                    } else {
+                        unschedulePeriodicWidgetUpdate()
+                    }
+                    isFirstValue = false
                 }
-            }
         }
 
         setContent {
@@ -172,14 +181,18 @@ class MainActivity : AppCompatActivity() {
 
     /**
      * Schedules the periodic update of the places and widgets at the next mark of the chosen period.
+     *
+     * @param replacePending whether the work already scheduled, which may be running, is replaced
      */
-    private fun schedulePeriodicWidgetUpdate() {
+    private fun schedulePeriodicWidgetUpdate(replacePending: Boolean) {
         val tag = "MainActivity.schedulePeriodicWidgetUpdate"
         
         try {
             val periodMillis = settingsRepository.settingsFlow.value.updatePeriod.durationMillis
             WidgetsManager.getInstance(applicationContext)
-                .scheduleWorkRequest(applicationContext, WidgetsManager.timeUntilNextMark(periodMillis))
+                .scheduleWorkRequest(
+                    applicationContext, WidgetsManager.timeUntilNextMark(periodMillis), replacePending
+                )
         } catch (e: Exception) {
             android.util.Log.e(tag, "Failed to schedule work: ${e.message}", e)
         }
