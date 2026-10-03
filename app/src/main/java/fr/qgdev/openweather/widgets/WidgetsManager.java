@@ -249,11 +249,16 @@ public final class WidgetsManager {
 	/**
 	 * Will schedule a work request to update all places and widgets periodically.
 	 *
-	 * @param context Use to get the WorkManager instance
+	 * @param context              Use to get the WorkManager instance
+	 * @param timeBeforeNextUpdate Delay before the run
+	 * @param replacePending       Whether an already scheduled work request, which may be running, is
+	 *                             replaced by this one or left as it is
 	 */
-	public void scheduleWorkRequest(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate) {
+	public void scheduleWorkRequest(@NonNull Context context, @NonNull Duration timeBeforeNextUpdate,
+	                                boolean replacePending) {
 		try {
-			enqueueWorkRequest(context, timeBeforeNextUpdate, ExistingWorkPolicy.REPLACE);
+			enqueueWorkRequest(context, timeBeforeNextUpdate,
+					  replacePending ? ExistingWorkPolicy.REPLACE : ExistingWorkPolicy.KEEP);
 		} catch (Exception e) {
 			android.util.Log.e("WidgetsManager", "Error scheduling work: " + e.getMessage(), e);
 		}
