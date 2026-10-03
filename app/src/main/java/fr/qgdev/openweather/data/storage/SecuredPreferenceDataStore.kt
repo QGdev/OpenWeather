@@ -22,10 +22,12 @@ package fr.qgdev.openweather.data.storage
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.annotation.Nullable
 import androidx.preference.PreferenceDataStore
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import java.security.KeyStore
 
 /**
  * Opens [open], and if that fails once, calls [discardCorruptedState] and tries a single further
@@ -78,7 +80,7 @@ class SecuredPreferenceDataStore(context: Context, filename: String) : Preferenc
         //  file then cannot be decrypted, and every later launch fails the same way, so the app is
         //  permanently broken until its data is cleared by hand.
         //
-        //  Discarding the file and recreating it recovers from that: the user loses their saved
+        //  Discarding the file and the master key recovers from that: the user loses their saved
         //  settings and has to re-enter the API key, which is a far better outcome than an app
         //  that cannot start.
         sharedPreferences = openWithOneRecoveryAttempt(
@@ -94,7 +96,12 @@ class SecuredPreferenceDataStore(context: Context, filename: String) : Preferenc
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                 )
             },
-            discardCorruptedState = { context.deleteSharedPreferences(filename) }
+            discardCorruptedState = {
+                Log.w("SecuredPreferenceDataStore", "Unable to open $filename, discarding it and the master key")
+                context.deleteSharedPreferences(filename)
+                KeyStore.getInstance("AndroidKeyStore").apply { load(null) }
+                    .deleteEntry(MasterKey.DEFAULT_MASTER_KEY_ALIAS)
+            }
         )
     }
 
