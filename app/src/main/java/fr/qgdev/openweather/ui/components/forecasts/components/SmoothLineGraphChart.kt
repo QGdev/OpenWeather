@@ -56,7 +56,7 @@ fun SmoothLineGraphChart(
     color: Color,
     style: DrawStyle = Stroke(5f),
     outerValuesOnlyForCompute: Boolean = true,
-    debug: Boolean = true
+    debug: Boolean = false
 ) {
     Canvas(modifier = modifier.fillMaxSize()
         .clipToBounds()) {

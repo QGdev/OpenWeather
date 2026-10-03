@@ -92,18 +92,18 @@ object DailyWeatherForecastDataBuilder {
             // partials beziers
 
             val idxBefore = if (startIdx > 0) startIdx - 1 else 0
-            val idxAfter = if (endIdx < dailyForecasts.size - 1) endIdx + 1 else endIdx
+            val idxAfter = if (endIdx < allTemperatures.size - 1) endIdx + 1 else endIdx
 
             Log.i("DailyDataBuilder", "%d -> %d [%d, %d, %d, %d] %d".format(index, idxBefore, startIdx, startIdx + 1, startIdx + 2, startIdx + 3, idxAfter))
 
             val temperatureGraphPoints: FloatArray = floatArrayOf(
                 allTemperatures[idxBefore],
-                *(allTemperatures.subList(startIdx, endIdx).toFloatArray()),
+                *(allTemperatures.subList(startIdx, endIdx + 1).toFloatArray()),
                 allTemperatures[idxAfter])
 
             val feelsLikeTemperatureGraphPoints: FloatArray = floatArrayOf(
                 allFeelsLike[idxBefore],
-                *(allFeelsLike.subList(startIdx, endIdx).toFloatArray()),
+                *(allFeelsLike.subList(startIdx, endIdx + 1).toFloatArray()),
                 allFeelsLike[idxAfter])
 
             val uniqueDataIdxBefore = if (index > 0) index - 1 else 0
