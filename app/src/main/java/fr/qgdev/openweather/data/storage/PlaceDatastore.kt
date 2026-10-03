@@ -45,7 +45,7 @@ object PlaceDataStore {
         return context.placeDatastore
     }
 
-    private object PlaceSerializer : Serializer<PlaceStorage> {
+    internal object PlaceSerializer : Serializer<PlaceStorage> {
         override val defaultValue: PlaceStorage = PlaceStorage.getDefaultInstance()
 
         override suspend fun readFrom(input: InputStream): PlaceStorage {

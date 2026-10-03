@@ -70,6 +70,13 @@ class PlaceDataMapperTest {
     }
 
     @Test
+    fun `UTC offset is converted from seconds to milliseconds`() {
+        val place = PlaceDataMapper.fromOWMToProtoBuilder(fixture())!!.buildPartial()
+
+        assertEquals(7200 * 1000, place.properties.timeOffset)
+    }
+
+    @Test
     fun `alert is mapped with its sender and tags`() {
         val alert = PlaceDataMapper.fromOWMToProtoBuilder(fixture())!!.buildPartial()
             .getWeatherAlertsList(0)
