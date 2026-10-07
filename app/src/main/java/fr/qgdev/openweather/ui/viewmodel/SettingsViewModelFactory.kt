@@ -23,7 +23,7 @@ package fr.qgdev.openweather.ui.viewmodel
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import fr.qgdev.openweather.data.settings.SettingsRepository
+import fr.qgdev.openweather.data.repositories.SettingsRepository
 import fr.qgdev.openweather.ui.format.FormattingService
 
 /**

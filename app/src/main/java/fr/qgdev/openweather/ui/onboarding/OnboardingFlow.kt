@@ -74,7 +74,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.qgdev.openweather.R
-import fr.qgdev.openweather.data.settings.SettingsRepository
+import fr.qgdev.openweather.data.repositories.SettingsRepository
 import fr.qgdev.openweather.ui.components.dialogs.AddPlaceDialog
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
 import fr.qgdev.openweather.ui.theme.PlexMono
