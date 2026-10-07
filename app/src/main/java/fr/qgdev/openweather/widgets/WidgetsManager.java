@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import fr.qgdev.openweather.data.storage.SecuredPreferenceDataStore;
-import fr.qgdev.openweather.repositories.PeriodicUpdaterWorker;
+import fr.qgdev.openweather.data.sync.PeriodicUpdaterWorker;
 
 /**
  * WidgetsManager
