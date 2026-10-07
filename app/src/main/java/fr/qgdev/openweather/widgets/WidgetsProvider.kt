@@ -33,8 +33,8 @@ import android.widget.RemoteViews
 import androidx.core.os.BundleCompat
 import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.data.repositories.PlaceRepository
-import fr.qgdev.openweather.repositories.FormattingService
 import fr.qgdev.openweather.data.repositories.identityKey
+import fr.qgdev.openweather.ui.format.FormattingService
 import fr.qgdev.openweather.widgets.WidgetsBinder.WidgetType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

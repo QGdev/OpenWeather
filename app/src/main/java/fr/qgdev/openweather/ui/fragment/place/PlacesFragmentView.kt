@@ -113,7 +113,7 @@ import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.data.models.Properties
 import fr.qgdev.openweather.data.repositories.PlaceRepository
 import fr.qgdev.openweather.data.settings.SettingsRepository
-import fr.qgdev.openweather.repositories.FormattingService
+import fr.qgdev.openweather.ui.format.FormattingService
 import fr.qgdev.openweather.ui.common.components.dragToReorder
 import fr.qgdev.openweather.ui.common.components.rememberDragToReorderState
 import fr.qgdev.openweather.ui.components.dialogs.AddPlaceDialog
