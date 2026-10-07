@@ -88,7 +88,7 @@ import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.data.models.Properties
 import fr.qgdev.openweather.data.models.WeatherAlert
 import fr.qgdev.openweather.data.repositories.PlaceRepository
-import fr.qgdev.openweather.data.settings.SettingsRepository
+import fr.qgdev.openweather.data.repositories.SettingsRepository
 import fr.qgdev.openweather.ui.common.dialogs.FullScreenDialog
 import java.text.SimpleDateFormat
 import java.util.Date
