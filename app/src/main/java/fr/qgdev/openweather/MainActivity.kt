@@ -53,7 +53,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import fr.qgdev.openweather.data.repositories.PlaceRepository
-import fr.qgdev.openweather.data.settings.SettingsRepository
+import fr.qgdev.openweather.data.repositories.SettingsRepository
 import fr.qgdev.openweather.ui.format.FormattingService
 import fr.qgdev.openweather.ui.fragment.place.PlacesScreenView
 import fr.qgdev.openweather.ui.fragment.settings.SettingsScreenView

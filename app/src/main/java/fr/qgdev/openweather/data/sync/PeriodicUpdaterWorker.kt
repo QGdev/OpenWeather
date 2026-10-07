@@ -24,7 +24,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import fr.qgdev.openweather.data.repositories.PlaceRepository
-import fr.qgdev.openweather.data.settings.SettingsRepository
+import fr.qgdev.openweather.data.repositories.SettingsRepository
 import fr.qgdev.openweather.widgets.WidgetsManager
 import kotlinx.coroutines.withTimeoutOrNull
 

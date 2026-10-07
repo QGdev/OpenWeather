@@ -25,7 +25,7 @@ import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.settings.MeasureSettings
 import fr.qgdev.openweather.data.settings.PressureSettings
 import fr.qgdev.openweather.data.settings.Settings
-import fr.qgdev.openweather.data.settings.SettingsRepository
+import fr.qgdev.openweather.data.repositories.SettingsRepository
 import fr.qgdev.openweather.data.settings.TemperatureSettings
 import fr.qgdev.openweather.data.settings.TimeSettings
 import fr.qgdev.openweather.data.settings.WindDirectionSettings

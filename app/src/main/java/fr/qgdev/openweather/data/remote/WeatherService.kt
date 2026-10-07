@@ -35,7 +35,7 @@ import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.data.remote.mappers.AirQualityMapper
 import fr.qgdev.openweather.data.remote.mappers.PlaceDataMapper
-import fr.qgdev.openweather.data.settings.SettingsRepository
+import fr.qgdev.openweather.data.repositories.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

@@ -18,9 +18,17 @@
  *  along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
  */
 
-package fr.qgdev.openweather.data.settings
+package fr.qgdev.openweather.data.repositories
 
 import androidx.preference.PreferenceDataStore
+import fr.qgdev.openweather.data.settings.MeasureSettings
+import fr.qgdev.openweather.data.settings.OneCallVersion
+import fr.qgdev.openweather.data.settings.PressureSettings
+import fr.qgdev.openweather.data.settings.Settings
+import fr.qgdev.openweather.data.settings.TemperatureSettings
+import fr.qgdev.openweather.data.settings.TimeSettings
+import fr.qgdev.openweather.data.settings.UpdatePeriodSettings
+import fr.qgdev.openweather.data.settings.WindDirectionSettings
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
