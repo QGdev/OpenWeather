@@ -18,7 +18,7 @@
  *  along with OpenWeather. If not, see <http://www.gnu.org/licenses/>
  */
 
-package fr.qgdev.openweather.repositories
+package fr.qgdev.openweather.ui.format
 
 import android.content.Context
 import fr.qgdev.openweather.R

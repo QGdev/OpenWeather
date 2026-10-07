@@ -63,7 +63,7 @@ import fr.qgdev.openweather.MainActivity
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.repositories.PlaceRepository
 import fr.qgdev.openweather.data.settings.SettingsRepository
-import fr.qgdev.openweather.repositories.FormattingService
+import fr.qgdev.openweather.ui.format.FormattingService
 import fr.qgdev.openweather.ui.theme.AppTheme
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
 import kotlinx.coroutines.Dispatchers

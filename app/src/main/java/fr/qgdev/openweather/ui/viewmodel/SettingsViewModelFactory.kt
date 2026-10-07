@@ -24,7 +24,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import fr.qgdev.openweather.data.settings.SettingsRepository
-import fr.qgdev.openweather.repositories.FormattingService
+import fr.qgdev.openweather.ui.format.FormattingService
 
 /**
  * SettingsViewModelFactory

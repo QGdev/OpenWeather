@@ -42,8 +42,8 @@ import androidx.compose.ui.graphics.toArgb
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.models.HourlyForecast
 import fr.qgdev.openweather.data.models.Place
-import fr.qgdev.openweather.repositories.FormattingService
-import fr.qgdev.openweather.repositories.FormattingService.FormattingSpec
+import fr.qgdev.openweather.ui.format.FormattingService
+import fr.qgdev.openweather.ui.format.FormattingService.FormattingSpec
 import fr.qgdev.openweather.ui.theme.DarkWeatherPalette
 import fr.qgdev.openweather.ui.theme.LightWeatherPalette
 import fr.qgdev.openweather.ui.theme.Sky

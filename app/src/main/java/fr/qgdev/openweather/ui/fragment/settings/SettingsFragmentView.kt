@@ -86,7 +86,7 @@ import fr.qgdev.openweather.data.settings.TemperatureSettings
 import fr.qgdev.openweather.data.settings.TimeSettings
 import fr.qgdev.openweather.data.settings.UpdatePeriodSettings
 import fr.qgdev.openweather.data.settings.WindDirectionSettings
-import fr.qgdev.openweather.repositories.FormattingService.Conversion
+import fr.qgdev.openweather.ui.format.FormattingService.Conversion
 import fr.qgdev.openweather.ui.components.OneCallVersionSwitch
 import fr.qgdev.openweather.ui.components.dialogs.AboutAppDialog
 import fr.qgdev.openweather.ui.icons.VisibilityOff
