@@ -45,8 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.models.MinutelyForecast
-import fr.qgdev.openweather.repositories.FormattingService
-import fr.qgdev.openweather.repositories.FormattingService.FormattingSpec
+import fr.qgdev.openweather.ui.format.FormattingService
+import fr.qgdev.openweather.ui.format.FormattingService.FormattingSpec
 import fr.qgdev.openweather.ui.theme.LocalWeatherPalette
 import java.util.Date
 import java.util.TimeZone

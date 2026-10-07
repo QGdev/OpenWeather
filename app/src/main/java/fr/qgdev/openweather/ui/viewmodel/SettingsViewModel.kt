@@ -24,7 +24,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import fr.qgdev.openweather.data.settings.Settings
 import fr.qgdev.openweather.data.settings.SettingsRepository
-import fr.qgdev.openweather.repositories.FormattingService
+import fr.qgdev.openweather.ui.format.FormattingService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

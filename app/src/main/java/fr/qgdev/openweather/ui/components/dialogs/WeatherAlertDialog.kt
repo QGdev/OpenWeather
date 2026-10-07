@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.dp
 import fr.qgdev.openweather.R
 import fr.qgdev.openweather.data.models.Place
 import fr.qgdev.openweather.data.models.WeatherAlert
-import fr.qgdev.openweather.repositories.FormattingService
+import fr.qgdev.openweather.ui.format.FormattingService
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.shape.RoundedCornerShape
