@@ -93,6 +93,17 @@ Issues and merge requests are welcome, please:
 This application is powered by the OpenWeatherMap APIs but has no connection or affiliation with
 OpenWeather Ltd.
 
+## 🤖 Use of AI
+Since 0.10, AI helped me to develop the application:
+* The application already existed and worked, with its architecture and its data layer (Kotlin,
+  Protobuf DataStore), all of it mine.
+* AI took charge of the end of the migration of the views to Kotlin and of the new interface, under
+  my direction, because I am not a UI/UX designer.
+* I set the goals, I approved every plan and I checked the result.
+* I used the application every day on my phone before releasing it.
+
+The application itself doesn't use any AI.
+
 ## ⚖️ Credits
 
 ### Weather data and Forecasts
