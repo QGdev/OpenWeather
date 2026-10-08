@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en" data-sky="sun">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenWeather — the weather for every city you care about</title>
+<meta name="description" content="Rain by the minute, 48 hours, 8 days and the air you breathe. No account, no ads, no tracking. Free software for Android.">
+<link rel="icon" href="assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/sky.js"></script>
+<script src="assets/showcase.js" defer></script>
+</head>
+<body>
+<header class="hero">
+	<div class="wrap">
+		<div class="bar">
+			<a class="brand" href="./" data-keep><img src="assets/img/logo.svg" alt="" width="32" height="32">OpenWeather</a>
+			<nav class="nav" aria-label="Main">
+				<a href="privacy/" data-keep>Privacy</a>
+				<a href="credits/" data-keep>Credits</a>
+				<a href="fr/" data-keep lang="fr" hreflang="fr">Français</a>
+				<a href="https://github.com/QGdev/OpenWeather">Source</a>
+			</nav>
+		</div>
+		<div class="hero__grid">
+			<div>
+				<p class="eyebrow">OpenWeather 0.10 · Android</p>
+				<h1>The weather for every city you care about, under its own sky.</h1>
+				<p class="lead">Rain by the minute, 48 hours, 8 days and the air you breathe. No account, no ads, no tracking.</p>
+				<p class="cta">
+					<a class="btn" href="https://github.com/QGdev/OpenWeather/releases">Download</a>
+				</p>
+				<ul class="sky-picker" aria-label="Sky" hidden>
+					<li><button class="chip" type="button" data-sky="auto" aria-pressed="false">Auto</button></li>
+					<li><button class="chip" type="button" data-sky="sun" aria-pressed="false">Sun</button></li>
+					<li><button class="chip" type="button" data-sky="cloud" aria-pressed="false">Cloud</button></li>
+					<li><button class="chip" type="button" data-sky="rain" aria-pressed="false">Rain</button></li>
+					<li><button class="chip" type="button" data-sky="storm" aria-pressed="false">Storm</button></li>
+					<li><button class="chip" type="button" data-sky="snow" aria-pressed="false">Snow</button></li>
+					<li><button class="chip" type="button" data-sky="night" aria-pressed="false">Night</button></li>
+				</ul>
+			</div>
+			<div class="phone"><img src="assets/img/en/places.webp" width="540" height="1170" alt="The list of places: each card takes the colour of the weather it shows."></div>
+		</div>
+	</div>
+</header>
+
+<main class="wrap">
+	<section class="showcase" aria-label="Features">
+		<div class="showcase__stage">
+			<div class="showcase__phone phone">
+				<div class="screen">
+				<img src="assets/img/en/detail.webp" width="540" height="1170" alt="The detail of a place with its temperature and measurements.">
+				<img src="assets/img/en/next-hour.webp" width="540" height="1170" alt="Rain for the next hour, minute by minute, and the air quality.">
+				<img src="assets/img/en/hourly.webp" width="540" height="1170" alt="The 48 hours ahead, hour by hour.">
+				<img src="assets/img/en/daily.webp" width="540" height="1170" alt="The next eight days with their lows and highs.">
+				<img src="assets/img/en/air.webp" width="540" height="1170" alt="The air quality index and its six pollutants.">
+				<img src="assets/img/en/light.webp" width="540" height="1170" alt="The list of places in the light theme.">
+				</div>
+			</div>
+			<div class="showcase__steps">
+				<div class="step"><h2>Everything that matters, on one screen</h2><p>Feels like, wind and gusts, humidity, pressure, visibility, and any active alert.</p></div>
+				<div class="step"><h2>Rain, minute by minute</h2><p>The next 60 minutes, drawn minute by minute: when it starts, when it stops, how hard.</p></div>
+				<div class="step"><h2>48 hours, hour by hour</h2><p>Tap an hour to see its temperature, rain, wind and sky.</p></div>
+				<div class="step"><h2>The week at a glance</h2><p>Eight days, their lows and highs on a single scale.</p></div>
+				<div class="step"><h2>The air you breathe</h2><p>An index from 1 to 5, and the six pollutants behind it.</p></div>
+				<div class="step"><h2>Light or dark, like your phone</h2><p>The app follows your system theme and accent colour. Widgets come in three sizes, with the transparency of your choice.</p></div>
+			</div>
+		</div>
+	</section>
+	<ul class="points">
+		<li><h3>No account, no tracking</h3><p>Your places and your own OpenWeatherMap key stay on your phone. The key is stored encrypted.</p></li>
+		<li><h3>Free software</h3><p>OpenWeather is released under the GNU GPLv3. Read it, build it, improve it.</p></li>
+		<li><h3>Only what is needed leaves your phone</h3><p>The coordinates of your places go to OpenWeatherMap, the text you search goes to OpenStreetMap. <a href="privacy/" data-keep>The details</a>.</p></li>
+	</ul>
+</main>
+
+<footer class="foot">
+	<div class="wrap">
+		<p>Free software, <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPLv3</a>. Weather data: <a href="https://openweathermap.org/">OpenWeatherMap</a>, ODbL. Place search: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>, ODbL. <a href="credits/" data-keep>All credits</a></p>
+	</div>
+</footer>
+</body>
+</html>

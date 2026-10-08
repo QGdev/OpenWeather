@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr" data-sky="sun">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confidentialité — OpenWeather</title>
+<meta name="description" content="Ce qu'OpenWeather garde sur votre téléphone, ce qu'il envoie, et à qui.">
+<link rel="icon" href="../../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/style.css">
+<script src="../../assets/sky.js"></script>
+</head>
+<body>
+<header class="hero">
+	<div class="wrap">
+		<div class="bar">
+			<a class="brand" href="../" data-keep><img src="../../assets/img/logo.svg" alt="" width="32" height="32">OpenWeather</a>
+			<nav class="nav" aria-label="Principale">
+				<a href="../" data-keep>Accueil</a>
+				<a href="./" data-keep aria-current="page">Confidentialité</a>
+				<a href="../credits/" data-keep>Attributions</a>
+				<a href="../../privacy/" data-keep lang="en" hreflang="en">English</a>
+				<a href="https://github.com/QGdev/OpenWeather">Code source</a>
+			</nav>
+		</div>
+	</div>
+</header>
+
+<main class="wrap prose">
+<h1>Confidentialité</h1>
+<p>OpenWeather n'a ni compte, ni publicité, ni outil de mesure d'audience. C'est un logiciel libre : tout ce qui suit peut être vérifié dans le code source.</p>
+
+<h2>Ce qui reste sur votre téléphone</h2>
+<ul>
+	<li>Les lieux que vous avez enregistrés et vos réglages.</li>
+	<li>Votre clé d'API OpenWeatherMap, stockée chiffrée.</li>
+</ul>
+
+<h2>Ce qui quitte votre téléphone, et où cela va</h2>
+<ul>
+	<li><strong>OpenWeatherMap</strong> (<code>api.openweathermap.org</code>) : les coordonnées ou le nom de chaque lieu enregistré, votre langue et votre clé d'API, pour obtenir la météo et la qualité de l'air. <a href="https://openweather.co.uk/privacy-policy">Leur politique de confidentialité</a>.</li>
+	<li><strong>OpenStreetMap Nominatim</strong> (<code>nominatim.openstreetmap.org</code>) : le texte que vous saisissez pour chercher un lieu à ajouter. <a href="https://osmfoundation.org/wiki/Privacy_Policy">Leur politique de confidentialité</a>.</li>
+	<li>Comme tout serveur, les deux voient l'adresse IP d'où vient la requête.</li>
+</ul>
+<p>Rien d'autre n'est envoyé. L'app ne demande jamais votre position : vous cherchez les lieux par leur nom. Elle demande l'accès à internet et à l'état du réseau (pour récupérer les données et savoir quand actualiser) et la vibration.</p>
+
+<h2>Ce site</h2>
+<p>Ce site ne dépose aucun cookie et ne stocke rien dans votre navigateur. Le ciel affiché est conservé dans l'adresse de la page (la partie après <code>#</code>), que votre navigateur n'envoie jamais au serveur. Le site ne fait aucune requête vers un tiers. Il est hébergé par GitHub Pages qui, comme tout hébergeur, peut journaliser l'adresse IP des visites : voir la <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement">déclaration de confidentialité de GitHub</a>.</p>
+
+<h2>Contact</h2>
+<p>Une question : ouvrez un ticket sur <a href="https://github.com/QGdev/OpenWeather/issues">GitHub</a>.</p>
+</main>
+
+<footer class="foot">
+	<div class="wrap">
+		<p>Logiciel libre, <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPLv3</a>. Données météo : <a href="https://openweathermap.org/">OpenWeatherMap</a>, ODbL. Recherche de lieux : © <a href="https://www.openstreetmap.org/copyright">contributeurs d'OpenStreetMap</a>, ODbL. <a href="../credits/" data-keep>Toutes les attributions</a></p>
+	</div>
+</footer>
+</body>
+</html>

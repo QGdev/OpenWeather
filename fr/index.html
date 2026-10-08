@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr" data-sky="sun">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenWeather — la météo de chacune de vos villes</title>
+<meta name="description" content="La pluie à la minute, 48 heures, 8 jours et l'air que vous respirez. Sans compte, sans publicité, sans pistage. Logiciel libre pour Android.">
+<link rel="icon" href="../assets/img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/style.css">
+<script src="../assets/sky.js"></script>
+<script src="../assets/showcase.js" defer></script>
+</head>
+<body>
+<header class="hero">
+	<div class="wrap">
+		<div class="bar">
+			<a class="brand" href="./" data-keep><img src="../assets/img/logo.svg" alt="" width="32" height="32">OpenWeather</a>
+			<nav class="nav" aria-label="Principale">
+				<a href="confidentialite/" data-keep>Confidentialité</a>
+				<a href="credits/" data-keep>Attributions</a>
+				<a href="../" data-keep lang="en" hreflang="en">English</a>
+				<a href="https://github.com/QGdev/OpenWeather">Code source</a>
+			</nav>
+		</div>
+		<div class="hero__grid">
+			<div>
+				<p class="eyebrow">OpenWeather 0.10 · Android</p>
+				<h1>La météo de chacune de vos villes, sous son propre ciel.</h1>
+				<p class="lead">La pluie à la minute, 48 heures, 8 jours et l'air que vous respirez. Sans compte, sans publicité, sans pistage.</p>
+				<p class="cta">
+					<a class="btn" href="https://github.com/QGdev/OpenWeather/releases">Télécharger</a>
+				</p>
+				<ul class="sky-picker" aria-label="Ciel" hidden>
+					<li><button class="chip" type="button" data-sky="auto" aria-pressed="false">Auto</button></li>
+					<li><button class="chip" type="button" data-sky="sun" aria-pressed="false">Soleil</button></li>
+					<li><button class="chip" type="button" data-sky="cloud" aria-pressed="false">Nuages</button></li>
+					<li><button class="chip" type="button" data-sky="rain" aria-pressed="false">Pluie</button></li>
+					<li><button class="chip" type="button" data-sky="storm" aria-pressed="false">Orage</button></li>
+					<li><button class="chip" type="button" data-sky="snow" aria-pressed="false">Neige</button></li>
+					<li><button class="chip" type="button" data-sky="night" aria-pressed="false">Nuit</button></li>
+				</ul>
+			</div>
+			<div class="phone"><img src="../assets/img/fr/places.webp" width="540" height="1170" alt="La liste des lieux : chaque carte prend la couleur du temps qu'il fait."></div>
+		</div>
+	</div>
+</header>
+
+<main class="wrap">
+	<section class="showcase" aria-label="Fonctions">
+		<div class="showcase__stage">
+			<div class="showcase__phone phone">
+				<div class="screen">
+				<img src="../assets/img/fr/detail.webp" width="540" height="1170" alt="Le détail d'un lieu avec sa température et ses mesures.">
+				<img src="../assets/img/fr/next-hour.webp" width="540" height="1170" alt="La pluie de l'heure à venir, minute par minute, et la qualité de l'air.">
+				<img src="../assets/img/fr/hourly.webp" width="540" height="1170" alt="Les 48 heures à venir, heure par heure.">
+				<img src="../assets/img/fr/daily.webp" width="540" height="1170" alt="Les huit jours à venir avec leurs minimales et maximales.">
+				<img src="../assets/img/fr/air.webp" width="540" height="1170" alt="L'indice de qualité de l'air et ses six polluants.">
+				<img src="../assets/img/fr/light.webp" width="540" height="1170" alt="La liste des lieux en thème clair.">
+				</div>
+			</div>
+			<div class="showcase__steps">
+				<div class="step"><h2>L'essentiel en un écran</h2><p>Ressenti, vent et rafales, humidité, pression, visibilité, et les alertes en cours.</p></div>
+				<div class="step"><h2>La pluie, minute par minute</h2><p>Les 60 prochaines minutes, dessinées minute par minute : quand ça commence, quand ça s'arrête, et avec quelle force.</p></div>
+				<div class="step"><h2>48 heures, heure par heure</h2><p>Touchez une heure pour voir sa température, sa pluie, son vent et son ciel.</p></div>
+				<div class="step"><h2>La semaine d'un regard</h2><p>Huit jours, leurs minimales et maximales sur une même échelle.</p></div>
+				<div class="step"><h2>L'air que vous respirez</h2><p>Un indice de 1 à 5, et les six polluants qui le composent.</p></div>
+				<div class="step"><h2>Clair ou sombre, comme votre téléphone</h2><p>L'app suit le thème et la couleur d'accent de votre téléphone. Les widgets existent en trois tailles, avec la transparence de votre choix.</p></div>
+			</div>
+		</div>
+	</section>
+	<ul class="points">
+		<li><h3>Sans compte, sans pistage</h3><p>Vos lieux et votre propre clé OpenWeatherMap restent sur votre téléphone. La clé y est stockée chiffrée.</p></li>
+		<li><h3>Logiciel libre</h3><p>OpenWeather est publié sous licence GNU GPLv3. Lisez-le, compilez-le, améliorez-le.</p></li>
+		<li><h3>Seul le nécessaire quitte votre téléphone</h3><p>Les coordonnées de vos lieux vont à OpenWeatherMap, le texte de vos recherches à OpenStreetMap. <a href="confidentialite/" data-keep>Le détail</a>.</p></li>
+	</ul>
+</main>
+
+<footer class="foot">
+	<div class="wrap">
+		<p>Logiciel libre, <a href="https://www.gnu.org/licenses/gpl-3.0.html">GNU GPLv3</a>. Données météo : <a href="https://openweathermap.org/">OpenWeatherMap</a>, ODbL. Recherche de lieux : © <a href="https://www.openstreetmap.org/copyright">contributeurs d'OpenStreetMap</a>, ODbL. <a href="credits/" data-keep>Toutes les attributions</a></p>
+	</div>
+</footer>
+</body>
+</html>
